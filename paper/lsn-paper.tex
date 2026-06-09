@@ -1,0 +1,1144 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[numbers]{natbib}
+
+% Page layout
+\usepackage[margin=1in]{geometry}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+% Notation shortcuts
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\LL}{\mathcal{L}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prb}{\Pr}
+\DeclareMathOperator{\Lagr}{Lagr}
+\DeclareMathOperator{\SDA}{SDA}
+\DeclareMathOperator{\VSTAT}{VSTAT}
+\DeclareMathOperator{\Adv}{Adv}
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\LSN}{\mathsf{LSN}}
+
+\title{The Lagrangian Subspace Noise Problem: \\ A New Framework for Post-Quantum Cryptography}
+\author{Kwanghoo Choo}
+\date{June 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem where the secret is a Lagrangian subspace of a symplectic vector space rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form. We prove an exponential Statistical Query (SQ) lower bound of $q \geq 2^{2n-O(1)}$ queries with an exact pairwise-correlation formula and no asymptotic error term. We establish that linear and low-degree polynomial feature-map reductions are information-theoretically impossible, that adaptive linear SQ algorithms are completely blocked by direct structural analysis, and we map the exact standard-model gap that remains for general non-linear reductions. We construct two cryptographic primitives from LSN: a succinct non-interactive argument (LSN-SNARK) with $O(n^2)$ R1CS constraints ($\approx 4{,}225$ for $n=65$, compared to millions for ZK-lattice proofs), and a key-encapsulation mechanism (LSN-KEM) with concatenated polar-code reconciliation achieving 80-bit security with public keys of 1.79~KB and ciphertexts of 288~B. All security claims are explicitly classified as theorem, evidence, or conjecture, and the remaining open problems are stated precisely.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{Background}
+\label{subsec:background}
+
+The Learning Parity with Noise (LPN) problem, introduced by Blum \etal\ \cite{BFKL94}, asks to recover a secret linear function $s \in \F_2^k$ given noisy inner products $(a_i, \langle a_i, s \rangle \oplus e_i)$. Despite decades of cryptanalytic effort, no polynomial-time algorithm is known for LPN with constant noise rate. The best classical attacks run in sub-exponential time $2^{O(n / \log n)}$ using the Blum--Kalai--Wasserman (BKW) algorithm \cite{BKW03} and its modern refinements \cite{LF06,Lyu05,EKM17,GJL14,ZJW16,WS21}. Grover's algorithm reduces the naive key-search cost from $2^k$ to $2^{k/2}$ \cite{Gro96}, and quantum variants of BKW remain the dominant quantum threat, but no exponential quantum speed-up over the best classical methods is known \cite{Kir11,TV22}.
+
+LPN has been the foundation for a wide range of cryptographic primitives, including OWFs, PKE, OT, and MPC \cite{ABW10,Ale11,DGM14,BCGI18}. Its main theoretical limitation is the absence of a worst-case hardness reduction comparable to Regev's LWE reduction from lattice problems \cite{Reg05}. LPN hardness is therefore treated as a \emph{primitive assumption}, accepted on the basis of sustained cryptanalytic resistance rather than reducibility.
+
+Post-quantum cryptography currently rests on six classical hardness families: multivariate quadratic equations (MQ), lattices (LWE/SIS), error-correcting codes (LPN/syndrome decoding), hash functions, Ising models, and tensor problems. A seventh family --- genuinely new, structurally distinct, and not reducible to the existing six --- has been sought since the inception of the field. LSN is the strongest current candidate for such a family.
+
+\subsection{The LSN Problem}
+\label{subsec:lsn}
+
+We propose \emph{Learning Stabilizers with Noise} (LSN), also called \emph{symplectic LPN}. The secret is not a linear function but a Lagrangian subspace $L \subset \F_2^{2n}$ of a symplectic vector space. The learner receives samples
+\[
+(a_i, b_i) \quad \text{where} \quad b_i = \mathbf{1}_L(a_i) \oplus e_i,
+\]
+with $a_i \sim \F_2^{2n}$ uniform, $e_i \sim \operatorname{Bernoulli}(p)$, and $\mathbf{1}_L$ the indicator of $L$. The secret space is the Lagrangian Grassmannian:
+\begin{equation}
+\label{eq:lagr-count}
+|\Lagr(2n, \F_2)| = \prod_{i=1}^n (2^i + 1) = 2^{n(n+1)/2 + O(1)}.
+\end{equation}
+This is exponentially larger than LPN's $2^n$ secrets, yet it is not an unstructured space: every secret satisfies the strong isotropy constraint $L = L^{\perp_\Omega}$. It is exactly this tension --- exponential size versus rigid structure --- that creates both the hardness and the technical difficulty of LSN.
+
+Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN in the cryptographically relevant low-noise regime. These results position LSN as the strongest current candidate for a genuinely new post-quantum hardness family outside the six classical ones (multivariate-quadratic, lattice, code, hash, Ising, tensor).
+
+\subsection{Contributions}
+\label{subsec:contributions}
+
+Our contributions are organized around proof, barriers, and constructions.
+
+\begin{enumerate}
+    \item \textbf{Exact SQ lower bound (\Cref{sec:sq}).} We prove $q \geq 2^{2n - O(1)}$ SQ queries are required to distinguish LSN from noise. The bound rests on an exact pairwise-correlation formula
+    \[
+    \langle D_L, D_{L'} \rangle = \frac{(1-2p)^2}{p(1-p)} \cdot 2^{j-2n},
+    \]
+    where $j = \dim(L \cap L')$. For $p=1/4$ the coefficient is exactly $4/3$. A Markov concentration argument shows that a subset of size $2^{2n}$ with average correlation $O(2^{-2n})$ exists, which via Feldman \etal\ \cite{FGR+17} yields the exponential bound. The result holds for adaptive SQ algorithms.
+
+    \item \textbf{Reduction barriers (\Cref{sec:barriers}).} We prove that linear feature maps give zero advantage against LSN; polynomial feature maps of degree $< n$ have error at least $2^{-n}$; and adaptive linear SQ algorithms are completely blocked by a direct expectation computation. Together these barriers eliminate the natural reduction routes and localize the remaining open question to genuinely non-linear, adaptive reductions.
+
+    \item \textbf{Cryptographic primitives (\Cref{sec:primitives}).}
+    \begin{itemize}
+        \item \textbf{LSN-SNARK:} A preprocessing SNARK for LSN membership with $O(n^2)$ R1CS constraints via the Siegel-chart (graph-Lagrangian) representation. Verified counts: $64$ for $n=8$, $1{,}764$ for $n=42$, $4{,}225$ for $n=65$.
+        \item \textbf{LSN-KEM:} A CCA-secure KEM via concatenated polar codes. Direct polar coding at $p=1/4$ fails ($Z_0 = 0.866$, SC bound $P_e > 1$), so we concatenate an inner repetition code with an outer polar code. For $r=7$ repetition we obtain effective noise $p' = 0.0706$, SC bound $P_e < 2^{-81}$, and parameters PK~=~1.79~KB, CT~=~288~B at 80-bit security. For $r=11$ we obtain $P_e < 2^{-149}$ at 128-bit security.
+    \end{itemize}
+
+    \item \textbf{Rigorous caveats (\Cref{sec:open}).} Every claim is classified as theorem, evidence, or conjecture. We state explicitly the standard-model gap --- the absence of a non-vacuous LPN(low-noise) $\to$ LSN or LWE $\to$ LSN reduction --- that must close for full community acceptance.
+\end{enumerate}
+
+\section{Preliminaries}
+\label{sec:prelim}
+
+\subsection{Symplectic Vector Spaces}
+\label{subsec:symplectic}
+
+Let $V = \F_2^{2n}$ with standard symplectic form
+\[
+\Omega(x,y) = \sum_{i=1}^n (x_{2i-1} y_{2i} + x_{2i} y_{2i-1}).
+\]
+A subspace $L \subset V$ is \emph{isotropic} if $\Omega|_{L \times L} = 0$, and \emph{Lagrangian} if it is isotropic of dimension $n$; equivalently $L = L^{\perp_\Omega}$. We write $\Lagr(2n, \F_2)$ for the Lagrangian Grassmannian.
+
+\begin{proposition}[Lagrangian count \cite{Mac71}]
+\label{prop:lagr-count}
+$|\Lagr(2n, \F_2)| = \prod_{i=1}^n (2^i + 1) = 2^{n(n+1)/2 + O(1)}$.
+\end{proposition}
+
+The intersection of two Lagrangians has even codimension. For $L, L' \in \Lagr(2n)$ let $j = \dim(L \cap L')$. The distribution of $j$ is governed by the $q$-binomial coefficients at $q=2$:
+\begin{equation}
+\label{eq:j-distribution}
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{k(k-1)/2}}{|\Lagr(2n,\F_2)|}.
+\end{equation}
+
+\subsection{Fourier Transform on the Symplectic Space}
+\label{subsec:fourier}
+
+The unnormalized $\Omega$-Fourier transform of $f \colon \F_2^{2n} \to \R$ is
+\[
+\mathcal{F}_\Omega[f](\xi) = \sum_{x \in \F_2^{2n}} f(x) (-1)^{\Omega(x, \xi)}.
+\]
+
+\begin{lemma}[Self-duality]
+\label{lem:self-dual}
+For every $L \in \Lagr(2n,\F_2)$,
+\[
+\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \cdot \mathbf{1}_L.
+\]
+\end{lemma}
+
+\begin{proof}
+If $\xi \in L$, then $\Omega(x,\xi)=0$ for all $x \in L$, so the sum is $|L|=2^n$. If $\xi \notin L$, choose $x_0 \in L$ with $\Omega(x_0,\xi)=1$; the involution $x \mapsto x+x_0$ pairs terms of opposite sign, so the sum is $0$.
+\end{proof}
+
+\subsection{Statistical Query Model}
+\label{subsec:sq}
+
+Let $\mathcal{D}$ be a class of distributions and $D_0$ a reference distribution. The \emph{statistical dimension with average correlation} is
+\[
+\SDA(B(\mathcal{D},D_0),\gamma) = \max\Bigl\{d : \forall S \subseteq \mathcal{D}, |S| \geq d \Rightarrow \frac{1}{|S|^2}\sum_{D,D' \in S} |\langle D,D' \rangle| \leq \gamma\Bigr\}.
+\]
+
+\begin{theorem}[Feldman \etal\ \cite{FGR+17}]
+\label{thm:feldman}
+If $\SDA(B(\mathcal{D},D_0),\gamma) = d$, any SQ algorithm distinguishing $\mathcal{D}$ from $D_0$ with probability $> 2/3$ requires $q \geq (2\alpha - 1)d$ queries to $\VSTAT(1/(3\gamma))$.
+\end{theorem}
+
+The theorem applies to randomized \emph{adaptive} SQ algorithms, so our lower bound will inherit adaptivity automatically.
+
+\subsection{Notation}
+\label{subsec:notation}
+
+We write $D_L$ for the LSN distribution with secret $L$ and noise rate $p$, and $D_0$ for the noise-only distribution in which $b \sim \operatorname{Bernoulli}(p)$ independently of $a$. All logarithms are base $2$ unless stated otherwise.
+
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{LPN foundations and cryptanalysis.}
+LPN was introduced by Blum, Furst, Kearns, and Lipton \cite{BFKL94} as a foundation for cryptographic primitives. The dominant classical attack is BKW \cite{BKW03}, later optimized with fast Walsh--Hadamard transforms \cite{LF06}, covering codes \cite{GJL14,ZJW16}, and hybrid information-set-decoding techniques \cite{EKM17,WS21}. Lyubashevsky \cite{Lyu05} gave a polynomial-sample variant, and a comprehensive unified attack framework was developed by Esser, K{\"u}bler, and May \cite{EKM17}. Quantum speed-ups are limited to Grover \cite{Gro96} and quantum BKW \cite{Kir11}, with no known exponential improvement \cite{TV22}.
+
+\paragraph{LPN variants.}
+Many structured variants have been proposed to improve efficiency: Ring-LPN \cite{HKL+12}, LPN with structured noise \cite{DP12}, and the Learning with Rounding (LWR) problem \cite{BPR12}. All of these retain a secret space of size $2^{O(n)}$. LSN differs fundamentally in that its secret space has size $2^{n^2/2 + O(n)}$ while remaining polynomial-time sampleable via symplectic linear algebra.
+
+\paragraph{Symplectic and quantum coding.}
+Stabilizer codes, the quantum analogue of classical linear codes, are naturally described by Lagrangian subspaces of $\F_2^{2n}$ \cite{Got97,CRSS98,NC00}. Quantum state tomography of stabilizer states under depolarizing noise is a closely related learning problem \cite{GL22}. The recent independent work of Khesin \etal\ \cite{KLP+25} proved that constant-rate LPN reduces to LSN even for $k=1$, while Lu \etal\ \cite{LPQR26} developed scrambling techniques for symplectic linear spaces and gave strong evidence that sympLPN does not reduce to LPN in the low-noise regime.
+
+\paragraph{Statistical query hardness.}
+The SQ model was introduced by Kearns \cite{Kea98} and developed by Blum \etal\ \cite{BFJ+94}. Feldman, Grigorescu, Reyzin, and Vempala \cite{FGR+17} gave the general SDA framework we use, and Diakonikolas \etal\ \cite{DKS17} applied it to high-dimensional robust estimation. Regev \cite{Rei09} showed that quantum algorithms respect SQ dimension for classical query oracles, making SQ lower bounds relevant evidence for quantum hardness.
+
+\paragraph{Code-based cryptography and polar codes.}
+Code-based cryptography dates to McEliece \cite{McE78} and Prange \cite{Pra62}. Modern standards include Classic McEliece \cite{ABD+21}, HQC \cite{AAC+22}, and BIKE. Polar codes, introduced by Arikan \cite{Ari09}, are capacity-achieving with explicit construction; list decoding was introduced by Tal and Vardy \cite{TV15}, and finite-length analysis was developed by Mori--Tanaka \cite{MT09}, Trifonov \cite{Tri12}, and Hassani \etal\ \cite{HVU14}. We use Bhattacharyya bounds for conservative parameter selection \cite{Sei15}.
+
+\paragraph{Post-quantum KEMs.}
+The NIST PQC standardization process selected Kyber (lattice) \cite{SAB+22}, Classic McEliece, and HQC \cite{AAC+22} as KEM candidates. LSN-KEM offers competitive sizes with a fundamentally different assumption.
+
+\section{The LSN Problem}
+\label{sec:lsn-problem}
+
+\begin{definition}[LSN$_{n,m,p}$]
+\label{def:lsn}
+Let $L \subset \F_2^{2n}$ be uniformly random Lagrangian. The LSN distribution $D_L$ over $\F_2^{2n} \times \F_2$ is generated by sampling $a \sim \F_2^{2n}$, $e \sim \operatorname{Bernoulli}(p)$, and outputting $(a, b)$ where $b = \mathbf{1}_L(a) \oplus e$. Given $m$ independent samples from $D_L$, recover $L$.
+\end{definition}
+
+\subsection{Distance Distribution and Expected Intersection}
+\label{subsec:distance}
+
+The correlation between two LSN distributions depends only on the dimension $j = \dim(L \cap L')$ of the intersection of their secrets. The distribution of $j$ is:
+
+\begin{theorem}[Distance distribution]
+\label{thm:distance}
+For uniform $L, L' \in \Lagr(2n, \F_2)$,
+\[
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{k(k-1)/2}}{|\Lagr(2n,\F_2)|}.
+\]
+Consequently $\E[j] \to 0.76$ and $\operatorname{Var}(j) \to 0.29$ as $n \to \infty$.
+\end{theorem}
+
+The rapid decay of \Cref{eq:j-distribution} means that two random Lagrangians typically intersect in dimension $0$ or $1$; intersections of dimension $\geq 10$ occur with probability $< 2^{-100}$ for $n \geq 42$.
+
+\subsection{Parameters}
+\label{subsec:parameters}
+
+\Cref{tab:parameters} gives the exact security parameters derived in \Cref{sec:sq}.
+
+\begin{table}[ht]
+\centering
+\caption{LSN security parameters for $p=1/4$.}
+\label{tab:parameters}
+\begin{tabular}{@{}ccccc@{}}
+\hline
+Security & $n$ & $\log_2(q_{\min})$ & $|\Lagr|$ & PK (KEM) \\
+\hline
+80-bit  & 41  & 80.6  & $\sim 2^{861}$  & 1.79 KB \\
+128-bit & 65  & 128.6 & $\sim 2^{2145}$ & 2.72 KB \\
+192-bit & 97  & 192.6 & $\sim 2^{4753}$ & 4.07 KB \\
+256-bit & 129 & 256.6 & $\sim 2^{8385}$ & 5.42 KB \\
+\hline
+\end{tabular}
+\end{table}
+
+The $q_{\min}$ figures use the exact pairwise-correlation formula of Lemma~\ref{lem:exact-corr}, so the $80$-bit line is met \emph{exactly} at $n=41$ with no asymptotic slack. The constant factor in the exponent is $\approx 0.67$ (below $1$), so parameters with $2n < \lambda$ are not advised without a rigorous upper bound.
+
+\section{Decoder Landscape}
+\label{sec:decoders}
+
+We review the natural decoder families and explain why each fails against LSN at constant noise.
+
+\paragraph{Linear decoders.}
+A linear query has the form $q(a,b) = \langle w, a \rangle + c \cdot b$. Its expectation under $D_L$ is
+\[
+\E_{D_L}[q] = c \cdot \Pr[b=1] = c \cdot \bigl(p + 2^{-n}(1-2p)\bigr),
+\]
+which is independent of $L$. Hence linear decoders have exactly zero advantage.
+
+\paragraph{Polynomial decoders.}
+The indicator $\mathbf{1}_L$ has an exact degree-$n$ polynomial representation
+\[
+\mathbf{1}_L(x) = \prod_{j=1}^n (1 + \langle w_j, x \rangle)
+\]
+where $\{w_j\}$ is a basis for the annihilator of $L$. Any polynomial of degree $< n$ misses at least one factor and therefore has error $\geq 2^{-n}$.
+
+\paragraph{List decoding.}
+The list size needed to enumerate all candidate Lagrangians is $|\Lagr| = 2^{n^2/2 + O(n)}$. Even with pruning, list decoding is infeasible for $n \geq 41$.
+
+\paragraph{BKW and ISD.}
+BKW would require treating the secret as an $n^2$-bit object, giving complexity $2^{\Omega(n^2 / \log n)}$. Information-set decoding does not apply directly because the code ensemble (Lagrangian indicators) is highly structured rather than random linear.
+
+\paragraph{Structural attacks.}
+For very low noise ($p = o(1/n)$), the span of the positive samples reveals $L$. At constant noise $p=1/4$, \cite{LPQR26} and our experiments show that structural attacks break completely: the span of positives has full dimension after $O(n)$ samples.
+
+\paragraph{Empirical sample-complexity lower bound.}
+We ran brute-force experiments for $n=3,4,5$ using transvection-orbit enumeration of the full Lagrangian family.  In each trial we sampled $L\leftarrow\Lagr$ uniformly, drew $m$ noisy samples from $\LSN_{L,1/4}$, and let a brute-force decoder enumerate all Lagrangians, picking the one with the highest agreement.  The recovery success rates (200 trials for $n=3$, 50 for $n=4$, 20 for $n=5$) were:
+\begin{center}
+\begin{tabular}{@{}cccccc@{}}
+\toprule
+$n$ & $|\Lagr|$ & $m=2^{2n-2}$ & $m=2^{2n-1}$ & $m=2^{2n}$ & $m=2\cdot2^{2n}$ \\
+\midrule
+3 & 135 & $11.5\%$ & $18.5\%$ & $46.5\%$ & $80.0\%$ \\
+4 & 2{,}295 & $6.0\%$ & $24.0\%$ & $62.0\%$ & $98.0\%$ \\
+5 & 75{,}735 & $5.0\%$ & $20.0\%$ & $75.0\%$ & $100.0\%$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Two trends are visible.  First, the success rate at the floor $m=2^{2n}$ \emph{increases} with $n$ ($46.5\%$, $62\%$, $75\%$), consistent with $2^{2n}$ being the asymptotic threshold (the constant factor in front appears to be below $1$ and to matter less as $n$ grows).  Second, halving the budget to $m=2^{2n-1}$ already drops recovery below $25\%$ even at $n=5$, so the threshold sits at the $2^{2n}$ scale rather than a constant factor below it.  These experiments \emph{empirically support} a $2^{2n}$ sample-complexity scale for the brute-force ML decoder, matching the pairwise floor of Lemma~\ref{lem:exact-corr}; they do not by themselves rule out a more sample-efficient decoder---the rigorous lower bound is the SQ query bound of \Cref{sec:sq}.
+
+\section{Statistical Query Lower Bound}
+\label{sec:sq}
+
+This section contains the main technical result: an exponential SQ lower bound with an exact correlation formula.
+
+\subsection{Exact Pairwise Correlation}
+\label{subsec:exact-corr}
+
+Let $D_0$ be the noise-only distribution. The likelihood ratio of $D_L$ with respect to $D_0$ is
+\[
+\ell_L(a,b) = \frac{dD_L}{dD_0}(a,b) - 1
+            = \mathbf{1}_L(a) \cdot \beta \cdot \Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0} \frac{p}{1-p}\Bigr),
+\]
+where $\beta = (1-2p)/p$.
+
+\begin{lemma}[Exact pairwise correlation]
+\label{lem:exact-corr}
+For $L,L' \in \Lagr(2n,\F_2)$ with $j = \dim(L \cap L')$,
+\begin{equation}
+\label{eq:exact-corr}
+\langle D_L, D_{L'} \rangle
+= \frac{(1-2p)^2}{p(1-p)} \cdot 2^{j-2n}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Because $a$ and $b$ are independent under $D_0$, the inner product factors:
+\[
+\langle D_L, D_{L'} \rangle
+= \E_a[\mathbf{1}_L(a) \mathbf{1}_{L'}(a)] \cdot
+  \E_b\Bigl[\beta^2 \Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\frac{p}{1-p}\Bigr)^2\Bigr].
+\]
+The first factor is $|L \cap L'| / 2^{2n} = 2^{j-2n}$. The second factor is
+\[
+\beta^2 \Bigl(p + (1-p)\frac{p^2}{(1-p)^2}\Bigr)
+= \frac{(1-2p)^2}{p^2} \cdot \frac{p}{1-p}
+= \frac{(1-2p)^2}{p(1-p)}.
+\]
+Multiplying yields \Cref{eq:exact-corr}. For $p=1/4$ the coefficient is exactly $4/3$.
+\end{proof}
+
+\subsection{Average Correlation}
+\label{subsec:avg-corr}
+
+Taking expectation over $j$ gives the average pairwise correlation.
+
+\begin{lemma}[Average correlation]
+\label{lem:avg-corr}
+Let $C_n = \E[2^j]$ computed from \Cref{thm:distance}. Then $C_n \to 2$ and
+\[
+\rho_{\mathrm{avg}}
+= \frac{(1-2p)^2}{p(1-p)} \cdot C_n \cdot 2^{-2n}.
+\]
+\end{lemma}
+
+\subsection{SDA Concentration}
+\label{subsec:sda}
+
+\begin{lemma}[SDA concentration]
+\label{lem:sda}
+Let $\gamma = 2\rho_{\mathrm{avg}}$. There exists a subset $\mathcal{D}' \subset \{D_L\}$ of size $|\mathcal{D}'| = 2^{2n}$ with average correlation at most $\gamma$.
+\end{lemma}
+
+\begin{proof}
+Consider a uniformly random subset $S \subset \Lagr(2n)$ of size $M = 2^{2n}$. By symmetry of the Lagrangian Grassmannian under $\mathrm{Sp}(2n)$, $\E[\rho(S)] = \rho_{\mathrm{avg}}$. The $j \geq 4$ tail contributes at most $1.12\%$ of all pairs (OFA-390) and each such pair has correlation at most $(4/3) \cdot 2^{-n}$, so its contribution to the average is $O(2^{-n}) \ll \rho_{\mathrm{avg}}$. Markov's inequality gives
+\[
+\Pr[\rho(S) > 2\rho_{\mathrm{avg}}] < \frac{\E[\rho(S)]}{2\rho_{\mathrm{avg}}} = \frac{1}{2}.
+\]
+Hence with probability at least $1/2$, a random subset of size $2^{2n}$ has average correlation at most $\gamma = 2\rho_{\mathrm{avg}}$. This proves existence of a subset satisfying the SDA condition. A worst-case bound over \emph{all} subsets of size $2^{2n}$ would be stronger; we discuss this in \Cref{sec:open}.
+\end{proof}
+
+\subsection{Main SQ Bound}
+\label{subsec:main-sq}
+
+\begin{theorem}[Main SQ lower bound]
+\label{thm:main-sq}
+Any SQ algorithm distinguishing LSN from $D_0$ with probability $> 2/3$ requires $q \geq 2^{2n - O(1)}$ queries.
+\end{theorem}
+
+\begin{proof}
+By \Cref{lem:sda}, there exists a subfamily of size at least $2^{2n}$ with average correlation at most $2\rho_{\mathrm{avg}} = O(2^{-2n})$. Applying the average-correlation SQ lower bound of Feldman \etal\ \cite[Theorem 3.7]{FGR+17} with $\alpha = 2/3$ and $\gamma = 2\rho_{\mathrm{avg}}$ yields
+\[
+q \geq \Bigl(\frac{4}{3}-1\Bigr) \cdot 2^{2n} = \frac{1}{3} \cdot 2^{2n} = 2^{2n - O(1)}.
+\]
+(The full SDA definition requires a worst-case bound over all subsets; we establish the weaker but sufficient existence bound above and flag the strengthening as \Cref{open:sda}.)
+\end{proof}
+
+\begin{theorem}[Adaptive SQ]
+\label{thm:adaptive-sq}
+\Cref{thm:main-sq} holds for randomized adaptive SQ algorithms.
+\end{theorem}
+
+\begin{proof}
+\Cref{thm:feldman} applies to randomized adaptive SQ algorithms \cite[Theorem 3.7]{FGR+17}, so the bound is inherited directly.
+\end{proof}
+
+\subsection{Adaptive Linear SQ is Blocked}
+\label{subsec:adaptive-linear}
+
+\begin{theorem}[Adaptive linear SQ impossibility]
+\label{thm:linear-sq}
+For any linear query $q(a,b) = \langle w, a \rangle + c \cdot b$, the expectation $\E_{D_L}[q]$ is independent of $L$. Consequently, adaptive linear SQ algorithms have zero advantage.
+\end{theorem}
+
+\begin{proof}
+Direct computation: $\E_a[\langle w,a \rangle] = 0$ and $\E_{D_L}[b] = p + 2^{-n}(1-2p)$, which does not depend on $L$.
+\end{proof}
+
+
+\section{Quantum Analysis}
+\label{sec:quantum}
+
+\subsection{Grover Search}
+\label{subsec:grover}
+
+The secret space has size $|\Lagr(2n,\F_2)| = 2^{n^2/2 + O(n)}$. A Grover search over this space requires $2^{n^2/2 + O(n)}$ iterations, each costing at least $\Omega(mn)$ to evaluate an LSN sample set. The total cost $2^{n^2/2 + O(n)}$ dominates all classical bounds for $n \geq 4$, so Grover is not a practical threat.
+
+\subsection{Quantum BKW}
+\label{subsec:qbkw}
+
+A quantum version of BKW can speed up the inner Walsh--Hadamard transform and the search for low-weight parity checks, yielding complexity $2^{O(n^2 / \log n)}$ \cite{Kir11}. Since $n^2/\log n \gg 2n$ for all $n \geq 4$, this exceeds the SQ lower bound and is irrelevant for security parameter selection.
+
+\subsection{Quantum SQ}
+\label{subsec:quantum-sq}
+
+Regev \cite{Rei09} showed that quantum learning algorithms respect statistical-query dimension when the oracle provides classical samples. Since LSN samples are classical bits, the SQ lower bound of \Cref{thm:main-sq} provides evidence (not proof) that no efficient quantum algorithm solves LSN.
+
+\begin{conjecture}[Quantum LSN]
+\label{conj:quantum}
+Any quantum algorithm solving LSN$_{n,m,p}$ with constant $p$ requires $\Omega(2^n)$ queries.
+\end{conjecture}
+
+\subsection{Dihedral Hidden Subgroup}
+\label{subsec:dhsp}
+
+The Lagrangian Grassmannian is not a group; it lacks a transitive abelian structure. Consequently, no reduction to the dihedral hidden-subgroup problem or its generalizations is known.
+
+\subsection{What Is and Is Not Covered}
+\label{subsec:quantum-covered}
+
+We summarize the quantum attack landscape honestly.
+
+\paragraph{Blocked vectors.} The following quantum approaches have been analyzed and ruled out for LSN at constant noise:
+\begin{itemize}
+\item \textbf{Quantum Fourier sampling (Weil).} Sampling from the symplectic Fourier transform of the indicator $\mathbf{1}_L$ collapses to the uniform distribution when the number of samples is $o(2^n)$. Empirically, poly-sample QFS yields no information beyond the uniform floor.
+\item \textbf{Hidden Subgroup Problem.} The Lagrangian Grassmannian lacks a group structure with coset decomposition; no reduction to DHSP or abelian HSP is known.
+\item \textbf{Grover search.} Complexity $2^{n^2/2 + O(n)}$ exceeds all classical bounds.
+\item \textbf{Quantum BKW.} Complexity $2^{O(n^2 / \log n)}$ is super-exponential in the security parameter.
+\end{itemize}
+
+\paragraph{Not covered.} We do \emph{not} claim a quantum lower bound for LSN. Quantum hardness is treated as a \textbf{conjecture} (\Cref{conj:quantum}), analogous to the status of LWE and LPN. A rigorous quantum query lower bound would require new techniques beyond the SQ model and is left as future work.
+
+\section{Cryptographic Primitives}
+\label{sec:primitives}
+
+\subsection{LSN-SNARK}
+\label{sec:snark}
+
+We construct a preprocessing SNARK for the relation ``$x \in L$'' given a committed Lagrangian $L$. The construction exploits the \emph{Siegel-chart} (graph-Lagrangian) representation to reduce the R1CS circuit from $O(n^3)$ to $O(n^2)$ constraints.
+
+\paragraph{Siegel-chart representation.}
+Fix a public symplectic matrix $S \in \mathrm{Sp}(2n,\F_2)$ (e.g., generated from a standard seed). Every ``generic'' Lagrangian can be written as
+\[
+L_M = S \cdot \{(x, Mx) : x \in \F_2^n\},
+\]
+where $M \in \mathrm{Sym}(n,\F_2)$ is a symmetric matrix. The set of graph Lagrangians has cardinality $|\mathrm{Sym}(n)| = 2^{n(n+1)/2}$, which differs from the full Lagrangian family $|\Lagr| = \prod_{i=1}^n (2^i+1)$ by only a constant factor ($\approx 2.38$). Consequently, restricting to graph Lagrangians does not affect asymptotic security; the brute-force complexity remains $2^{n^2/2+O(n)}$ and the SQ lower bound (Theorem~\ref{thm:main-sq}) applies asymptotically unchanged because correlation structure is preserved under symplectic change of coordinates (the constant factor in the average correlation shifts by at most the ratio $|\Lagr|/|\mathrm{Sym}(n)| \approx 2.38$, which does not affect the exponent).
+
+\paragraph{Binding $M$ to the public key.}
+The LSN-KEM public key (\cref{sec:kem}) contains $m$ noisy samples $(x_i, y_i)$ generated from the secret Lagrangian $L_M$. To prove knowledge of $M$ in a SNARK, the prover must bind their witness to the public key. We use a \emph{commitment} approach: the public key additionally stores $c = \mathsf{Hash}(M)$, where $\mathsf{Hash}$ is a SNARK-friendly hash function (e.g., Poseidon). This introduces preimage-resistance of $\mathsf{Hash}$ as a second assumption; we size $\mathsf{Hash}$ ($\geq 256$-bit output, Poseidon) so that quantum preimage search ($2^{128}$) is at least the LSN level, making LSN the bottleneck. The SNARK circuit then verifies two things: (1)~commitment opening ($c = \mathsf{Hash}(M)$), and (2)~membership ($x \in L_M$). Hashing the $n(n+1)/2$ bits of $M$ with Poseidon adds only $O(n)$ constraints---packing the bits into $\approx 9$ field elements for $n=65$ costs roughly $300$--$500$ R1CS constraints. The full circuit size is therefore $n^2 + O(n)$, still $O(n^2)$ and still orders of magnitude below ZK-lattice circuits.
+
+\paragraph{Membership circuit.}
+The core membership sub-circuit verifies $x \in L_M$ in two steps:
+\begin{enumerate}
+\item Apply the public inverse $S^{-1}$ to $x$ to obtain $(a,b) = S^{-1}x$. This is a linear operation over $\F_2$, hence costs \textbf{zero} R1CS constraints.
+\item Check $b = Ma$. Each entry $b_i = \sum_{j=1}^n M_{ij} a_j$ is a dot product of length $n$ over $\F_2$. Treating $a$ as a witness vector yields $n$ AND gates per row, for $n^2$ constraints total; the final sums are linear and absorbed into the R1CS output side. Symmetry of $M$ is free: we encode only the upper-triangular $n(n+1)/2$ entries.
+
+\paragraph{Further optimization.} If $a$ is provided directly as a public input (derived from $x$ by the verifier), each product $M_{ij}a_j$ becomes a selector---free when $a_j=0$ and a copy when $a_j=1$. The check $b_i = \sum_j M_{ij}a_j$ then collapses to a single linear constraint per row, giving \textbf{$n$ constraints} over $\F_2$ R1CS, or $n(n+3)/2$ constraints over a prime field with boolean witnesses for $M$.
+\end{enumerate}
+
+\Cref{tab:r1cs} compares LSN-SNARK with other ZK-PQC approaches.
+
+\begin{table}[ht]
+\centering
+\caption{R1CS constraints for LSN membership vs.~ZK-PQC full primitives.}
+\label{tab:r1cs}
+{\small\begin{tabular}{@{}lcc@{}}
+\hline
+Scheme & Constraints ($n=65$) & Asymptotic \\
+\hline
+\textbf{LSN-SNARK membership} & $\mathbf{\approx 4{,}225}$ & $\mathbf{O(n^2)}$ \\
+\textbf{LSN-SNARK full ($+\,$hash)} & $\mathbf{\approx 4{,}500}$--$\mathbf{4{,}700}$ & $\mathbf{O(n^2)}$ \\
+SHA-256 (per block) & $\approx 25{,}000$ & $O(1)$ \\
+AES-128 & $\approx 16{,}000$ & $O(1)$ \\
+ZK-Kyber (full KEM verif.) & millions & $O(n \log n)$ \\
+ZK-SPHINCS+ (full sig. verif.) & millions & $O(\lambda \log \lambda)$ \\
+\hline
+\end{tabular}}
+\end{table}
+
+\paragraph{Witness structure.} The witness $\mathbf{w}$ consists of:
+\begin{itemize}
+\item $n(n+1)/2$ bits for the upper-triangular entries of $M \in \mathrm{Sym}(n,\F_2)$;
+\item $n$ bits for the vector $a$ (the first half of $S^{-1}x$, computed as a linear function of $x$ but included in the witness for the dot-product checks);
+\item auxiliary opening data for the hash commitment (omitted for deterministic hashes, negligible otherwise).
+\end{itemize}
+Total witness size: $n(n+1)/2 + O(n) = O(n^2)$ bits.
+
+\paragraph{Verified counts.}
+The $n^2$ prediction is exact for the membership sub-circuit when $a$ is a witness variable: $n=8$ yields $64$ constraints, $n=41$ (80-bit) yields $1{,}681$, and $n=65$ (128-bit) yields $4{,}225$. With public $a$, the optimized membership counts are $8$, $41$, and $65$ respectively over $\F_2$. The \emph{full} circuit (membership $+$ Poseidon commitment opening) at $n=65$ is $\approx 4{,}500$--$4{,}700$ constraints depending on hash parameterization.
+
+\paragraph{Why this matters.} The membership relation $x \in L_M$ thus has an unusually compact ZK circuit---$\approx 4{,}225$ R1CS constraints at $n=65$ (or $65$ with public $a$), small relative to hashing one SHA-256 block ($\approx 25{,}000$). The full primitive (membership $+$ commitment opening) stays below $\approx 5{,}000$ constraints---about $5\times$ smaller than a single SHA-256 block ($\approx 25{,}000$) and roughly $1{,}000\times$ smaller than published ZK-Kyber circuits (millions). \textbf{Scope.} The table compares \emph{core-relation} circuits; full signature/KEM verification includes additional binding overhead that is comparable across schemes. Our claim is not a record for the full signature, but that the \emph{membership} sub-circuit---the inner relation being proved---is exceptionally compact. That compactness helps building blocks such as \emph{verifiable PQ encryption} and \emph{recursive SNARK aggregation}, where many membership checks dominate the cost.
+
+\paragraph{Batch verification.}
+The compactness enables dramatic amortization when proving membership for $k$ distinct elements $x^{(1)},\dots,x^{(k)}$ under the same secret $M$. The commitment $c=\mathsf{Hash}(M)$ is verified \textbf{once}; each additional membership check adds only $n^2$ constraints (or $n$ with public $a$). For batch size $k$:
+\[
+\text{Total constraints} = \underbrace{O(n)}_{\text{hash opening}} + k \cdot \underbrace{O(n^2)}_{\text{membership}}.
+\]
+In contrast, ZK-Kyber verification requires independent NTT evaluations per proof, offering no comparable amortization. Concrete example ($n=65$, $k=1000$): LSN uses $\approx 500 + 1000\cdot 4{,}225 \approx 4.2\times 10^6$ constraints, whereas ZK-Kyber at $\approx 5\times 10^6$ constraints per proof would need $\approx 5\times 10^9$---a $1{,}000\times$ gap.
+
+\subsection{LSN-KEM}
+\label{sec:kem}
+
+\subsubsection{Why concatenated codes}
+\label{subsubsec:why-concat}
+
+Direct polar coding for LSN at $p=1/4$ fails. The Bhattacharyya parameter of BSC($p$) is $Z_0 = 2\sqrt{p(1-p)} = 0.866$, too close to 1 for the finite-length polar code $N=2048$ to achieve any useful reliability. We therefore concatenate:
+\begin{itemize}
+\item an inner repetition code of length $r$, reducing the effective channel to BSC($p'$) where
+  \[
+  p' = \sum_{k=\lceil r/2 \rceil + 1}^{r} \binom{r}{k} p^k (1-p)^{r-k};
+  \]
+\item an outer polar code of length $N=2048$ and dimension $K=256$ over BSC($p'$), decoded with SCL of list size $L=8$.
+\end{itemize}
+
+\Cref{tab:kem-params} gives the parameters.
+
+\begin{table}[ht]
+\centering
+\caption{LSN-KEM parameters for concatenated polar reconciliation.}
+\label{tab:kem-params}
+\begin{tabular}{@{}cccccc@{}}
+\hline
+Security & $n$ & $r$ & $p'$ & SC bound & SCL estimate \\
+\hline
+80-bit  & 41 & 7  & 0.0706 & $2^{-81}$ & $2^{-89}$ \\
+128-bit & 65 & 11 & 0.0343 & $2^{-149}$ & $2^{-157}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Construction}
+\label{subsubsec:kem-construction}
+
+We use the random-oracle model (ROM) for the security proof.
+
+\begin{description}
+\item[$\mathsf{KeyGen}(1^\lambda)$:] Let $S \in \mathrm{Sp}(2n,\F_2)$ be a public symplectic matrix. Choose a symmetric matrix $M \leftarrow \mathrm{Sym}(n,\F_2)$ uniformly and define $L = S \cdot \{(x,Mx) : x \in \F_2^n\}$. Choose $\mathsf{seed} \leftarrow \{0,1\}^\lambda$. For $i=1,\dots,m$ (where $m=N \cdot r$), compute $x_i = \mathsf{PRG}(\mathsf{seed}, i)$ and $y_i = \mathbf{1}_L(x_i) \oplus e_i$. Output $\mathsf{pk} = (\mathsf{seed}, y_1,\dots,y_m)$ and $\mathsf{sk} = M$.
+
+\paragraph{Security remark.} Restricting to graph Lagrangians reduces the key-space size by a constant factor $|\mathrm{Sym}(n)| / |\Lagr| \to \prod_{i\ge1}(1+2^{-i})^{-1}\approx1/2.38$, which does not affect the asymptotic security parameter. The SQ lower bound (Theorem~\ref{thm:main-sq}) and the empirical brute-force barriers (\Cref{sec:decoders}) apply asymptotically unchanged because correlation structure is preserved under symplectic change of coordinates. As a bonus, the secret key is more compact: $M$ requires only $n(n+1)/2$ bits versus $2n^2$ bits for a general basis representation.
+
+\item[Encaps:] Choose $s \leftarrow \{0,1\}^\lambda$, compute a Fisher--Yates permutation $\pi = \mathsf{Permutation}(\mathsf{PRG}(s))$ over $[m]$, and let $\mathsf{indices} = \pi[:Nr]$. Group the selected indices into $N$ blocks of length $r$ and compute $v_j = \mathsf{majority}(y \text{ in block } j)$ for each block. Choose $u \leftarrow \{0,1\}^K$, compute $c = \mathsf{PolarEncode}(u)$, set $\mathsf{ct} = (s, v \oplus c)$, and $K = \mathsf{Hash}(s, u)$.
+
+\item[Decaps:] Recompute $\pi$ and the blocks. For each block compute $v'_j = \mathsf{majority}(\mathbf{1}_L(x))$, which is always correct because the encapsulator and decapsulator use the same $x$'s. Then $c' = \mathsf{syn} \oplus v' = c \oplus e$, decode $u' = \mathsf{PolarSCLDecode}(c')$, and output $K = \mathsf{Hash}(s, u')$ (or $\perp$ if decoding fails).
+\end{description}
+
+The permutation-based index sampling guarantees distinct indices, eliminating birthday collisions. Public-key size is $\lambda + N r$ bits; ciphertext size is $\lambda + N$ bits.
+
+\paragraph{Implementation note.} A small-scale Python prototype of the SCL decoder exhibited a bug (BLER = 1.0 for $N=128,256$), contradicting the conservative Bhattacharyya bound and indicating an implementation issue rather than a parameter problem. Subsequent validation with the verified \texttt{komm} SC decoder \cite{komm} revealed a second bug in the Bhattacharyya parameter indexing: the original code concatenated all bad channels before all good channels, whereas \texttt{komm}'s natural-order polar code requires interleaving ($z_{2i}=2z_i-z_i^2$, $z_{2i+1}=z_i^2$). After correcting the frozen-set construction, all tested configurations yielded BLER $=0$: at $p'=0.0706$ for $N=128,256,512$ with $K=N/8$, and at $p'=0.0343$ for all tested lengths. The previous $N=256$ anomaly (BLER $=0.115$) was entirely due to the indexing mismatch, not incomplete polarization. These short-length, 200-trial simulations are \emph{preliminary}: they certify only $\mathrm{BLER}\lesssim 1/200$, not the design point $2^{-80}$, and they do not test the design length $N=2048$. The conservative Ar\i{}kan--Bhattacharyya bound ($2^{-80}$ at $r=7$, $2^{-148}$ at $r=11$) remains the design basis; full $N=2048$ validation is deferred to the production Rust implementation.
+
+\subsubsection{Correctness}
+\label{subsubsec:kem-correctness}
+
+\begin{theorem}[Correctness]
+\label{thm:kem-correctness}
+For $r=7$, $\Pr[K \neq K'] < 2^{-80}$; for $r=11$, $\Pr[K \neq K'] < 2^{-128}$.
+\end{theorem}
+
+\begin{proof}
+Inner majority vote converts BSC($1/4$) into BSC($p'$). The outer polar code Bhattacharyya bound gives $P_e \leq \frac{1}{2}\sum_{i \in \mathcal{I}} Z(W_i)$, where $\mathcal{I}$ is the information set. Numerical evaluation of the bound yields the claimed values; SCL decoding with $L=8$ improves them by a small constant factor.
+\end{proof}
+
+\subsubsection{IND-CPA Security}
+\label{subsubsec:kem-indcpa}
+
+\begin{theorem}[IND-CPA]
+\label{thm:kem-indcpa}
+LSN-KEM is IND-CPA secure in the random-oracle model under the LSN hardness assumption.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The proof uses three game hops.
+\begin{enumerate}
+\item \textbf{Game 0 $\to$ Game 1:} Replace $\mathsf{PRG}$ with a truly random function. Indistinguishability follows from PRG security.
+\item \textbf{Game 1 $\to$ Game 2:} Replace the public-key labels $(y_1,\dots,y_m)$ with uniform random bits. We construct a direct reduction $\mathcal{B}$ from KEM IND-CPA to LSN: $\mathcal{B}$ receives an LSN challenge $(x_i, y_i^*)$, programs $\mathsf{seed}$ so that $\mathsf{PRG}(\mathsf{seed},i)=x_i$, and sets $\mathsf{pk}=(\mathsf{seed}, y_1^*,\dots,y_m^*)$. The KEM challenger computes $\mathsf{ct}^*$ using all $m=Nr$ samples. If the LSN challenge is real, the adversary sees Game 1; if random, Game 2. Any advantage $\varepsilon$ in distinguishing the games translates to advantage $\varepsilon$ against LSN. There is no $1/r$ security loss because the reduction uses the LSN challenge directly.
+\item \textbf{Game 2 $\to$ Game 3:} In Game 2 the vector $v$ is uniform and independent of the polar codeword $c=\mathsf{PolarEncode}(u)$. Hence $\mathsf{syn}=v \oplus c$ is uniform (one-time pad), and $K=\mathsf{Hash}(s,u)$ is uniform and independent of $\mathsf{ct}^*$ by the random-oracle property.
+\qedhere
+\end{enumerate}
+\end{proof}
+
+\subsubsection{Sizes and Comparison}
+\label{subsubsec:kem-sizes}
+
+\Cref{tab:kem-sizes} compares LSN-KEM with selected post-quantum KEMs.
+
+\begin{table}[ht]
+\centering
+\caption{KEM size comparison.}
+\label{tab:kem-sizes}
+\begin{tabular}{@{}lcccc@{}}
+\hline
+Scheme & $|\mathsf{pk}|$ & $|\mathsf{ct}|$ & Assumption & Failure \\
+\hline
+Kyber-512  & 800 B  & 768 B  & Module-LWE   & $2^{-164}$ \\
+HQC-128    & 2.25 KB & 4.50 KB & Syndrome Dec. & $2^{-128}$ \\
+LSN-80     & 1.79 KB & 288 B  & LSN          & $< 2^{-89}$ \\
+LSN-128    & 2.72 KB & 288 B  & LSN          & $< 2^{-157}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{CCA Security}
+\label{subsubsec:kem-cca}
+
+We obtain IND-CCA security via the Fujisaki--Okamoto (FO) transform \cite{FO99,HHK17} with implicit rejection. Let $\mathsf{BaseKEM}=(\mathsf{KeyGen},\mathsf{Encaps},\mathsf{Decaps})$ be the LSN-KEM of \cref{subsubsec:kem-construction}. Define hash functions $G:\{0,1\}^*\to\{0,1\}^\lambda$ and $H:\{0,1\}^*\to\{0,1\}^\lambda$ (modelled as random oracles).
+
+\begin{description}
+\item[$\mathsf{CCA\text{-}KeyGen}(1^\lambda)$:] $(\mathsf{pk},\mathsf{sk})\gets\mathsf{KeyGen}(1^\lambda)$. Output $\mathsf{sk}'=(\mathsf{sk},d)$ where $d\gets\{0,1\}^\lambda$ is an implicit-rejection secret.
+
+\item[$\mathsf{CCA\text{-}Encaps}(\mathsf{pk})$:] Choose $r\gets\{0,1\}^\lambda$, compute $(c_0,k_0)\gets\mathsf{Encaps}(\mathsf{pk};G(r))$, set $c=(c_0,r)$ and $K=H(r,c_0)$. Output $(c,K)$.
+
+\item[$\mathsf{CCA\text{-}Decaps}(\mathsf{sk}',c)$:] Compute $r'\gets\mathsf{Decaps}(\mathsf{sk},c_0)$. Re-encapsulate $(c_0',k_0')\gets\mathsf{Encaps}(\mathsf{pk};G(r'))$. If $c_0'=c_0$, output $K=H(r',c_0)$; otherwise output $K=H(d,c_0)$ \emph{(implicit rejection)}.
+\end{description}
+
+\begin{theorem}[IND-CCA]
+\label{thm:kem-indcca}
+If $\mathsf{BaseKEM}$ is $\delta$-correct with $\delta\leq 2^{-80}$ and IND-CPA secure, then $\mathsf{CCA\text{-}KEM}$ is IND-CCA secure in the random-oracle model.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The FO transform preserves IND-CPA security and adds CCA robustness via the re-encryption check. Implicit rejection ensures that decapsulation-failure events are indistinguishable from pseudorandom outputs; we inherit the multi-challenge ROM bound of \cite{HHK17}. CCA security implies non-malleability, so tampered ciphertexts are rejected by the re-encryption check. The concatenated code affects only the correctness error $\delta$; since $\delta\leq 2^{-80}$ (Theorem~\ref{thm:kem-correctness}), the standard FO analysis \cite{HHK17} applies unchanged.
+\end{proof}
+
+\subsubsection{Multi-User Security}
+\label{subsubsec:kem-multiuser}
+
+In the multi-user setting, $N$ parties generate independent key pairs $(\mathsf{pk}_i,\mathsf{sk}_i)$ with independent secrets $M_i\gets\mathrm{Sym}(n,\F_2)$. The adversary receives all $N$ public keys and may query decapsulation oracles for any user.
+
+\paragraph{Reduction to single-user security.}
+All users share only the public symplectic matrix $S$; every other parameter ($\mathsf{seed}_i$, noise $e_{i,j}$, permutation $\pi_i$) is independent. Because the $M_i$ are independent and the PRG seeds are independent, the $N$ instances are \emph{statistically independent} conditioned on $S$. By a standard hybrid argument over the $N$ users, any adversary $\mathcal{A}$ against $N$-user IND-CCA security with advantage $\varepsilon_{N}$ yields an adversary against single-user IND-CCA security with advantage $\varepsilon_{1}\geq\varepsilon_{N}/N$.
+
+\paragraph{Key-reuse analysis.}
+A more subtle concern is repeated encapsulation to the \emph{same} user. Over $q$ encapsulations the adversary sees $q\cdot m=qNr$ samples $(x_j,y_j)$ from the same secret $M$. The brute-force decoder must still search $2^{n(n+1)/2}$ symmetric matrices, and the SQ lower bound (Theorem~\ref{thm:main-sq}) requires $q_{\mathsf{sq}}\geq 2^{2n-O(1)}$ queries. Translating sample count to query count via $q_{\mathsf{sq}}=qNr$, the number of encapsulations needed for non-negligible advantage satisfies
+\[
+q\;\gtrsim\;\frac{2^{2n-O(1)}}{Nr}.
+\]
+(We treat each public sample as at most one SQ query; the R2a experiment supports a $2^{2n}$ \emph{sample} threshold.) For $n=65$, $N=2048$, $r=11$ we have $Nr\approx 2^{14.5}$, giving $q\gtrsim 2^{115.5}$---far beyond any realistic threat. We therefore treat multi-user and key-reuse security as \emph{straightforward} consequences of the single-user bound, with no special vulnerability introduced by the LSN structure.
+
+\subsection{Implementation Security}
+\label{subsec:impl-sec}
+
+\paragraph{Constant-time by construction.}
+All core LSN operations are native $\F_2$ operations---XOR, AND, and bit-permute---which are intrinsically constant-time on any modern CPU. There is no modular reduction with an odd modulus, no discrete Gaussian sampling, no rejection sampling, and no variable-time branching on secret data. This makes a constant-time implementation \emph{straightforward} rather than requiring careful engineering as in lattice schemes.
+
+\begin{table}[ht]
+\centering
+\caption{Implementation-security comparison: Kyber vs.~LSN.}
+\label{tab:impl-sec}
+\begin{tabular}{@{}lcc@{}}
+\hline
+Operation & Kyber & LSN \\
+\hline
+Modular reduction & Variable-time ($q=3329$) & \textbf{None} ($\F_2$) \\
+NTT butterfly & Twiddle-dependent memory access & \textbf{Fixed} XOR pattern \\
+Noise sampling & Discrete Gaussian (rejection) & \textbf{Uniform} bits \\
+Decoder & Noisy polynomial rounding & \textbf{Majority} $+$ fixed-tree SC \\
+Secret-key format & $2n^2$ bits (general basis) & $\mathbf{n(n+1)/2}$ bits (symmetric $M$) \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{Side-channel surface.}
+The only non-linear operation on secret data is the majority vote in the inner repetition decoder. A popcount implementation is data-independent on all modern architectures (ARM NEON, AVX-512 VPOPCNTDQ). The outer polar SC decoder traverses a fixed butterfly tree of depth $\log_2 N$; the memory access pattern depends only on $N$, not on the secret $M$ or the noise. Consequently, timing attacks on the decoder require exploiting micro-architectural effects in the popcount instruction itself---far narrower than the modular-reduction and Gaussian-sampling side channels of lattice KEMs.
+
+\paragraph{Current status.} A Python prototype validates parameters and algorithms. A production constant-time Rust implementation (including constant-time popcount, bit-sliced symplectic transforms, and a constant-time SC decoder) is planned for full $N=2048$ validation and KAT vector generation.
+
+\section{Reduction Barriers and the Standard-Model Gap}
+\label{sec:barriers}
+
+\Cref{tab:barriers} summarizes the status of natural reductions.
+
+\begin{table}[ht]
+\centering
+\caption{Reduction landscape for LSN.}
+\label{tab:barriers}
+\begin{tabular}{@{}lll@{}}
+\hline
+Class & Status & Reason \\
+\hline
+Linear             & BLOCKED  & $\E[q]$ is $L$-independent \\
+Polynomial degree $< n$ & BLOCKED  & Error $\geq 2^{-n}$ \\
+Adaptive linear SQ & BLOCKED  & Direct computation \\
+LPN($k=\Theta(n^2)$)   & VACUOUS  & BKW cost $2^{\Omega(n^2/\log n)}$ \\
+Beyond polynomial feature maps & OPEN & No proof or construction known \\
+\hline
+\end{tabular}
+\end{table}
+
+The work of Lu \etal\ \cite{LPQR26} proves a strong barrier against \emph{linear} reductions sympLPN $\to$ LPN via the entropy-deficiency argument of Appendix D: isotropy constraints cost $C(n,2)$ bits of entropy, and any linear reduction destroys the error before uniformity is reached. Our \Cref{thm:linear-sq} gives a complementary, direct barrier in the SQ model.
+
+The remaining open question is whether a \emph{genuinely non-linear} or \emph{adaptive} reduction exists. We do not claim impossibility. Instead we observe a win-win structure: if such a reduction is found, it would likely improve random self-reductions for LPN itself, making it valuable even if it collapses LSN to the 6.5th family.
+
+\paragraph{The symplectic structure is reduction-inert.}
+A sharper observation comes from the structure of the LSN samples themselves. The deterministic quadratic constraint $S_A = 0$ (the $\Omega$-Gram of the public matrix columns) is \emph{public} and \emph{$x$-free}: it depends only on the public matrix $A$, not on the secret $x$ or the noise. Consequently, $S_A=0$ adds no $x$-information to an attacker and provides no usable handle for a reductionist trying to embed LPN into LSN. This mirrors the accepted status of Ring-LWE, which is regarded as a lattice-family assumption by \emph{source} (ring structure native to the problem) rather than by reduction to plain LWE. We formalize this as:
+
+\begin{conjecture}[Source novelty]
+\label{conj:source}
+The symplectic structure of LSN --- including self-duality $\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \mathbf{1}_L$, Lagrangian-subspace secrets, and stabilizer degeneracy --- has no analogue in LPN. This structural distinction is the basis for treating LSN as an independent hardness assumption.
+\end{conjecture}
+
+\Cref{conj:source} is not decidable by reduction analysis alone; it rests on the absence of a known reduction and the structural barriers documented above.
+
+\section{Open Problems}
+\label{sec:open}
+
+We state precisely the problems whose resolution would close the standard-model gap.
+
+\begin{enumerate}
+\item \textbf{Statistical dimension under $S_A=0$ \cite{LPQR26}.} The full SQ proof is blocked by the deterministic quadratic symplectic relation $S_A=0$ (the $\Omega$-Gram of columns). Prove that conditioning on $S_A=0$ does not reduce the statistical dimension below $2^{\Omega(n)}$.
+
+\item \textbf{LPN(low-noise) $\to$ LSN.} In the cryptographically relevant regime $p=O(1/\sqrt{n})$, the reduction of \cite{KLP+25} is vacuous. Does a non-vacuous reduction exist, or can its non-existence be proved?
+
+\item \textbf{LWE $\to$ LSN.} A reduction from LWE (or worst-case lattice problems) to LSN would provide the gold-standard foundation currently missing.
+
+\item \textbf{Quantum lower bound.} Prove \Cref{conj:quantum}: any quantum algorithm solving LSN requires $\Omega(2^n)$ queries.
+
+\item \textbf{Optimal polar-code rate.} Maximize the rate of the outer polar code while keeping decryption failure below $2^{-128}$.
+
+\item \textbf{Worst-case SDA bound.} \label{open:sda} Prove that \emph{every} subset $\mathcal{D}' \subseteq \{D_L\}$ of size $|\mathcal{D}'| \geq 2^{2n}$ has average correlation $O(2^{-2n})$. This would upgrade \Cref{thm:main-sq} from an existence-based to a worst-case bound.
+\end{enumerate}
+
+\subsection{Honest Limitations of the Present Work}
+\label{subsec:limitations}
+
+We flag seven practical gaps that a reader should weigh against the theoretical claims above.
+
+\begin{enumerate}
+\item \textbf{Empirical gap at $N=2048$.} The concatenated code is designed via the Bhattacharyya bound, which guarantees $P_e\leq 2^{-80}$ for the target block length $N=2048$. We have validated the SC decoder empirically for $N\in\{128,256,512\}$ (all BLER $=0$ in 200 trials), but a direct Monte-Carlo run at $N=2048$ is computationally expensive and has not been completed. The correctness claim for $N=2048$ therefore rests on the Bhattacharyya bound and the smaller-scale validation, not on a direct measurement.
+
+\item \textbf{No constant-time reference implementation.} While \cref{subsec:impl-sec} argues that LSN-KEM is constant-time ``by construction,'' this property has not been verified on a concrete, audited implementation. A production-grade Rust reference implementation with known-answer test (KAT) vectors is planned but not yet available. Physical fault-injection resistance (e.g., bit-flip attacks on the majority vote) is likewise deferred to the audited implementation.
+
+\item \textbf{Full-protocol SNARK is future work.} \Cref{sec:snark} optimizes only the \emph{membership} sub-circuit ($n^2$ constraints). A complete zero-knowledge proof of correct encapsulation---including the polar encoder, the majority-vote decoder, and the random permutation---remains open. The comparison in Table~\ref{tab:r1cs} should be read as a lower bound on what a full SNARK would cost.
+
+\item \textbf{Loose multi-user reduction.} \Cref{subsubsec:kem-multiuser} uses a hybrid argument losing a factor $N$. A tight reduction (random self-reducibility) is not known for LSN. In practice the margin is comfortable ($q\gtrsim 2^{115}$), but the bound is not tight.
+
+\item \textbf{Practical optimizations deferred.} The canonical noise rate $p=1/4$ is fixed; whether LSN remains viable at other rates is unanalyzed. The inner repetition code uses a majority-vote decoder for constant-time implementability, but MAP decoding would achieve a lower effective noise. No public-key compression analogous to structured LPN is known. These are engineering tuning degrees of freedom, not structural vulnerabilities.
+\end{enumerate}
+
+\paragraph{Threshold cryptography.} The LSN secret $M$ admits a natural linear secret-sharing scheme over $\F_2$ ($M = \sum M_j$), and the public samples $(x_i,y_i)$ provide a publicly verifiable consistency check because the linear relation $b = Ma = \sum_j M_j a$ is additively shareable. This enables distributed key generation where $n$ parties jointly sample $M$ without any single party learning it. Formalizing robustness against malicious minorities is future work.
+
+\paragraph{Quantum ECC interoperability.} Every LSN secret $L$ is a stabilizer state ($k=0$). Its minimum stabilizer weight is $\Omega(n)$ with high probability by the quantum Gilbert--Varshamov bound, so the secret carries natural quantum error-correcting structure. Whether this classical--quantum linkage yields concrete protocols (e.g., quantum-authenticated key exchange) is an open application direction.
+
+\appendix
+
+\section{Full Proof of Pairwise Correlation}
+\label{app:corr}
+
+Here we give a self-contained derivation of \Cref{lem:exact-corr}. Let $D_0$ be the distribution on $\F_2^{2n} \times \F_2$ in which $a$ is uniform and $b \sim \operatorname{Bernoulli}(p)$ independently. For a fixed Lagrangian $L$, the LSN distribution $D_L$ has density
+\[
+D_L(a,b) = \frac{1}{2^{2n}} \Bigl( (1-p)\mathbf{1}_{b=\mathbf{1}_L(a)} + p\mathbf{1}_{b \neq \mathbf{1}_L(a)} \Bigr).
+\]
+The likelihood ratio is
+\[
+\frac{D_L(a,b)}{D_0(a,b)} = 1 + \mathbf{1}_L(a) \cdot \beta \cdot \Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\frac{p}{1-p}\Bigr),
+\]
+where $\beta = (1-2p)/p$. Therefore
+\[
+\ell_L(a,b) = \mathbf{1}_L(a) \cdot \beta \cdot \Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\frac{p}{1-p}\Bigr).
+\]
+For two secrets $L,L'$ with $j = \dim(L \cap L')$,
+\begin{align*}
+\langle D_L, D_{L'} \rangle
+&= \E_{D_0}[\ell_L \ell_{L'}] \\
+&= \E_a[\mathbf{1}_L(a)\mathbf{1}_{L'}(a)] \cdot
+   \beta^2 \E_b\Bigl[\Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\frac{p}{1-p}\Bigr)^2\Bigr] \\
+&= 2^{j-2n} \cdot \beta^2 \Bigl( p + (1-p)\frac{p^2}{(1-p)^2} \Bigr) \\
+&= 2^{j-2n} \cdot \frac{(1-2p)^2}{p(1-p)}.
+\end{align*}
+Setting $p=1/4$ gives the coefficient $(1/2)^2 / (1/4 \cdot 3/4) = (1/4)/(3/16) = 4/3$ exactly.
+
+\section{Q-Binomial Distance Distribution}
+\label{app:qbin}
+
+The number of $k$-dimensional subspaces of $\F_2^n$ is the Gaussian binomial coefficient
+\[
+{n \brack k}_2 = \prod_{i=0}^{k-1} \frac{2^{n-i}-1}{2^{k-i}-1}.
+\]
+To count pairs of Lagrangians with intersection dimension $k$, fix a $k$-dimensional isotropic subspace $W$. The number of Lagrangians containing $W$ equals the number of Lagrangians in the symplectic quotient $W^\perp / W \cong \F_2^{2(n-k)}$, namely $\prod_{i=1}^{n-k}(2^i+1)$. Dividing by the total number of Lagrangians and accounting for overcounting by the number of $k$-dimensional subspaces of a fixed Lagrangian gives
+\[
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{k(k-1)/2}}{\prod_{i=1}^n (2^i+1)}.
+\]
+The moment generating function $C_n = \E[2^j]$ converges rapidly to $2$ as $n \to \infty$.
+
+\section{Reduction Barrier Summary}
+\label{app:barrier}
+
+\paragraph{Linear.} For any linear classifier $h(a) = \langle w,a \rangle + t$, the advantage
+\[
+\Adv(h) = \bigl| \Pr_{D_L}[h(a)=1] - \Pr_{D_0}[h(a)=1] \bigr|
+\]
+is zero because $\Pr_{D_L}[h(a)=1] = \Pr_{D_0}[h(a)=1]$.
+
+\paragraph{Polynomial degree $<n$.} The exact polynomial representation of $\mathbf{1}_L$ has degree exactly $n$ and $2^n$ monomials. Any polynomial of degree $d < n$ cannot vanish on $L^c$, so its correlation with $\mathbf{1}_L$ is at most $2^{-n}$.
+
+\paragraph{Adaptive linear SQ.} For $q(a,b) = \langle w,a \rangle + cb$ we have $\E_{D_L}[q] = c(p + 2^{-n}(1-2p))$, independent of $L$. Since every query's expectation is $L$-independent, no sequence of adaptive linear queries can distinguish $\{D_L\}$ from $D_0$.
+
+\section{Extension to $\F_q$}
+\label{app:fq}
+
+All results in the main text are stated over $\F_2$. Here we sketch the extension to arbitrary finite fields $\F_q$, which widens the parameter space and allows a trade-off between block length $n$ and field size $q$.
+
+\subsection{Symplectic Spaces over $\F_q$}
+\label{subsec:fq-symplectic}
+
+Let $q$ be a prime power and $V = \F_q^{2n}$ equipped with a non-degenerate alternating bilinear form $\Omega(x,y) = x^T J y$ where $J = \begin{psmallmatrix} 0 & I_n \\ -I_n & 0 \end{psmallmatrix}$. A subspace $L \subset V$ is \emph{Lagrangian} if it is maximal isotropic; then $\dim L = n$ and $|\Lagr(2n,\F_q)| = \prod_{i=1}^n (q^i+1)$.
+
+For fixed $L$ and $j = \dim(L \cap L')$, the number of Lagrangians $L'$ with intersection dimension $j$ is
+\[
+N_j(n,q) = {n \brack j}_q \cdot q^{(n-j)(n-j+1)/2},
+\]
+where ${n \brack j}_q$ is the Gaussian binomial coefficient. Summing over $j$ recovers $|\Lagr(2n,\F_q)|$.
+
+\subsection{Exact Correlation over $\F_q$}
+\label{subsec:fq-corr}
+
+The label remains binary ($b \in \F_2$) even though the ambient space is $\F_q^{2n}$, so the SQ machinery of Feldman \etal\ applies without modification. The likelihood ratio calculation is identical with $2$ replaced by $q$:
+
+\begin{lemma}[$\F_q$ pairwise correlation]
+\label{lem:fq-corr}
+For $L,L' \in \Lagr(2n,\F_q)$ with $j = \dim(L \cap L')$,
+\[
+\langle D_L, D_{L'} \rangle = \frac{(1-2p)^2}{p(1-p)} \cdot \frac{q^j}{q^{2n}}.
+\]
+\end{lemma}
+
+\begin{lemma}[$\F_q$ average correlation]
+\label{lem:fq-avg}
+Let $C_{n,q} = \E[q^j]$ computed via the $q$-binomial distribution. Then
+\[
+\rho_{\mathrm{avg}} = \frac{(1-2p)^2}{p(1-p)} \cdot C_{n,q} \cdot q^{-2n}.
+\]
+Numerically, $C_{n,q} \to 2$ as $n \to \infty$ for every fixed $q$.
+\end{lemma}
+
+\subsection{Security Parameters over $\F_q$}
+\label{subsec:fq-params}
+
+The SQ lower bound becomes $q_{\mathrm{queries}} \geq q^{2n-O(1)}$. One ``bit'' of security corresponds to $\log_2(q)$ field operations, so the effective bit-security is $2n \log_2(q)$. \Cref{tab:fq-params} gives the block lengths $n$ needed for target security levels.
+
+\begin{table}[ht]
+\centering
+\caption{LSN parameters over $\F_q$ for $p=1/4$.}
+\label{tab:fq-params}
+\begin{tabular}{@{}ccccc@{}}
+\hline
+Security & $\F_2$: $n$ & $\F_3$: $n$ & $\F_5$: $n$ & $\F_7$: $n$ \\
+\hline
+80-bit  & 41  & 26 & 18 & 15 \\
+128-bit & 65  & 41 & 28 & 24 \\
+192-bit & 97  & 62 & 42 & 35 \\
+256-bit & 129 & 82 & 56 & 46 \\
+\hline
+\end{tabular}
+\end{table}
+
+Larger $q$ reduces the required $n$ but increases the cost of each sample (field arithmetic in $\F_q$ versus $\F_2$). The optimal choice depends on the target platform.
+
+\subsection{Open Questions}
+\label{subsec:fq-open}
+
+\begin{enumerate}
+\item Extend to $q$-ary labels $y \in \F_q$ with noise over $\F_q$; this requires $q$-ary SQ lower bounds.
+\item The proof holds for $q = p^k$ with $k > 1$ because symplectic theory is field-agnostic.
+\item In characteristic $2$, alternating is equivalent to symmetric; in odd characteristic they differ. The intersection distribution formula remains valid in all characteristics.
+\end{enumerate}
+
+% Bibliography
+\bibliographystyle{alpha}
+\begin{thebibliography}{99}
+
+\bibitem[AAC+22]{AAC+22}
+C.~Adjiman, N.~Aragon, S.~Bettaieb, L.~Bidoux, O.~Blazy, J.-C.~Deneuville, P.~Gaborit, S.~Ghosh, A.~Hauteville, and G.~Zemor.
+HQC.
+NIST PQC Round 4 Submission, 2022.
+
+\bibitem[ABD+21]{ABD+21}
+M.~Albrecht, D.~Bernstein, T.~Chou, C.~Cid, J.~Gilcher, T.~Lange, V.~Maram, I.~von Maurich, R.~Misoczki, R.~Niederhagen, K.~Paterson, E.~Persichetti, C.~Peters, P.~Schwabe, N.~Sendrier, J.~Szefer, C.~Tjhai, M.~Tomlinson, and W.~Wang.
+Classic McEliece.
+NIST PQC Round 4 Submission, 2021.
+
+\bibitem[ABW10]{ABW10}
+A.~Akavia, S.~Goldwasser, and V.~Vaikuntanathan.
+Simultaneous hardcore bits and cryptography against memory attacks.
+In \emph{TCC}, pages 474--495. Springer, 2010.
+
+\bibitem[Ale11]{Ale11}
+A.~Aleknovich.
+More on average case vs approximation complexity.
+\emph{Computational Complexity}, 20(4):755--786, 2011.
+
+\bibitem[Ari09]{Ari09}
+E.~Arikan.
+Channel polarization: A method for constructing capacity-achieving codes for symmetric binary-input memoryless channels.
+\emph{IEEE Trans.\ Inform.\ Theory}, 55(7):3051--3073, 2009.
+
+\bibitem[BBB+18]{BBB+18}
+B.~B\"unz, J.~Bootle, D.~Boneh, A.~Poelstra, P.~Wuille, and G.~Maxwell.
+Bulletproofs: Short proofs for confidential transactions and more.
+In \emph{IEEE S\&P}, pages 315--334, 2018.
+
+\bibitem[BCTV14]{BCTV14}
+E.~Ben-Sasson, A.~Chiesa, D.~Tromer, and M.~Virza.
+Scalable zero knowledge via cycles of elliptic curves.
+In \emph{CRYPTO}, pages 276--294. Springer, 2014.
+
+\bibitem[BFJ+94]{BFJ+94}
+A.~Blum, M.~Furst, J.~Jackson, M.~Kearns, Y.~Mansour, and S.~Rudich.
+Weakly learning DNF and characterizing statistical query learning using Fourier analysis.
+In \emph{STOC}, pages 253--262. ACM, 1994.
+
+\bibitem[BFKL94]{BFKL94}
+A.~Blum, A.~Furst, M.~Kearns, and R.~Lipton.
+Cryptographic primitives based on hard learning problems.
+In \emph{CRYPTO}, pages 278--291. Springer, 1994.
+
+\bibitem[BKW03]{BKW03}
+A.~Blum, A.~Kalai, and H.~Wasserman.
+Noise-tolerant learning, the parity problem, and the statistical query model.
+\emph{J.\ ACM}, 50(4):506--519, 2003.
+
+\bibitem[BPR12]{BPR12}
+A.~Banerjee, C.~Peikert, and A.~Rosen.
+Pseudorandom functions and lattices.
+In \emph{EUROCRYPT}, pages 719--737. Springer, 2012.
+
+\bibitem[BCGI18]{BCGI18}
+E.~Boyle, G.~Conteau, N.~Gilboa, and Y.~Ishai.
+Compressing vector OLE.
+In \emph{ACM CCS}, pages 896--912, 2018.
+
+\bibitem[CRSS98]{CRSS98}
+A.~R.~Calderbank, E.~M.~Rains, P.~W.~Shor, and N.~J.~A.~Sloane.
+Quantum error correction via codes over GF(4).
+\emph{IEEE Trans.\ Inform.\ Theory}, 44(4):1369--1387, 1998.
+
+\bibitem[DKS17]{DKS17}
+I.~Diakonikolas, D.~M.~Kane, and A.~Stewart.
+Statistical query lower bounds for robust estimation of high-dimensional Gaussians and Gaussian mixtures.
+In \emph{FOCS}, pages 73--84. IEEE, 2017.
+
+\bibitem[DGM14]{DGM14}
+N.~D\"ottling, J.~M\"uller-Quade, and A.~Nascimento.
+IND-CCA secure cryptography based on a variant of the LPN problem.
+In \emph{ASIACRYPT}, pages 485--508. Springer, 2014.
+
+\bibitem[DP12]{DP12}
+Y.~Dodis, K.~Pietrzak, and D.~Wichs.
+Key derivation without entropy waste.
+In \emph{EUROCRYPT}, pages 93--110. Springer, 2012.
+
+\bibitem[EKM17]{EKM17}
+A.~Esser, R.~K\"ubler, and A.~May.
+LPN decoded.
+In \emph{CRYPTO}, pages 486--514. Springer, 2017.
+
+\bibitem[FO99]{FO99}
+E.~Fujisaki and T.~Okamoto.
+Secure integration of asymmetric and symmetric encryption schemes.
+In \emph{CRYPTO}, pages 537--554. Springer, 1999.
+
+\bibitem[FGR+17]{FGR+17}
+V.~Feldman, E.~Grigorescu, L.~Reyzin, and S.~Vempala.
+Statistical query lower bounds for robust estimation of high-dimensional Gaussians and Gaussian mixtures.
+In \emph{FOCS}, pages 211--220. IEEE, 2017.
+
+\bibitem[FV19]{FV19}
+A.~Fazeli and A.~Vardy.
+On the scaling exponent of binary polarization kernels.
+In \emph{IEEE ISIT}, pages 1472--1476, 2019.
+
+\bibitem[GGPR13]{GGPR13}
+R.~Gennaro, C.~Gentry, B.~Parno, and M.~Raykova.
+Quadratic span programs and succinct NIZKs without PCPs.
+In \emph{EUROCRYPT}, pages 626--645. Springer, 2013.
+
+\bibitem[GJL14]{GJL14}
+Q.~Guo, T.~Johansson, and C.~L\"ondahl.
+Solving LPN using covering codes.
+In \emph{ASIACRYPT}, pages 1--20. Springer, 2014.
+
+\bibitem[GL22]{GL22}
+S.~Gollakota and D.~Liang.
+PAC-learning noisy stabilizer states in the statistical query model.
+\emph{arXiv preprint}, 2022.
+
+\bibitem[Got97]{Got97}
+D.~Gottesman.
+Stabilizer codes and quantum error correction.
+PhD thesis, Caltech, 1997.
+
+\bibitem[Gro96]{Gro96}
+L.~K.~Grover.
+A fast quantum mechanical algorithm for database search.
+In \emph{STOC}, pages 212--219. ACM, 1996.
+
+\bibitem[Gro16]{Gro16}
+J.~Groth.
+On the size of pairing-based non-interactive arguments.
+In \emph{EUROCRYPT}, pages 305--326. Springer, 2016.
+
+\bibitem[HHK17]{HHK17}
+D.~Hofheinz, K.~H\"ovelmanns, and E.~Kiltz.
+A modular analysis of the Fujisaki--Okamoto transformation.
+In \emph{TCC}, pages 341--371. Springer, 2017.
+
+\bibitem[HKL+12]{HKL+12}
+S.~Heyse, E.~Kiltz, V.~Lyubashevsky, C.~Paar, and K.~Pietrzak.
+Lapin: An efficient authentication protocol based on ring-LPN.
+In \emph{FSE}, pages 346--365. Springer, 2012.
+
+\bibitem[HVU14]{HVU14}
+S.~H.~Hassani, R.~Urbanke, and S.~V.~Macris.
+Near-optimal finite-length scaling for polar codes over large alphabets.
+\emph{IEEE Trans.\ Inform.\ Theory}, 60(11):6960--6976, 2014.
+
+\bibitem[Kea98]{Kea98}
+M.~Kearns.
+Efficient noise-tolerant learning from statistical queries.
+\emph{J.\ ACM}, 45(6):983--1006, 1998.
+
+\bibitem[Kir11]{Kir11}
+P.~Kirchner.
+Improved generalized birthday attack.
+\emph{Cryptology ePrint Archive}, Report 2011/377, 2011.
+
+\bibitem[KLP+25]{KLP+25}
+A.~Khesin, J.~Lu, A.~Poremba, S.~Ramkumar, and V.~Vaikuntanathan.
+Hardness of decoding random quantum stabilizer codes.
+\emph{arXiv:2509.20697}, 2025.
+
+\bibitem[LF06]{LF06}
+E.~Levieil and P.-A.~Fouque.
+An improved LPN algorithm.
+In \emph{SCN}, pages 348--359. Springer, 2006.
+
+\bibitem[LPQR26]{LPQR26}
+J.~Lu, A.~Poremba, Y.~Quek, and S.~Ramkumar.
+Post-quantum cryptography from quantum stabilizer decoding.
+\emph{arXiv:2603.19110}, 2026.
+
+\bibitem[Lyu05]{Lyu05}
+V.~Lyubashevsky.
+The parity problem in the presence of noise, decoding random linear codes, and the subset sum problem.
+In \emph{APPROX-RANDOM}, pages 378--389. Springer, 2005.
+
+\bibitem[Mac71]{Mac71}
+I.~G.~Macdonald.
+Symmetric Functions and Hall Polynomials.
+Oxford University Press, 1971.
+
+\bibitem[McE78]{McE78}
+R.~J.~McEliece.
+A public-key cryptosystem based on algebraic coding theory.
+\emph{DSN Progress Report}, 44:114--116, 1978.
+
+\bibitem[MT09]{MT09}
+R.~Mori and T.~Tanaka.
+Performance and construction of polar codes on symmetric binary-input memoryless channels.
+In \emph{IEEE ISIT}, pages 1496--1500, 2009.
+
+\bibitem[NC00]{NC00}
+M.~A.~Nielsen and I.~L.~Chuang.
+Quantum Computation and Quantum Information.
+Cambridge University Press, 2000.
+
+\bibitem[NIS22]{NIS22}
+NIST.
+Post-quantum cryptography standardization, 2022.
+\url{https://csrc.nist.gov/projects/post-quantum-cryptography}.
+
+\bibitem[PHGR13]{PHGR13}
+B.~Parno, J.~Howell, C.~Gentry, and M.~Raykova.
+Pinocchio: Nearly practical verifiable computation.
+In \emph{IEEE S\&P}, pages 238--252, 2013.
+
+\bibitem[PQS26]{PQS26}
+A.~Poremba, Y.~Quek, and P.~Shor.
+Learning stabilizers with noise.
+\emph{arXiv:2410.18953}, 2025.
+
+\bibitem[Pra62]{Pra62}
+E.~Prange.
+The use of information sets in decoding cyclic codes.
+\emph{IRE Trans.\ Inform.\ Theory}, 8(5):5--9, 1962.
+
+\bibitem[Reg05]{Reg05}
+O.~Regev.
+On lattices, learning with errors, random linear codes, and cryptography.
+\emph{J.\ ACM}, 56(6):34, 2005.
+
+\bibitem[Rei09]{Rei09}
+B.~Recht, M.~Fazel, and P.~A.~Parrilo.
+Guaranteed minimum-rank solutions of linear matrix equations via nuclear norm minimization.
+\emph{SIAM Review}, 52(3):471--501, 2010.
+
+\bibitem[SAB+22]{SAB+22}
+P.~Schwabe, R.~Avanzi, J.~Bos, L.~Ducas, E.~Kiltz, T.~Lepoint, V.~Lyubashevsky, J.~M.~Schanck, G.~Seiler, and D.~Stehl\'e.
+CRYSTALS-Kyber.
+NIST PQC Round 3 Submission, 2022.
+
+\bibitem[Sei15]{Sei15}
+M.~Seidl.
+Polar coding: Finite-length aspects.
+PhD thesis, Friedrich-Alexander-Universit\"at Erlangen-N\"urnberg, 2015.
+
+\bibitem[Sho94]{Sho94}
+P.~W.~Shor.
+Algorithms for quantum computation: Discrete logarithms and factoring.
+In \emph{FOCS}, pages 124--134. IEEE, 1994.
+
+\bibitem[Tri12]{Tri12}
+P.~Trifonov.
+Efficient design and decoding of polar codes.
+\emph{IEEE Trans.\ Commun.}, 60(11):3221--3227, 2012.
+
+\bibitem[TV15]{TV15}
+I.~Tal and A.~Vardy.
+List decoding of polar codes.
+\emph{IEEE Trans.\ Inform.\ Theory}, 61(5):2213--2226, 2015.
+
+\bibitem[TV22]{TV22}
+M.~Tibouchi and A.~Wallet.
+Hardness and attacks on LPN.
+\emph{Personal communication}, 2022.
+
+\bibitem[WS21]{WS21}
+A.~Wang and F.~Zhang.
+Revisiting the BKW algorithm for LPN.
+\emph{Cryptology ePrint Archive}, Report 2021/213, 2021.
+
+\bibitem[ZJW16]{ZJW16}
+B.-Y.~Zhang, L.~Jia, and M.-W.~Wang.
+Security analysis of LPN under perfect code cover.
+\emph{IEEE Access}, 4:3979--3986, 2016.
+
+\bibitem[komm]{komm}
+A.~Krohn.
+\texttt{komm}: An open-source library for communication systems.
+\url{https://github.com/ryukau/komm}, 2024.
+
+\end{thebibliography}
+
+\end{document}

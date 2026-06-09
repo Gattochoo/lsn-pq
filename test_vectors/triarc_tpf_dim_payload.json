@@ -1,0 +1,26 @@
+{
+  "algorithm": "TRIARC",
+  "version": "syzygy-dim-payload-v1",
+  "source": "tests/vectors.rs",
+  "profile": "TPF-P0",
+  "release": "ChaosSpongeEnvelope",
+  "note": "Default-cipher vector. The default Cipher::encrypt changed from DIM v0x02 to chaos-sponge v0x04 (2026-06-05); these bytes are REAL captured output of the default path (print_default_cs_vector). DIM v0x02 stays writable via the explicit Cipher::encrypt_dim and parseable as Envelope::Dim.",
+  "timeSeed": {
+    "monotonicSec": 1778755600,
+    "monotonicNsec": 123456789
+  },
+  "keyHex": "7472696172632d7470662d766563746f722d6b6579",
+  "ctxHex": "7472696172632d7470662d766563746f722d637478",
+  "nonceHex": "7472696172632d7470662d766563746f722d6e6f6e6365",
+  "aadHex": "7472696172632d7470662d766563746f722d616164",
+  "plaintextHex": "7472696172632d7470662d766563746f722d7061796c6f6164",
+  "payloadLen": 25,
+  "ciphertextLen": 25,
+  "envelopeLen": 113,
+  "dimMagicHex": "4d",
+  "dimVersion": 4,
+  "d11CommitHex": "7dee426355827b93b71cb1a893819ee238a52e03ca284d8ea10ae744daeb0c18",
+  "ciphertextHex": "1043a176671df8d748a9bf32b75dc1884bc2d4c2c38d5e80c6",
+  "tagFieldHex": "ea9cb1ad536ffb1142f6c450a33bf7fe75bc9e27b7333b5619bc2934c1f80301",
+  "envelopeHex": "4d0400000000000000000000000000007dee426355827b93b71cb1a893819ee238a52e03ca284d8ea10ae744daeb0c1819000000000000001043a176671df8d748a9bf32b75dc1884bc2d4c2c38d5e80c6ea9cb1ad536ffb1142f6c450a33bf7fe75bc9e27b7333b5619bc2934c1f80301"
+}

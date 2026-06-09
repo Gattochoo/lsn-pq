@@ -1,0 +1,26 @@
+name: LaTeX
+
+on:
+  push:
+    branches: [main, lightening-design, shared/hardness-7th-exchange]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-latex:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: teatimeguest/setup-tectonic@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build LSN paper
+        run: |
+          cd docs/superpowers/specs
+          tectonic 2026-06-08-lsn-paper-latex.tex
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lsn-paper-pdf
+          path: docs/superpowers/specs/2026-06-08-lsn-paper-latex.pdf
