@@ -54,6 +54,9 @@
 We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem where the secret is a Lagrangian subspace of a symplectic vector space rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form. We prove an exponential Statistical Query (SQ) lower bound of $q \geq 2^{2n-O(1)}$ queries with an exact pairwise-correlation formula and no asymptotic error term. We establish that linear and low-degree polynomial feature-map reductions are information-theoretically impossible, that adaptive linear SQ algorithms are completely blocked by direct structural analysis, and we map the exact standard-model gap that remains for general non-linear reductions. We construct two cryptographic primitives from LSN: a succinct non-interactive argument (LSN-SNARK) with $O(n^2)$ R1CS constraints ($\approx 4{,}225$ for $n=65$, compared to millions for ZK-lattice proofs), and a key-encapsulation mechanism (LSN-KEM) with concatenated polar-code reconciliation achieving 80-bit security with public keys of 1.79~KB and ciphertexts of 288~B. All security claims are explicitly classified as theorem, evidence, or conjecture, and the remaining open problems are stated precisely.
 \end{abstract}
 
+\section*{Acknowledgements}
+During the preparation of this work, the author used large language models (Claude, Kimi, and Codex) to assist with literature review, mathematical exploration, code prototyping, and manuscript drafting. After using these tools, the author reviewed and edited the content as needed and takes full responsibility for the accuracy, integrity, and final content of the work.
+
 \section{Introduction}
 \label{sec:intro}
 
