@@ -43,7 +43,7 @@
 \newcommand{\LSN}{\mathsf{LSN}}
 
 \title{The Lagrangian Subspace Noise Problem: \\ A New Framework for Post-Quantum Cryptography}
-\author{Kwanghoo Choo\thanks{ORCID: \href{https://orcid.org/0009-0005-5682-8098}{0009-0005-5682-8098}. Email: \texttt{gattochoo@gmail.com}}}
+\author{Kwanghoo Choo\thanks{ORCID: \href{https://orcid.org/0009-0005-5682-8098}{0009-0005-5682-8098}. Email: \texttt{gattochoo@gmail.com}}\\ \normalsize Independent Researcher}
 \date{June 2026}
 
 \begin{document}
@@ -55,13 +55,6 @@ We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Le
 \end{abstract}
 
 \paragraph{\textbf{Keywords.}} Post-quantum cryptography, Learning Parity with Noise, statistical query model, symplectic geometry, polar codes, zero-knowledge proofs.
-
-\section*{Acknowledgements}
-During the preparation of this work, the author used large language models (Claude, Kimi, and Codex) to assist with literature review, mathematical exploration, code prototyping, and manuscript drafting. After using these tools, the author reviewed and edited the content as needed and takes full responsibility for the accuracy, integrity, and final content of the work.
-
-\paragraph{\textbf{Data and code availability.}} All Python prototypes, test vectors, and the \LaTeX{} source are available at \url{https://github.com/Gattochoo/lsn-pq}.
-
-\paragraph{\textbf{Conflict of interest.}} The author declares no competing interests.
 
 \section{Introduction}
 \label{sec:intro}
@@ -839,9 +832,9 @@ Class (model) & Status & Mechanism \\
 Real-linear queries (SQ) & BLOCKED & $\E[q]$ $L$-independent; F$_2$-linear $\leq (1-2p)2^{-n}$ (\Cref{thm:linear-sq}) \\
 Poly degree $< n$ (SQ) & BLOCKED & RM distance (correlation $\leq 2^{-n}$) \\
 Single-sample adaptive deg-$D$ (SQ) & BLOCKED & selection $\neq$ composition \\
-Fixed $B$, any rank, $m \ge cn$ & CLOSED & D.1 + Fannes: SD $\geq d-1/(mn)$ \\
-Public $B$, $\rho \ge (3/2+\epsilon)n$ & CLOSED & transport/Gram (constructive) \\
-Adaptive $B$, conditional-uniform & CLOSED & reachability (\Cref{thm:any-b-uniformity}) \\
+Fixed $B$, any rank, $m \ge cn$ & DEAD & D.1 + Fannes: SD $\geq d-1/(mn)$ \\
+Public $B$, $\rho \ge (3/2+\epsilon)n$ & DEAD & transport/Gram (constructive) \\
+Adaptive $B$, conditional-uniform & DEAD & reachability (\Cref{thm:any-b-uniformity}) \\
 Adaptive $B$, marginal-uniform & \textbf{OPEN} & \Cref{lem:m1} proven half; \Cref{lem:m2} conditional (\Cref{open:marginal-adaptive}) \\
 Non-linear / multi-sample & OPEN & no proof or construction known \\
 \hline
@@ -918,7 +911,7 @@ This is $1 - 2^{-\Omega(n^2)}$ only when $n - 2c = \Omega(n)$, i.e. $\rho \ge (3
 \begin{itemize}
 \item $\rho = 2n$ (full rank): \textbf{BLOCKED} --- output Gram is identically zero (\Cref{thm:transport-fullrank}).
 \item $(3/2+\epsilon)n \le \rho < 2n$ (near-full): \textbf{BLOCKED} --- output Gram rank $\le 2c \le (1-\epsilon)n$ (\Cref{thm:transport-nearfull}), while the uniform Gram has rank $\approx n$ w.h.p.
-\item $\rho \le (3/2-\epsilon)n$ (mid/low rank): \textbf{CLOSED} for fixed $B$ at $m \ge cn$ --- the rank test dies, but the output matrix $BA$ is statistically far from uniform. By LPQR26's Theorem~D.1, $H(BA) \le (1-d)mn$ for a constant $d > 0$; the Fannes--Csisz\'{a}r continuity inequality gives $\operatorname{SD}(BA, \operatorname{Uniform}) \ge d - 1/(mn)$. At $n=41$, $m=82$ this distance is at least $0.2497$. Since any LPN solver expects a uniform matrix, the reduction fails regardless of rank. The rank-stratification theorems above retain value as \emph{constructive} distinguishers (explicitly exhibiting the defect), whereas the Fannes argument is non-constructive but covers all ranks uniformly.
+\item $\rho \le (3/2-\epsilon)n$ (mid/low rank): \textbf{DEAD} for fixed $B$ at $m \ge cn$ --- the rank test dies, but the output matrix $BA$ is statistically far from uniform. By LPQR26's Theorem~D.1, $H(BA) \le (1-d)mn$ for a constant $d > 0$; the Fannes--Csisz\'{a}r continuity inequality gives $\operatorname{SD}(BA, \operatorname{Uniform}) \ge d - 1/(mn)$. At $n=41$, $m=82$ this distance is at least $0.2497$. Since any LPN solver expects a uniform matrix, the reduction fails regardless of rank. The rank-stratification theorems above retain value as \emph{constructive} distinguishers (explicitly exhibiting the defect), whereas the Fannes argument is non-constructive but covers all ranks uniformly.
 \end{itemize}
 This stratification applies to \emph{fixed/public} $B$ (per-realization). For $m < cn$ the Fannes bound is not triggered; this corner case is cryptographically irrelevant because $m$ must exceed the secret dimension $n$ for any reduction to have polynomially many samples. If the reduction draws $B$ from a high-entropy distribution conditioned on $BA$ being uniform, the matrix is randomized---but then the label noise $Be$ is killed by piling-up at $p=1/4$ (row weight $w$ gives bias $2^{-w}$). The remaining regime is the secret-$B$ model of \Cref{lem:affine-coset-bias}, where the quantitative trade-off is governed by the Gram-rank transition.
 
@@ -1067,7 +1060,7 @@ Each invariant is preserved by the symplectic group $\mathrm{Sp}(2n)$ and destro
 
 \paragraph{The scrambling barrier at constant noise.} The LPQR26 linear barrier (Theorem D.2) applies at any noise rate $p=\omega(1/n)$, and at our constant noise $p=1/4$ its error-amplification step is in fact \emph{stronger}: a randomizing row of weight $w$ leaves per-bit bias $(1-2p)^w = 2^{-w}$ (piling-up), versus $\approx 1-2wp$ in the low-noise regime. The residual gap is therefore not about noise: linear reductions consuming $m=\omega(n)$ samples are ruled out in the conditional-uniformity model for all $m=\operatorname{poly}(n)$ by the reachability barrier (\Cref{thm:any-b-uniformity}).  The marginal-adaptive corner, in which $B=g(A)$ yields marginally-uniform $BA$ via low-weight rows that vary with $A$, is not covered by this argument and remains open (Open Problem~\ref{open:marginal-adaptive}).  What remains outside both regimes is only non-linear scramblers. For (ii) an algebraic obstruction remains: $S_A=0$ is a deterministic quadratic relation among the public vectors (our observation, distinct from the LPQR entropy argument). Direct inspection of the $n=3$ case shows that simple scramblers fall into one of three classes: a linear scrambler \emph{transports} the quadratic relation ($S'_{A'}=0$ with respect to the conjugated form $M^{-\top}\Omega M^{-1}$, so it remains detectable), a non-linear scrambler destroys the linear label structure required by LPN, and a random scrambler destroys the secret entirely. None of these simple classes simultaneously destroys $S_A=0$ and creates a fresh LPN secret-bit structure. The residual question --- whether a sufficiently complex non-linear scrambler exists --- is the same as Open Problem~2.
 
-\paragraph{Closing the marginal-adaptive corner via entropy counting.}
+\paragraph{The marginal-adaptive corner: entropy-support bound.}
 The gap between conditional and marginal uniformity is bridged by an entropy-support argument that does not require per-instance uniformity.  The idea is simple: the isotropic basis $A$ carries entropy $H(A)=\Theta(n^{2})$, while each low-weight row of $B$ can only ``spend'' $O(n)$ bits of entropy on its output query.  If the total output entropy is $nm$ (uniformity), the budget forces most rows to have high weight.
 
 \begin{lemma}[Entropy-support bound for low-weight rows]
@@ -1076,7 +1069,7 @@ Let $A\in\F_2^{2n\times n}$ be a random isotropic basis and let $B=g(A,R)\in\F_2
 \[
 \E\bigl[\,\bigl|\{\,i:|b_i|\le w\,\}\bigr|\,\bigr]
 \;\le\;
-\frac{\log_2 N(n)+m+\delta nm+O(1)}{0.094n}
+\frac{\log_2 \bigl(|\Lagr(2n,\F_2)|\cdot|GL(n,\F_2)|\bigr)+m+\delta nm+O(1)}{0.094n}
 \;=\;16n+11\delta m+\frac{11m}{n}+O(1),
 \]
 \end{lemma}
@@ -1103,12 +1096,12 @@ Summing over $i$ and letting $k=\sum_i T_i$,
 \sum_{i=1}^{m}H(c_i\mid A)
 \;\le\;m+nm-\E[k\mid A]\cdot0.094n.
 \]
-The entropy of $A$ is at most the log-support of the isotropic-frame distribution, $H(A)\le\log_2 N(n)$ (Lane~C).  Combining with the Fannes--Csisz\'{a}r bound $H(C)\ge nm-\delta nm-1$ and the chain rule,
+The entropy of $A$ is at most the log-support of the isotropic-frame distribution, $H(A)\le (3/2)n^{2}+n/2+O(1)$.  Combining with the Fannes--Csisz\'{a}r bound $H(C)\ge nm-\delta nm-1$ and the chain rule,
 \[
 nm-\delta nm-1
-\;\le\;\log_2 N(n)+m+nm-\E[k\mid A]\cdot0.094n+O(1),
+\;\le\;(3/2)n^{2}+n/2+m+nm-\E[k\mid A]\cdot0.094n+O(1),
 \]
-which rearranges to $\E[k\mid A]\cdot0.094n\le\log_2 N(n)+m+\delta nm+O(1)$.  Taking expectations over $A$ and $R$ and using $N(n)=2^{(3/2)n^{2}+n/2+O(1)}$ gives the claimed bound.
+which rearranges to $\E[k\mid A]\cdot0.094n\le(3/2)n^{2}+n/2+m+\delta nm+O(1)$.  Taking expectations over $A$ and $R$ gives the claimed bound.
 \end{proof}
 
 \Cref{lem:m1} is the missing piece for the marginal-adaptive model: it bounds the \emph{expected} number of low-weight rows using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification and recovery arguments of \Cref{cor:noise-amp,cor:recovery-barrier} then apply to those rows.
@@ -1131,7 +1124,7 @@ provided $m\ge \frac{4n}{(1-2p')^{2}}\cdot\operatorname{polylog}(n)$.
 \textbf{Depends on \Cref{lem:m2}.}  Let $A\sim\operatorname{Uniform}(\Lagr(2n,\F_2))$ and let $B=g(A,R)\in\F_2^{m\times 2n}$ be any randomized adaptive matrix.  \Cref{lem:m1} shows that if $\operatorname{SD}(BA,\text{Uniform})\le\delta$ and $m\ge Cn$ ($C>16$), at least $m-o(m)$ rows have weight $>0.19n$, hence effective noise bias $\le 2^{-0.19n}$.  If \Cref{lem:m2} holds, this yields $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for every $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$, and no marginal-adaptive linear reduction maps symplectic LPN to a usable standard LPN instance when $m\ge Cn$.
 \end{theorem}
 
-\Cref{thm:marginal-adaptive} is a \textbf{conditional} barrier: \Cref{lem:m1} is proven, but \Cref{lem:m2} remains open because of the correlated-noise obstacle described above.  The landscape is therefore: fixed-$B$ closed, public-$B$ closed, conditionally-uniform adaptive closed, marginal-adaptive \emph{open}.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is covered by LPQR26 Appendix~D (their Theorem~D.2) for fixed $B$ (any rank, including low-rank).
+\Cref{thm:marginal-adaptive} is a \textbf{conditional} barrier: \Cref{lem:m1} is proven, but \Cref{lem:m2} remains open because of the correlated-noise obstacle described above.  The honest map is therefore: fixed-$B$ \textbf{DEAD}, public-$B$ \textbf{DEAD}, conditionally-uniform adaptive \textbf{DEAD}, marginal-adaptive \textbf{OPEN}.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is covered by LPQR26 Appendix~D (their Theorem~D.2) for fixed $B$ (any rank, including low-rank).
 
 \section{Open Problems}
 \label{sec:open}
@@ -1155,7 +1148,7 @@ We state precisely the problems whose resolution would close the standard-model 
 
 \item \textbf{Membership-LSN $\leftrightarrow$ stabilizer-decoding LSN bridge.} Relate our membership formulation (\Cref{def:lsn}; secret Lagrangian, no public matrix) to the LSN of \cite{KLP+25,LPQR26} (public isotropic matrix, junk register, secret logical string). A reduction in either direction would let the external hardness results (constant-rate LPN $\le$ their LSN) and our SQ lower bounds support a \emph{single} object; absent a bridge, the two hardness cases remain parallel rather than cumulative.
 
-\item \textbf{Marginal-adaptive linear reductions.} \label{open:marginal-adaptive} The current landscape: fixed-$B$ closed, public-$B$ closed, conditionally-uniform adaptive closed, marginal-adaptive \emph{open}.  \Cref{lem:m1} shows that any marginal-adaptive $B=g(A)$ with uniform $BA$ must have $m-o(m)$ rows of weight $>0.19n$ (hence effective noise bias $\le 2^{-0.19n}$), but \Cref{lem:m2} is not yet established because the output noise $e'=Be$ is $m$ linear images of a fixed $2n$-bit symplectic-LPN noise vector and therefore lives in a subspace of dimension at most $2n$.  The decisive question: \emph{Does the $\le 2n$-dimensional noise structure of $Be$ survive a high-entropy secret $B$, or can adaptive $B$ fake $m$ independent $\operatorname{Bernoulli}(p')$ from $2n$ noise bits undetectably in $C$?}  In other words, does there exist a family $g_n$ such that (i)~$\E_A[\Pr_{g_n(A)}[|b_i|\le w]]=\Omega(1)$ for $w=o(n)$, yet (ii)~$g_n(A)^{\!\top}A$ is uniform, or must every marginal-adaptive uniform $B$ force noise bias $\le 2^{-\Theta(n)}$ on all but $o(m)$ rows?  A proof either way would close the marginal-adaptive corner.
+\item \textbf{Marginal-adaptive linear reductions.} \label{open:marginal-adaptive} The honest map: fixed-$B$ \textbf{DEAD}, public-$B$ \textbf{DEAD}, conditionally-uniform adaptive \textbf{DEAD}, marginal-adaptive \textbf{OPEN}.  \Cref{lem:m1} shows that any marginal-adaptive $B=g(A)$ with uniform $BA$ must have $m-o(m)$ rows of weight $>0.19n$ (hence effective noise bias $\le 2^{-0.19n}$), but \Cref{lem:m2} is not yet established because the output noise $e'=Be$ is $m$ linear images of a fixed $2n$-bit symplectic-LPN noise vector and therefore lives in a subspace of dimension at most $2n$.  The decisive question: \emph{Does the $\le 2n$-dimensional noise structure of $Be$ survive a high-entropy secret $B$, or can adaptive $B$ fake $m$ independent $\operatorname{Bernoulli}(p')$ from $2n$ noise bits undetectably in $C$?}  In other words, does there exist a family $g_n$ such that (i)~$\E_A[\Pr_{g_n(A)}[|b_i|\le w]]=\Omega(1)$ for $w=o(n)$, yet (ii)~$g_n(A)^{\!\top}A$ is uniform, or must every marginal-adaptive uniform $B$ force noise bias $\le 2^{-\Theta(n)}$ on all but $o(m)$ rows?  A proof either way would close the marginal-adaptive corner.
 \end{enumerate}
 
 \subsection{Honest Limitations of the Present Work}
@@ -1307,6 +1300,13 @@ Larger $q$ reduces the required $n$ but increases the cost of each sample (field
 
 % Bibliography
 \bibliographystyle{alpha}
+\section*{Acknowledgements}
+During the preparation of this work, the author used large language models (Claude, Kimi, and Codex) to assist with literature review, mathematical exploration, code prototyping, and manuscript drafting. After using these tools, the author reviewed and edited the content as needed and takes full responsibility for the accuracy, integrity, and final content of the work.
+
+\paragraph{\textbf{Data and code availability.}} All Python prototypes, test vectors, and the \LaTeX{} source are available at \url{https://github.com/Gattochoo/lsn-pq}.
+
+\paragraph{\textbf{Conflict of interest.}} The author declares no competing interests.
+
 \begin{thebibliography}{99}
 
 \bibitem[AAC+22]{AAC+22}
