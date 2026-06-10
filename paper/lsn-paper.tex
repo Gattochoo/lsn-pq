@@ -324,7 +324,7 @@ In particular, the gain over the uniform-query baseline ($\delta=0$) is $\Delta\
 Under the null model ($b=e$) we have $\E[\phi] = \E[(-1)^e] = 1-2p$. Under the structured model, $\Pr[b=1 \mid a] = p + \mathbf{1}_L(a)(1-2p)$, so $\E[\phi \mid a] = 1-2\Pr[b=1 \mid a] = (1-2p)(1-2\mathbf{1}_L(a))$. Averaging over $a \sim \mathcal{R}$ gives $\E[\phi] = (1-2p)(1-2\Pr[a \in L]) = (1-2p)(1-2(1+\delta)2^{-n})$. The advantage is $|\E[\phi]-\E_{\text{null}}[\phi]| = |1-2p| \cdot 2(1+\delta)2^{-n}$.
 \end{proof}
 
-a $\delta$-enrichment would scale the per-query advantage by $(1+\delta)$; for selection rules implementable by linear SQ this exceeds the per-query ceiling of \Cref{thm:linear-sq}, while general (non-linear, multi-sample) selection rules remain open.
+A $\delta$-enrichment would scale the per-query advantage by $(1+\delta)$; for selection rules implementable by linear SQ this exceeds the per-query ceiling of \Cref{thm:linear-sq}, while general (non-linear, multi-sample) selection rules remain open.  Empirical probes at $n=5$ (full graph-Lagrangian prior, $32{,}768$ secrets) and $n=6$ (random subset, $100{,}000$ secrets) confirm the predicted scaling $\delta \approx c\,m\,2^{-n}$ with $c\approx 0.01\text{--}0.06$ (\cref{subsec:limitations}, Experiment~92).  At $n=65$ and $m=22{,}528$ this gives $\delta \le 2^{-50}$, far below any cryptographically relevant threshold.
 
 \subsection{Parameters}
 \label{subsec:parameters}
