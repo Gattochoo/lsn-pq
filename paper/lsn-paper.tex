@@ -940,6 +940,85 @@ Write $b = b_0 + Nz$ with $z \sim \operatorname{Uniform}(\F_2^n)$ and $N$ a basi
 
 At cryptographic $n$ the $2^{-n}$ term is negligible and the bias is dominated by $(9/16)^n$, which matches the full-space piling-up baseline $(3/4)^{2n}$. Thus, in expectation over random isotropic $A$, the affine constraint does not materially increase the per-row label bias; the secret-$B$ trade-off is governed by the Gram-rank transition, not by bias amplification.
 
+\paragraph{Low-weight reachability barrier (any-$B$).}
+The preceding affine-coset bound controls the per-row label signal when the reduction is forced into a high-rank affine subspace.  A complementary barrier applies to \emph{any} $B$ model (adaptive or fixed, public or secret) and closes the linear-reduction landscape at constant noise $p=1/4$ for all $m=\operatorname{poly}(n)$.  It rests on a pure counting argument that is independent of $A$.
+
+Let $A\in\F_2^{2n\times n}$ be any isotropic basis and let $B\in\F_2^{m\times 2n}$ be any matrix (possibly depending on $A$).  For $w\ge 0$ define the \emph{reachability set}
+\[
+R_w(A) \;:=\; \{\,b^{\!\top} A \;:\; b\in\F_2^{2n},\; |b|\le w \,\} \subseteq \F_2^{n}.
+\]
+Every row of $BA$ that is produced with a row of $B$ of weight at most $w$ must lie in $R_w(A)$.  The cardinality of $R_w(A)$ is bounded independently of $A$:
+
+\begin{lemma}[Reachability bound]
+\label{lem:reachability}
+For every $A\in\F_2^{2n\times n}$ and every $w\ge 0$,
+\[
+|R_w(A)| \;\le\; \sum_{j=0}^{w} \binom{2n}{j}.
+\]
+\end{lemma}
+
+\begin{proof}
+Each $b\in\F_2^{2n}$ with $|b|\le w$ contributes at most one element $b^{\!\top}A$ to $R_w(A)$.  The number of such $b$ is exactly $\sum_{j=0}^{w}\binom{2n}{j}$.
+\end{proof}
+
+For $w=\lfloor 0.19n\rfloor$ and large $n$, the binomial sum is at most $2^{2n\cdot H(0.095)}<2^{0.94n}$, where $H(\cdot)$ is the binary entropy function.  Hence
+\begin{equation}
+\label{eq:reach-mass}
+\frac{|R_w(A)|}{2^{n}} \;\le\; 2^{-0.06n}.
+\end{equation}
+This ratio is exponentially small, regardless of $A$.
+
+\begin{theorem}[Any-$B$ uniformity forcing]
+\label{thm:any-b-uniformity}
+Let $A\in\F_2^{2n\times n}$ be any isotropic basis and let $B\in\F_2^{m\times 2n}$ be any matrix (possibly depending on~$A$).  Let $w=\lfloor 0.19n\rfloor$ and suppose that $\operatorname{SD}(BA,\,\operatorname{Uniform}_{\F_2^{n}})\le\delta$.  Then for every row $b_i$ of~$B$,
+\[
+\Pr\bigl[\,|b_i|\le w\,\bigr] \;\le\; \frac{|R_w(A)|}{2^{n}} + \delta \;\le\; 2^{-0.06n}+\delta.
+\]
+In particular, if $m\le\operatorname{poly}(n)$ and $\delta\le 1/(4mn)$, then with probability $1-o(1)$ over the randomness of the reduction \emph{every} row of $B$ has weight $>w$.
+\end{theorem}
+
+\begin{proof}
+If $|b_i|\le w$ then $c_i=b_i^{\!\top}A\in R_w(A)$.  Under a uniform distribution on $\F_2^{n}$ the probability of $R_w(A)$ is $|R_w(A)|/2^{n}\le 2^{-0.06n}$.  Since $\operatorname{SD}(BA,\text{Uniform})\le\delta$, the actual probability is at most $2^{-0.06n}+\delta$.  A union bound over $m$ rows gives
+\[
+\Pr[\exists i:\,|b_i|\le w]\;\le\; m\bigl(2^{-0.06n}+\delta\bigr)\;=\;o(1)
+\]
+when $m=\operatorname{poly}(n)$ and $\delta\le 1/(4mn)$.
+\end{proof}
+
+\Cref{thm:any-b-uniformity} applies to adaptive $B$, secret $B$, and any distribution over $B$ conditioned only on the marginal of $BA$ being uniform.  It is the final piece of the linear-reduction closure: once $BA$ is forced to be uniform (otherwise the output is distinguishable from standard LPN), every row of $B$ must have weight $>0.19n$.
+
+The row-weight lower bound immediately amplifies the noise.
+
+\begin{corollary}[Noise amplification]
+\label{cor:noise-amp}
+Under the hypotheses of \Cref{thm:any-b-uniformity}, every output label $a_i=\langle b_i,e\rangle+\langle c_i,x\rangle$ has effective noise parameter
+\[
+p' \;\ge\; \frac{1-(1-2p)^{w+1}}{2} \;=\; \frac{1-2^{-(w+1)}}{2}
+\]
+at $p=1/4$.  For $w=\lfloor 0.19n\rfloor$ this gives $p'\ge \tfrac12-2^{-0.19n-1}$.
+\end{corollary}
+
+\begin{proof}
+The label noise is the XOR of $|b_i|$ independent $\operatorname{Bernoulli}(p)$ variables.  The bias of XOR of $w'$ i.i.d. $\operatorname{Bernoulli}(p)$ bits is $(1-2p)^{w'}$.  Since $|b_i|>w$, the bias is at most $(1-2p)^{w+1}=2^{-(w+1)}$, which translates to the stated $p'$.
+\end{proof}
+
+Finally, the amplified noise forces an information-theoretic sample lower bound.
+
+\begin{corollary}[Recovery barrier]
+\label{cor:recovery-barrier}
+No algorithm can recover $x\in\F_2^{n}$ from $m$ samples with per-sample noise $p'\ge \tfrac12-2^{-0.19n-1}$ with probability $>1/3$ unless
+\[
+m \;=\; \Omega\bigl(n\,\cdot\,2^{0.38n}\bigr).
+\]
+In particular, any linear reduction from symplectic LPN to standard LPN that produces uniform queries requires super-polynomially many output samples.
+\end{corollary}
+
+\begin{proof}
+Each sample carries at most $1-h_2(p')$ bits of information about $x$, where $h_2$ is the binary entropy function.  For $p'=\tfrac12-\epsilon$ with $\epsilon=2^{-0.19n-1}$, we have $1-h_2(p')=\Theta(\epsilon^2)=\Theta(2^{-0.38n})$.  To resolve $n$ bits of entropy requires $m\ge n/\Theta(2^{-0.38n})=\Omega(n\cdot 2^{0.38n})$.
+\end{proof}
+
+Together, \Cref{lem:reachability,thm:any-b-uniformity,cor:noise-amp,cor:recovery-barrier} close the linear-reduction landscape: any linear reduction that makes $BA$ uniform is forced into high-weight rows, which amplifies the noise to $p'\ge \tfrac12-2^{-\Theta(n)}$, and recovery then requires $m=2^{\Theta(n)}$.  At $m=\operatorname{poly}(n)$ the reduction fails unconditionally, for every $B$ model, every isotropic $A$, and every noise rate $p=\Theta(1)$.
+
 A sharper, unconditional barrier comes from an information-theoretic floor:
 
 \begin{proposition}[Entropy floor]
