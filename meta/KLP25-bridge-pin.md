@@ -17,7 +17,9 @@
 
 **Location:** §2.1 (Technical overview), pages 6–7 of the PDF.
 
-**Precision note (dimensional consistency):** The quoted text says $A \in \mathbb{Z}_2^{2n \times n}$ and $B \in \mathbb{Z}_2^{2n \times k}$ are jointly isotropic and full rank. Since an isotropic subspace of $\mathbb{Z}_2^{2n}$ has dimension at most $n$, the columns of $A$ and $B$ together span a space of dimension at most $n$. The quoted dimensions therefore imply $k = 0$, which contradicts $k \geq 1$. LPQR26 likely means $A \in \mathbb{Z}_2^{2n \times (n-k)}$ (the stabilizer generators) and $B \in \mathbb{Z}_2^{2n \times k}$ (the logical operators), with the joint isotropy condition meaning that every column of $A$ is symplectically orthogonal to every column of $B$ (and $A$'s columns are mutually orthogonal, $B$'s columns are mutually orthogonal). The "full rank" condition then means $\operatorname{rank}([A \mid B]) = n$.
+**Precision note (dimensional consistency):** The quoted text says $A \in \mathbb{Z}_2^{2n \times n}$ and $B \in \mathbb{Z}_2^{2n \times k}$ are jointly isotropic and full rank. Since an isotropic subspace of $\mathbb{Z}_2^{2n}$ has dimension at most $n$, the columns of $A$ and $B$ together span a space of dimension at most $n$. The quoted dimensions therefore imply $k = 0$, which contradicts $k \geq 1$.
+
+> **PDF p.6–7 재대조:** 인쇄 원문은 정확히 『$A \in \mathbb{Z}_2^{2n \times n}$, $B \in \mathbb{Z}_2^{2n \times k}$』라고 기술되어 있음. 위 차원 모순은 원문 그대로 인용한 결과이며, 해석상 LPQR26은 $A \in \mathbb{Z}_2^{2n \times (n-k)}$ (stabilizer generators)와 $B \in \mathbb{Z}_2^{2n \times k}$ (logical operators)를 의도한 것으로 보임 — 즉 원논문의 $A$ 차원 표기에 오타가 있을 가능성.
 
 ---
 
@@ -27,7 +29,9 @@
 
 **Proof sketch (from LPQR26):** Given an LSN instance $(A, B, z)$ with $z = Ar + By + e$, the algorithm queries the sympLPN oracle on $(A, z)$. If $y = 0$, then $(A, z) = (A, Ar)$ is a structured sympLPN instance. If $y \neq 0$, then $z \sim (Ax + e) + b_1$ where $b_1$ is uniformly random over $\mathbb{Z}_2^{2n} \setminus V$ ($V = \operatorname{im} A$), which has total variation distance $O(2^{-n})$ from uniform. Hence the oracle distinguishes structured from unstructured with advantage $\epsilon - \operatorname{negl}(n)$, yielding an LSN solver with success probability $\frac{1}{2^k} + \frac{1}{\operatorname{poly}(n)}$.
 
-**Precision note (parameter notation):** Theorem 4.1 writes sympLPN$(n, p)$, whereas the general definition in §2.1 is sympLPN$(k, n, p)$. Here the first argument is the secret dimension. Theorem 4.1's sympLPN$(n, p)$ is shorthand for sympLPN$(n, n, p)$, i.e. the secret dimension equals the physical qubit count.
+**Precision note (parameter notation):** Theorem 4.1 writes sympLPN$(n, p)$, whereas the general definition in §2.1 is sympLPN$(k, n, p)$. Here the first argument is the secret dimension.
+
+> **PDF p.17 재대조:** 인쇄 원문은 정확히 『sympLPN$(n, p)$』라고 기술되어 있음. 이는 sympLPN$(n, n, p)$의 축약 표기, 즉 secret dimension이 physical qubit count와 같을 때의 특수 경우.
 
 **Location:** §4.1, page 17 of the PDF.
 

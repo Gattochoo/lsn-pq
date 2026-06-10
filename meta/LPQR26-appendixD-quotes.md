@@ -60,4 +60,6 @@ Clarification: the PDF rendering splits the fraction across two lines as $(1-r-\
 
 Clarification: Equation (63) in the PDF renders the fraction $(1-r-\delta)$ on one line and $m/2$ on the next; the intended bound is $|Be| \ge \frac{(1-r-\delta)m}{2}$.
 
+**Quantifier order (crucial for A3b model):** The premise says "$B \in \mathbb{Z}_2^{m \times 2n}$ is a random variable such that $BA$ is statistically indistinguishable from uniformly random." This does **not** require $B$ to be independent of $A$; $B$ may be chosen as a function $B = f(A, \mathsf{rand})$ after observing $A$, provided only that the induced distribution of $BA$ is uniform. In particular, adaptive randomised reductions are not ruled out by Theorem D.2; only the output distribution of $BA$ matters.
+
 **Location:** Appendix D, page 42 of the PDF (page number in the rendered document).
