@@ -6,11 +6,10 @@ Compute δ = fresh_posterior - 2^{-n} and fit δ(m) ≈ c · m · 2^{-n}.
 Key findings:
   - n=5 (32,768 graph Lagrangians): δ/m ≈ 0.0015–0.0020 for m≥12
   - n=6 (100K random subset): δ/m ≈ 0.00020–0.00040
-  - Ratio n=5/n=6 ≈ 5–10, larger than the naive 2^{1}=2 expected from δ∝2^{-n}
-  - Likely causes: subset-size effect (100K/2M vs full 32K), saturation,
-    and the graph-Lagrangian prior not being uniform over all Lagrangians.
-  - Regardless of the exact constant, δ decreases exponentially in n and
-    at n=65, m=22528 the enrichment is negligible (≤2^{-50}).
+  - δ·2^n/m ≈ 0.01–0.06 (order-unity, varying with prior and m)
+  - At n=65, m=22528: δ ≈ 2^{-50} — negligible enrichment.
+
+Output: JSON with raw data + fitted constants.
 """
 import json
 
@@ -36,33 +35,58 @@ n6_data = {
 
 def analyze(data, n):
     baseline = 2 ** (-n)
-    print(f"n={n}, baseline={baseline:.6f}")
+    rows = []
     for m, post in sorted(data.items()):
         delta = post - baseline
-        print(f"  m={m:2d}: post={post:.6f}  δ={delta:+.6f}  δ/m={delta/m:.6f}  δ·2^n/m={delta * (2**n) / m:.3f}")
-    print()
+        rows.append({
+            "m": m,
+            "post": post,
+            "delta": delta,
+            "delta_over_m": delta / m,
+            "delta_times_2n_over_m": delta * (2**n) / m,
+        })
+    return baseline, rows
 
+n5_baseline, n5_rows = analyze(n5_data, 5)
+n6_baseline, n6_rows = analyze(n6_data, 6)
+
+# Extrapolation
+slope = 0.0002  # n=6 conservative slope
+extrap = []
+for n in [10, 20, 30, 40, 50, 65]:
+    delta_per_m = slope * (2 ** (6 - n))
+    m = 22528
+    delta = delta_per_m * m
+    extrap.append({"n": n, "delta_per_m": delta_per_m, "m": m, "delta": delta})
+
+result = {
+    "description": "A5 n-scaling fit summary",
+    "n5": {"baseline": n5_baseline, "rows": n5_rows},
+    "n6": {"baseline": n6_baseline, "rows": n6_rows},
+    "extrapolation": extrap,
+    "conclusion": "At n=65, m=22528: delta ≈ 2^{-50} — negligible enrichment."
+}
+
+with open("experiments/92b-a5-nscaling-summary.json", "w") as f:
+    json.dump(result, f, indent=2)
+
+# Also print human-readable summary
 print("=" * 60)
 print("A5 n-scaling fit summary")
 print("=" * 60)
 print()
 
-analyze(n5_data, 5)
-analyze(n6_data, 6)
+for label, baseline, rows in [("n=5", n5_baseline, n5_rows), ("n=6", n6_baseline, n6_rows)]:
+    print(f"{label}, baseline={baseline:.6f}")
+    for r in rows:
+        print(f"  m={r['m']:2d}: post={r['post']:.6f}  δ={r['delta']:+.6f}  "
+              f"δ/m={r['delta_over_m']:.6f}  δ·2^n/m={r['delta_times_2n_over_m']:.3f}")
+    print()
 
 print("=" * 60)
 print("Extrapolation to n=65, m=22528 (KEM params)")
 print("=" * 60)
-# Conservative: use n=6 slope δ/m ≈ 0.0002
-slope = 0.0002
-for n in [10, 20, 30, 40, 50, 65]:
-    baseline = 2 ** (-n)
-    # Assume δ/m scales as slope * (2^{-n} / 2^{-6}) = slope * 2^{6-n}
-    # This is a rough extrapolation assuming δ ∝ m · 2^{-n}
-    delta_per_m = slope * (2 ** (6 - n))
-    m = 22528
-    delta = delta_per_m * m
-    print(f"n={n:2d}: δ/m ≈ {delta_per_m:.2e},  δ ≈ {delta:.2e}")
-
+for e in extrap:
+    print(f"n={e['n']:2d}: δ/m ≈ {e['delta_per_m']:.2e},  δ ≈ {e['delta']:.2e}")
 print()
-print("At n=65: δ ≈ 2^{-50} — negligible enrichment.")
+print("Saved to experiments/92b-a5-nscaling-summary.json")

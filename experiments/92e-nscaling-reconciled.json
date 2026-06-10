@@ -1,0 +1,112 @@
+{
+  "n5_full": {
+    "n": 5,
+    "subset_size": 32768,
+    "subset_fraction": 1.0,
+    "results": [
+      {
+        "m": 8,
+        "delta_over_m": 0.00112,
+        "c": 0.036
+      },
+      {
+        "m": 12,
+        "delta_over_m": 0.00109,
+        "c": 0.035
+      },
+      {
+        "m": 16,
+        "delta_over_m": 0.00096,
+        "c": 0.031
+      },
+      {
+        "m": 20,
+        "delta_over_m": 0.00095,
+        "c": 0.03
+      },
+      {
+        "m": 24,
+        "delta_over_m": 0.00094,
+        "c": 0.03
+      }
+    ]
+  },
+  "n5_10k": {
+    "n": 5,
+    "subset_size": 10000,
+    "subset_fraction": 0.305,
+    "results": [
+      {
+        "m": 8,
+        "delta_over_m": 0.00146,
+        "c": 0.047
+      },
+      {
+        "m": 12,
+        "delta_over_m": 0.00132,
+        "c": 0.042
+      },
+      {
+        "m": 16,
+        "delta_over_m": 0.00115,
+        "c": 0.037
+      },
+      {
+        "m": 20,
+        "delta_over_m": 0.00112,
+        "c": 0.036
+      },
+      {
+        "m": 24,
+        "delta_over_m": 0.00102,
+        "c": 0.033
+      }
+    ]
+  },
+  "n6_200k": {
+    "n": 6,
+    "subset_size": 200000,
+    "subset_fraction": 0.095,
+    "results": [
+      {
+        "m": 8,
+        "delta_over_m": 0.000373,
+        "c": 0.024
+      },
+      {
+        "m": 16,
+        "delta_over_m": 0.00028,
+        "c": 0.018
+      },
+      {
+        "m": 24,
+        "delta_over_m": 0.000235,
+        "c": 0.015
+      },
+      {
+        "m": 32,
+        "delta_over_m": 0.000202,
+        "c": 0.013
+      },
+      {
+        "m": 40,
+        "delta_over_m": 0.000199,
+        "c": 0.013
+      },
+      {
+        "m": 48,
+        "delta_over_m": 0.000179,
+        "c": 0.011
+      }
+    ]
+  },
+  "reconciliation": {
+    "finding": "Subset-size inflation is the dominant source of discrepancy between 90 and 92.",
+    "n5_full_c": 0.03,
+    "n6_extrapolated_full_c": 0.01,
+    "scaling_law": "delta \u2248 c \u00b7 m \u00b7 2^{-n}",
+    "c_range": "0.01\u20130.03 for full population; 0.01\u20130.10 depending on subset size",
+    "chi_squared_upper_bound": 0.7
+  },
+  "security_implication": "At n=65, m=22528, delta <= 2^{-50} \u2014 negligible enrichment."
+}
