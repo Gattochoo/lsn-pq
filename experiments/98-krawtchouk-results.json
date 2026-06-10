@@ -1,0 +1,153 @@
+{
+  "experiment": "98-krawtchouk-concentration",
+  "description": "Empirical concentration of W_N(1/2) for random isotropic A",
+  "results": [
+    {
+      "n": 4,
+      "D": 8,
+      "num_samples": 5000,
+      "empirical": {
+        "mean": 2.285959,
+        "std": 0.366242,
+        "var": 0.134133,
+        "min": 1.878906,
+        "max": 5.0625
+      },
+      "theoretical": {
+        "mean": 2.448759,
+        "var_diagonal_only": 0.274628,
+        "std_diagonal_only": 0.524049
+      },
+      "concentration": {
+        "std_over_mean": 0.160214,
+        "theo_std_over_mean": 0.214006
+      }
+    },
+    {
+      "n": 5,
+      "D": 10,
+      "num_samples": 5000,
+      "empirical": {
+        "mean": 2.562965,
+        "std": 0.384027,
+        "var": 0.147477,
+        "min": 2.144531,
+        "max": 5.273438
+      },
+      "theoretical": {
+        "mean": 2.717122,
+        "var_diagonal_only": 0.244282,
+        "std_diagonal_only": 0.494249
+      },
+      "concentration": {
+        "std_over_mean": 0.149837,
+        "theo_std_over_mean": 0.181902
+      }
+    },
+    {
+      "n": 6,
+      "D": 12,
+      "num_samples": 5000,
+      "empirical": {
+        "mean": 2.836704,
+        "std": 0.370794,
+        "var": 0.137488,
+        "min": 2.425781,
+        "max": 6.328125
+      },
+      "theoretical": {
+        "mean": 2.980713,
+        "var_diagonal_only": 0.205283,
+        "std_diagonal_only": 0.453082
+      },
+      "concentration": {
+        "std_over_mean": 0.130713,
+        "theo_std_over_mean": 0.152005
+      }
+    },
+    {
+      "n": 7,
+      "D": 14,
+      "num_samples": 5000,
+      "empirical": {
+        "mean": 3.141689,
+        "std": 0.358159,
+        "var": 0.128278,
+        "min": 2.726807,
+        "max": 6.328125
+      },
+      "theoretical": {
+        "mean": 3.255266,
+        "var_diagonal_only": 0.1672,
+        "std_diagonal_only": 0.408902
+      },
+      "concentration": {
+        "std_over_mean": 0.114002,
+        "theo_std_over_mean": 0.125612
+      }
+    },
+    {
+      "n": 8,
+      "D": 16,
+      "num_samples": 5000,
+      "empirical": {
+        "mean": 3.454166,
+        "std": 0.346109,
+        "var": 0.119792,
+        "min": 3.04541,
+        "max": 6.786804
+      },
+      "theoretical": {
+        "mean": 3.55191,
+        "var_diagonal_only": 0.133824,
+        "std_diagonal_only": 0.36582
+      },
+      "concentration": {
+        "std_over_mean": 0.100201,
+        "theo_std_over_mean": 0.102992
+      }
+    },
+    {
+      "n": 9,
+      "D": 18,
+      "num_samples": 2000,
+      "empirical": {
+        "mean": 3.823811,
+        "std": 0.328457,
+        "var": 0.107884,
+        "min": 3.42691,
+        "max": 6.315765
+      },
+      "theoretical": {
+        "mean": 3.878932,
+        "var_diagonal_only": 0.106052,
+        "std_diagonal_only": 0.325657
+      },
+      "concentration": {
+        "std_over_mean": 0.085898,
+        "theo_std_over_mean": 0.083955
+      }
+    },
+    {
+      "n": 10,
+      "D": 20,
+      "num_samples": 2000,
+      "empirical": {
+        "mean": 4.18589,
+        "std": 0.299867,
+        "var": 0.08992,
+        "min": 3.831276,
+        "max": 6.519699
+      },
+      "theoretical": {
+        "mean": 4.243177,
+        "var_diagonal_only": 0.083563,
+        "std_diagonal_only": 0.289073
+      },
+      "concentration": {
+        "std_over_mean": 0.071638,
+        "theo_std_over_mean": 0.068127
+      }
+    }
+  ]
+}
