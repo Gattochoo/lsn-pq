@@ -51,7 +51,7 @@
 \maketitle
 
 \begin{abstract}
-We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem where the secret is a Lagrangian subspace of a symplectic vector space rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form. We prove an unconditional exponential Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, and a conditional $2^{2n-O(1)}$ bound under a precisely-stated extremality conjecture, together with an exact pairwise-correlation formula and no asymptotic error term. We establish that linear and low-degree polynomial feature-map reductions are information-theoretically impossible, that adaptive linear SQ algorithms have only exponentially small advantage, and we map the exact standard-model gap that remains for general non-linear reductions. We construct two cryptographic primitives from LSN: a succinct non-interactive argument (LSN-SNARK) with $O(n^2)$ R1CS constraints ($\approx 4{,}225$ for $n=65$, compared to millions for ZK-lattice proofs), and a key-encapsulation mechanism (LSN-KEM) with concatenated polar-code reconciliation achieving 80-bit security with public keys of 1.78~KB and ciphertexts of 288~B. All security claims are explicitly classified as theorem, evidence, or conjecture, and the remaining open problems are stated precisely.
+We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem where the secret is a Lagrangian subspace of a symplectic vector space rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form. We prove an unconditional exponential Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, and a conditional $2^{2n-O(1)}$ bound under a precisely-stated extremality conjecture, together with an exact pairwise-correlation formula and no asymptotic error term. We establish a near-complete barrier landscape for linear reductions from symplectic LPN to standard LPN: a transport-based rank stratification eliminates every public-matrix linear reduction at all sample counts and noise rates; an entropy-continuity argument eliminates every fixed linear reduction; and an entropy-support counting bound forces all but $O(n)$ rows of any marginally-uniform adaptive reduction to have linear Hamming weight. Three of the four cells of the linear landscape are thereby closed unconditionally; the fourth (marginal-adaptive) is reduced to a single precisely-stated open problem. We further separate the membership and decoding formulations of the problem by information-theoretic floors, and map the standard-model gap that remains for general non-linear reductions. We construct two cryptographic primitives from LSN: a succinct non-interactive argument (LSN-SNARK) with $O(n^2)$ R1CS constraints ($\approx 4{,}225$ for $n=65$, compared to millions for ZK-lattice proofs), and a key-encapsulation mechanism (LSN-KEM) with concatenated polar-code reconciliation achieving 80-bit security with public keys of 1.78~KB and ciphertexts of 288~B. All security claims are explicitly classified as theorem, evidence, or conjecture, and the remaining open problems are stated precisely.
 \end{abstract}
 
 \paragraph{\textbf{Keywords.}} Post-quantum cryptography, Learning Parity with Noise, statistical query model, symplectic geometry, polar codes, zero-knowledge proofs.
@@ -103,7 +103,11 @@ Our contributions are organized around proof, barriers, and constructions.
     \]
     where $j = \dim(L \cap L')$ and $\langle D_L, D_{L'} \rangle$ denotes the pairwise correlation. For $p=1/4$ the coefficient is exactly $4/3$. A Markov concentration argument shows that a subset of size $2^{2n}$ with average correlation $O(2^{-2n})$ exists; the stronger worst-case bound remains open. The results hold for adaptive SQ algorithms.
 
-    \item \textbf{Reduction barriers (\Cref{sec:barriers}).} We prove that linear feature maps give zero advantage against LSN; polynomial feature maps of degree $< n$ have error at least $2^{-n}$; and adaptive linear SQ algorithms have advantage at most $(1-2p)2^{-n}$ at any noise rate $p$. Together these barriers eliminate the natural reduction routes and localize the remaining open question to genuinely non-linear, adaptive reductions.
+    \item \textbf{Reduction barriers (\Cref{sec:barriers}).} We prove that linear feature maps give zero advantage against LSN; polynomial feature maps of degree $< n$ have error at least $2^{-n}$; and adaptive linear SQ algorithms have advantage at most $(1-2p)2^{-n}$ at any noise rate $p$.
+    
+    \textbf{Linear-reduction landscape.} Transport theorems (\Cref{thm:transport-fullrank,thm:transport-nearfull}) close all public-$B$ reductions; Theorem~D.1 of \cite{LPQR26} with the Fannes--Csisz\'ar inequality closes all fixed $B$; the entropy-support bound (\Cref{lem:m1}) and the reachability theorem (\Cref{thm:any-b-uniformity}) close conditionally-uniform adaptive $B$. The marginal-adaptive cell is posed as a precise open problem (\Cref{open:marginal-adaptive}).
+    
+    \textbf{Two formulations.} We separate the membership and batch/sympLPN formulations and prove information-theoretic floors for the former (\Cref{sec:info-floors}).
 
     \item \textbf{Cryptographic primitives (\Cref{sec:primitives}).}
     \begin{itemize}
@@ -827,17 +831,16 @@ The only non-linear operation on secret data is the majority vote in the inner r
 \label{tab:barriers}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.8cm}l>{\raggedright\arraybackslash}p{6.5cm}@{}}
 \hline
-Class & Status & Reason \\
+Class (model) & Status & Mechanism \\
 \hline
-Linear (real)      & BLOCKED  & real-linear: $\E[q]$ $L$-independent; F$_2$-linear: $\leq (1-2p)2^{-n}$ \\
-Polynomial degree $< n$ & BLOCKED  & Error $\geq 2^{-n}$ \\
-Linear, $\rho=2n$ (full) & BLOCKED & Transport lemma; output Gram $\equiv 0$ (\Cref{thm:transport-fullrank}) \\
-Linear, $(3/2+\epsilon)n \le \rho < 2n$ (near-full) & BLOCKED & Gram rank $\le 2c \le (1-\epsilon)n$ (\Cref{thm:transport-nearfull}) \\
-Linear, $\rho \le (3/2-\epsilon)n$, $m=\Theta(n)$ & RULED OUT & LPQR26 App.~D (all fixed linear reductions) \\
-Linear, $\rho \le (3/2-\epsilon)n$, $m=\omega(n)$ & CLOSED (cond.) & Reachability bound; conditional uniform, any $m=\operatorname{poly}(n)$ (\Cref{thm:any-b-uniformity}) \\
-LPN($k=\Theta(n^2)$)   & VACUOUS  & \Cref{prop:entropy-floor} + BKW cost $2^{\Omega(n^2/\log n)}$ \\
-Multi-sample linear & OPEN & Non-linear scramblers only (Open Problem 2) \\
-Non-linear adaptive & OPEN & No proof or construction known \\
+Real-linear queries (SQ) & BLOCKED & $\E[q]$ $L$-independent; F$_2$-linear $\leq (1-2p)2^{-n}$ (\Cref{thm:linear-sq}) \\
+Poly degree $< n$ (SQ) & BLOCKED & RM distance (correlation $\leq 2^{-n}$) \\
+Single-sample adaptive deg-$D$ (SQ) & BLOCKED & selection $\neq$ composition \\
+Fixed $B$, any rank, $m \ge cn$ & DEAD & D.1 + Fannes: SD $\geq d-1/(mn)$ \\
+Public $B$, $\rho \ge (3/2+\epsilon)n$ & DEAD & transport/Gram (constructive) \\
+Adaptive $B$, conditional-uniform & DEAD & reachability (\Cref{thm:any-b-uniformity}) \\
+Adaptive $B$, marginal-uniform & \textbf{OPEN} & \Cref{lem:m1} proven half; \Cref{lem:m2} conditional (\Cref{open:marginal-adaptive}) \\
+Non-linear / multi-sample & OPEN & no proof or construction known \\
 \hline
 \end{tabular}
 \end{table}
@@ -1125,7 +1128,7 @@ provided $m\ge \frac{4n}{(1-2p')^{2}}\cdot\operatorname{polylog}(n)$.
 \textbf{Depends on \Cref{lem:m2}.}  Let $A\sim\operatorname{Uniform}(\Lagr(2n,\F_2))$ and let $B=g(A,R)\in\F_2^{m\times 2n}$ be any randomized adaptive matrix.  \Cref{lem:m1} shows that if $\operatorname{SD}(BA,\text{Uniform})\le\delta$ and $m\ge Cn$ ($C>16$), at least $m-o(m)$ rows have weight $>0.19n$, hence effective noise bias $\le 2^{-0.19n}$.  If \Cref{lem:m2} holds, this yields $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for every $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$, and no marginal-adaptive linear reduction maps symplectic LPN to a usable standard LPN instance when $m\ge Cn$.
 \end{theorem}
 
-\Cref{thm:marginal-adaptive} is a \textbf{conditional} barrier: \Cref{lem:m1} is proven, but \Cref{lem:m2} remains open because of the correlated-noise obstacle described above.  The honest map is therefore: fixed-B \textbf{DEAD}, public-B \textbf{DEAD}, conditional-uniform adaptive \textbf{DEAD}, marginal-adaptive \textbf{OPEN}.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is covered by LPQR26 Appendix~D (their Theorem~D.2) for fixed linear reductions.
+\Cref{thm:marginal-adaptive} is a \textbf{conditional} barrier: \Cref{lem:m1} is proven, but \Cref{lem:m2} remains open because of the correlated-noise obstacle described above.  The honest map is therefore: fixed-B \textbf{DEAD}, public-B \textbf{DEAD}, conditional-uniform adaptive \textbf{DEAD}, marginal-adaptive \textbf{OPEN}.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is covered by LPQR26 Appendix~D (their Theorem~D.2) for fixed $B$ (any rank, including low-rank).
 
 \section{Open Problems}
 \label{sec:open}
