@@ -988,7 +988,7 @@ If $|b_i|\le w$ then $c_i=b_i^{\!\top}A\in R_w(A)$.  Under a uniform distributio
 when $m=\operatorname{poly}(n)$ and $\delta\le 1/(4mn)$.
 \end{proof}
 
-\Cref{thm:any-b-uniformity} applies to adaptive $B$, secret $B$, and any distribution over $B$ conditioned only on the marginal of $BA$ being uniform.  It is the final piece of the linear-reduction closure: once $BA$ is forced to be uniform (otherwise the output is distinguishable from standard LPN), every row of $B$ must have weight $>0.19n$.
+\Cref{thm:any-b-uniformity} applies to adaptive $B$, secret $B$, and any distribution over $B$, \emph{provided the conditional-uniformity hypothesis holds}: $BA$ must be close to uniform conditioned on each fixed $A$. In that model, once $BA$ is forced to be uniform (otherwise the output is distinguishable from standard LPN), every row of $B$ must have weight $>0.19n$. The theorem does \emph{not} cover the marginal-adaptive corner (\Cref{open:marginal-adaptive}).
 
 The row-weight lower bound immediately amplifies the noise.
 
