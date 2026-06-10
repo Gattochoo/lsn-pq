@@ -1,0 +1,151 @@
+{
+  "experiment": "113-e-op9a-lowweight-B-recovery",
+  "description": "Low-weight B construction + x recovery (recoverability target)",
+  "date": "2026-06-12",
+  "results": [
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w1",
+      "marginal_uniformity": {
+        "avg_entropy": 5.9542,
+        "min_entropy": 5.9371,
+        "max_possible": 6,
+        "entropy_ratio": 0.9924
+      },
+      "recovery": {
+        "success_rate": 0.145,
+        "avg_agree_correct": 23.93103448275862,
+        "avg_agree_wrong": 23.415204678362574
+      }
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w2",
+      "marginal_uniformity": {
+        "avg_entropy": 5.9534,
+        "min_entropy": 5.9317,
+        "max_possible": 6,
+        "entropy_ratio": 0.9922
+      },
+      "recovery": {
+        "success_rate": 0.09,
+        "avg_agree_correct": 23.555555555555557,
+        "avg_agree_wrong": 22.653846153846153
+      }
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w3",
+      "marginal_uniformity": {
+        "avg_entropy": 5.9517,
+        "min_entropy": 5.9395,
+        "max_possible": 6,
+        "entropy_ratio": 0.9919
+      },
+      "recovery": {
+        "success_rate": 0.125,
+        "avg_agree_correct": 24.0,
+        "avg_agree_wrong": 21.982857142857142
+      }
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "random_w1",
+      "marginal_uniformity": {
+        "avg_entropy": 5.0241,
+        "min_entropy": 4.8605,
+        "max_possible": 6,
+        "entropy_ratio": 0.8374
+      },
+      "recovery": {
+        "success_rate": 0.3,
+        "avg_agree_correct": 21.983333333333334,
+        "avg_agree_wrong": 21.142857142857142
+      }
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "random_w2",
+      "marginal_uniformity": {
+        "avg_entropy": 5.8428,
+        "min_entropy": 5.8166,
+        "max_possible": 6,
+        "entropy_ratio": 0.9738
+      },
+      "recovery": {
+        "success_rate": 0.185,
+        "avg_agree_correct": 21.324324324324323,
+        "avg_agree_wrong": 19.78527607361963
+      }
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "uniform",
+      "marginal_uniformity": {
+        "avg_entropy": 5.9533,
+        "min_entropy": 5.9436,
+        "max_possible": 6,
+        "entropy_ratio": 0.9922
+      },
+      "recovery": {
+        "success_rate": 0.045,
+        "avg_agree_correct": 22.666666666666668,
+        "avg_agree_wrong": 17.670157068062828
+      }
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "bottom_w1",
+      "marginal_uniformity": {
+        "avg_entropy": 7.8052,
+        "min_entropy": 7.776,
+        "max_possible": 8,
+        "entropy_ratio": 0.9757
+      },
+      "recovery": {
+        "success_rate": 0.08,
+        "avg_agree_correct": 30.875,
+        "avg_agree_wrong": 31.21195652173913
+      }
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "bottom_w2",
+      "marginal_uniformity": {
+        "avg_entropy": 7.8049,
+        "min_entropy": 7.7597,
+        "max_possible": 8,
+        "entropy_ratio": 0.9756
+      },
+      "recovery": {
+        "success_rate": 0.01,
+        "avg_agree_correct": 32.0,
+        "avg_agree_wrong": 30.78787878787879
+      }
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "uniform",
+      "marginal_uniformity": {
+        "avg_entropy": 7.8015,
+        "min_entropy": 7.7639,
+        "max_possible": 8,
+        "entropy_ratio": 0.9752
+      },
+      "recovery": {
+        "success_rate": 0.015,
+        "avg_agree_correct": 29.666666666666668,
+        "avg_agree_wrong": 23.944162436548222
+      }
+    }
+  ]
+}

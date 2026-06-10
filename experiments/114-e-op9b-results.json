@@ -1,0 +1,514 @@
+{
+  "experiment": "114-e-op9b-tradeoff-curve",
+  "description": "Low-weight B trade-off: non-uniformity vs recovery",
+  "date": "2026-06-12",
+  "results": [
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w",
+      "w": 1,
+      "nonuniformity": {
+        "entropy_ratio": 0.9953,
+        "chi2": 77.25,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.015
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w",
+      "w": 2,
+      "nonuniformity": {
+        "entropy_ratio": 0.9963,
+        "chi2": 60.74,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.01
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w",
+      "w": 3,
+      "nonuniformity": {
+        "entropy_ratio": 0.9965,
+        "chi2": 58.18,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.02
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w",
+      "w": 4,
+      "nonuniformity": {
+        "entropy_ratio": 0.9965,
+        "chi2": 56.77,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.02
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w",
+      "w": 5,
+      "nonuniformity": {
+        "entropy_ratio": 0.9968,
+        "chi2": 53.5,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "bottom_w",
+      "w": 6,
+      "nonuniformity": {
+        "entropy_ratio": 0.9948,
+        "chi2": 84.1,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.02
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "top_w",
+      "w": 1,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 124031.25,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.015
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "top_w",
+      "w": 2,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 124031.25,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.01
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "top_w",
+      "w": 3,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 124031.25,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.005
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "top_w",
+      "w": 4,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 124031.25,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.01
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "top_w",
+      "w": 5,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 124031.25,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.015
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "top_w",
+      "w": 6,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 124031.25,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.02
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "mixed_w",
+      "w": 2,
+      "nonuniformity": {
+        "entropy_ratio": 0.9958,
+        "chi2": 68.86,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.015
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "mixed_w",
+      "w": 4,
+      "nonuniformity": {
+        "entropy_ratio": 0.9958,
+        "chi2": 69.63,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.01
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "family": "mixed_w",
+      "w": 6,
+      "nonuniformity": {
+        "entropy_ratio": 0.9961,
+        "chi2": 63.94,
+        "unique_values": 64,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.02
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "bottom_w",
+      "w": 1,
+      "nonuniformity": {
+        "entropy_ratio": 0.9877,
+        "chi2": 281.47,
+        "unique_values": 256,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.005
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "bottom_w",
+      "w": 2,
+      "nonuniformity": {
+        "entropy_ratio": 0.9895,
+        "chi2": 227.2,
+        "unique_values": 256,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "bottom_w",
+      "w": 3,
+      "nonuniformity": {
+        "entropy_ratio": 0.9876,
+        "chi2": 261.76,
+        "unique_values": 256,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.01
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "bottom_w",
+      "w": 4,
+      "nonuniformity": {
+        "entropy_ratio": 0.9877,
+        "chi2": 249.08,
+        "unique_values": 255,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.005
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "bottom_w",
+      "w": 6,
+      "nonuniformity": {
+        "entropy_ratio": 0.9893,
+        "chi2": 232.06,
+        "unique_values": 256,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "bottom_w",
+      "w": 8,
+      "nonuniformity": {
+        "entropy_ratio": 0.9877,
+        "chi2": 253.57,
+        "unique_values": 256,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "top_w",
+      "w": 1,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 508007.81,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "top_w",
+      "w": 2,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 508007.81,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.01
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "top_w",
+      "w": 3,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 508007.81,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.005
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "top_w",
+      "w": 4,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 508007.81,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "top_w",
+      "w": 6,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 508007.81,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 8,
+      "m": 32,
+      "family": "top_w",
+      "w": 8,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 508007.81,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "bottom_w",
+      "w": 1,
+      "nonuniformity": {
+        "entropy_ratio": 0.9548,
+        "chi2": 773.93,
+        "unique_values": 863,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "bottom_w",
+      "w": 2,
+      "nonuniformity": {
+        "entropy_ratio": 0.9577,
+        "chi2": 736.95,
+        "unique_values": 875,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "bottom_w",
+      "w": 3,
+      "nonuniformity": {
+        "entropy_ratio": 0.9563,
+        "chi2": 755.86,
+        "unique_values": 870,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "bottom_w",
+      "w": 5,
+      "nonuniformity": {
+        "entropy_ratio": 0.9619,
+        "chi2": 667.19,
+        "unique_values": 898,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "bottom_w",
+      "w": 8,
+      "nonuniformity": {
+        "entropy_ratio": 0.9572,
+        "chi2": 765.24,
+        "unique_values": 879,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.005
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "bottom_w",
+      "w": 10,
+      "nonuniformity": {
+        "entropy_ratio": 0.9551,
+        "chi2": 776.81,
+        "unique_values": 865,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "top_w",
+      "w": 1,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 2044001.95,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "top_w",
+      "w": 2,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 2044001.95,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.005
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "top_w",
+      "w": 3,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 2044001.95,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.005
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "top_w",
+      "w": 5,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 2044001.95,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "top_w",
+      "w": 8,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 2044001.95,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.0
+    },
+    {
+      "n": 10,
+      "m": 40,
+      "family": "top_w",
+      "w": 10,
+      "nonuniformity": {
+        "entropy_ratio": 0.0,
+        "chi2": 2044001.95,
+        "unique_values": 1,
+        "total_samples": 2000
+      },
+      "recovery_rate": 0.005
+    }
+  ]
+}

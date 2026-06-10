@@ -41,3 +41,5 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 08:48 | P24 | experiments/111-n36-quick-test.json | n=36 quick test: syndrome sep negligible (0.19/0.08/0.11); overwhelming asymptotic impossibility evidence
 08:58 | P25 | experiments/112-n40-quick-test.json | n=40 quick test: syndrome sep negligible (0.33/0.10/0.14); definitive asymptotic impossibility evidence
 09:00 | P26 | meta/2026-06-12-OVERNIGHT-REPORT.md | Final update: one-line verdict revised with n=8..40 scaling and asymptotic impossibility conjecture
+09:45 | E-OP9a | experiments/113-e-op9a-results.json | bottom_w1 entropy=0.99, recovery=14%(n=6)/8%(n=8); marginal-uniformity maintained
+09:52 | E-OP9b | experiments/114-e-op9b-results.json | bottom_w entropy=0.96-0.99 across w=1..10; top_w entropy=0; recovery≤2% for fixed B
