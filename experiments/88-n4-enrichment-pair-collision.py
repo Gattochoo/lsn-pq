@@ -154,11 +154,12 @@ def main():
         print(f"       pair(0,0)_posterior = {min(pair0_best):.4f}..{max(pair0_best):.4f} (mean {sum(pair0_best)/len(pair0_best):.4f}, hits {sum(pair0_counts)/len(pair0_counts):.1f})")
         print()
 
-    print("Interpretation:")
-    print("  - If max_posterior stays near baseline, even Bayesian-optimal selection cannot enrich.")
-    print("  - If pair(1,1)_posterior >> baseline, the pair-collision heuristic achieves enrichment.")
-    print("  - The 20/64 object (experiments/83) shows XOR-combining is not a fresh sample;")
-    print("    this probe tests whether the SUM itself has enriched membership probability.")
+    print("Interpretation (REJECTED framing — see experiments/90 for corrected sub-floor n=5 data):")
+    print("  - The m=100 '6.9x enrichment' is a generic past-floor posterior effect, not a")
+    print("    pair-collision advantage.  At m=200/500 pair(1,1)_posterior ≈ plain Bayesian max.")
+    print("  - See experiments/90 for sub-floor n=5 probe (m<32) with fresh/observed split:")
+    print("    pair-collision gives NO advantage over Bayesian-optimal fresh-point selection.")
+    print("  - All observed enrichment = past-floor posterior; negative = good-for-hardness.")
 
 if __name__ == "__main__":
     main()
