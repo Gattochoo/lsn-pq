@@ -324,7 +324,7 @@ In particular, the gain over the uniform-query baseline ($\delta=0$) is $\Delta\
 Under the null model ($b=e$) we have $\E[\phi] = \E[(-1)^e] = 1-2p$. Under the structured model, $\Pr[b=1 \mid a] = p + \mathbf{1}_L(a)(1-2p)$, so $\E[\phi \mid a] = 1-2\Pr[b=1 \mid a] = (1-2p)(1-2\mathbf{1}_L(a))$. Averaging over $a \sim \mathcal{R}$ gives $\E[\phi] = (1-2p)(1-2\Pr[a \in L]) = (1-2p)(1-2(1+\delta)2^{-n})$. The advantage is $|\E[\phi]-\E_{\text{null}}[\phi]| = |1-2p| \cdot 2(1+\delta)2^{-n}$.
 \end{proof}
 
-\Cref{lem:enrichment-sq} shows that any selection rule achieving $\delta = \Omega(1)$ yields an SQ distinguisher with advantage $\Omega(2^{-n})$, which is exactly the threshold ruled out by \Cref{thm:linear-sq} for linear SQ algorithms. Non-linear selection rules are not covered by this lemma; their analysis remains open.
+a $\delta$-enrichment would scale the per-query advantage by $(1+\delta)$; for selection rules implementable by linear SQ this exceeds the per-query ceiling of \Cref{thm:linear-sq}, while general (non-linear, multi-sample) selection rules remain open.
 
 \subsection{Parameters}
 \label{subsec:parameters}
