@@ -11,3 +11,5 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 03:45 | P6 | meta/2026-06-12-OVERNIGHT-REPORT.md | Handoff report complete; 7 new files; verdict: OP9 single-sample blocked, sharpens to multi-sample threshold; awaiting Claude 09:00
 04:00 | P5b | 98-krawtchouk-concentration.py + meta draft | W_N(1/2) empirical mean matches theory within 5%; std/mean decreases 0.16(n=4)→0.07(n=10); Chebyshev gives w.h.p. bound; lem:affine-coset-bias promotable to w.h.p. theorem
 04:00 | P1 E1 adv | 94c-e1-advanced-analysis.py | Corrected AUC via Mann-Whitney: max_agree best (0.58-0.80), syndrome weak (0.56-0.61), rank_diff/corr random (≈0.50); confirms single-sample detection is weak even for best statistic
+04:30 | P5c | meta/2026-06-12-fq-barrier-sketch.md | F_q generalization sketch: transport theorems field-independent; reachability counting improves with q; conjecture drafted
+04:30 | P5d | meta/2026-06-12-2nd-moment-detector-sketch.md | 2nd-moment detector algebraic derivation: k=1,2 bias analysis; signal term masks noise bias; aligns with P1 E1 weak corr separation
