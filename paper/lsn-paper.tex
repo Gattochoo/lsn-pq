@@ -51,7 +51,7 @@
 \maketitle
 
 \begin{abstract}
-We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem where the secret is a Lagrangian subspace of a symplectic vector space rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form. We prove an exponential Statistical Query (SQ) lower bound of $q \geq 2^{2n-O(1)}$ queries with an exact pairwise-correlation formula and no asymptotic error term. We establish that linear and low-degree polynomial feature-map reductions are information-theoretically impossible, that adaptive linear SQ algorithms are completely blocked by direct structural analysis, and we map the exact standard-model gap that remains for general non-linear reductions. We construct two cryptographic primitives from LSN: a succinct non-interactive argument (LSN-SNARK) with $O(n^2)$ R1CS constraints ($\approx 4{,}225$ for $n=65$, compared to millions for ZK-lattice proofs), and a key-encapsulation mechanism (LSN-KEM) with concatenated polar-code reconciliation achieving 80-bit security with public keys of 1.79~KB and ciphertexts of 288~B. All security claims are explicitly classified as theorem, evidence, or conjecture, and the remaining open problems are stated precisely.
+We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem where the secret is a Lagrangian subspace of a symplectic vector space rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form. We prove an unconditional exponential Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, and a conditional $2^{2n-O(1)}$ bound under a precisely-stated extremality conjecture, together with an exact pairwise-correlation formula and no asymptotic error term. We establish that linear and low-degree polynomial feature-map reductions are information-theoretically impossible, that adaptive linear SQ algorithms are completely blocked by direct structural analysis, and we map the exact standard-model gap that remains for general non-linear reductions. We construct two cryptographic primitives from LSN: a succinct non-interactive argument (LSN-SNARK) with $O(n^2)$ R1CS constraints ($\approx 4{,}225$ for $n=65$, compared to millions for ZK-lattice proofs), and a key-encapsulation mechanism (LSN-KEM) with concatenated polar-code reconciliation achieving 80-bit security with public keys of 1.78~KB and ciphertexts of 288~B. All security claims are explicitly classified as theorem, evidence, or conjecture, and the remaining open problems are stated precisely.
 \end{abstract}
 
 \paragraph{\textbf{Keywords.}} Post-quantum cryptography, Learning Parity with Noise, statistical query model, symplectic geometry, polar codes, zero-knowledge proofs.
@@ -97,18 +97,18 @@ Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cit
 Our contributions are organized around proof, barriers, and constructions.
 
 \begin{enumerate}
-    \item \textbf{Exact SQ lower bound (\Cref{sec:sq}).} We prove $q \geq 2^{2n - O(1)}$ SQ queries are required to distinguish LSN from noise. The bound rests on an exact pairwise-correlation formula
+    \item \textbf{Exact SQ lower bound (\Cref{sec:sq}).} We prove an unconditional $\Omega(2^n)$ SQ query lower bound via an explicit symplectic spread, and a conditional $q \geq 2^{2n - O(1)}$ bound under a pencil-extremality conjecture. Both rest on an exact pairwise-correlation formula
     \[
     \langle D_L, D_{L'} \rangle = \frac{(1-2p)^2}{p(1-p)} \cdot 2^{j-2n},
     \]
-    where $j = \dim(L \cap L')$. For $p=1/4$ the coefficient is exactly $4/3$. A Markov concentration argument shows that a subset of size $2^{2n}$ with average correlation $O(2^{-2n})$ exists, which via Feldman \etal\ \cite{FGR+17} yields the exponential bound. The result holds for adaptive SQ algorithms.
+    where $j = \dim(L \cap L')$ and $\langle D_L, D_{L'} \rangle$ denotes the pairwise correlation. For $p=1/4$ the coefficient is exactly $4/3$. A Markov concentration argument shows that a subset of size $2^{2n}$ with average correlation $O(2^{-2n})$ exists; the stronger worst-case bound remains open. The results hold for adaptive SQ algorithms.
 
     \item \textbf{Reduction barriers (\Cref{sec:barriers}).} We prove that linear feature maps give zero advantage against LSN; polynomial feature maps of degree $< n$ have error at least $2^{-n}$; and adaptive linear SQ algorithms are completely blocked by a direct expectation computation. Together these barriers eliminate the natural reduction routes and localize the remaining open question to genuinely non-linear, adaptive reductions.
 
     \item \textbf{Cryptographic primitives (\Cref{sec:primitives}).}
     \begin{itemize}
         \item \textbf{LSN-SNARK:} A preprocessing SNARK for LSN membership with $O(n^2)$ R1CS constraints via the Siegel-chart (graph-Lagrangian) representation. Verified counts: $64$ for $n=8$, $1{,}764$ for $n=42$, $4{,}225$ for $n=65$.
-        \item \textbf{LSN-KEM:} A CCA-secure KEM via concatenated polar codes. Direct polar coding at $p=1/4$ fails ($Z_0 = 0.866$, SC bound $P_e > 1$), so we concatenate an inner repetition code with an outer polar code. For $r=7$ repetition we obtain effective noise $p' = 0.0706$, SC bound $P_e < 2^{-81}$, and parameters PK~=~1.79~KB, CT~=~288~B at 80-bit security. For $r=11$ we obtain $P_e < 2^{-149}$ at 128-bit security.
+        \item \textbf{LSN-KEM:} A CCA-secure KEM via concatenated polar codes. Direct polar coding at $p=1/4$ fails ($Z_0 = 0.866$, SC bound $P_e > 1$), so we concatenate an inner repetition code with an outer polar code. For $r=7$ repetition we obtain effective noise $p' = 0.0706$, SC bound $P_e < 2^{-81}$, and parameters PK~=~1.78~KB, CT~=~288~B at 80-bit security. For $r=11$ we obtain $P_e < 2^{-149}$ at 128-bit security.
     \end{itemize}
 
     \item \textbf{Rigorous caveats (\Cref{sec:open}).} Every claim is classified as theorem, evidence, or conjecture. We state explicitly the standard-model gap --- the absence of a non-vacuous LPN(low-noise) $\to$ LSN or LWE $\to$ LSN reduction --- that must close for full community acceptance.
@@ -127,14 +127,13 @@ Let $V = \F_2^{2n}$ with standard symplectic form
 A subspace $L \subset V$ is \emph{isotropic} if $\Omega|_{L \times L} = 0$, and \emph{Lagrangian} if it is isotropic of dimension $n$; equivalently $L = L^{\perp_\Omega}$. We write $\Lagr(2n, \F_2)$ for the Lagrangian Grassmannian.
 
 \begin{proposition}[Lagrangian count \cite{Mac71}]
-\label{prop:lagr-count}
 $|\Lagr(2n, \F_2)| = \prod_{i=1}^n (2^i + 1) = 2^{n(n+1)/2 + O(1)}$.
 \end{proposition}
 
 The intersection of two Lagrangians has even codimension. For $L, L' \in \Lagr(2n)$ let $j = \dim(L \cap L')$. The distribution of $j$ is governed by the $q$-binomial coefficients at $q=2$:
 \begin{equation}
 \label{eq:j-distribution}
-\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{k(k-1)/2}}{|\Lagr(2n,\F_2)|}.
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{|\Lagr(2n,\F_2)|}.
 \end{equation}
 
 \subsection{Fourier Transform on the Symplectic Space}
@@ -146,7 +145,6 @@ The unnormalized $\Omega$-Fourier transform of $f \colon \F_2^{2n} \to \R$ is
 \]
 
 \begin{lemma}[Self-duality]
-\label{lem:self-dual}
 For every $L \in \Lagr(2n,\F_2)$,
 \[
 \mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \cdot \mathbf{1}_L.
@@ -160,14 +158,14 @@ If $\xi \in L$, then $\Omega(x,\xi)=0$ for all $x \in L$, so the sum is $|L|=2^n
 \subsection{Statistical Query Model}
 \label{subsec:sq}
 
-Let $\mathcal{D}$ be a class of distributions and $D_0$ a reference distribution. The \emph{statistical dimension with average correlation} is
+Let $\mathcal{D}$ be a class of distributions and $D_0$ a reference distribution. The \emph{statistical dimension with average correlation} \cite{FGR+17} is
 \[
-\SDA(B(\mathcal{D},D_0),\gamma) = \max\Bigl\{d : \forall S \subseteq \mathcal{D}, |S| \geq d \Rightarrow \frac{1}{|S|^2}\sum_{D,D' \in S} |\langle D,D' \rangle| \leq \gamma\Bigr\}.
+\SDA(B(\mathcal{D},D_0),\gamma) = \max\Bigl\{d : \forall S \subseteq \mathcal{D}, |S| \geq \frac{|\mathcal{D}|}{d} \Rightarrow \frac{1}{|S|^2}\sum_{D,D' \in S} |\langle D,D' \rangle| \leq \gamma\Bigr\}.
 \]
 
 \begin{theorem}[Feldman \etal\ \cite{FGR+17}]
 \label{thm:feldman}
-If $\SDA(B(\mathcal{D},D_0),\gamma) = d$, any SQ algorithm distinguishing $\mathcal{D}$ from $D_0$ with probability $> 2/3$ requires $q \geq (2\alpha - 1)d$ queries to $\VSTAT(1/(3\gamma))$.
+If $\SDA(B(\mathcal{D},D_0),\gamma) = d$, any SQ algorithm distinguishing $\mathcal{D}$ from $D_0$ with success probability $\alpha > 1/2$ requires $q \geq (2\alpha - 1)d$ queries to $\VSTAT(1/(3\gamma))$.
 \end{theorem}
 
 The theorem applies to randomized \emph{adaptive} SQ algorithms, so our lower bound will inherit adaptivity automatically.
@@ -207,6 +205,8 @@ The NIST PQC standardization process selected Kyber (lattice) \cite{SAB+22}, Cla
 Let $L \subset \F_2^{2n}$ be uniformly random Lagrangian. The LSN distribution $D_L$ over $\F_2^{2n} \times \F_2$ is generated by sampling $a \sim \F_2^{2n}$, $e \sim \operatorname{Bernoulli}(p)$, and outputting $(a, b)$ where $b = \mathbf{1}_L(a) \oplus e$. Given $m$ independent samples from $D_L$, recover $L$.
 \end{definition}
 
+\paragraph{Search vs.~decision.} All hardness results in this paper are stated for the \emph{decisional} problem: distinguishing $D_L$ from the noise-only distribution $D_0$ (where $b \sim \operatorname{Bernoulli}(p)$ independently of $a$). The search-to-decision reduction follows the same template as for LPN~\cite{BFKL94}: given a decision oracle and a candidate Lagrangian $L'$, one can verify whether $L'=L$ by testing whether the samples are consistent with $D_{L'}$; a standard hybrid argument then yields search hardness from decision hardness. We therefore treat decisional LSN as the primitive assumption.
+
 \subsection{Distance Distribution and Expected Intersection}
 \label{subsec:distance}
 
@@ -216,12 +216,12 @@ The correlation between two LSN distributions depends only on the dimension $j =
 \label{thm:distance}
 For uniform $L, L' \in \Lagr(2n, \F_2)$,
 \[
-\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{k(k-1)/2}}{|\Lagr(2n,\F_2)|}.
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{|\Lagr(2n,\F_2)|}.
 \]
-Numerical evaluation shows that $\E[j] \to 0.76$ and $\operatorname{Var}(j) \to 0.29$ as $n \to \infty$.
+Numerical evaluation shows that $\E[j] \to 0.76$ and $\operatorname{Var}(j) \to 0.60$ as $n \to \infty$.
 \end{theorem}
 
-The rapid decay of \Cref{eq:j-distribution} means that two random Lagrangians typically intersect in dimension $0$ or $1$; intersections of dimension $\geq 10$ occur with probability $< 2^{-100}$ for $n \geq 42$.
+The rapid decay of \Cref{eq:j-distribution} means that two random Lagrangians typically intersect in dimension $0$ or $1$; intersections of dimension $\geq 14$ occur with probability $< 2^{-100}$ for $n \geq 42$.
 
 \subsection{Parameters}
 \label{subsec:parameters}
@@ -234,14 +234,16 @@ The rapid decay of \Cref{eq:j-distribution} means that two random Lagrangians ty
 \label{tab:parameters}
 \begin{tabular}{@{}ccccc@{}}
 \hline
-Security & $n$ & $\log_2(q_{\min})$ & $|\Lagr|$ & PK (KEM) \\
+Security & $n$ & $\log_2(q_{\min})^{\text{(a)}}$ & $|\Lagr|$ & PK (KEM) \\
 \hline
-80-bit  & 41  & 80.6  & $\sim 2^{861}$  & 1.79 KB \\
+80-bit  & 41  & 80.6  & $\sim 2^{861}$  & 1.78 KB \\
 128-bit & 65  & 128.6 & $\sim 2^{2145}$ & 2.78 KB \\
 192-bit & 97  & 192.6 & $\sim 2^{4753}$ & --- \\
 256-bit & 129 & 256.6 & $\sim 2^{8385}$ & --- \\
 \hline
 \end{tabular}
+\vspace{4pt}
+\noindent {\footnotesize $^{\text{(a)}}$ The $q_{\min}$ figures use the conditional bound of \Cref{thm:main-sq-cond}; the unconditional spread bound (\Cref{thm:main-sq-uncond}) gives $\Omega(2^n)$.}
 \end{table}
 
 The $q_{\min}$ figures use the exact pairwise-correlation formula of Lemma~\ref{lem:exact-corr}, so the $80$-bit line is met \emph{exactly} at $n=41$ with no asymptotic slack. The constant factor in the exponent is $\approx 0.67$ (below $1$), so parameters with $2n < \lambda$ are not advised without a rigorous upper bound. PK sizes are shown only for the two KEM parameter sets derived in \Cref{sec:kem}; 192/256-bit KEM parameters depend on the inner repetition length $r$ and are left as standard extrapolations.
@@ -272,7 +274,7 @@ The list size needed to enumerate all candidate Lagrangians is $|\Lagr| = 2^{n^2
 BKW would require treating the secret as an $n^2$-bit object, giving complexity $2^{\Omega(n^2 / \log n)}$. Information-set decoding does not apply directly because the code ensemble (Lagrangian indicators) is highly structured rather than random linear.
 
 \paragraph{Structural attacks.}
-For very low noise ($p = o(1/n)$), the span of the positive samples reveals $L$. At constant noise $p=1/4$, \cite{LPQR26} and our experiments show that structural attacks break completely: the span of positives has full dimension after $O(n)$ samples.
+For very low noise ($p = o(1/n)$), the span of the positive samples reveals $L$. At constant noise $p=1/4$, \cite{LPQR26} and our experiments show that structural attacks are ineffective: the span of positives has full dimension after $O(n)$ samples.
 
 \paragraph{Empirical sample-complexity lower bound.}
 We ran brute-force experiments for $n=3,4,5$ using transvection-orbit enumeration of the full Lagrangian family.  In each trial we sampled $L\leftarrow\Lagr$ uniformly, drew $m$ noisy samples from $\LSN_{L,1/4}$, and let a brute-force decoder enumerate all Lagrangians, picking the one with the highest agreement.  The recovery success rates (200 trials for $n=3$, 50 for $n=4$, 20 for $n=5$) were:
@@ -283,7 +285,7 @@ $n$ & $|\Lagr|$ & $m=2^{2n-2}$ & $m=2^{2n-1}$ & $m=2^{2n}$ & $m=2\cdot2^{2n}$ \\
 \midrule
 3 & 135 & $11.5\%$ & $18.5\%$ & $46.5\%$ & $80.0\%$ \\
 4 & 2{,}295 & $6.0\%$ & $24.0\%$ & $62.0\%$ & $98.0\%$ \\
-5 & 75{,}735 & $5.0\%$ & $20.0\%$ & $75.0\%$ & $100.0\%$ \\
+5 & 75{,}735 & $5.0\%$ & $20.0\%$ & $75.0\%$ & $100\%$~(20/20) \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -336,7 +338,6 @@ Multiplying yields \Cref{eq:exact-corr}. For $p=1/4$ the coefficient is exactly 
 Taking expectation over $j$ gives the average pairwise correlation.
 
 \begin{lemma}[Average correlation]
-\label{lem:avg-corr}
 Let $C_n = \E[2^j]$ computed from \Cref{thm:distance}. Then $C_n \to 2$ and
 \[
 \rho_{\mathrm{avg}}
@@ -347,38 +348,76 @@ Let $C_n = \E[2^j]$ computed from \Cref{thm:distance}. Then $C_n \to 2$ and
 \subsection{SDA Concentration}
 \label{subsec:sda}
 
-\begin{lemma}[SDA concentration]
+\begin{lemma}[Existence of low-correlation subset]
 \label{lem:sda}
 Let $\gamma = 2\rho_{\mathrm{avg}}$. There exists a subset $\mathcal{D}' \subset \{D_L\}$ of size $|\mathcal{D}'| = 2^{2n}$ with average correlation at most $\gamma$.
 \end{lemma}
 
 \begin{proof}
-Consider a uniformly random subset $S \subset \Lagr(2n)$ of size $M = 2^{2n}$. By symmetry of the Lagrangian Grassmannian under $\mathrm{Sp}(2n)$, $\E[\rho(S)] = \rho_{\mathrm{avg}}$. A direct computation shows that the $j \geq 4$ tail contributes at most $1.12\%$ of all pairs; each such pair has correlation at most $(4/3) \cdot 2^{-n}$, so its contribution to the average is $O(2^{-n}) \ll \rho_{\mathrm{avg}}$. Markov's inequality gives
+Consider a uniformly random subset $S \subset \Lagr(2n)$ of size $M = 2^{2n}$. By symmetry of the Lagrangian Grassmannian under $\mathrm{Sp}(2n)$, $\E[\rho(S)] = \rho_{\mathrm{avg}}$. Markov's inequality gives
 \[
 \Pr[\rho(S) > 2\rho_{\mathrm{avg}}] < \frac{\E[\rho(S)]}{2\rho_{\mathrm{avg}}} = \frac{1}{2}.
 \]
-Hence with probability at least $1/2$, a random subset of size $2^{2n}$ has average correlation at most $\gamma = 2\rho_{\mathrm{avg}}$. This proves existence of a subset satisfying the SDA condition. A worst-case bound over \emph{all} subsets of size $2^{2n}$ would be stronger; we discuss this in \Cref{sec:open}.
+Hence with probability at least $1/2$, a random subset of size $2^{2n}$ has average correlation at most $\gamma = 2\rho_{\mathrm{avg}}$. This proves existence of such a subset. A worst-case bound over \emph{all} subsets of size $2^{2n}$ would require a structural argument; we discuss this in \Cref{sec:open}.
 \end{proof}
 
-\subsection{Main SQ Bound}
+\subsection{Unconditional SQ Bound: The Symplectic Spread}
+\label{subsec:spread-bound}
+
+We first give an unconditional exponential lower bound on a concrete worst-case promise problem. The bound is weaker in both query count and VSTAT strength than the conditional average-case bound of \Cref{thm:main-sq-cond}, but it requires no unproven structural hypothesis.
+
+Let $V = \F_{2^n} \times \F_{2^n}$ with symplectic form $\omega((a,b),(c,d)) = \operatorname{Tr}(ad) + \operatorname{Tr}(bc)$, where $\operatorname{Tr}$ is the trace from $\F_{2^n}$ to $\F_2$. The \emph{Desarguesian symplectic spread} $\mathcal{S}^* = \{L_\lambda\}_{\lambda \in \F_{2^n}} \cup \{L_\infty\}$ consists of $d_0 = 2^n+1$ Lagrangians
+\[
+L_\lambda = \{(x, \lambda x) : x \in \F_{2^n}\}, \qquad L_\infty = \{0\} \times \F_{2^n},
+\]
+which are pairwise transversal: $\dim(L \cap L') = 0$ for all distinct $L, L' \in \mathcal{S}^*$.
+
+\begin{theorem}[Unconditional spread bound]
+\label{thm:main-sq-uncond}
+Let $\kappa = (1-2p)^2/(p(1-p))$ and fix $1 \leq t \leq n-1$. Set $\bar\gamma_t = \kappa \cdot 2^{-(2n-t)}$. Every subset $T \subseteq \mathcal{S}^*$ with $|T| \geq 2^{n-t}$ has diagonal-inclusive average correlation at most $2\bar\gamma_t$. Consequently $\SDA(\mathcal{S}^*, 2\bar\gamma_t) \geq 2^t$, and any SQ algorithm that is correct on every $L \in \mathcal{S}^*$ requires $\Omega(2^t)$ queries to $\VSTAT(1/(6\bar\gamma_t))$.
+\end{theorem}
+
+At $t = n-1$ this yields an unconditional $\Omega(2^n)$ query lower bound at VSTAT strength $O(2^n)$.
+
+\begin{proof}
+For distinct $L, L' \in \mathcal{S}^*$ we have $j = \dim(L \cap L') = 0$, so by Lemma~\ref{lem:exact-corr} the pairwise correlation is exactly $\langle D_L, D_{L'}\rangle = \kappa \cdot 2^{-2n} = \bar\gamma_t \cdot 2^{-t} \leq \bar\gamma_t$. The diagonal terms contribute $\beta = \kappa \cdot 2^{-n}$ each, so for $|T| \geq 2^{n-t}$
+\[
+\frac{1}{|T|^2}\sum_{D,D' \in T} |\langle D,D'\rangle|
+\;\leq\; \frac{|T|^2 \cdot \bar\gamma_t + |T| \cdot \beta}{|T|^2}
+\;\leq\; \bar\gamma_t + \frac{\beta}{2^{n-t}}
+\;\leq\; 2\bar\gamma_t.
+\]
+Hence $\SDA(\mathcal{S}^*, 2\bar\gamma_t) \geq |\mathcal{S}^*| / 2^{n-t} \geq 2^t$. Applying \Cref{thm:feldman} with $\alpha = 2/3$ gives the query bound.
+\end{proof}
+
+\paragraph{Honesty notes.}
+(i) \textbf{Worst-case promise only.} The spread has measure $|\mathcal{S}^*|/|\Lagr(2n,\F_2)| \sim 2^n / 2^{n(n+1)/2} \to 0$, so Theorem~\ref{thm:main-sq-uncond} does \emph{not} cover the average-case (uniform $L$) problem; it protects only the promise problem ``$L \in \mathcal{S}^*$?''.
+(ii) \textbf{VSTAT trade-off.} The unconditional bound is $\Omega(2^n)$ queries at $\VSTAT(O(2^n))$; the conditional bound below is $2^{2n-O(1)}$ queries at $\VSTAT(\Theta(2^{2n}))$. The two parameters are not interchangeable.
+(iii) The subfamily restriction is valid for the promise problem: any algorithm solving LSN over the full family is correct on $\mathcal{S}^*$ a fortiori.
+
+\subsection{Conditional SQ Bound}
 \label{subsec:main-sq}
 
-\begin{theorem}[Main SQ lower bound]
-\label{thm:main-sq}
-Any SQ algorithm distinguishing LSN from $D_0$ with probability $> 2/3$ requires $q \geq 2^{2n - O(1)}$ queries.
+The stronger $2^{2n}$-scale bound rests on a structural conjecture about extremal subsets.
+
+\begin{conjecture}[Pencil extremality]
+\label{conj:pencil}
+There is an absolute constant $c$ such that every subset $\mathcal{D}' \subseteq \{D_L\}$ of size $|\mathcal{D}'| \geq |\Lagr(2n,\F_2)| / 2^{2n-c}$ has average correlation at most $5\rho_{\mathrm{avg}}$.
+\end{conjecture}
+
+Motivation: $k=2$ isotropic pencils force any threshold above $4\rho_{\mathrm{avg}}$ (their expected $2^{\dim(L\cap L')}$ ratio tends to $4$ from below), while $k \geq 3$ pencils fall below the size threshold $|\Lagr|/2^{2n}$ for $n \geq 4$, and mixtures of pencils with random fill dilute quadratically. A proof would require classifying near-extremal subsets.
+
+\begin{theorem}[Conditional main SQ lower bound]
+\label{thm:main-sq-cond}
+Assume \Cref{conj:pencil}. Any SQ algorithm distinguishing LSN (uniform $L$) from $D_0$ with probability $> 2/3$ requires $q \geq 2^{2n - O(1)}$ queries to $\VSTAT(1/(15\rho_{\mathrm{avg}}))$.
 \end{theorem}
 
 \begin{proof}
-By \Cref{lem:sda}, there exists a subfamily of size at least $2^{2n}$ with average correlation at most $2\rho_{\mathrm{avg}} = O(2^{-2n})$. Applying the average-correlation SQ lower bound of Feldman \etal\ \cite[Theorem 3.7]{FGR+17} with $\alpha = 2/3$ and $\gamma = 2\rho_{\mathrm{avg}}$ yields
-\[
-q \geq \Bigl(\frac{4}{3}-1\Bigr) \cdot 2^{2n} = \frac{1}{3} \cdot 2^{2n} = 2^{2n - O(1)}.
-\]
-(The full SDA definition requires a worst-case bound over all subsets; we establish the weaker but sufficient existence bound above and flag the strengthening as \Cref{open:sda}.)
+Under \Cref{conj:pencil} with $c=0$, every subset of size at least $|\Lagr(2n,\F_2)| / 2^{2n}$ has average correlation at most $5\rho_{\mathrm{avg}}$. Hence $\SDA(B(\{D_L\},D_0), 5\rho_{\mathrm{avg}}) \geq 2^{2n}$. Applying \Cref{thm:feldman} with $\alpha = 2/3$ and $\gamma = 5\rho_{\mathrm{avg}}$ yields $q \geq (4/3 - 1) \cdot 2^{2n} = 2^{2n - O(1)}$ queries to $\VSTAT(1/(15\rho_{\mathrm{avg}}))$.
 \end{proof}
 
 \begin{theorem}[Adaptive SQ]
-\label{thm:adaptive-sq}
-\Cref{thm:main-sq} holds for randomized adaptive SQ algorithms.
+\Cref{thm:main-sq-cond} holds for randomized adaptive SQ algorithms.
 \end{theorem}
 
 \begin{proof}
@@ -404,7 +443,7 @@ Direct computation: $\E_a[\langle w,a \rangle] = 0$ and $\E_{D_L}[b] = p + 2^{-n
 \subsection{Grover Search}
 \label{subsec:grover}
 
-The secret space has size $|\Lagr(2n,\F_2)| = 2^{n^2/2 + O(n)}$. A Grover search over this space requires $2^{n^2/2 + O(n)}$ iterations, each costing at least $\Omega(mn)$ to evaluate an LSN sample set. The total cost $2^{n^2/2 + O(n)}$ dominates all classical bounds for $n \geq 4$, so Grover is not a practical threat.
+The secret space has size $|\Lagr(2n,\F_2)| = 2^{n^2/2 + O(n)}$. A Grover search over this space requires $2^{n^2/4 + O(n)}$ iterations, each costing at least $\Omega(mn)$ to evaluate an LSN sample set. The total cost $2^{n^2/4 + O(n)}$ dominates all classical bounds for $n \geq 4$, so Grover is not a practical threat.
 
 \subsection{Quantum BKW}
 \label{subsec:qbkw}
@@ -433,7 +472,6 @@ We summarize the quantum attack landscape honestly.
 
 \paragraph{Blocked vectors.} The following quantum approaches have been analyzed and ruled out for LSN at constant noise:
 \begin{itemize}
-\item \textbf{Quantum Fourier sampling (Weil).} Sampling from the symplectic Fourier transform of the indicator $\mathbf{1}_L$ collapses to the uniform distribution when the number of samples is $o(2^n)$. Empirically, poly-sample QFS yields no information beyond the uniform floor.
 \item \textbf{Hidden Subgroup Problem.} The Lagrangian Grassmannian lacks a group structure with coset decomposition; no reduction to DHSP or abelian HSP is known.
 \item \textbf{Grover search.} Complexity $2^{n^2/2 + O(n)}$ exceeds all classical bounds.
 \item \textbf{Quantum BKW.} Complexity $2^{O(n^2 / \log n)}$ is super-exponential in the security parameter.
@@ -454,7 +492,7 @@ Fix a public symplectic matrix $S \in \mathrm{Sp}(2n,\F_2)$ (e.g., generated fro
 \[
 L_M = S \cdot \{(x, Mx) : x \in \F_2^n\},
 \]
-where $M \in \mathrm{Sym}(n,\F_2)$ is a symmetric matrix. The set of graph Lagrangians has cardinality $|\mathrm{Sym}(n)| = 2^{n(n+1)/2}$, which differs from the full Lagrangian family $|\Lagr| = \prod_{i=1}^n (2^i+1)$ by only a constant factor ($\approx 2.38$). Consequently, restricting to graph Lagrangians does not affect asymptotic security; the brute-force complexity remains $2^{n^2/2+O(n)}$ and the SQ lower bound (Theorem~\ref{thm:main-sq}) applies asymptotically unchanged because correlation structure is preserved under symplectic change of coordinates (the constant factor in the average correlation shifts by at most the ratio $|\Lagr|/|\mathrm{Sym}(n)| \approx 2.38$, which does not affect the exponent).
+where $M \in \mathrm{Sym}(n,\F_2)$ is a symmetric matrix. The set of graph Lagrangians has cardinality $|\mathrm{Sym}(n)| = 2^{n(n+1)/2}$, which differs from the full Lagrangian family $|\Lagr| = \prod_{i=1}^n (2^i+1)$ by only a constant factor ($\approx 2.38$). Consequently, restricting to graph Lagrangians does not affect asymptotic security; the brute-force complexity remains $2^{n^2/2+O(n)}$ and the SQ lower bounds (Theorems~\ref{thm:main-sq-uncond} and~\ref{thm:main-sq-cond}) apply asymptotically unchanged because correlation structure is preserved under symplectic change of coordinates.
 
 \paragraph{Binding $M$ to the public key.}
 The LSN-KEM public key (\cref{sec:kem}) contains $m$ noisy samples $(x_i, y_i)$ generated from the secret Lagrangian $L_M$. To prove knowledge of $M$ in a SNARK, the prover must bind their witness to the public key. The public key is therefore augmented with a commitment $c = \mathsf{Hash}(M)$, where $\mathsf{Hash}$ is a SNARK-friendly hash function (e.g., Poseidon). This introduces preimage-resistance of $\mathsf{Hash}$ as a second assumption; we size $\mathsf{Hash}$ ($\geq 256$-bit output, Poseidon) so that quantum preimage search ($2^{128}$) is at least the LSN level, making LSN the bottleneck. The SNARK circuit then verifies two things: (1)~commitment opening ($c = \mathsf{Hash}(M)$), and (2)~membership ($x \in L_M$). Hashing the $n(n+1)/2$ bits of $M$ with Poseidon adds only $O(n)$ constraints---packing the bits into $\approx 9$ field elements for $n=65$ costs roughly $300$--$500$ R1CS constraints. The full circuit size is therefore $n^2 + O(n)$, still $O(n^2)$ and still orders of magnitude below ZK-lattice circuits.
@@ -547,7 +585,7 @@ We use the random-oracle model (ROM) for the security proof.
 \begin{description}
 \item[$\mathsf{KeyGen}(1^\lambda)$:] Let $S \in \mathrm{Sp}(2n,\F_2)$ be a public symplectic matrix. Choose a symmetric matrix $M \leftarrow \mathrm{Sym}(n,\F_2)$ uniformly and define $L = S \cdot \{(x,Mx) : x \in \F_2^n\}$. Choose $\mathsf{seed} \leftarrow \{0,1\}^\lambda$. For $i=1,\dots,m$ (where $m=N \cdot r$), compute $x_i = \mathsf{PRG}(\mathsf{seed}, i)$ and $y_i = \mathbf{1}_L(x_i) \oplus e_i$. Output $\mathsf{pk} = (\mathsf{seed}, y_1,\dots,y_m)$ and $\mathsf{sk} = M$.
 
-\paragraph{Security remark.} Restricting to graph Lagrangians reduces the key-space size by a constant factor $|\mathrm{Sym}(n)| / |\Lagr| \to \prod_{i\ge1}(1+2^{-i})^{-1}\approx1/2.38$, which does not affect the asymptotic security parameter. The SQ lower bound (Theorem~\ref{thm:main-sq}) and the empirical brute-force barriers (\Cref{sec:decoders}) apply asymptotically unchanged because correlation structure is preserved under symplectic change of coordinates. As a bonus, the secret key is more compact: $M$ requires only $n(n+1)/2$ bits versus $2n^2$ bits for a general basis representation.
+\paragraph{Security remark.} Restricting to graph Lagrangians reduces the key-space size by a constant factor $|\mathrm{Sym}(n)| / |\Lagr| \to \prod_{i\ge1}(1+2^{-i})^{-1}\approx1/2.38$, which does not affect the asymptotic security parameter. The SQ lower bounds (Theorems~\ref{thm:main-sq-uncond} and~\ref{thm:main-sq-cond}) and the empirical brute-force barriers (\Cref{sec:decoders}) apply asymptotically unchanged because correlation structure is preserved under symplectic change of coordinates. As a bonus, the secret key is more compact: $M$ requires only $n(n+1)/2$ bits versus $2n^2$ bits for a general basis representation.
 
 \item[Encaps:] Choose randomness $\rho=(s,u)$ with $s \leftarrow \{0,1\}^\lambda$ and $u \leftarrow \{0,1\}^K$. Compute a Fisher--Yates permutation $\pi = \mathsf{Permutation}(\mathsf{PRG}(s))$ over $[m]$, and let $\mathsf{indices} = \pi[:Nr]$. Group the selected indices into $N$ blocks of length $r$ and compute $v_j = \mathsf{majority}(y \text{ in block } j)$ for each block. Compute $c = \mathsf{PolarEncode}(u)$, set $\mathsf{ct} = (s, v \oplus c)$, and $K = \mathsf{Hash}(s, u)$.
 
@@ -574,7 +612,6 @@ Inner majority vote converts BSC($1/4$) into BSC($p'$). The outer polar code Bha
 \label{subsubsec:kem-indcpa}
 
 \begin{theorem}[IND-CPA]
-\label{thm:kem-indcpa}
 LSN-KEM is IND-CPA secure in the random-oracle model under the LSN hardness assumption.
 \end{theorem}
 
@@ -603,7 +640,7 @@ Scheme & $|\mathsf{pk}|$ & $|\mathsf{ct}|$ & Assumption & Failure \\
 \hline
 Kyber-512  & 800 B  & 768 B  & Module-LWE   & $2^{-164}$ \\
 HQC-128    & 2.25 KB & 4.50 KB & Syndrome Dec. & $2^{-128}$ \\
-LSN-80     & 1.79 KB & 288 B  & LSN          & $< 2^{-89}$ \\
+LSN-80     & 1.78 KB & 288 B  & LSN          & $< 2^{-89}$ \\
 LSN-128    & 2.78 KB & 288 B  & LSN          & $< 2^{-157}$ \\
 \hline
 \end{tabular}
@@ -623,7 +660,6 @@ We obtain IND-CCA security via the Fujisaki--Okamoto (FO) transform \cite{FO99,H
 \end{description}
 
 \begin{theorem}[IND-CCA]
-\label{thm:kem-indcca}
 If $\mathsf{BaseKEM}$ is $\delta$-correct with $\delta\leq 2^{-80}$ and IND-CPA secure, then $\mathsf{CCA\text{-}KEM}$ is IND-CCA secure in the random-oracle model.
 \end{theorem}
 
@@ -640,7 +676,7 @@ In the multi-user setting, $N$ parties generate independent key pairs $(\mathsf{
 All users share only the public symplectic matrix $S$; every other parameter ($\mathsf{seed}_i$, noise $e_{i,j}$, permutation $\pi_i$) is independent. Because the $M_i$ are independent and the PRG seeds are independent, the $N$ instances are \emph{statistically independent} conditioned on $S$. By a standard hybrid argument over the $N$ users, any adversary $\mathcal{A}$ against $N$-user IND-CCA security with advantage $\varepsilon_{N}$ yields an adversary against single-user IND-CCA security with advantage $\varepsilon_{1}\geq\varepsilon_{N}/N$.
 
 \paragraph{Key-reuse analysis.}
-A more subtle concern is repeated encapsulation to the \emph{same} user. Over $q$ encapsulations the adversary sees $q\cdot m=qNr$ samples $(x_j,y_j)$ from the same secret $M$. The brute-force decoder must still search $2^{n(n+1)/2}$ symmetric matrices, and the SQ lower bound (Theorem~\ref{thm:main-sq}) requires $q_{\mathsf{sq}}\geq 2^{2n-O(1)}$ queries. Translating sample count to query count via $q_{\mathsf{sq}}=qNr$, the number of encapsulations needed for non-negligible advantage satisfies
+A more subtle concern is repeated encapsulation to the \emph{same} user. Over $q$ encapsulations the adversary sees $q\cdot m=qNr$ samples $(x_j,y_j)$ from the same secret $M$. The brute-force decoder must still search $2^{n(n+1)/2}$ symmetric matrices, and the conditional SQ lower bound (Theorem~\ref{thm:main-sq-cond}) requires $q_{\mathsf{sq}}\geq 2^{2n-O(1)}$ queries. Translating sample count to query count via $q_{\mathsf{sq}}=qNr$, the number of encapsulations needed for non-negligible advantage satisfies
 \[
 q\;\gtrsim\;\frac{2^{2n-O(1)}}{Nr}.
 \]
@@ -650,12 +686,11 @@ q\;\gtrsim\;\frac{2^{2n-O(1)}}{Nr}.
 \label{subsec:impl-sec}
 
 \paragraph{Constant-time by construction.}
-All core LSN operations are native $\F_2$ operations---XOR, AND, and bit-permute---which are intrinsically constant-time on any modern CPU. There is no modular reduction with an odd modulus, no discrete Gaussian sampling, no rejection sampling, and no variable-time branching on secret data. This makes a constant-time implementation \emph{straightforward} rather than requiring careful engineering as in lattice schemes.
+All core LSN operations are native $\F_2$ operations---XOR, AND, and bit-permute---which are straightforward to implement in constant time on modern CPUs. There is no modular reduction with an odd modulus, no discrete Gaussian sampling, no rejection sampling, and no variable-time branching on secret data. This makes a constant-time implementation \emph{straightforward} rather than requiring careful engineering as in lattice schemes.
 
 \begin{table}[ht]
 \centering
 \caption{Implementation-security comparison: Kyber vs.~LSN.}
-\label{tab:impl-sec}
 \begin{tabular}{@{}lcc@{}}
 \hline
 Operation & Kyber & LSN \\
@@ -696,7 +731,7 @@ Beyond polynomial feature maps & OPEN & No proof or construction known \\
 \end{tabular}
 \end{table}
 
-The work of Lu \etal\ \cite{LPQR26} proves a strong barrier against \emph{linear} reductions sympLPN $\to$ LPN via the entropy-deficiency argument of Appendix D: isotropy constraints cost $C(n,2)$ bits of entropy, and any linear reduction destroys the error before uniformity is reached. Our \Cref{thm:linear-sq} gives a complementary, direct barrier in the SQ model.
+The work of Lu \etal\ \cite{LPQR26} proves a strong barrier against \emph{linear} reductions sympLPN $\to$ LPN via the entropy-deficiency argument of Lu \etal\: isotropy constraints cost $C(n,2)$ bits of entropy, and any linear reduction destroys the error before uniformity is reached. Our \Cref{thm:linear-sq} gives a complementary, direct barrier in the SQ model.
 
 The remaining open question is whether a \emph{genuinely non-linear} or \emph{adaptive} reduction exists. We do not claim impossibility. Instead we observe a win-win structure: if such a reduction is found, it would likely improve random self-reductions for LPN itself, making it valuable even if it collapses LSN to the 6.5th family.
 
@@ -726,7 +761,7 @@ We state precisely the problems whose resolution would close the standard-model 
 
 \item \textbf{Optimal polar-code rate.} Maximize the rate of the outer polar code while keeping decryption failure below $2^{-128}$.
 
-\item \textbf{Worst-case SDA bound.} \label{open:sda} Prove that \emph{every} subset $\mathcal{D}' \subseteq \{D_L\}$ of size $|\mathcal{D}'| \geq 2^{2n}$ has average correlation $O(2^{-2n})$. This would upgrade \Cref{thm:main-sq} from an existence-based to a worst-case bound.
+\item \textbf{Pencil-extremality conjecture.} \label{open:sda} Prove \Cref{conj:pencil}: that isotropic pencils ($k \leq 2$) are extremal at scale $|\Lagr(2n,\F_2)|/2^{2n}$, giving average correlation $\leq 5\rho_{\mathrm{avg}}$ for every subset of that size. This would upgrade \Cref{thm:main-sq-cond} from a conditional to an unconditional worst-case bound.
 \end{enumerate}
 
 \subsection{Honest Limitations of the Present Work}
@@ -741,7 +776,7 @@ We flag five practical gaps that a reader should weigh against the theoretical c
 
 \item \textbf{Full-protocol SNARK is future work.} \Cref{sec:snark} optimizes only the \emph{membership} sub-circuit ($n^2$ constraints). A complete zero-knowledge proof of correct encapsulation---including the polar encoder, the majority-vote decoder, and the random permutation---remains open. The comparison in Table~\ref{tab:r1cs} should be read as a lower bound on what a full SNARK would cost.
 
-\item \textbf{Loose multi-user reduction.} \Cref{subsubsec:kem-multiuser} uses a hybrid argument losing a factor $N$. A tight reduction (random self-reducibility) is not known for LSN. In practice the margin is comfortable ($q\gtrsim 2^{115}$), but the bound is not tight.
+\item \textbf{Loose multi-user reduction.} \Cref{subsubsec:kem-multiuser} uses a hybrid argument losing a factor $N$. A tight reduction (random self-reducibility) is not known for LSN. In practice the margin is comfortable ($q\gtrsim 2^{114}$), but the bound is not tight.
 
 \item \textbf{Practical optimizations deferred.} The canonical noise rate $p=1/4$ is fixed; whether LSN remains viable at other rates is unanalyzed. The inner repetition code uses a majority-vote decoder for constant-time implementability, but MAP decoding would achieve a lower effective noise. No public-key compression analogous to structured LPN is known. These are engineering tuning degrees of freedom, not structural vulnerabilities.
 \end{enumerate}
@@ -787,7 +822,7 @@ The number of $k$-dimensional subspaces of $\F_2^n$ is the Gaussian binomial coe
 \]
 To count pairs of Lagrangians with intersection dimension $k$, fix a $k$-dimensional isotropic subspace $W$. The number of Lagrangians containing $W$ equals the number of Lagrangians in the symplectic quotient $W^\perp / W \cong \F_2^{2(n-k)}$, namely $\prod_{i=1}^{n-k}(2^i+1)$. Dividing by the total number of Lagrangians and accounting for overcounting by the number of $k$-dimensional subspaces of a fixed Lagrangian gives
 \[
-\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{k(k-1)/2}}{\prod_{i=1}^n (2^i+1)}.
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{\prod_{i=1}^n (2^i+1)}.
 \]
 The moment generating function $C_n = \E[2^j]$ converges rapidly to $2$ as $n \to \infty$.
 
@@ -839,7 +874,7 @@ Let $C_{n,q} = \E[q^j]$ computed via the $q$-binomial distribution. Then
 \[
 \rho_{\mathrm{avg}} = \frac{(1-2p)^2}{p(1-p)} \cdot C_{n,q} \cdot q^{-2n}.
 \]
-Numerically, $C_{n,q} \to 2$ as $n \to \infty$ for every fixed $q$.
+Numerically, $C_{n,q} \to \prod_{i=1}^{\infty}(1+q^{-i})$ as $n \to \infty$ (e.g. $2.38$ for $q=2$, $1.56$ for $q=3$).
 \end{lemma}
 
 \subsection{Security Parameters over $\F_q$}
