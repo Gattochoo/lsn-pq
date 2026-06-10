@@ -275,6 +275,32 @@ Numerical evaluation shows that $\E[j] \to 0.76$ and $\operatorname{Var}(j) \to 
 
 The rapid decay of \Cref{eq:j-distribution} means that two random Lagrangians typically intersect in dimension $0$ or $1$; intersections of dimension $\geq 14$ occur with probability $< 2^{-100}$ for $n \geq 42$.
 
+\subsection{The Diluted-LPN View}
+\label{subsec:diluted-lpn}
+
+In the Siegel chart $L = \{(u, Mu) : u \in \F_2^n\}$ with $M \in \operatorname{Sym}(n,\F_2)$, a sample $(a,b)$ with $a=(u,v)$ and $b=1$ reveals $n$ linear equations $v = Mu$ in the $n(n+1)/2$ unknown entries of $M$.  The catch is that true positives are drowned in noise.
+
+\begin{proposition}[Dilution of true positives]
+\label{prop:dilution}
+Conditioned on the label $b=1$, the posterior probability that the query point lies in $L$ is
+\[
+\Pr[a \in L \mid b=1] \;=\; \frac{(1-p)\,2^{-n}}{p + (1-2p)\,2^{-n}} \;=\; \Theta(2^{-n}).
+\]
+At $p=1/4$ the exact constant is $3$ asymptotically ($\approx 3\cdot 2^{-n}$ for large $n$); for $n=3$ it is exactly $3/10$.
+\end{proposition}
+
+\begin{proof}
+Bayes' rule: $\Pr[a \in L \mid b=1] = \Pr[b=1 \mid a \in L]\Pr[a \in L] / \Pr[b=1] = (1-p)\cdot 2^{-n} / (p + (1-2p)2^{-n})$.
+\end{proof}
+
+\Cref{prop:dilution} reframes batch-LSN search as an \emph{$\varepsilon$-diluted LPN} problem over $\operatorname{Sym}(n,\F_2)$: with probability $\varepsilon \approx 3\cdot 2^{-n}$ a sample yields $n$ clean linear equations in $M$; otherwise it yields noise.  This is LPN with secret dimension $n(n+1)/2$ at an extreme dilution rate.  The computational question becomes:
+
+\paragraph{Enrichment question.}
+\label{q:enrichment}
+Can any efficient selection rule (using past labeled samples and the symplectic structure) produce query points with $\Pr[a \in L] \geq (1+\delta)\,2^{-n}$ for non-negligible $\delta$?  In other words, can the $2^{-n}$ dilution be beaten?
+
+A negative answer would be the cleanest quantitative statement of what $\mathrm{LSN}\setminus\mathrm{LPN}$ is; a positive answer would yield a concrete attack improvement (and a step toward a $6.5$th-family demotion).  The SQ lower bounds of \Cref{sec:sq} already rule out enrichment for SQ-implementable selection rules, because any such rule is just a linear combination of SQ queries, and the correlation bounds limit its advantage to $2^{-n}$.
+
 \subsection{Parameters}
 \label{subsec:parameters}
 
