@@ -1,0 +1,329 @@
+{
+  "experiment": "95-e2-colspace-confinement",
+  "description": "m-sweep around 2n threshold; measures confinement visibility",
+  "results": [
+    {
+      "n": 4,
+      "m": 4,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 8,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 0.366,
+        "rank_B_mean": 3.9505
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 0.2455
+      }
+    },
+    {
+      "n": 4,
+      "m": 6,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 8,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 0.9415,
+        "rank_B_mean": 5.764
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 0.7785
+      }
+    },
+    {
+      "n": 4,
+      "m": 8,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 8,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 1.764,
+        "rank_B_mean": 7.1595
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 1.4245
+      }
+    },
+    {
+      "n": 4,
+      "m": 10,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 8,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 2.589,
+        "rank_B_mean": 7.7705
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 2.1365
+      }
+    },
+    {
+      "n": 4,
+      "m": 12,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 8,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 3.413,
+        "rank_B_mean": 7.936
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 2.922
+      }
+    },
+    {
+      "n": 5,
+      "m": 6,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 10,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 0.6595,
+        "rank_B_mean": 5.9445
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 0.5305
+      }
+    },
+    {
+      "n": 5,
+      "m": 8,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 10,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 1.4715,
+        "rank_B_mean": 7.7575
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 1.2015
+      }
+    },
+    {
+      "n": 5,
+      "m": 10,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 10,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 2.29,
+        "rank_B_mean": 9.1315
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 1.969
+      }
+    },
+    {
+      "n": 5,
+      "m": 12,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 10,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 3.2765,
+        "rank_B_mean": 9.773
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 2.7135
+      }
+    },
+    {
+      "n": 5,
+      "m": 14,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 10,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 4.084,
+        "rank_B_mean": 9.948
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 3.513
+      }
+    },
+    {
+      "n": 5,
+      "m": 16,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 10,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 5.0865,
+        "rank_B_mean": 9.9835
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 4.33
+      }
+    },
+    {
+      "n": 6,
+      "m": 8,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 12,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 1.068,
+        "rank_B_mean": 7.9305
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 0.916
+      }
+    },
+    {
+      "n": 6,
+      "m": 10,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 12,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 1.9465,
+        "rank_B_mean": 9.7585
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 1.626
+      }
+    },
+    {
+      "n": 6,
+      "m": 12,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 12,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 2.88,
+        "rank_B_mean": 11.179
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 2.4855
+      }
+    },
+    {
+      "n": 6,
+      "m": 14,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 12,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 3.8105,
+        "rank_B_mean": 11.7625
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 3.285
+      }
+    },
+    {
+      "n": 6,
+      "m": 16,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 12,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 4.7895,
+        "rank_B_mean": 11.9455
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 4.197
+      }
+    },
+    {
+      "n": 6,
+      "m": 20,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "threshold_2n": 12,
+      "P0": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 6.732,
+        "rank_B_mean": 11.9965
+      },
+      "P1": {
+        "frac_in_C": 0.0,
+        "rank_diff_mean": 1.0,
+        "syndrome_mean": 5.8855
+      }
+    }
+  ]
+}
