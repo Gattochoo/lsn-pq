@@ -1,0 +1,808 @@
+{
+  "experiment": "94-e1-distinguishing-game",
+  "description": "P0 vs P1 single-sample 4-statistic distinguishing",
+  "p0_noise": 0.25,
+  "results": [
+    {
+      "n": 4,
+      "m": 8,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 1.7275,
+          "std": 1.1581,
+          "min": 0,
+          "max": 5,
+          "median": 2.0
+        },
+        "rank_diff": {
+          "mean": 0.814,
+          "std": 0.3891,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0174,
+          "std": 0.2204,
+          "min": -0.1428571428571429,
+          "max": 1.0,
+          "median": -0.0714
+        },
+        "max_agree": {
+          "mean": 6.641,
+          "std": 0.873,
+          "min": 4,
+          "max": 8,
+          "median": 7.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 1.4425,
+          "std": 1.0708,
+          "min": 0,
+          "max": 5,
+          "median": 1.0
+        },
+        "rank_diff": {
+          "mean": 0.7775,
+          "std": 0.4159,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0199,
+          "std": 0.2228,
+          "min": -0.1428571428571429,
+          "max": 1.0,
+          "median": -0.0714
+        },
+        "max_agree": {
+          "mean": 6.908,
+          "std": 0.7567,
+          "min": 4,
+          "max": 8,
+          "median": 7.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 0.285,
+          "pooled_std": 1.1153,
+          "ratio": 0.2555
+        },
+        "rank_diff": {
+          "delta_mean": 0.0365,
+          "pooled_std": 0.4027,
+          "ratio": 0.0906
+        },
+        "corr": {
+          "delta_mean": 0.0025,
+          "pooled_std": 0.2216,
+          "ratio": 0.0111
+        },
+        "max_agree": {
+          "delta_mean": 0.267,
+          "pooled_std": 0.8169,
+          "ratio": 0.3268
+        }
+      }
+    },
+    {
+      "n": 4,
+      "m": 16,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 5.0745,
+          "std": 2.6378,
+          "min": 0,
+          "max": 11,
+          "median": 6.0
+        },
+        "rank_diff": {
+          "mean": 0.8575,
+          "std": 0.3496,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0089,
+          "std": 0.1269,
+          "min": -0.06666666666666665,
+          "max": 1.0,
+          "median": -0.05
+        },
+        "max_agree": {
+          "mean": 12.1345,
+          "std": 1.8613,
+          "min": 8,
+          "max": 16,
+          "median": 12.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 4.5385,
+          "std": 2.3261,
+          "min": 0,
+          "max": 11,
+          "median": 5.0
+        },
+        "rank_diff": {
+          "mean": 0.9725,
+          "std": 0.1635,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0193,
+          "std": 0.1339,
+          "min": -0.06666666666666665,
+          "max": 1.0,
+          "median": -0.05
+        },
+        "max_agree": {
+          "mean": 13.039,
+          "std": 1.304,
+          "min": 9,
+          "max": 16,
+          "median": 13.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 0.536,
+          "pooled_std": 2.4868,
+          "ratio": 0.2155
+        },
+        "rank_diff": {
+          "delta_mean": 0.115,
+          "pooled_std": 0.2729,
+          "ratio": 0.4214
+        },
+        "corr": {
+          "delta_mean": 0.0104,
+          "pooled_std": 0.1304,
+          "ratio": 0.0796
+        },
+        "max_agree": {
+          "delta_mean": 0.9045,
+          "pooled_std": 1.607,
+          "ratio": 0.5629
+        }
+      }
+    },
+    {
+      "n": 5,
+      "m": 10,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 2.357,
+          "std": 1.2816,
+          "min": 0,
+          "max": 6,
+          "median": 2.0
+        },
+        "rank_diff": {
+          "mean": 0.904,
+          "std": 0.2946,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0023,
+          "std": 0.1536,
+          "min": -0.11111111111111116,
+          "max": 1.0,
+          "median": -0.0667
+        },
+        "max_agree": {
+          "mean": 8.2605,
+          "std": 0.8635,
+          "min": 5,
+          "max": 10,
+          "median": 8.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 1.9375,
+          "std": 1.2572,
+          "min": 0,
+          "max": 5,
+          "median": 2.0
+        },
+        "rank_diff": {
+          "mean": 0.86,
+          "std": 0.347,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0075,
+          "std": 0.1714,
+          "min": -0.11111111111111116,
+          "max": 1.0,
+          "median": -0.0667
+        },
+        "max_agree": {
+          "mean": 8.638,
+          "std": 0.7924,
+          "min": 6,
+          "max": 10,
+          "median": 9.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 0.4195,
+          "pooled_std": 1.2695,
+          "ratio": 0.3305
+        },
+        "rank_diff": {
+          "delta_mean": 0.044,
+          "pooled_std": 0.3219,
+          "ratio": 0.1367
+        },
+        "corr": {
+          "delta_mean": 0.0052,
+          "pooled_std": 0.1627,
+          "ratio": 0.0318
+        },
+        "max_agree": {
+          "delta_mean": 0.3775,
+          "pooled_std": 0.8287,
+          "ratio": 0.4555
+        }
+      }
+    },
+    {
+      "n": 5,
+      "m": 20,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 6.904,
+          "std": 2.7261,
+          "min": 0,
+          "max": 14,
+          "median": 7.0
+        },
+        "rank_diff": {
+          "mean": 0.9235,
+          "std": 0.2658,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.005,
+          "std": 0.0883,
+          "min": -0.052631578947368474,
+          "max": 1.0,
+          "median": -0.0105
+        },
+        "max_agree": {
+          "mean": 14.9825,
+          "std": 1.7681,
+          "min": 12,
+          "max": 20,
+          "median": 15.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 5.991,
+          "std": 2.7521,
+          "min": 0,
+          "max": 13,
+          "median": 6.0
+        },
+        "rank_diff": {
+          "mean": 0.9895,
+          "std": 0.1019,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0145,
+          "std": 0.1119,
+          "min": -0.052631578947368474,
+          "max": 0.8,
+          "median": -0.0105
+        },
+        "max_agree": {
+          "mean": 16.2815,
+          "std": 1.444,
+          "min": 12,
+          "max": 20,
+          "median": 16.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 0.913,
+          "pooled_std": 2.7391,
+          "ratio": 0.3333
+        },
+        "rank_diff": {
+          "delta_mean": 0.066,
+          "pooled_std": 0.2013,
+          "ratio": 0.3279
+        },
+        "corr": {
+          "delta_mean": 0.0095,
+          "pooled_std": 0.1008,
+          "ratio": 0.0947
+        },
+        "max_agree": {
+          "delta_mean": 1.299,
+          "pooled_std": 1.6142,
+          "ratio": 0.8047
+        }
+      }
+    },
+    {
+      "n": 6,
+      "m": 12,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 2.926,
+          "std": 1.3189,
+          "min": 0,
+          "max": 6,
+          "median": 3.0
+        },
+        "rank_diff": {
+          "mean": 0.9465,
+          "std": 0.225,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": -0.0014,
+          "std": 0.1253,
+          "min": -0.09090909090909094,
+          "max": 1.0,
+          "median": -0.0606
+        },
+        "max_agree": {
+          "mean": 9.958,
+          "std": 0.8374,
+          "min": 7,
+          "max": 12,
+          "median": 10.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 2.48,
+          "std": 1.3909,
+          "min": 0,
+          "max": 6,
+          "median": 2.0
+        },
+        "rank_diff": {
+          "mean": 0.9205,
+          "std": 0.2705,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0118,
+          "std": 0.1456,
+          "min": -0.09090909090909094,
+          "max": 1.0,
+          "median": -0.0606
+        },
+        "max_agree": {
+          "mean": 10.327,
+          "std": 0.8161,
+          "min": 8,
+          "max": 12,
+          "median": 10.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 0.446,
+          "pooled_std": 1.3554,
+          "ratio": 0.3291
+        },
+        "rank_diff": {
+          "delta_mean": 0.026,
+          "pooled_std": 0.2488,
+          "ratio": 0.1045
+        },
+        "corr": {
+          "delta_mean": 0.0131,
+          "pooled_std": 0.1358,
+          "ratio": 0.0966
+        },
+        "max_agree": {
+          "delta_mean": 0.369,
+          "pooled_std": 0.8268,
+          "ratio": 0.4463
+        }
+      }
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "p_prime": 0.2,
+      "B_family": "uniform",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 8.6035,
+          "std": 2.746,
+          "min": 0,
+          "max": 16,
+          "median": 9.0
+        },
+        "rank_diff": {
+          "mean": 0.958,
+          "std": 0.2006,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0002,
+          "std": 0.0614,
+          "min": -0.04347826086956519,
+          "max": 1.0,
+          "median": -0.0145
+        },
+        "max_agree": {
+          "mean": 17.912,
+          "std": 1.668,
+          "min": 14,
+          "max": 24,
+          "median": 18.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 7.5905,
+          "std": 3.0502,
+          "min": 0,
+          "max": 16,
+          "median": 8.0
+        },
+        "rank_diff": {
+          "mean": 0.994,
+          "std": 0.0772,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.006,
+          "std": 0.0811,
+          "min": -0.04347826086956519,
+          "max": 0.8333333333333333,
+          "median": -0.0145
+        },
+        "max_agree": {
+          "mean": 19.5375,
+          "std": 1.5797,
+          "min": 16,
+          "max": 24,
+          "median": 19.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 1.013,
+          "pooled_std": 2.9021,
+          "ratio": 0.3491
+        },
+        "rank_diff": {
+          "delta_mean": 0.036,
+          "pooled_std": 0.152,
+          "ratio": 0.2369
+        },
+        "corr": {
+          "delta_mean": 0.0058,
+          "pooled_std": 0.0719,
+          "ratio": 0.0808
+        },
+        "max_agree": {
+          "delta_mean": 1.6255,
+          "pooled_std": 1.6245,
+          "ratio": 1.0006
+        }
+      }
+    },
+    {
+      "n": 4,
+      "m": 8,
+      "p_prime": 0.2,
+      "B_family": "low_weight",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 1.6225,
+          "std": 1.1546,
+          "min": 0,
+          "max": 5,
+          "median": 2.0
+        },
+        "rank_diff": {
+          "mean": 0.789,
+          "std": 0.408,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.034,
+          "std": 0.2399,
+          "min": -0.1428571428571429,
+          "max": 1.0,
+          "median": -0.0714
+        },
+        "max_agree": {
+          "mean": 6.718,
+          "std": 0.8686,
+          "min": 4,
+          "max": 8,
+          "median": 7.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 1.437,
+          "std": 1.0687,
+          "min": 0,
+          "max": 5,
+          "median": 1.0
+        },
+        "rank_diff": {
+          "mean": 0.7905,
+          "std": 0.407,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0159,
+          "std": 0.2118,
+          "min": -0.1428571428571429,
+          "max": 1.0,
+          "median": -0.0714
+        },
+        "max_agree": {
+          "mean": 6.918,
+          "std": 0.7371,
+          "min": 5,
+          "max": 8,
+          "median": 7.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 0.1855,
+          "pooled_std": 1.1124,
+          "ratio": 0.1668
+        },
+        "rank_diff": {
+          "delta_mean": 0.0015,
+          "pooled_std": 0.4075,
+          "ratio": 0.0037
+        },
+        "corr": {
+          "delta_mean": 0.018,
+          "pooled_std": 0.2263,
+          "ratio": 0.0797
+        },
+        "max_agree": {
+          "delta_mean": 0.2,
+          "pooled_std": 0.8055,
+          "ratio": 0.2483
+        }
+      }
+    },
+    {
+      "n": 5,
+      "m": 10,
+      "p_prime": 0.2,
+      "B_family": "low_weight",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 2.1675,
+          "std": 1.2792,
+          "min": 0,
+          "max": 5,
+          "median": 2.0
+        },
+        "rank_diff": {
+          "mean": 0.8755,
+          "std": 0.3302,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0124,
+          "std": 0.1741,
+          "min": -0.11111111111111116,
+          "max": 1.0,
+          "median": -0.0667
+        },
+        "max_agree": {
+          "mean": 8.4015,
+          "std": 0.8742,
+          "min": 6,
+          "max": 10,
+          "median": 8.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 1.938,
+          "std": 1.2523,
+          "min": 0,
+          "max": 6,
+          "median": 2.0
+        },
+        "rank_diff": {
+          "mean": 0.859,
+          "std": 0.348,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0107,
+          "std": 0.1723,
+          "min": -0.11111111111111116,
+          "max": 1.0,
+          "median": -0.0667
+        },
+        "max_agree": {
+          "mean": 8.6245,
+          "std": 0.7966,
+          "min": 6,
+          "max": 10,
+          "median": 9.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 0.2295,
+          "pooled_std": 1.2658,
+          "ratio": 0.1813
+        },
+        "rank_diff": {
+          "delta_mean": 0.0165,
+          "pooled_std": 0.3392,
+          "ratio": 0.0486
+        },
+        "corr": {
+          "delta_mean": 0.0017,
+          "pooled_std": 0.1732,
+          "ratio": 0.0099
+        },
+        "max_agree": {
+          "delta_mean": 0.223,
+          "pooled_std": 0.8363,
+          "ratio": 0.2667
+        }
+      }
+    },
+    {
+      "n": 6,
+      "m": 12,
+      "p_prime": 0.2,
+      "B_family": "low_weight",
+      "num_samples": 2000,
+      "P0": {
+        "syndrome": {
+          "mean": 2.6895,
+          "std": 1.3675,
+          "min": 0,
+          "max": 6,
+          "median": 3.0
+        },
+        "rank_diff": {
+          "mean": 0.928,
+          "std": 0.2585,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": 0.0115,
+          "std": 0.142,
+          "min": -0.09090909090909094,
+          "max": 1.0,
+          "median": -0.0606
+        },
+        "max_agree": {
+          "mean": 10.115,
+          "std": 0.8572,
+          "min": 8,
+          "max": 12,
+          "median": 10.0
+        }
+      },
+      "P1": {
+        "syndrome": {
+          "mean": 2.4345,
+          "std": 1.3942,
+          "min": 0,
+          "max": 6,
+          "median": 2.0
+        },
+        "rank_diff": {
+          "mean": 0.92,
+          "std": 0.2713,
+          "min": 0,
+          "max": 1,
+          "median": 1.0
+        },
+        "corr": {
+          "mean": -0.0002,
+          "std": 0.1323,
+          "min": -0.09090909090909094,
+          "max": 1.0,
+          "median": -0.0606
+        },
+        "max_agree": {
+          "mean": 10.364,
+          "std": 0.8084,
+          "min": 8,
+          "max": 12,
+          "median": 10.0
+        }
+      },
+      "separation": {
+        "syndrome": {
+          "delta_mean": 0.255,
+          "pooled_std": 1.3809,
+          "ratio": 0.1847
+        },
+        "rank_diff": {
+          "delta_mean": 0.008,
+          "pooled_std": 0.265,
+          "ratio": 0.0302
+        },
+        "corr": {
+          "delta_mean": 0.0118,
+          "pooled_std": 0.1372,
+          "ratio": 0.0858
+        },
+        "max_agree": {
+          "delta_mean": 0.249,
+          "pooled_std": 0.8332,
+          "ratio": 0.2989
+        }
+      }
+    }
+  ]
+}
