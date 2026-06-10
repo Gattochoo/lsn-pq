@@ -766,6 +766,8 @@ Each invariant is preserved by the symplectic group $\mathrm{Sp}(2n)$ and destro
 
 \Cref{conj:source} is falsifiable: a single explicit reduction sympLPN $\to$ LPN that preserves any of the three invariants would refute the conjecture in its current form. It is not decidable by reduction analysis alone; it rests on the absence of such a reduction and the structural barriers documented above.
 
+\paragraph{The scrambling barrier at constant noise.} Lu \etal\ \cite{LPQR26} proved that \emph{linear} reductions sympLPN $\to$ LPN are impossible in the low-noise regime because isotropy constraints cost $C(n,2)$ bits of entropy and linear maps cannot randomize the public matrix before the noise is exhausted. At our constant noise $p=1/4$ this \emph{entropy argument disappears}: the total noise entropy $Nr \cdot H(p) \approx 1.8\times 10^4$ bits (for $n=65$) far exceeds the $C(n,2) = 2080$ bits of isotropy constraint. What survives is an \emph{algebraic} obstruction: $S_A=0$ is a deterministic quadratic relation among the public vectors. A linear scrambler preserves isotropy (detectable); a non-linear scrambler destroys the linear structure required by LPN; a random scrambler destroys the secret entirely. A computational probe at $n=3$ confirms that no simple scrambler (linear, quadratic, or random) simultaneously destroys $S_A=0$ and creates a fresh LPN secret-bit structure. The residual question---whether a sufficiently complex non-linear scrambler exists---is the same as Open Problem~2.
+
 \section{Open Problems}
 \label{sec:open}
 
