@@ -40,3 +40,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 08:38 | P23 | experiments/110-n32-quick-test.json | n=32 quick test: syndrome sep effectively ZERO (0.08/0.03/0.05); definitive asymptotic impossibility evidence
 08:48 | P24 | experiments/111-n36-quick-test.json | n=36 quick test: syndrome sep negligible (0.19/0.08/0.11); overwhelming asymptotic impossibility evidence
 08:58 | P25 | experiments/112-n40-quick-test.json | n=40 quick test: syndrome sep negligible (0.33/0.10/0.14); definitive asymptotic impossibility evidence
+09:00 | P26 | meta/2026-06-12-OVERNIGHT-REPORT.md | Final update: one-line verdict revised with n=8..40 scaling and asymptotic impossibility conjecture

@@ -185,10 +185,10 @@ OVERNIGHT-LOG.md
 
 ## 7. One-line verdict (measurement-based, not claimed)
 
-> **OP9 single-sample detection is blocked for marginal-uniform adaptive B.** The marginal-uniformity constraint screens out trivial detectors (e.g., `all_ones`), and the remaining natural families make P0 statistically close to P1. **Multi-sample detection is easy IF samples share the same $C$** (rank detector achieves perfect separation for $k > 2n$). The decisive open question is: *can a marginal-adaptive reduction randomize $A$ per output to evade multi-sample detection, or must it reuse $(A,B)$?*
+> **OP9 single-sample detection is empirically asymptotically impossible for marginal-uniform adaptive B.** Scaling experiments from n=8 to n=40 (200 trials each, m=2n..8n) show syndrome separation dropping from ~0.3 to ~0.1 and remaining negligible. **Multi-sample detection with fixed (A,B) is closed** (rank detector achieves perfect separation for $k > 2n$). **Multi-sample detection with randomized A per output is defeated** (P0 rank = P1 rank = k). The decisive open question is: *does the honest map definition allow per-output randomization of A, or must a reduction reuse (A,B)?*
 
 No 7th; no break; no security claim. OPEN = LSN.
 
 ---
 
-*Report by Kimi, 2026-06-12 ~03:45 KST. Awaiting Claude 09:00 batch adjudication.*
+*Report by Kimi, 2026-06-12 ~03:45 KST. Updated ~09:00 with n=8..40 scaling. Awaiting Claude 09:00 batch adjudication.*
