@@ -111,7 +111,7 @@ Our contributions are organized around proof, barriers, and constructions.
 
     \item \textbf{Cryptographic primitives (\Cref{sec:primitives}).}
     \begin{itemize}
-        \item \textbf{LSN-SNARK:} A preprocessing SNARK for LSN membership with $O(n^2)$ R1CS constraints via the Siegel-chart (graph-Lagrangian) representation. Verified counts: $64$ for $n=8$, $1{,}764$ for $n=42$, $4{,}225$ for $n=65$.
+        \item \textbf{LSN-SNARK:} A preprocessing SNARK for LSN membership with $O(n^2)$ R1CS constraints via the Siegel-chart (graph-Lagrangian) representation. Verified counts: $64$ for $n=8$, $1{,}681$ for $n=41$, $4{,}225$ for $n=65$.
         \item \textbf{LSN-KEM:} A CCA-secure KEM via concatenated polar codes. Direct polar coding at $p=1/4$ fails ($Z_0 = 0.866$, SC bound $P_e > 1$), so we concatenate an inner repetition code with an outer polar code. For $r=7$ repetition we obtain effective noise $p' = 0.0706$, SC bound $P_e < 2^{-81}$, and parameters PK~=~1.78~KB, CT~=~288~B at 80-bit security. For $r=11$ we obtain $P_e < 2^{-149}$ at 128-bit security.
     \end{itemize}
 
