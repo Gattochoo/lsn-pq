@@ -89,7 +89,7 @@ with $a_i \sim \F_2^{2n}$ uniform, $e_i \sim \operatorname{Bernoulli}(p)$, and $
 \end{equation}
 This is exponentially larger than LPN's $2^n$ secrets, yet it is not an unstructured space: every secret satisfies the strong isotropy constraint $L = L^{\perp_\Omega}$. It is exactly this tension --- exponential size versus rigid structure --- that creates both the hardness and the technical difficulty of LSN.
 
-Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN (for linear reductions, tightly in the constant-rate sample regime $m=\Theta(n)$; see \Cref{sec:barriers}). These results position LSN as the strongest current candidate for a genuinely new post-quantum hardness family outside the six classical ones (multivariate-quadratic, lattice, code, hash, Ising, tensor).
+Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN (for linear reductions, proven in the constant-rate sample regime $m=\Theta(n)$; see \Cref{sec:barriers}). These results position LSN as the strongest current candidate for a genuinely new post-quantum hardness family outside the six classical ones (multivariate-quadratic, lattice, code, hash, Ising, tensor).
 
 \subsection{Contributions}
 \label{subsec:contributions}
@@ -186,7 +186,7 @@ LPN was introduced by Blum, Furst, Kearns, and Lipton \cite{BFKL94} as a foundat
 Many structured variants have been proposed to improve efficiency: Ring-LPN \cite{HKL+12}, LPN with structured noise \cite{DP12}, and the Learning with Rounding (LWR) problem \cite{BPR12}. All of these retain a secret space of size $2^{O(n)}$. LSN differs fundamentally in that its secret space has size $2^{n^2/2 + O(n)}$ while remaining polynomial-time sampleable via symplectic linear algebra.
 
 \paragraph{Symplectic and quantum coding.}
-Stabilizer codes, the quantum analogue of classical linear codes, are naturally described by Lagrangian subspaces of $\F_2^{2n}$ \cite{Got97,CRSS98,NC00}. Quantum state tomography of stabilizer states under depolarizing noise is a closely related learning problem \cite{GL22}. The recent independent work of Khesin \etal\ \cite{KLP+25} proved that constant-rate LPN reduces to LSN even for $k=1$, while Lu \etal\ \cite{LPQR26} proved that linear reductions cannot reduce sympLPN to LPN --- tightly in the constant-rate sample regime $m=\Theta(n)$; for $m=\omega(n)$ their bound shows error weight $1/2-\delta$, which they note is not sufficient to fully rule out decodability.
+Stabilizer codes, the quantum analogue of classical linear codes, are naturally described by Lagrangian subspaces of $\F_2^{2n}$ \cite{Got97,CRSS98,NC00}. Quantum state tomography of stabilizer states under depolarizing noise is a closely related learning problem \cite{GL22}. The recent independent work of Khesin \etal\ \cite{KLP+25} proved that constant-rate LPN reduces to LSN even for $k=1$, while Lu \etal\ \cite{LPQR26} proved that linear reductions cannot reduce sympLPN to LPN in the constant-rate sample regime $m=\Theta(n)$; for $m=\omega(n)$ their bound shows error weight $1/2-\delta$, which they note is not sufficient to fully rule out decodability (though they expect the barrier to extend to all $m=\operatorname{poly}(n)$).
 
 \paragraph{Statistical query hardness.}
 The SQ model was introduced by Kearns \cite{Kea98} and developed by Blum \etal\ \cite{BFJ+94}. Feldman, Grigorescu, Reyzin, and Vempala \cite{FGR+17} gave the general SDA framework we use, and Diakonikolas \etal\ \cite{DKS17} applied it to high-dimensional robust estimation. Quantum algorithms that access only classical samples can achieve at most a quadratic Grover speed-up over classical algorithms. Since the SQ lower bound is exponential in $n$, such a speed-up does not affect the asymptotic security parameter, making SQ lower bounds relevant evidence for quantum hardness.
@@ -729,14 +729,14 @@ Class & Status & Reason \\
 Linear (real)      & BLOCKED  & real-linear: $\E[q]$ $L$-independent; F$_2$-linear: $\leq (1-2p)2^{-n}$ \\
 Polynomial degree $< n$ & BLOCKED  & Error $\geq 2^{-n}$ \\
 Linear sample-red., $m=\Theta(n)$ & RULED OUT & LPQR26 (external) \\
-Linear sample-red., $m=\omega(n)$ & OPEN & LPQR26 bound insufficient (their caveat) \\
+Linear sample-red., $m=\omega(n)$ & OPEN & LPQR26 bound insufficient (their caveat; extension expected) \\
 LPN($k=\Theta(n^2)$)   & VACUOUS  & \Cref{prop:entropy-floor} + BKW cost $2^{\Omega(n^2/\log n)}$ \\
 Multi-sample or beyond-poly & OPEN & No proof or construction known \\
 \hline
 \end{tabular}
 \end{table}
 
-Lu \etal~\cite{LPQR26} prove that linear reductions cannot reduce sympLPN to LPN (their \S2.4 and Appendix~D): for any \emph{fixed} $B \in \F_2^{m\times 2n}$ the matrix $BA$ has entropy at most $(1-d)mn$ for a constant $d$, so randomizing the public matrix forces a high-entropy $B$, which drives the output error weight past the Shannon-converse threshold. Per their Appendix~D, the bound is tight in the primary cryptographic regime $m=\Theta(n)$; for $m=\omega(n)$ it shows error weight larger than $1/2-\delta$ for any constant $\delta$, which they note is not sufficient to fully rule out decodability. Our \Cref{thm:linear-sq} gives a complementary single-query barrier of $(1-2p)2^{-n}$ at any noise rate.
+Lu \etal~\cite{LPQR26} prove that linear reductions cannot reduce sympLPN to LPN (their \S2.4 and Appendix~D): for any \emph{fixed} $B \in \F_2^{m\times 2n}$ the matrix $BA$ has entropy at most $(1-d)mn$ for a constant $d$, so randomizing the public matrix forces a high-entropy $B$, which drives the output error weight past the Shannon-converse threshold. Per their Appendix~D, the proof targets the primary cryptographic regime $m=\Theta(n)$ (output rows $m=(1+\epsilon)n$); for $m=\omega(n)$ it shows error weight larger than $1/2-\delta$ for any constant $\delta$, which they note is not sufficient to fully rule out decodability, though they state they expect the barrier to extend to all $m=\operatorname{poly}(n)$. Our \Cref{thm:linear-sq} gives a complementary single-query barrier of $(1-2p)2^{-n}$ at any noise rate.
 
 A sharper, unconditional barrier comes from an information-theoretic floor:
 
