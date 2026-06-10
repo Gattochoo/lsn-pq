@@ -17,3 +17,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 05:00 | P6 final | meta/2026-06-12-OVERNIGHT-REPORT.md | Report updated with P5b-P5d and multi-sample detector findings; verdict refined
 05:10 | P5a | meta/2026-06-12-op8-bridge-probe.md | OP8 bridge probe BLOCKED: LPQR26 dimensional ambiguity (A∈Z2^{2n×n}, B∈Z2^{2n×k} cannot be jointly full rank for k≥1); noise model mismatch; parked pending external clarification
 05:15 | P1 ext | 94d-n7-quick-test | n=7,m=14: syndrome sep=0.262, corr sep=0.031; single-sample separation remains weak at larger n
+05:20 | P6 theory | meta/2026-06-12-multisample-theory.md | Theorem sketches: P0 rank=2n, P1 rank=k; perfect separation for k>2n if C shared; evasion possible only if reduction randomizes A per output; conjecture on computational trade-off drafted

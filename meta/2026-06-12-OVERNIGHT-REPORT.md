@@ -40,6 +40,13 @@ All separation ratios (delta_mean / pooled_std) for `uniform` B:
 - `rank_B` saturates at 2n for m > 2n, invisible to C-only adversary.
 - **No sharp m-vs-2n threshold** in adversary-observable statistics.
 
+### P1 E1 extended: n=7 quick test
+| n | m | syndrome sep | corr sep |
+|---|---|--------------|----------|
+| 7 | 14 | 0.26 | 0.03 |
+
+**Conclusion:** Weak separation persists at n=7; no improvement with larger n.
+
 ### P1 E1 advanced: ROC/AUC (Mann-Whitney, 2000 samples)
 Corrected AUC for `uniform` B (AUC < 0.5 flipped to 1−AUC):
 | n | m | syndrome | rank_diff | corr | max_agree |
@@ -143,6 +150,7 @@ experiments/94-e1-distinguishing-game.py
 experiments/94-e1-results.json
 experiments/94c-e1-advanced-analysis.py
 experiments/94c-e1-advanced.json
+experiments/94d-n7-quick-test.json
 experiments/95-e2-colspace-confinement.py
 experiments/95-e2-results.json
 experiments/96-e3-adaptive-B-families.py
