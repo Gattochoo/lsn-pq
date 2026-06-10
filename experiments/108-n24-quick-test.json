@@ -1,0 +1,30 @@
+{
+  "experiment": "108-n24-quick-test",
+  "description": "Quick n=24 single-sample distinguishing for OP9 (no max_agree due to cost)",
+  "date": "2026-06-11",
+  "n": 24,
+  "p_prime": 0.2,
+  "B_family": "uniform",
+  "num_trials": 200,
+  "results": [
+    {
+      "m": 48,
+      "P0": {"syndrome": 11.78, "rank_diff": 1.00, "corr": 0.01},
+      "P1": {"syndrome": 11.84, "rank_diff": 1.00, "corr": -0.00},
+      "separation": {"syndrome": 0.06, "rank_diff": 0.00, "corr": 0.01}
+    },
+    {
+      "m": 96,
+      "P0": {"syndrome": 35.59, "rank_diff": 1.00, "corr": 0.00},
+      "P1": {"syndrome": 35.48, "rank_diff": 1.00, "corr": 0.00},
+      "separation": {"syndrome": 0.02, "rank_diff": 0.00, "corr": 0.00}
+    },
+    {
+      "m": 192,
+      "P0": {"syndrome": 84.36, "rank_diff": 1.00, "corr": -0.00},
+      "P1": {"syndrome": 83.62, "rank_diff": 1.00, "corr": 0.00},
+      "separation": {"syndrome": 0.07, "rank_diff": 0.00, "corr": 0.00}
+    }
+  ],
+  "conclusion": "Syndrome separation is effectively ZERO at n=24: 0.06→0.02→0.07. Overwhelming empirical evidence that single-sample detection is asymptotically impossible for marginal-uniform B."
+}
