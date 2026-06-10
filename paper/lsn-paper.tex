@@ -324,7 +324,7 @@ In particular, the gain over the uniform-query baseline ($\delta=0$) is $\Delta\
 Under the null model ($b=e$) we have $\E[\phi] = \E[(-1)^e] = 1-2p$. Under the structured model, $\Pr[b=1 \mid a] = p + \mathbf{1}_L(a)(1-2p)$, so $\E[\phi \mid a] = 1-2\Pr[b=1 \mid a] = (1-2p)(1-2\mathbf{1}_L(a))$. Averaging over $a \sim \mathcal{R}$ gives $\E[\phi] = (1-2p)(1-2\Pr[a \in L]) = (1-2p)(1-2(1+\delta)2^{-n})$. The advantage is $|\E[\phi]-\E_{\text{null}}[\phi]| = |1-2p| \cdot 2(1+\delta)2^{-n}$.
 \end{proof}
 
-A $\delta$-enrichment would scale the per-query advantage by $(1+\delta)$; for selection rules implementable by linear SQ this exceeds the per-query ceiling of \Cref{thm:linear-sq}, while general (non-linear, multi-sample) selection rules remain open.  Empirical probes confirm the predicted scaling $\delta \approx c\,m\,2^{-n}$.  At $n=5$ with the full graph-Lagrangian prior ($32{,}768$ secrets) we measure $c\approx 0.03$ ($\delta\cdot 2^{n}/m\approx 0.03$).  At $n=6$ a $200{,}000$-subset probe ($10\%$ of $2.1$M graph Lagrangians) gives $c\approx 0.01$ after correcting for the subset-size inflation observed in smaller samples; the full-population value is estimated at $c\approx 0.01\text{--}0.02$.  A chi-squared-unit analysis predicts $c\approx 0.7$ as an upper bound.  The exact constant depends on the prior and the sample-size regime, but the exponential scaling in $n$ is the operative fact: at $n=65$ and $m=22{,}528$ the enrichment is $\delta \le 2^{-50}$, far below any cryptographically relevant threshold.
+A $\delta$-enrichment would scale the per-query advantage by $(1+\delta)$; for selection rules implementable by linear SQ this exceeds the per-query ceiling of \Cref{thm:linear-sq}, while general (non-linear, multi-sample) selection rules remain open.  Empirical probes confirm the predicted scaling $\delta \approx c\,m\,2^{-n}$ with $c=\Theta(1)$.  The exact constant depends on the prior, the sample-size regime, and the estimator; at $n=65$ and $m=22{,}528$ the enrichment is $\delta \le 2^{-50}$, far below any cryptographically relevant threshold.
 
 \subsection{Parameters}
 \label{subsec:parameters}
@@ -1070,8 +1070,8 @@ Let $A\in\F_2^{2n\times n}$ be a random isotropic basis and let $B=g(A,R)\in\F_2
 \[
 \E\bigl[\,\bigl|\{\,i:|b_i|\le w\,\}\bigr|\,\bigr]
 \;\le\;
-\frac{(3/2)n^{2}+n/2+\delta nm+O(1)}{0.094n}
-\;=\;16n+11\delta m+O(1).
+\frac{\log_2 N(n)+m+\delta nm+O(1)}{0.094n}
+\;=\;16n+11\delta m+\frac{11m}{n}+O(1),
 \]
 \end{lemma}
 
@@ -1081,48 +1081,59 @@ By the Fannes--Csisz\'{a}r continuity bound (Cover--Thomas \S17.3.3), $\operator
 H(C)\;\le\;H(A)+H(C\mid A)\;=\;H(A)+\sum_{i=1}^{m}H(c_i\mid A,c_{<i})
 \;\le\;H(A)+\sum_{i=1}^{m}H(c_i\mid A).
 \]
-The entropy of $A$ is the log-cardinality of the Lagrangian Grassmannian,
-\[
-H(A)\;=\;\log_2|\Lagr(2n,\F_2)|\;=\;\frac{3}{2}n^{2}+\frac{n}{2}+O(1).
-\]
-
-For a low-weight row ($|b_i|\le w$), the conditional distribution of $c_i=b_i^{\!\top}A$ is supported on $R_w(A)$, so by \Cref{lem:reachability}
+Let $T_i$ be the indicator of the event $|b_i|\le w$.  Then
 \begin{align*}
 H(c_i\mid A)
-&\;\le\;\log_2|R_w(A)|\;\le\;\log_2\sum_{j=0}^{w}\binom{2n}{j} \\
-&\;\le\;2n\cdot H_2(w/2n)+\log_2(w+1)
-\;\le\;0.906n+O(\log n).
+&\;\le\;H(T_i,c_i\mid A)
+\;=\;H(T_i\mid A)+H(c_i\mid T_i,A) \\
+&\;\le\;1+\Pr[T_i=1\mid A]\cdot0.906n+\Pr[T_i=0\mid A]\cdot n,
 \end{align*}
-For a row with $|b_i|>w$ we use the trivial bound $H(c_i\mid A)\le n$.
-
-Let $k$ be the (random) number of low-weight rows.  Then
+where the first term is at most $1$ because $T_i$ is binary, the second uses \Cref{lem:reachability} ($|R_w(A)|\le2^{0.906n}$), and the third uses the trivial bound $H(c_i\mid A)\le n$.  Simplifying,
 \[
-\sum_{i=1}^{m}H(c_i\mid A)\;\le\;k\cdot 0.906n+(m-k)\cdot n
-\;=\;nm-k\cdot 0.094n.
+H(c_i\mid A)\;\le\;1+n-\Pr[T_i=1\mid A]\cdot0.094n.
 \]
-Combining the three inequalities,
+Summing over $i$ and letting $k=\sum_i T_i$,
+\[
+\sum_{i=1}^{m}H(c_i\mid A)
+\;\le\;m+nm-\E[k\mid A]\cdot0.094n.
+\]
+The entropy of $A$ is at most the log-support of the isotropic-frame distribution, $H(A)\le\log_2 N(n)$ (Lane~C).  Combining with the Fannes--Csisz\'{a}r bound $H(C)\ge nm-\delta nm-1$ and the chain rule,
 \[
 nm-\delta nm-1
-\;\le\;(3/2)n^{2}+n/2+nm-k\cdot 0.094n+O(1),
+\;\le\;\log_2 N(n)+m+nm-\E[k\mid A]\cdot0.094n+O(1),
 \]
-which rearranges to $k\cdot 0.094n\le(3/2)n^{2}+n/2+\delta nm+O(1)$.  Taking expectations over $A$ and $R$ gives the claimed bound.
+which rearranges to $\E[k\mid A]\cdot0.094n\le\log_2 N(n)+m+\delta nm+O(1)$.  Taking expectations over $A$ and $R$ and using $N(n)=2^{(3/2)n^{2}+n/2+O(1)}$ gives the claimed bound.
 \end{proof}
 
 \Cref{lem:m1} is the missing piece for the marginal-adaptive model: it bounds the \emph{expected} number of low-weight rows using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification and recovery arguments of \Cref{cor:noise-amp,cor:recovery-barrier} then apply to those rows.
 
 \begin{lemma}[Distribution-mismatch death]
 \label{lem:m2}
-Let $p'\in(0,1/2)$ be a target noise parameter with $1-2p'\ge 1/\operatorname{poly}(n)$.  Consider any reduction outputting $m$ samples $(c_i,a_i)$.  If at least $m-16n-11\delta m$ rows have effective noise bias $\le 2^{-0.19n}$, then the output distribution $(C,y)$ satisfies
+Let $p'\in(0,1/2)$ with $1-2p'\ge 1/\operatorname{poly}(n)$.  Consider any reduction outputting $m$ samples $(c_i,a_i)$ with $a_i=\langle c_i,x\rangle+e'_i$ where $e'_i$ has bias $\le 2^{-0.19n}$ on all but $\ell=o(m)$ rows.  Then
 \[
 \operatorname{SD}\bigl(\,(C,y),\;\mathrm{LPN}_{p'}\,\bigr)
 \;\ge\;
-1-\exp\!\bigl(-\Omega((m-16n-11\delta m)(1-2p')^{2})\bigr).
+1-o(1)
 \]
-In particular, for $m\ge Cn$ with any constant $C>16$ and $\delta=o(1)$, the statistical distance is $1-o(1)$.
+provided $m\ge \frac{4n}{(1-2p')^{2}}\cdot\operatorname{polylog}(n)$.
 \end{lemma}
 
 \begin{proof}
-Standard LPN$_{p'}$ has identical noise bias $1-2p'$ on every row.  A row with bias $\le 2^{-0.19n}$ has squared Hellinger distance $\ge (1-2p'-2^{-0.19n})^{2}/4=(1-2p')^{2}/4-o(1)$ from the target Bernoulli$(p')$ noise.  By tensorization of Hellinger distance over independent rows and the relation $\operatorname{SD}\ge 1-\exp(-\frac12 H^{2})$ (see e.g. Le Cam \cite{LeCam86}), the cumulative Hellinger distance over the $m-16n-11\delta m$ mismatched rows gives the claimed bound.
+The reduction output is $(C,y)$ where $y_i=\langle c_i,x\rangle+e'_i$.  In the target $\mathrm{LPN}_{p'}$ distribution each row has independent noise with bias $1-2p'$.  In our output, at least $m-\ell$ rows have bias $\le 2^{-0.19n}=o(1)$.
+
+Consider the max-agreement distinguisher: for each candidate secret $x'\in\F_2^{n}$, compute $S(x')=\sum_{i=1}^{m} \mathbf{1}_{y_i=\langle c_i,x'\rangle}$.  Under the true secret $x$, the expected agreement is
+\[
+\E[S(x)] \;\ge\; (1-p')(m-\ell) + \tfrac12\ell
+\;=\; \frac{m}{2} + \Bigl(\tfrac12-p'\Bigr)(m-\ell).
+\]
+For any wrong secret $x'\neq x$, the labels $y_i$ are independent of $\langle c_i,x'\rangle$ on the low-bias rows (because the parity $\langle c_i,x+x'\rangle$ is unbiased when $c_i$ is uniform and $x\neq x'$), so $\E[S(x')]\le m/2$.
+
+By Hoeffding's inequality and a union bound over the $2^{n}$ candidates,
+\[
+\Pr\bigl[S(x')\ge \E[S(x)] - t\bigr]
+\;\le\; 2^{n}\exp\!\Bigl(-\frac{2t^{2}}{m}\Bigr).
+\]
+Choosing $t=\frac14(1-2p')(m-\ell)$ gives failure probability at most $2^{n}\exp(-\Omega((1-2p')^{2}m))$, which is $o(1)$ when $m\ge 4n/(1-2p')^{2}\cdot\operatorname{polylog}(n)$.  Hence the distinguisher separates the two distributions with advantage $1-o(1)$.
 \end{proof}
 
 \begin{theorem}[Marginal-adaptive linear-reduction barrier]
@@ -1136,7 +1147,7 @@ Consequently, no marginal-adaptive linear reduction maps symplectic LPN to a usa
 \end{theorem}
 
 \begin{proof}
-If $\operatorname{SD}(BA,\text{Uniform})\le\delta$, \Cref{lem:m1} forces at least $m-16n-11\delta m=m-o(m)$ rows to have weight $>0.19n$.  By \Cref{cor:noise-amp} each such row has noise bias $\le 2^{-0.19n}$, i.e. $p'\ge \tfrac12-2^{-0.19n-1}$.  \Cref{lem:m2} then gives $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for any target $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$.
+If $\operatorname{SD}(BA,\text{Uniform})\le\delta$, \Cref{lem:m1} forces at least $m-16n-11\delta m-11m/n=m-o(m)$ rows to have weight $>0.19n$.  By \Cref{cor:noise-amp} each such row has noise bias $\le 2^{-0.19n}$, i.e. $p'\ge \tfrac12-2^{-0.19n-1}$.  \Cref{lem:m2} then gives $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for any target $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$.
 \end{proof}
 
 \Cref{thm:marginal-adaptive} closes the marginal-adaptive corner for $m\ge Cn$ with $C>16$.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is the primary case of LPQR26 Appendix~D (their Theorem~D.2), which rules out decodability at constant noise for all fixed linear reductions with $m=(1+\epsilon)n$.  Combining their external result with our \Cref{thm:marginal-adaptive} yields a complete barrier for all $m=\operatorname{poly}(n)$ in the marginal-adaptive model as well.
