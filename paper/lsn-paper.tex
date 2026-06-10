@@ -1069,8 +1069,7 @@ Let $A\in\F_2^{2n\times n}$ be a random isotropic basis and let $B=g(A,R)\in\F_2
 \[
 \E\bigl[\,\bigl|\{\,i:|b_i|\le w\,\}\bigr|\,\bigr]
 \;\le\;
-\frac{\log_2 \bigl(|\Lagr(2n,\F_2)|\cdot|GL(n,\F_2)|\bigr)+m+\delta nm+O(1)}{0.094n}
-\;=\;16n+11\delta m+\frac{11m}{n}+O(1),
+16n+11\delta m+\frac{11m}{n}+O(1),
 \]
 \end{lemma}
 
@@ -1101,10 +1100,10 @@ The entropy of $A$ is at most the log-support of the isotropic-frame distributio
 nm-\delta nm-1
 \;\le\;(3/2)n^{2}+n/2+m+nm-\E[k\mid A]\cdot0.094n+O(1),
 \]
-which rearranges to $\E[k\mid A]\cdot0.094n\le(3/2)n^{2}+n/2+m+\delta nm+O(1)$.  Taking expectations over $A$ and $R$ gives the claimed bound.
+which rearranges to $\E[k\mid A]\cdot0.094n\le(3/2)n^{2}+n/2+m+\delta nm+O(1)$.  Since $(3/2)n^{2}+n/2$ divided by $0.094n$ is $16n+O(1)$, taking expectations over $A$ and $R$ gives the claimed bound.
 \end{proof}
 
-\Cref{lem:m1} is the missing piece for the marginal-adaptive model: it bounds the \emph{expected} number of low-weight rows using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification and recovery arguments of \Cref{cor:noise-amp,cor:recovery-barrier} then apply to those rows.
+\Cref{lem:m1} bounds the \emph{expected} number of low-weight rows in the marginal-adaptive model using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification and recovery arguments of \Cref{cor:noise-amp,cor:recovery-barrier} then apply to those rows.
 
 \begin{lemma}[Distribution-mismatch death --- \textbf{conditional}]
 \label{lem:m2}
