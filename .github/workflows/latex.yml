@@ -2,7 +2,7 @@ name: LaTeX
 
 on:
   push:
-    branches: [main, lightening-design, shared/hardness-7th-exchange]
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -17,10 +17,10 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build LSN paper
         run: |
-          cd docs/superpowers/specs
-          tectonic 2026-06-08-lsn-paper-latex.tex
+          cd paper
+          tectonic lsn-paper.tex
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: lsn-paper-pdf
-          path: docs/superpowers/specs/2026-06-08-lsn-paper-latex.pdf
+          path: paper/lsn-paper.pdf

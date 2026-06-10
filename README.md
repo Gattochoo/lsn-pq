@@ -49,7 +49,7 @@ re-derivation before entering the paper (`meta/2026-06-10-CLAUDE-*` adjudication
 
 ## Status
 
-- Paper: **preprint-ready** (v1); arXiv / IACR ePrint submission pending.
+- Paper: **preprint-ready** (v1); IACR ePrint submitted. arXiv submission pending.
 - Open research: the marginal-adaptive corner of the linear-reduction landscape
   (Open Problem 9) and the membership↔stabilizer-decoding bridge (Open Problem 8).
 - Implementation: Python prototypes validate parameters and algorithms; a production

@@ -35,3 +35,9 @@ Cryptography / cs.CR
 - 11T71 (Algebraic coding theory; cryptography)
 - 14M15 (Grassmannians, Schubert varieties, flag manifolds)
 - 81P73 (Quantum error correction, fault tolerance)
+
+## IACR ePrint Additional Notes
+35 pages. Preliminary version.
+
+## IACR ePrint Message to Editors
+First submission. All security claims classified as theorem, evidence, or conjecture. A preliminary version circulated informally; this is the first formal submission.
