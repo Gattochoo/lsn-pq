@@ -18,7 +18,8 @@
 | P5c | `meta/2026-06-12-fq-barrier-sketch.md` | F_q barrier generalization | ✅ Drafted |
 | P5d | `meta/2026-06-12-2nd-moment-detector-sketch.md` | 2nd-moment detector analysis | ✅ Drafted |
 | P1 E1 adv | `94c-e1-advanced-analysis.py` | ROC/AUC for 4 statistics | ✅ Done |
-| P6 | This file | Handoff report | ✅ Done |
+| P6 ext | `99-multisample-detector.py` | Multi-sample rank detector | ✅ Done |
+| P6 | This file | Handoff report | ✅ Updated |
 
 ---
 
@@ -78,6 +79,13 @@ Corrected AUC for `uniform` B (AUC < 0.5 flipped to 1−AUC):
 - Signal term $\langle c_i \oplus c_j, x \rangle$ masks the noise bias difference.
 - Aligns with P1 E1 observation that `corr` has negligible separation.
 
+### P6 ext: Multi-sample detector
+- **Detector:** $\operatorname{rank}([y_1 \mid \cdots \mid y_k])$ for $k$ samples sharing the same $C$.
+- **P0:** $\operatorname{rank}(Y) = 2n$ (saturated, since $Y = B(AX + E)$ and $\operatorname{rank}(B) = 2n$).
+- **P1:** $\operatorname{rank}(Y) = k$ (for $k \le m$, since noise matrix $E'$ has full rank).
+- **Empirical:** Perfect separation at $(n,m,k) = (6,30,20)$ — P0 rank = 12.0, P1 rank = 20.0 on all 200 trials.
+- **Critical nuance:** Detector only works if samples share the **same** $C$. If reduction randomizes $A$ per output, each $C_i = B_i A_i$ is independent and the detector collapses.
+
 ---
 
 ## 3. Which path the data points to
@@ -113,6 +121,9 @@ The open question shifts from "can P0 be distinguished from P1?" to:
 5. **P5d 2nd-moment detector.**
    Exact algebraic form derived. Aligns with weak empirical separation. Multi-sample extension is open.
 
+6. **Multi-sample detector: reuse-vs-randomize trade-off.**
+   If a marginal-adaptive reduction reuses $(A,B)$, multi-sample rank detection closes OP9 for multi-sample adversaries. Can the reduction randomize $A$ per output while preserving marginal-uniformity and efficiency? This is the decisive question for OP9.
+
 ---
 
 ## 5. Blocked points and open questions
@@ -121,6 +132,7 @@ The open question shifts from "can P0 be distinguished from P1?" to:
 - **Blocked:** n-scaling beyond n=6. Brute-force max_agreement is 2^n, so n=7 is 128 (feasible), n=8 is 256 (slow), n=9 is 512 (very slow).
 - **Open:** Does there exist a marginal-uniform adaptive B family that is **provably** indistinguishable from P1 in total variation? This would be a genuine reduction-exists signal.
 - **Open:** If multi-sample detection is the right framework, what is the threshold sample count k*(n, m)?
+- **Open:** Can a marginal-adaptive reduction randomize $A$ per output to evade multi-sample rank detection? If yes, OP9 remains open. If no, OP9 is closed for multi-sample adversaries.
 
 ---
 
@@ -141,6 +153,7 @@ meta/2026-06-12-marginal-adaptive-theory-attempt.md
 meta/2026-06-12-krawtchouk-concentration-draft.md
 meta/2026-06-12-fq-barrier-sketch.md
 meta/2026-06-12-2nd-moment-detector-sketch.md
+meta/2026-06-12-multisample-detector-findings.md
 meta/2026-06-12-OVERNIGHT-REPORT.md
 OVERNIGHT-LOG.md
 ```
@@ -149,7 +162,7 @@ OVERNIGHT-LOG.md
 
 ## 7. One-line verdict (measurement-based, not claimed)
 
-> **OP9 single-sample detection is blocked for marginal-uniform adaptive B.** The marginal-uniformity constraint screens out trivial detectors (e.g., `all_ones`), and the remaining natural families make P0 statistically close to P1. The open problem sharpens to: *how many samples does a subspace-detection adversary need?*
+> **OP9 single-sample detection is blocked for marginal-uniform adaptive B.** The marginal-uniformity constraint screens out trivial detectors (e.g., `all_ones`), and the remaining natural families make P0 statistically close to P1. **Multi-sample detection is easy IF samples share the same $C$** (rank detector achieves perfect separation for $k > 2n$). The decisive open question is: *can a marginal-adaptive reduction randomize $A$ per output to evade multi-sample detection, or must it reuse $(A,B)$?*
 
 No 7th; no break; no security claim. OPEN = LSN.
 

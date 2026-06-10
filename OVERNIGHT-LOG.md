@@ -14,3 +14,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 04:30 | P5c | meta/2026-06-12-fq-barrier-sketch.md | F_q generalization sketch: transport theorems field-independent; reachability counting improves with q; conjecture drafted
 04:30 | P5d | meta/2026-06-12-2nd-moment-detector-sketch.md | 2nd-moment detector algebraic derivation: k=1,2 bias analysis; signal term masks noise bias; aligns with P1 E1 weak corr separation
 04:50 | P6 ext | 99-multisample-detector.py + meta | Multi-sample rank detector: P0 rank=2n, P1 rank=k; perfect separation at n=6,m=30,k=20; BUT only works if samples share same C; critical nuance for OP9: does reduction reuse (A,B) or randomize A per output?
+05:00 | P6 final | meta/2026-06-12-OVERNIGHT-REPORT.md | Report updated with P5b-P5d and multi-sample detector findings; verdict refined
