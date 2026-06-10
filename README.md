@@ -39,8 +39,8 @@ experiments/     Numbered Python verification scripts + result JSONs.
 meta/            Research record: source-accuracy pins (verbatim quotes of cited
                  theorems with page numbers), adjudication reports, research
                  directives, and dated decision documents.
-kat/             Known-answer test vectors
-test_vectors/    Additional test vectors
+kat/             Reserved for LSN-KEM known-answer test vectors (future production impl)
+test_vectors/    Reserved for additional LSN test vectors
 ```
 
 The `meta/` directory is the project's audit trail: external citations are pinned verbatim
