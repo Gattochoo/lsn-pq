@@ -43,3 +43,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 09:00 | P26 | meta/2026-06-12-OVERNIGHT-REPORT.md | Final update: one-line verdict revised with n=8..40 scaling and asymptotic impossibility conjecture
 09:45 | E-OP9a | experiments/113-e-op9a-results.json | bottom_w1 entropy=0.99, recovery=14%(n=6)/8%(n=8); marginal-uniformity maintained
 09:52 | E-OP9b | experiments/114-e-op9b-results.json | bottom_w entropy=0.96-0.99 across w=1..10; top_w entropy=0; recovery≤2% for fixed B
+10:45 | Krawtchouk | meta/2026-06-12-krawtchouk-analytic-proof.md | Analytic Var[W]=O(E²/n) proof: diagonal bound + negative off-diagonal, numerically verified n=2,3
