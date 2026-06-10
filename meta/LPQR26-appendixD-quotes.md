@@ -48,3 +48,16 @@ Clarification: the PDF rendering splits the fraction across two lines as $(1-r-\
 - The HTML abstract page (arXiv abstract) does **not** contain the appendices; direct PDF download was required to verify these quotes.
 - The "low-noise regime" phrasing used in earlier drafts of our paper ($m = \Theta(n)$ vs. $m = \omega(n)$ distinction) was a misattribution: LPQR26's linear-reduction impossibility is **not** restricted to low noise. The true scope axis is the sample regime $m$. At constant noise $p=1/4$ the piling-up lemma makes the error-amplification step even stronger (per-bit bias $(1-2p)^w = 2^{-w}$).
 - The $C(n,2)$ isotropy-entropy cost phrase used in earlier drafts is **ours** (derived from the $S_A=0$ public quadratic constraint), not LPQR26's. Their argument uses the $(1-d)mn$ entropy-deficiency factor.
+
+---
+
+## Theorem D.2 (error-weight lower bound for randomized linear reductions)
+
+> **Theorem D.2.** Let $m = \operatorname{poly}(n)$ with $m > cn$ for some $c > 1$, and let $p = \omega(1/n)$. Suppose that $B \in \mathbb{Z}_2^{m \times 2n}$ is a random variable such that $BA \in \mathbb{Z}_2^{m \times n}$ is statistically indistinguishable from uniformly random. Fix any $\delta > 0$ and let $r := n/m$ be the rate of the transformed code $\operatorname{im}(BA)$. Then $|Be|$, the weight of the distorted error, satisfies
+> $$
+> \Pr_{B, e \sim D_p^{\otimes n}}\!\left[ |Be| \ge \frac{(1-r-\delta)\,m}{2} \right] \ge 1 - \operatorname{negl}(n).
+> $$
+
+Clarification: Equation (63) in the PDF renders the fraction $(1-r-\delta)$ on one line and $m/2$ on the next; the intended bound is $|Be| \ge \frac{(1-r-\delta)m}{2}$.
+
+**Location:** Appendix D, page 42 of the PDF (page number in the rendered document).

@@ -221,16 +221,16 @@ Let $L \subset \F_2^{2n}$ be uniformly random Lagrangian, and let $A = (a_1,\dot
 
 The columns of $A$ may be uniform random, pseudorandom (as in our KEM, \Cref{sec:kem}), or structured.
 
-\begin{definition}[sympLPN$_{n,m,p}$ \cite{KLP+25,LPQR26}]
+\begin{definition}[sympLPN$_{n,p}$ \cite{KLP+25,LPQR26}]
 \label{def:symplpn}
-Let $A \in \F_2^{2n \times n}$ be a public matrix whose columns are \emph{isotropic}: $S_A := A^{\top}\Omega A = 0$ (every pair of columns is orthogonal under the symplectic form). Let $x \in \F_2^n$ be a secret vector, $e \sim \operatorname{Bernoulli}(p)^m$ a noise vector, and $y = Ax + e \in \F_2^m$. Given $(A,y)$, recover $x$.
+Let $A \in \F_2^{2n \times n}$ be a public matrix whose columns are \emph{isotropic}: $S_A := A^{\top}\Omega A = 0$ (every pair of columns is orthogonal under the symplectic form). Let $x \in \F_2^n$ be a secret vector, $e \sim \operatorname{Bernoulli}(p)^{2n}$ a noise vector, and $y = Ax + e \in \F_2^{2n}$. Given $(A,y)$, recover $x$.
 \end{definition}
 
 \paragraph{Relationship.}
 \begin{enumerate}
 \item \textbf{Batch-LSN with uniform $A$ $\equiv$ membership-LSN.} When the columns of $A$ are uniform and independent, the adversary's view $(A,b)$ in batch-LSN is identical in distribution to $m$ independent samples from the membership oracle. Hence SQ lower bounds and information-theoretic floors proved for membership-LSN transfer \emph{verbatim} to batch-LSN with uniform~$A$.
 \item \textbf{Pseudorandom $A$ (KEM).} Our KEM (\Cref{sec:kem}) uses a pseudorandom $A$ generated from a short seed. Security reduces to batch-LSN with uniform $A$ plus one PRG step.
-\item \textbf{sympLPN is a different problem.} True sympLPN (\Cref{def:symplpn}) has linear labels $y = Ax + e$ and secret $x$; the isotropic constraint $S_A = 0$ is a public quadratic relation on the public parameters. It is not equivalent to batch-LSN (membership labels) without a pinned bridge theorem. LPQR26 study sympLPN; our transport theorems (\Cref{sec:barriers}) use only the $S_A = 0$ structure and apply to both.
+\item \textbf{sympLPN is a different problem.} True sympLPN (\Cref{def:symplpn}) has linear labels $y = Ax + e$ and secret $x$; the isotropic constraint $S_A = 0$ is a public quadratic relation on the public parameters. It is not equivalent to batch-LSN (membership labels) without a pinned bridge theorem. LPQR26 study sympLPN; our transport theorems (\Cref{sec:barriers}) use only the $S_A = 0$ structure on the public matrix and therefore apply to any formulation with isotropic columns, regardless of the label structure.
 \end{enumerate}
 
 Throughout the paper we state which formulation each theorem addresses; unless noted otherwise, ``LSN'' refers to the membership form.
@@ -249,7 +249,7 @@ I\bigl(L; (a,b)\bigr) \;=\; \Theta(2^{-n}).
 \end{proposition}
 
 \begin{proof}
-Given $L$, the label is $b = \mathbf{1}_L(a) \oplus e$ with $e \sim \operatorname{Bernoulli}(p)$, so $H(b \mid a, L) = H_2(p)$ exactly.  For $a \neq 0$, a uniformly random $a$ lies in $L$ with probability $(2^n-1)/(2^{2n}-1) = 2^{-n} + O(2^{-2n})$, hence $\Pr[b=1 \mid a] = p + 2^{-n}(1-2p) + O(2^{-2n})$; for $a=0$ we have $\Pr[b=1 \mid a=0] = 1-p = H_2(p)$, but this occurs with probability $2^{-2n}$ and contributes negligibly.  Thus $H(b \mid a) = H_2(p + 2^{-n}(1-2p)) + O(2^{-2n})$ and the mutual information is $\Theta(2^{-n})$ by the Taylor expansion $H_2(p+\varepsilon) = H_2(p) + \varepsilon\log_2\frac{1-p}{p} + O(\varepsilon^2)$.
+Given $L$, the label is $b = \mathbf{1}_L(a) \oplus e$ with $e \sim \operatorname{Bernoulli}(p)$, so $H(b \mid a, L) = H_2(p)$ exactly.  For $a \neq 0$, a uniformly random $a$ lies in $L$ with probability $(2^n-1)/(2^{2n}-1) = 2^{-n} + O(2^{-2n})$, hence $\Pr[b=1 \mid a] = p + 2^{-n}(1-2p) + O(2^{-2n})$; for $a=0$ we have $\Pr[b=1 \mid a=0] = 1-p$, and its entropy is $H_2(1-p) = H_2(p)$, but this occurs with probability $2^{-2n}$ and contributes negligibly.  Thus $H(b \mid a) = H_2(p + 2^{-n}(1-2p)) + O(2^{-2n})$ and the mutual information is $\Theta(2^{-n})$ by the Taylor expansion $H_2(p+\varepsilon) = H_2(p) + \varepsilon\log_2\frac{1-p}{p} + O(\varepsilon^2)$.
 \end{proof}
 
 \begin{proposition}[$\chi^2$ divergence and sample complexity]
@@ -881,7 +881,7 @@ Since $\Omega$ is invertible, any $c$ rows (resp.\ columns) of $\Omega$ are line
 \[
 \min_{E_{VV}} \operatorname{rank}(E) = 2c - \operatorname{rank}(\Omega|_K).
 \]
-The minimum is achieved constructively by $E_{VV} = \Omega_{VK} \cdot G \cdot \Omega_{KV}$ with $G$ any generalized inverse of $\Omega_{KK}$ (over $\F_2$, obtained from a rank factorization). Setting $M$ to the matrix representing this optimal form in the original coordinates yields the first claim.
+The minimum is achieved constructively by $E_{VV} = \Omega_{VK} \cdot G \cdot \Omega_{KV}$ with $G$ any generalized inverse of $\Omega_{KK}$ (over $\F_2$, obtained from a rank factorization). A symmetric g-inverse always exists: $G^* := G^{\top} \Omega_{KK} G$ satisfies $\Omega_{KK} G^* \Omega_{KK} = \Omega_{KK}$ and $(G^*)^{\top} = G^*$, yielding a symmetric $E_{VV}$ and hence a symmetric matrix $M$ representing the optimal form in the original coordinates. This justifies the corank-probability bound, which assumes a symmetric Gram matrix.
 
 For the probability bound, a uniformly random $n \times n$ symmetric matrix over $\F_2$ has corank $k$ with probability $2^{-\Theta(k^2)}$. Hence
 \[
