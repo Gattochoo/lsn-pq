@@ -68,7 +68,7 @@ The Learning Parity with Noise (LPN) problem, introduced by Blum \etal\ \cite{BF
 
 LPN has been the foundation for a wide range of cryptographic primitives, including OWFs, PKE, OT, and MPC \cite{ABW10,Ale11,DGM14,BCGI18}. Its main theoretical limitation is the absence of a worst-case hardness reduction comparable to Regev's LWE reduction from lattice problems \cite{Reg05}. LPN hardness is therefore treated as a \emph{primitive assumption}, accepted on the basis of sustained cryptanalytic resistance rather than reducibility.
 
-Post-quantum cryptography currently rests on a handful of established hardness families: lattices (LWE/SIS), error-correcting codes (LPN/syndrome decoding), multivariate quadratic equations (MQ), hash functions, and isogenies, with tensor and group-action problems emerging as further candidates. A genuinely new family --- structurally distinct and not reducible to the existing ones --- has been sought since the inception of the field. LSN is a leading candidate for such a family.
+Post-quantum cryptography currently rests on a handful of established hardness families: lattices (LWE/SIS), error-correcting codes (LPN/syndrome decoding), multivariate quadratic equations (MQ), hash functions, and isogenies, with tensor and group-action problems emerging as further candidates. Shor's algorithm \cite{Sho94} breaks the integer-factoring and discrete-logarithm assumptions underlying classical public-key cryptography, motivating the search for quantum-resistant alternatives. A genuinely new family --- structurally distinct and not reducible to the existing ones --- has been sought since the inception of the field. LSN is a leading candidate for such a family.
 
 \subsection{The LSN Problem}
 \label{subsec:lsn}
@@ -194,10 +194,10 @@ Stabilizer codes, the quantum analogue of classical linear codes, are naturally 
 The SQ model was introduced by Kearns \cite{Kea98} and developed by Blum \etal\ \cite{BFJ+94}. Feldman, Grigorescu, Reyzin, and Vempala \cite{FGR+17} gave the general SDA framework we use, and Diakonikolas \etal\ \cite{DKS17} applied it to high-dimensional robust estimation. Quantum algorithms that access only classical samples can achieve at most a quadratic Grover speed-up over classical algorithms. Since the SQ lower bound is exponential in $n$, such a speed-up does not affect the asymptotic security parameter, making SQ lower bounds relevant evidence for quantum hardness.
 
 \paragraph{Code-based cryptography and polar codes.}
-Code-based cryptography dates to McEliece \cite{McE78} and Prange \cite{Pra62}. Modern standards include Classic McEliece \cite{ABD+21}, HQC \cite{AAC+22}, and BIKE. Polar codes, introduced by Arikan \cite{Ari09}, are capacity-achieving with explicit construction; list decoding was introduced by Tal and Vardy \cite{TV15}, and finite-length analysis was developed by Mori--Tanaka \cite{MT09}, Trifonov \cite{Tri12}, and Hassani \etal\ \cite{HVU14}. We use Bhattacharyya bounds for conservative parameter selection \cite{Sei15}.
+Code-based cryptography dates to McEliece \cite{McE78} and Prange \cite{Pra62}. Modern standards include Classic McEliece \cite{ABD+21}, HQC \cite{AAC+22}, and BIKE. Polar codes, introduced by Arikan \cite{Ari09}, are capacity-achieving with explicit construction; list decoding was introduced by Tal and Vardy \cite{TV15} and refined by Fazeli and Vardy \cite{FV19}, and finite-length analysis was developed by Mori--Tanaka \cite{MT09}, Trifonov \cite{Tri12}, and Hassani \etal\ \cite{HVU14}. We use Bhattacharyya bounds for conservative parameter selection \cite{Sei15}.
 
 \paragraph{Post-quantum KEMs.}
-The NIST PQC standardization process selected Kyber (lattice) \cite{SAB+22}, Classic McEliece, and HQC \cite{AAC+22} as KEM candidates. LSN-KEM offers competitive sizes with a fundamentally different assumption.
+The NIST PQC standardization process \cite{NIS22} selected Kyber (lattice) \cite{SAB+22}, Classic McEliece, and HQC \cite{AAC+22} as KEM candidates. LSN-KEM offers competitive sizes with a fundamentally different assumption.
 
 \section{The LSN Problem}
 \label{sec:lsn-problem}
@@ -594,7 +594,7 @@ We summarize the quantum attack landscape honestly.
 \subsection{LSN-SNARK}
 \label{sec:snark}
 
-We construct a preprocessing SNARK for the relation ``$x \in L$'' given a committed Lagrangian $L$. The construction exploits the \emph{Siegel-chart} (graph-Lagrangian) representation to reduce the R1CS circuit from $O(n^3)$ to $O(n^2)$ constraints.
+We construct a preprocessing SNARK for the relation ``$x \in L$'' given a committed Lagrangian $L$, in the rank-1 constraint system (R1CS) / quadratic arithmetic program framework of Gennaro \etal\ \cite{GGPR13}, Parno \etal\ \cite{PHGR13}, Ben-Sasson \etal\ \cite{BCTV14}, and Groth \cite{Gro16}. The construction exploits the \emph{Siegel-chart} (graph-Lagrangian) representation to reduce the R1CS circuit from $O(n^3)$ to $O(n^2)$ constraints; here we count the R1CS constraints of the membership relation, which dominate proof and verification cost in these systems.
 
 \paragraph{Siegel-chart representation.}
 Fix a public symplectic matrix $S \in \mathrm{Sp}(2n,\F_2)$ (e.g., generated from a standard seed). Every ``generic'' Lagrangian can be written as
@@ -615,7 +615,7 @@ The core membership sub-circuit verifies $x \in L_M$ in two steps:
 \paragraph{Further optimization.} If $a$ is provided directly as a public input (derived from $x$ by the verifier), each product $M_{ij}a_j$ becomes a selector---free when $a_j=0$ and a copy when $a_j=1$. The check $b_i = \sum_j M_{ij}a_j$ then collapses to a single linear constraint per row, giving \textbf{$n$ constraints} over $\F_2$ R1CS, or $n(n+3)/2$ constraints over a prime field with boolean witnesses for $M$.
 \end{enumerate}
 
-\Cref{tab:r1cs} compares LSN-SNARK with other ZK-PQC approaches.
+\Cref{tab:r1cs} compares LSN-SNARK with other ZK-PQC approaches. The constraint count is the dominant cost metric across preprocessing SNARKs \cite{GGPR13,Gro16} and transparent systems such as Bulletproofs \cite{BBB+18} alike.
 
 \begin{table}[ht]
 \centering

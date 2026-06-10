@@ -62,7 +62,7 @@
 
 LPN은 OWF, PKE, OT, MPC 등 광범위한 암호 프리미티브의 토대가 되어 왔다. 이론적 한계는 Regev의 LWE 환원에 비견할 worst-case 하드니스 환원이 없다는 점이며, 따라서 LPN 하드니스는 환원 가능성보다 \emph{지속된 암호분석 저항}에 근거해 수용되는 원시 가정이다.
 
-포스트양자 암호는 현재 소수의 확립된 하드니스 family에 기대고 있다: 격자(LWE/SIS), 오류정정부호(LPN/신드롬 디코딩), 다변수 이차방정식(MQ), 해시함수, isogeny --- 그리고 텐서·군작용 문제가 신흥 후보로 떠오르고 있다. 기존 family로 환원되지 않는, 구조적으로 구별되는 진짜 새로운 family는 이 분야의 시작부터 추구되어 온 목표다. LSN은 그러한 family의 유력한(leading) 후보다.
+포스트양자 암호는 현재 소수의 확립된 하드니스 family에 기대고 있다: 격자(LWE/SIS), 오류정정부호(LPN/신드롬 디코딩), 다변수 이차방정식(MQ), 해시함수, isogeny --- 그리고 텐서·군작용 문제가 신흥 후보로 떠오르고 있다. Shor 알고리즘~\cite{Sho94}은 고전 공개키 암호의 토대인 인수분해·이산로그 가정을 깨뜨려 양자내성 대안의 탐색을 촉발했다. 기존 family로 환원되지 않는, 구조적으로 구별되는 진짜 새로운 family는 이 분야의 시작부터 추구되어 온 목표다. LSN은 그러한 family의 유력한(leading) 후보다.
 
 \subsection{LSN 문제}
 
@@ -162,9 +162,9 @@ $\SDA(B(\mathcal{D},D_0),\gamma) = d$이면, $\mathcal{D}$와 $D_0$를 성공확
 
 \paragraph{SQ 하드니스.} SQ 모형은 Kearns~\cite{Kea98}가 도입했고 FGRV~\cite{FGR+17}가 우리가 쓰는 SDA 프레임워크를 주었다. 고전 표본만 접근하는 양자 알고리즘의 가속은 Grover의 이차 가속이 최대이므로, 지수적 SQ 하계는 양자 하드니스의 유관한 증거가 된다.
 
-\paragraph{부호 기반 암호와 폴라 부호.} McEliece, HQC, BIKE 등이 표준화 대상이며, 폴라 부호(Arikan~\cite{Ari09})는 용량 달성 부호로 리스트 디코딩(Tal--Vardy)과 유한길이 해석이 정비되어 있다. 우리는 보수적 파라미터 선택을 위해 Bhattacharyya 한계를 쓴다.
+\paragraph{부호 기반 암호와 폴라 부호.} McEliece, HQC, BIKE 등이 표준화 대상이며, 폴라 부호(Arikan~\cite{Ari09})는 용량 달성 부호로, 리스트 디코딩(Tal--Vardy~\cite{TV15}, Fazeli--Vardy~\cite{FV19})과 유한길이 해석(Mori--Tanaka~\cite{MT09}, Trifonov~\cite{Tri12}, Hassani \etal~\cite{HVU14})이 정비되어 있다. 우리는 보수적 파라미터 선택을 위해 Bhattacharyya 한계를 쓴다.
 
-\paragraph{포스트양자 KEM.} NIST 표준화는 Kyber(격자), Classic McEliece, HQC를 선정했다. LSN-KEM은 근본적으로 다른 가정 위에서 경쟁력 있는 크기를 제공한다.
+\paragraph{포스트양자 KEM.} NIST 표준화~\cite{NIS22}는 Kyber(격자)~\cite{SAB+22}, Classic McEliece, HQC~\cite{AAC+22}를 선정했다. LSN-KEM은 근본적으로 다른 가정 위에서 경쟁력 있는 크기를 제공한다.
 
 
 \section{LSN 문제: 정의와 기본 성질}
@@ -405,7 +405,7 @@ real-선형: $\E_a[\langle w,a\rangle]$는 $L$과 무관하고($w\neq 0$이면 $
 
 \subsection{LSN-SNARK}
 
-커밋된 라그랑지안 $L$에 대한 관계 ``$x \in L$''의 전처리 SNARK를 구성한다. \emph{Siegel 차트}(그래프-라그랑지안) 표현으로 R1CS 회로를 $O(n^3)$에서 $O(n^2)$ 제약으로 줄인다.
+커밋된 라그랑지안 $L$에 대한 관계 ``$x \in L$''의 전처리 SNARK를, Gennaro \etal~\cite{GGPR13}, Parno \etal~\cite{PHGR13}, Ben-Sasson \etal~\cite{BCTV14}, Groth~\cite{Gro16}의 R1CS/QAP 프레임워크에서 구성한다. \emph{Siegel 차트}(그래프-라그랑지안) 표현으로 R1CS 회로를 $O(n^3)$에서 $O(n^2)$ 제약으로 줄인다.
 
 \paragraph{Siegel 차트 표현.} 공개 심플렉틱 행렬 $S$를 고정하면 ``일반적'' 라그랑지안은 $L_M = S\cdot\{(x, Mx)\}$($M \in \mathrm{Sym}(n,\F_2)$ 대칭)으로 쓸 수 있다. 그래프 라그랑지안의 수는 $2^{n(n+1)/2}$로 전체 family와 상수배($\approx 2.38$)만 차이나므로 점근 보안에 영향이 없다: brute-force 복잡도는 $2^{n^2/2+O(n)}$로 유지되고, 상관 구조가 심플렉틱 좌표변환에 보존되므로 SQ 하계도 점근적으로 그대로 적용된다.
 
@@ -415,7 +415,7 @@ real-선형: $\E_a[\langle w,a\rangle]$는 $L$과 무관하고($w\neq 0$이면 $
 
 \paragraph{검증된 제약 수.} $a$가 witness일 때 $n^2$ 예측이 정확하다: $n=8$에서 $64$, $n=41$에서 $1{,}681$, $n=65$에서 $4{,}225$. 공개 $a$ 최적화는 각각 $8$, $41$, $65$. Poseidon 커밋을 합친 전체 회로는 $n=65$에서 약 $4{,}500$--$4{,}700$.
 
-\paragraph{의의와 범위.} 멤버십 관계의 ZK 회로가 이례적으로 작다 --- SHA-256 한 블록($\approx 25{,}000$)의 약 $1/5$, 공개된 ZK-Kyber 회로(수백만)의 약 $1/1000$. 표는 \emph{핵심 관계} 회로의 비교다: 전체 서명/KEM 검증은 결박 오버헤드가 추가되며 그건 스킴 간에 비슷하다. 우리의 주장은 전체 프리미티브 기록이 아니라 \emph{멤버십 부회로}가 탁월하게 간결하다는 것이고, 이는 검증가능 PQ 암호화·재귀 SNARK 집적처럼 멤버십 검사가 비용을 지배하는 곳에 유용하다.
+\paragraph{의의와 범위.} 멤버십 관계의 ZK 회로가 이례적으로 작다 --- SHA-256 한 블록($\approx 25{,}000$)의 약 $1/5$, 공개된 ZK-Kyber 회로(수백만)의 약 $1/1000$. 표는 \emph{핵심 관계} 회로의 비교다: 전체 서명/KEM 검증은 결박 오버헤드가 추가되며 그건 스킴 간에 비슷하다. 우리의 주장은 전체 프리미티브 기록이 아니라 \emph{멤버십 부회로}가 탁월하게 간결하다는 것이고, 이는 검증가능 PQ 암호화·재귀 SNARK 집적처럼 멤버십 검사가 비용을 지배하는 곳에 유용하다. 제약 수는 전처리 SNARK~\cite{GGPR13,Gro16}와 Bulletproofs~\cite{BBB+18} 같은 투명 시스템 모두에서 지배적 비용 지표다.
 
 \paragraph{배치 검증.} 같은 비밀 $M$ 아래 $k$개 원소의 멤버십을 증명할 때 커밋 검증은 한 번이고 추가 멤버십마다 $n^2$($a$ 공개 시 $n$)개만 늘어, $n=65$, $k=1000$에서 약 $4.2\times 10^6$ 제약 --- 증명당 수백만이 드는 ZK-Kyber 대비 약 $1000$배 이득이다.
 
