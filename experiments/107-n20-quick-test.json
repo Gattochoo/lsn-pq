@@ -1,0 +1,30 @@
+{
+  "experiment": "107-n20-quick-test",
+  "description": "Quick n=20 single-sample distinguishing for OP9 (no max_agree due to cost)",
+  "date": "2026-06-11",
+  "n": 20,
+  "p_prime": 0.2,
+  "B_family": "uniform",
+  "num_trials": 200,
+  "results": [
+    {
+      "m": 40,
+      "P0": {"syndrome": 9.93, "rank_diff": 1.00, "corr": 0.00},
+      "P1": {"syndrome": 10.07, "rank_diff": 1.00, "corr": -0.00},
+      "separation": {"syndrome": 0.14, "rank_diff": 0.00, "corr": 0.00}
+    },
+    {
+      "m": 80,
+      "P0": {"syndrome": 29.57, "rank_diff": 1.00, "corr": -0.00},
+      "P1": {"syndrome": 29.21, "rank_diff": 1.00, "corr": 0.00},
+      "separation": {"syndrome": 0.08, "rank_diff": 0.00, "corr": 0.00}
+    },
+    {
+      "m": 160,
+      "P0": {"syndrome": 70.50, "rank_diff": 1.00, "corr": -0.00},
+      "P1": {"syndrome": 68.86, "rank_diff": 1.00, "corr": -0.00},
+      "separation": {"syndrome": 0.16, "rank_diff": 0.00, "corr": 0.00}
+    }
+  ],
+  "conclusion": "Syndrome separation remains negligible at n=20: 0.14→0.08→0.16. Consistent with asymptotic vanishing. Single-sample detection is empirically impossible for marginal-uniform B up to n=20."
+}
