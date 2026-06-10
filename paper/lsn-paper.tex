@@ -820,7 +820,7 @@ The number of $k$-dimensional subspaces of $\F_2^n$ is the Gaussian binomial coe
 \[
 {n \brack k}_2 = \prod_{i=0}^{k-1} \frac{2^{n-i}-1}{2^{k-i}-1}.
 \]
-To count pairs of Lagrangians with intersection dimension $k$, fix a $k$-dimensional isotropic subspace $W$. The number of Lagrangians containing $W$ equals the number of Lagrangians in the symplectic quotient $W^\perp / W \cong \F_2^{2(n-k)}$, namely $\prod_{i=1}^{n-k}(2^i+1)$. Dividing by the total number of Lagrangians and accounting for overcounting by the number of $k$-dimensional subspaces of a fixed Lagrangian gives
+To count pairs of Lagrangians with intersection dimension $k$, fix a $k$-dimensional isotropic subspace $W$. The number of Lagrangians containing $W$ equals the number of Lagrangians in the symplectic quotient $W^\perp / W \cong \F_2^{2(n-k)}$, namely $\prod_{i=1}^{n-k}(2^i+1)$. Summing over all $k$-dimensional subspaces $W \subseteq L$ and using the identity $\prod_{i=1}^{n-k}(2^i+1) = 2^{(n-k)(n-k+1)/2} \prod_{i=1}^{n-k}(1+2^{-i})$, the exact probability is
 \[
 \Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{\prod_{i=1}^n (2^i+1)}.
 \]
@@ -874,7 +874,7 @@ Let $C_{n,q} = \E[q^j]$ computed via the $q$-binomial distribution. Then
 \[
 \rho_{\mathrm{avg}} = \frac{(1-2p)^2}{p(1-p)} \cdot C_{n,q} \cdot q^{-2n}.
 \]
-Numerically, $C_{n,q} \to \prod_{i=1}^{\infty}(1+q^{-i})$ as $n \to \infty$ (e.g. $2.38$ for $q=2$, $1.56$ for $q=3$).
+Numerically, $C_{n,q} \to 2$ as $n \to \infty$ for every $q$ (the limit is independent of the field size).
 \end{lemma}
 
 \subsection{Security Parameters over $\F_q$}
