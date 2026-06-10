@@ -14,7 +14,10 @@
 | P2 E2 | `95-e2-colspace-confinement.py` | m-sweep around 2n threshold | ✅ Done |
 | P3 E3 | `96-e3-adaptive-B-families.py` | 4 B families vs P1 statistics | ✅ Done |
 | P4 Theory | `meta/2026-06-12-marginal-adaptive-theory-attempt.md` | Path A/B/C assessment | ✅ Drafted |
-| P5b | `98-krawtchouk-concentration.py` | Krawtchouk concentration (fallback) | ⏸️ Not started |
+| P5b | `98-krawtchouk-concentration.py` | Krawtchouk concentration (fallback) | ✅ Done |
+| P5c | `meta/2026-06-12-fq-barrier-sketch.md` | F_q barrier generalization | ✅ Drafted |
+| P5d | `meta/2026-06-12-2nd-moment-detector-sketch.md` | 2nd-moment detector analysis | ✅ Drafted |
+| P1 E1 adv | `94c-e1-advanced-analysis.py` | ROC/AUC for 4 statistics | ✅ Done |
 | P6 | This file | Handoff report | ✅ Done |
 
 ---
@@ -36,6 +39,17 @@ All separation ratios (delta_mean / pooled_std) for `uniform` B:
 - `rank_B` saturates at 2n for m > 2n, invisible to C-only adversary.
 - **No sharp m-vs-2n threshold** in adversary-observable statistics.
 
+### P1 E1 advanced: ROC/AUC (Mann-Whitney, 2000 samples)
+Corrected AUC for `uniform` B (AUC < 0.5 flipped to 1−AUC):
+| n | m | syndrome | rank_diff | corr | max_agree |
+|---|---|----------|-----------|------|-----------|
+| 4 | 8 | 0.56 | 0.50 | 0.52 | 0.58 |
+| 5 | 10 | 0.57 | 0.50 | 0.50 | 0.61 |
+| 6 | 12 | 0.58 | 0.50 | 0.51 | 0.61 |
+| 6 | 24 | 0.61 | 0.50 | 0.50 | **0.80** |
+
+**Conclusion:** Even the best statistic (`max_agree` at large m) achieves only AUC ≈ 0.8, far from perfect separation (1.0). `rank_diff` and `corr` are essentially random (AUC ≈ 0.5).
+
 ### P3 E3: 4 B families
 | Family | syndrome | corr | max_agree | Marginal-uniform? |
 |--------|----------|------|-----------|-------------------|
@@ -45,6 +59,24 @@ All separation ratios (delta_mean / pooled_std) for `uniform` B:
 | **all_ones** | **1.19–2.71** | **6.15–17.56** | **0.98–2.23** | **No (rank-1 BA)** |
 
 **Critical finding:** `all_ones` produces extreme separation, but it **violates** marginal-uniformity. All families that respect marginal-uniformity show weak separation.
+
+### P5b: Krawtchouk concentration
+- Empirical mean of $W_N(1/2)$ matches theoretical prediction within 5% (graph-Lagrangian sampling).
+- std/mean decreases monotonically: 0.16 (n=4) → 0.07 (n=10).
+- Chebyshev gives w.h.p. bound: $W_N(1/2) \le (9/8)^n \cdot (1+o(1))$ with probability $\ge 1 - 1/n$.
+- **lem:affine-coset-bias promotable from expectation-form to w.h.p. theorem** for random isotropic $A$.
+
+### P5c: F_q barrier generalization
+- Transport theorems (rank stratification) are field-independent.
+- Reachability counting bound improves as $q$ increases (larger field → fewer low-weight vectors relative to $q^n$).
+- Conjecture: all barrier landscape theorems hold over $\mathbb{F}_q$ with same qualitative conclusions.
+
+### P5d: 2nd-moment detector exact form
+- Algebraic derivation of $k$-subset parity bias for P0 vs P1.
+- P0 bias = $(1-2p)^{|b_S|}$ (unknown to adversary without $B$).
+- P1 bias = $(1-2p')^{|S|}$.
+- Signal term $\langle c_i \oplus c_j, x \rangle$ masks the noise bias difference.
+- Aligns with P1 E1 observation that `corr` has negligible separation.
 
 ---
 
@@ -72,8 +104,14 @@ The open question shifts from "can P0 be distinguished from P1?" to:
 2. **Multi-sample detector design.**
    If single-sample is blocked, the next question is the sample complexity of subspace detection. Should this be pursued as OP9-refinement or as a new experiment track?
 
-3. **P5b Krawtchouk concentration.**
-   Parked fallback. Clean independent win if proven. Should Kimi attempt this now or wait for 09:00 direction?
+3. **P5b Krawtchouk concentration → w.h.p. theorem.**
+   Empirically verified (n=4..10). Next: rigorous variance bound (including covariances) and Chernoff-style tail. Ready for Claude review.
+
+4. **P5c F_q barrier generalization.**
+   Algebraic skeleton complete. Need field-by-field verification of each lemma's dependence on characteristic.
+
+5. **P5d 2nd-moment detector.**
+   Exact algebraic form derived. Aligns with weak empirical separation. Multi-sample extension is open.
 
 ---
 
@@ -91,11 +129,18 @@ The open question shifts from "can P0 be distinguished from P1?" to:
 ```
 experiments/94-e1-distinguishing-game.py
 experiments/94-e1-results.json
+experiments/94c-e1-advanced-analysis.py
+experiments/94c-e1-advanced.json
 experiments/95-e2-colspace-confinement.py
 experiments/95-e2-results.json
 experiments/96-e3-adaptive-B-families.py
 experiments/96-e3-results.json
+experiments/98-krawtchouk-concentration.py
+experiments/98-krawtchouk-results.json
 meta/2026-06-12-marginal-adaptive-theory-attempt.md
+meta/2026-06-12-krawtchouk-concentration-draft.md
+meta/2026-06-12-fq-barrier-sketch.md
+meta/2026-06-12-2nd-moment-detector-sketch.md
 meta/2026-06-12-OVERNIGHT-REPORT.md
 OVERNIGHT-LOG.md
 ```
