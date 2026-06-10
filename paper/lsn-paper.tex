@@ -733,17 +733,38 @@ Beyond polynomial feature maps & OPEN & No proof or construction known \\
 
 The work of Lu \etal\ \cite{LPQR26} proves a strong barrier against \emph{linear} reductions sympLPN $\to$ LPN via the entropy-deficiency argument of Lu \etal\: isotropy constraints cost $C(n,2)$ bits of entropy, and any linear reduction destroys the error before uniformity is reached. Our \Cref{thm:linear-sq} gives a complementary, direct barrier in the SQ model.
 
-The remaining open question is whether a \emph{genuinely non-linear} or \emph{adaptive} reduction exists. We do not claim impossibility. Instead we observe a win-win structure: if such a reduction is found, it would likely improve random self-reductions for LPN itself, making it valuable even if it collapses LSN to the 6.5th family.
+A sharper, unconditional barrier comes from an information-theoretic floor:
+
+\begin{proposition}[Entropy floor]
+\label{prop:entropy-floor}
+Any reduction from $\mathrm{LSN}(n)$ to $\mathrm{LPN}(k)$ that preserves the secret (i.e., an adversary solving the LPN instance can recover the LSN secret with non-negligible probability) must satisfy $k = \Omega(n^2)$.
+\end{proposition}
+
+\begin{proof}
+The LSN secret space is $\Lagr(2n,\F_2)$ with $|\Lagr| = \prod_{i=1}^n (2^i+1)$. Hence $H(L) = \log_2|\Lagr| = n(n+1)/2 + \Theta(1)$, where the additive constant is $\log_2\prod_{i=1}^{\infty}(1+2^{-i}) \approx 1.25$. If a reduction outputs an $\mathrm{LPN}(k)$ instance whose secret determines $L$, Shannon's source coding theorem (or Fano's inequality) requires $k \geq H(L) - o(1) = \Omega(n^2)$.
+\end{proof}
+
+\paragraph{Concrete-security win-win.} For the parameter sets in \Cref{tab:parameters}, Proposition~\ref{prop:entropy-floor} forces $k \geq 862$ (80-bit), $k \geq 1432$ (100-bit), or $k \geq 2146$ (128-bit). The best known attack on $\mathrm{LPN}(k)$ (BKW \cite{BKW03}) requires time $2^{\Omega(k/\log k)}$. At these dimensions this yields $2^{88.4}$, $2^{136.6}$, and $2^{193.9}$ respectively---all exceeding the target security levels. We stress that this is a concrete-security observation, not an asymptotic impossibility: BKW on $\mathrm{LPN}(\Theta(n^2))$ runs in $2^{\Theta(n^2/\log n)}$, which is asymptotically smaller than brute-force on LSN ($2^{\Theta(n^2)}$). For the parameter range of interest, however, the entropy floor lands BKW well above the security budget.
+
+\paragraph{Adaptivity does not increase degree.} A natural question is whether \emph{adaptive} degree-$D$ feature-map reductions circumvent the static degree barrier. They do not: in each round the reduction applies a feature map $\phi_j(a,b)$ to the raw samples $(a,b)$. The degree of $\phi_j$ is at most $D$, regardless of how $\phi_j$ was chosen. Composing $r$ such maps does not increase degree because the outputs of previous rounds are expectations (real numbers), not new samples; they are used to \emph{select} the next query, not to raise its algebraic degree. Consequently the effective degree of the entire transcript is bounded by $D$. When $D < n$, the Reed--Muller obstruction of \Cref{sec:polynomial} still applies: correlation with $\mathbf{1}_L$ is at most $2^{-n}$, requiring exponentially many samples. Thus adaptive degree-$D$ feature-map reductions are blocked for every $D < n$, independent of the number of rounds.
+
+The remaining open question is whether a \emph{genuinely non-linear} reduction exists. We do not claim impossibility. Instead we observe a win-win structure: if such a reduction is found, it would likely improve random self-reductions for LPN itself, making it valuable even if it collapses LSN to the 6.5th family.
 
 \paragraph{The symplectic structure is reduction-inert.}
 A sharper observation comes from the structure of the LSN samples themselves. The deterministic quadratic constraint $S_A = 0$ (the $\Omega$-Gram of the public matrix columns) is \emph{public} and \emph{$x$-free}: it depends only on the public matrix $A$, not on the secret $x$ or the noise. Consequently, $S_A=0$ adds no $x$-information to an attacker and provides no usable handle for a reductionist trying to embed LPN into LSN. This mirrors the accepted status of Ring-LWE, which is regarded as a lattice-family assumption by \emph{source} (ring structure native to the problem) rather than by reduction to plain LWE. We formalize this as:
 
 \begin{conjecture}[Source novelty]
 \label{conj:source}
-The symplectic structure of LSN --- including self-duality $\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \mathbf{1}_L$, Lagrangian-subspace secrets, and stabilizer degeneracy --- has no analogue in LPN. This structural distinction is the basis for treating LSN as an independent hardness assumption.
+The following three invariants of LSN have no analogue in standard LPN, and each is destroyed by every natural reduction class that has been proposed:
+\begin{enumerate}
+\item \textbf{Symplectic-Fourier self-duality.} The indicator $\mathbf{1}_L$ satisfies $\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \mathbf{1}_L$, where $\mathcal{F}_\Omega$ is the symplectic Fourier transform. A standard linear function $f(x)=\langle s,x\rangle$ has no such fixed-point property; its Fourier transform is a Dirac mass, not a function.
+\item \textbf{$x$-free quadratic constraint.} The public matrix $A$ in LSN satisfies $S_A=0$ (the $\Omega$-Gram of columns is identically zero). This is a deterministic, public, quadratic constraint on the \emph{public parameters} alone. LPN has no analogous public structure linking its samples.
+\item \textbf{Stabilizer degeneracy.} Every LSN secret $L$ is a stabilizer state with stabilizer weight $\Omega(n)$. The secret space is the Lagrangian Grassmannian, not a vector space. LPN secrets are bare linear functions.
+\end{enumerate}
+Each invariant is preserved by the symplectic group $\mathrm{Sp}(2n)$ and destroyed by any of the blocked reductions: linear maps lose the self-duality (Lu \etal\ \cite{LPQR26}), degree-$D<n$ polynomial maps cannot represent $\mathbf{1}_L$ (Reed--Muller distance), and entropy-compressing maps discard the stabilizer structure (Proposition~\ref{prop:entropy-floor}).
 \end{conjecture}
 
-\Cref{conj:source} is not decidable by reduction analysis alone; it rests on the absence of a known reduction and the structural barriers documented above.
+\Cref{conj:source} is falsifiable: a single explicit reduction sympLPN $\to$ LPN that preserves any of the three invariants would refute the conjecture in its current form. It is not decidable by reduction analysis alone; it rests on the absence of such a reduction and the structural barriers documented above.
 
 \section{Open Problems}
 \label{sec:open}
@@ -762,6 +783,8 @@ We state precisely the problems whose resolution would close the standard-model 
 \item \textbf{Optimal polar-code rate.} Maximize the rate of the outer polar code while keeping decryption failure below $2^{-128}$.
 
 \item \textbf{Pencil-extremality conjecture.} \label{open:sda} Prove \Cref{conj:pencil}: that isotropic pencils ($k \leq 2$) are extremal at scale $|\Lagr(2n,\F_2)|/2^{2n}$, giving average correlation $\leq 5\rho_{\mathrm{avg}}$ for every subset of that size. This would upgrade \Cref{thm:main-sq-cond} from a conditional to an unconditional worst-case bound.
+
+\item \textbf{Random self-reducibility of LSN.} Does LSN admit a public random self-reduction (without knowing the secret)? A positive answer would yield a tight multi-user security bound and improve the reduction in \Cref{subsubsec:kem-multiuser}. A negative answer would explain why the hybrid argument loses a factor $N$.
 \end{enumerate}
 
 \subsection{Honest Limitations of the Present Work}
@@ -776,7 +799,7 @@ We flag five practical gaps that a reader should weigh against the theoretical c
 
 \item \textbf{Full-protocol SNARK is future work.} \Cref{sec:snark} optimizes only the \emph{membership} sub-circuit ($n^2$ constraints). A complete zero-knowledge proof of correct encapsulation---including the polar encoder, the majority-vote decoder, and the random permutation---remains open. The comparison in Table~\ref{tab:r1cs} should be read as a lower bound on what a full SNARK would cost.
 
-\item \textbf{Loose multi-user reduction.} \Cref{subsubsec:kem-multiuser} uses a hybrid argument losing a factor $N$. A tight reduction (random self-reducibility) is not known for LSN. In practice the margin is comfortable ($q\gtrsim 2^{114}$), but the bound is not tight.
+\item \textbf{Loose multi-user reduction.} \Cref{subsubsec:kem-multiuser} uses a hybrid argument losing a factor $N$. A tight reduction would require random self-reducibility. We observe that LSN does \emph{not} admit the standard LPN-style random self-reduction: because $\mathbf{1}_L$ is non-linear, noise cannot be refreshed by combining public samples without knowing $L$. In practice the margin is comfortable ($q\gtrsim 2^{114}$), but the bound is not tight.
 
 \item \textbf{Practical optimizations deferred.} The canonical noise rate $p=1/4$ is fixed; whether LSN remains viable at other rates is unanalyzed. The inner repetition code uses a majority-vote decoder for constant-time implementability, but MAP decoding would achieve a lower effective noise. No public-key compression analogous to structured LPN is known. These are engineering tuning degrees of freedom, not structural vulnerabilities.
 \end{enumerate}
