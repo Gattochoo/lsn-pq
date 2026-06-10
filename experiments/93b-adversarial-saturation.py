@@ -1,12 +1,16 @@
 """
-93b — Adversarial saturation probe for M1 bound.
+93b — Adversarial saturation probe for M1 bound (ILLUSTRATIVE).
 
 Varying the fraction alpha of low-weight rows in B, measures:
   1. SD(BA, Uniform) — actual uniformity gap
   2. k = actual low-weight rows
   3. M1 bound vs actual k
 
-Tests whether the M1 frontier is saturated by any adversarial choice.
+This script is ILLUSTRATIVE: it verifies that the M1 bound ingredients hold
+individually (entropy estimate, uniformity bound, noise amplification), but it
+does NOT assemble a full non-vacuous barrier because at small n the 11m/n term
+dominates the bound.  It confirms M1 is not vacuous for the tested parameter
+ranges, not that the marginal-adaptive corner is closed.
 
 No 7th; no break; no security claim. OPEN = LSN.
 """

@@ -1107,9 +1107,11 @@ which rearranges to $\E[k\mid A]\cdot0.094n\le\log_2 N(n)+m+\delta nm+O(1)$.  Ta
 
 \Cref{lem:m1} is the missing piece for the marginal-adaptive model: it bounds the \emph{expected} number of low-weight rows using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification and recovery arguments of \Cref{cor:noise-amp,cor:recovery-barrier} then apply to those rows.
 
-\begin{lemma}[Distribution-mismatch death]
+\begin{lemma}[Distribution-mismatch death --- \textbf{conditional}]
 \label{lem:m2}
-Let $p'\in(0,1/2)$ with $1-2p'\ge 1/\operatorname{poly}(n)$.  Consider any reduction outputting $m$ samples $(c_i,a_i)$ with $a_i=\langle c_i,x\rangle+e'_i$ where $e'_i$ has bias $\le 2^{-0.19n}$ on all but $\ell=o(m)$ rows.  Then
+\textbf{Status: heuristic, not yet established.}  The obstacle is that the output noise components $e'_i=\langle b_i,e\rangle$ are $m$ linear images of the fixed $2n$-bit symplectic-LPN noise vector $e$; they therefore live in a subspace of dimension at most $2n$ and are heavily correlated when $m=\omega(n)$.  Both standard repair strategies hit walls: (i)~a recovery-reduction argument needs \Cref{cor:recovery-barrier} to be robust to correlated noise, but the $\le 2n$ leak-rows could over-determine $x\in\F_2^{n}$ (and the solver does not know $B$); (ii)~a noise-entropy argument $H(Be)\le H(e)=O(n)$ holds for fixed $B$ but fails for random high-entropy $B$ (since $Be$ can be near-uniform).  The $\le 2n$-dimensional noise structure is both why the corner is plausibly closed and why no clean argument closes it yet.
+
+\emph{If} the following statement could be proved, it would close the marginal-adaptive corner: Let $p'\in(0,1/2)$ with $1-2p'\ge 1/\operatorname{poly}(n)$.  Consider any reduction outputting $m$ samples $(c_i,a_i)$ with $a_i=\langle c_i,x\rangle+e'_i$ where $e'_i$ has bias $\le 2^{-0.19n}$ on all but $\ell=o(m)$ rows.  Then
 \[
 \operatorname{SD}\bigl(\,(C,y),\;\mathrm{LPN}_{p'}\,\bigr)
 \;\ge\;
@@ -1118,39 +1120,12 @@ Let $p'\in(0,1/2)$ with $1-2p'\ge 1/\operatorname{poly}(n)$.  Consider any reduc
 provided $m\ge \frac{4n}{(1-2p')^{2}}\cdot\operatorname{polylog}(n)$.
 \end{lemma}
 
-\begin{proof}
-The reduction output is $(C,y)$ where $y_i=\langle c_i,x\rangle+e'_i$.  In the target $\mathrm{LPN}_{p'}$ distribution each row has independent noise with bias $1-2p'$.  In our output, at least $m-\ell$ rows have bias $\le 2^{-0.19n}=o(1)$.
-
-Consider the max-agreement distinguisher: for each candidate secret $x'\in\F_2^{n}$, compute $S(x')=\sum_{i=1}^{m} \mathbf{1}_{y_i=\langle c_i,x'\rangle}$.  Under the true secret $x$, the expected agreement is
-\[
-\E[S(x)] \;\ge\; (1-p')(m-\ell) + \tfrac12\ell
-\;=\; \frac{m}{2} + \Bigl(\tfrac12-p'\Bigr)(m-\ell).
-\]
-For any wrong secret $x'\neq x$, the labels $y_i$ are independent of $\langle c_i,x'\rangle$ on the low-bias rows (because the parity $\langle c_i,x+x'\rangle$ is unbiased when $c_i$ is uniform and $x\neq x'$), so $\E[S(x')]\le m/2$.
-
-By Hoeffding's inequality and a union bound over the $2^{n}$ candidates,
-\[
-\Pr\bigl[S(x')\ge \E[S(x)] - t\bigr]
-\;\le\; 2^{n}\exp\!\Bigl(-\frac{2t^{2}}{m}\Bigr).
-\]
-Choosing $t=\frac14(1-2p')(m-\ell)$ gives failure probability at most $2^{n}\exp(-\Omega((1-2p')^{2}m))$, which is $o(1)$ when $m\ge 4n/(1-2p')^{2}\cdot\operatorname{polylog}(n)$.  Hence the distinguisher separates the two distributions with advantage $1-o(1)$.
-\end{proof}
-
-\begin{theorem}[Marginal-adaptive linear-reduction barrier]
+\begin{theorem}[Marginal-adaptive linear-reduction barrier --- \textbf{conditional}]
 \label{thm:marginal-adaptive}
-Let $A\sim\operatorname{Uniform}(\Lagr(2n,\F_2))$ and let $B=g(A,R)\in\F_2^{m\times 2n}$ be any randomized adaptive matrix.  If $m\ge Cn$ for any constant $C>16$ and $\delta=o(1)$, then either:
-\begin{enumerate}
-\item $\operatorname{SD}(BA,\text{Uniform})>\delta$, or
-\item the output labels have effective noise $p'\ge \tfrac12-2^{-\Theta(n)}$ on all but $o(m)$ rows, so that $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for every $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$.
-\end{enumerate}
-Consequently, no marginal-adaptive linear reduction maps symplectic LPN to a usable standard LPN instance when $m\ge Cn$.
+\textbf{Depends on \Cref{lem:m2}.}  Let $A\sim\operatorname{Uniform}(\Lagr(2n,\F_2))$ and let $B=g(A,R)\in\F_2^{m\times 2n}$ be any randomized adaptive matrix.  \Cref{lem:m1} shows that if $\operatorname{SD}(BA,\text{Uniform})\le\delta$ and $m\ge Cn$ ($C>16$), at least $m-o(m)$ rows have weight $>0.19n$, hence effective noise bias $\le 2^{-0.19n}$.  If \Cref{lem:m2} holds, this yields $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for every $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$, and no marginal-adaptive linear reduction maps symplectic LPN to a usable standard LPN instance when $m\ge Cn$.
 \end{theorem}
 
-\begin{proof}
-If $\operatorname{SD}(BA,\text{Uniform})\le\delta$, \Cref{lem:m1} forces at least $m-16n-11\delta m-11m/n=m-o(m)$ rows to have weight $>0.19n$.  By \Cref{cor:noise-amp} each such row has noise bias $\le 2^{-0.19n}$, i.e. $p'\ge \tfrac12-2^{-0.19n-1}$.  \Cref{lem:m2} then gives $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for any target $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$.
-\end{proof}
-
-\Cref{thm:marginal-adaptive} closes the marginal-adaptive corner for $m\ge Cn$ with $C>16$.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is the primary case of LPQR26 Appendix~D (their Theorem~D.2), which rules out decodability at constant noise for all fixed linear reductions with $m=(1+\epsilon)n$.  Combining their external result with our \Cref{thm:marginal-adaptive} yields a complete barrier for all $m=\operatorname{poly}(n)$ in the marginal-adaptive model as well.
+\Cref{thm:marginal-adaptive} is a \textbf{conditional} barrier: \Cref{lem:m1} is proven, but \Cref{lem:m2} remains open because of the correlated-noise obstacle described above.  The honest map is therefore: fixed-B \textbf{DEAD}, public-B \textbf{DEAD}, conditional-uniform adaptive \textbf{DEAD}, marginal-adaptive \textbf{OPEN}.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is covered by LPQR26 Appendix~D (their Theorem~D.2) for fixed linear reductions.
 
 \section{Open Problems}
 \label{sec:open}
@@ -1174,7 +1149,7 @@ We state precisely the problems whose resolution would close the standard-model 
 
 \item \textbf{Membership-LSN $\leftrightarrow$ stabilizer-decoding LSN bridge.} Relate our membership formulation (\Cref{def:lsn}; secret Lagrangian, no public matrix) to the LSN of \cite{KLP+25,LPQR26} (public isotropic matrix, junk register, secret logical string). A reduction in either direction would let the external hardness results (constant-rate LPN $\le$ their LSN) and our SQ lower bounds support a \emph{single} object; absent a bridge, the two hardness cases remain parallel rather than cumulative.
 
-\item \textbf{Marginal-adaptive linear reductions.} \label{open:marginal-adaptive} Let $B=g(A)$ be chosen adaptively as a function of the public matrix $A$ and suppose only that $BA$ is uniform \emph{marginally} (averaged over $A$), not conditionally on each $A$.  Can such a reduction use low-weight rows that vary with $A$ to evade the per-instance reachability bound of \Cref{thm:any-b-uniformity}?  Equivalently: does there exist a family of functions $g_n$ such that (i)~$\E_A[\Pr_{g_n(A)}[|b_i|\le w]]=\Omega(1)$ for $w=o(n)$, yet (ii)~$g_n(A)^{\!\top}A$ is uniform over $A\sim\text{Isotropic}$?  A positive answer would reopen the linear-reduction landscape; a negative answer would complete the closure.
+\item \textbf{Marginal-adaptive linear reductions.} \label{open:marginal-adaptive} The honest map has fixed-B \textbf{DEAD}, public-B \textbf{DEAD}, conditional-uniform adaptive \textbf{DEAD}, marginal-adaptive \textbf{OPEN}.  \Cref{lem:m1} shows that any marginal-adaptive $B=g(A)$ with uniform $BA$ must have $m-o(m)$ rows of weight $>0.19n$ (hence effective noise bias $\le 2^{-0.19n}$), but \Cref{lem:m2} is not yet established because the output noise $e'=Be$ is $m$ linear images of a fixed $2n$-bit symplectic-LPN noise vector and therefore lives in a subspace of dimension at most $2n$.  The decisive question (rotation-2c sharpened): \emph{Does the $\le 2n$-dimensional noise structure of $Be$ survive a high-entropy secret $B$, or can adaptive $B$ fake $m$ independent $\operatorname{Bernoulli}(p')$ from $2n$ noise bits undetectably in $C$?}  In other words, does there exist a family $g_n$ such that (i)~$\E_A[\Pr_{g_n(A)}[|b_i|\le w]]=\Omega(1)$ for $w=o(n)$, yet (ii)~$g_n(A)^{\!\top}A$ is uniform, or must every marginal-adaptive uniform $B$ force noise bias $\le 2^{-\Theta(n)}$ on all but $o(m)$ rows?  A proof either way would close the marginal-adaptive corner.
 \end{enumerate}
 
 \subsection{Honest Limitations of the Present Work}
