@@ -51,7 +51,7 @@
 \maketitle
 
 \begin{abstract}
-We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem where the secret is a Lagrangian subspace of a symplectic vector space rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form. We prove an unconditional exponential Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, and a conditional $2^{2n-O(1)}$ bound under a precisely-stated extremality conjecture, together with an exact pairwise-correlation formula and no asymptotic error term. We establish that linear and low-degree polynomial feature-map reductions are information-theoretically impossible, that adaptive linear SQ algorithms are completely blocked by direct structural analysis, and we map the exact standard-model gap that remains for general non-linear reductions. We construct two cryptographic primitives from LSN: a succinct non-interactive argument (LSN-SNARK) with $O(n^2)$ R1CS constraints ($\approx 4{,}225$ for $n=65$, compared to millions for ZK-lattice proofs), and a key-encapsulation mechanism (LSN-KEM) with concatenated polar-code reconciliation achieving 80-bit security with public keys of 1.78~KB and ciphertexts of 288~B. All security claims are explicitly classified as theorem, evidence, or conjecture, and the remaining open problems are stated precisely.
+We introduce the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem where the secret is a Lagrangian subspace of a symplectic vector space rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form. We prove an unconditional exponential Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, and a conditional $2^{2n-O(1)}$ bound under a precisely-stated extremality conjecture, together with an exact pairwise-correlation formula and no asymptotic error term. We establish that linear and low-degree polynomial feature-map reductions are information-theoretically impossible, that adaptive linear SQ algorithms have only exponentially small advantage, and we map the exact standard-model gap that remains for general non-linear reductions. We construct two cryptographic primitives from LSN: a succinct non-interactive argument (LSN-SNARK) with $O(n^2)$ R1CS constraints ($\approx 4{,}225$ for $n=65$, compared to millions for ZK-lattice proofs), and a key-encapsulation mechanism (LSN-KEM) with concatenated polar-code reconciliation achieving 80-bit security with public keys of 1.78~KB and ciphertexts of 288~B. All security claims are explicitly classified as theorem, evidence, or conjecture, and the remaining open problems are stated precisely.
 \end{abstract}
 
 \paragraph{\textbf{Keywords.}} Post-quantum cryptography, Learning Parity with Noise, statistical query model, symplectic geometry, polar codes, zero-knowledge proofs.
@@ -89,7 +89,7 @@ with $a_i \sim \F_2^{2n}$ uniform, $e_i \sim \operatorname{Bernoulli}(p)$, and $
 \end{equation}
 This is exponentially larger than LPN's $2^n$ secrets, yet it is not an unstructured space: every secret satisfies the strong isotropy constraint $L = L^{\perp_\Omega}$. It is exactly this tension --- exponential size versus rigid structure --- that creates both the hardness and the technical difficulty of LSN.
 
-Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN in the cryptographically relevant low-noise regime. These results position LSN as the strongest current candidate for a genuinely new post-quantum hardness family outside the six classical ones (multivariate-quadratic, lattice, code, hash, Ising, tensor).
+Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN (our reading places the LPQR26 barrier in the low-noise regime). These results position LSN as the strongest current candidate for a genuinely new post-quantum hardness family outside the six classical ones (multivariate-quadratic, lattice, code, hash, Ising, tensor).
 
 \subsection{Contributions}
 \label{subsec:contributions}
@@ -103,7 +103,7 @@ Our contributions are organized around proof, barriers, and constructions.
     \]
     where $j = \dim(L \cap L')$ and $\langle D_L, D_{L'} \rangle$ denotes the pairwise correlation. For $p=1/4$ the coefficient is exactly $4/3$. A Markov concentration argument shows that a subset of size $2^{2n}$ with average correlation $O(2^{-2n})$ exists; the stronger worst-case bound remains open. The results hold for adaptive SQ algorithms.
 
-    \item \textbf{Reduction barriers (\Cref{sec:barriers}).} We prove that linear feature maps give zero advantage against LSN; polynomial feature maps of degree $< n$ have error at least $2^{-n}$; and adaptive linear SQ algorithms are completely blocked by a direct expectation computation. Together these barriers eliminate the natural reduction routes and localize the remaining open question to genuinely non-linear, adaptive reductions.
+    \item \textbf{Reduction barriers (\Cref{sec:barriers}).} We prove that linear feature maps give zero advantage against LSN; polynomial feature maps of degree $< n$ have error at least $2^{-n}$; and adaptive linear SQ algorithms have advantage at most $(1-2p)2^{-n}$ at any noise rate $p$. Together these barriers eliminate the natural reduction routes and localize the remaining open question to genuinely non-linear, adaptive reductions.
 
     \item \textbf{Cryptographic primitives (\Cref{sec:primitives}).}
     \begin{itemize}
@@ -186,7 +186,7 @@ LPN was introduced by Blum, Furst, Kearns, and Lipton \cite{BFKL94} as a foundat
 Many structured variants have been proposed to improve efficiency: Ring-LPN \cite{HKL+12}, LPN with structured noise \cite{DP12}, and the Learning with Rounding (LWR) problem \cite{BPR12}. All of these retain a secret space of size $2^{O(n)}$. LSN differs fundamentally in that its secret space has size $2^{n^2/2 + O(n)}$ while remaining polynomial-time sampleable via symplectic linear algebra.
 
 \paragraph{Symplectic and quantum coding.}
-Stabilizer codes, the quantum analogue of classical linear codes, are naturally described by Lagrangian subspaces of $\F_2^{2n}$ \cite{Got97,CRSS98,NC00}. Quantum state tomography of stabilizer states under depolarizing noise is a closely related learning problem \cite{GL22}. The recent independent work of Khesin \etal\ \cite{KLP+25} proved that constant-rate LPN reduces to LSN even for $k=1$, while Lu \etal\ \cite{LPQR26} developed scrambling techniques for symplectic linear spaces and gave strong evidence that sympLPN does not reduce to LPN in the low-noise regime.
+Stabilizer codes, the quantum analogue of classical linear codes, are naturally described by Lagrangian subspaces of $\F_2^{2n}$ \cite{Got97,CRSS98,NC00}. Quantum state tomography of stabilizer states under depolarizing noise is a closely related learning problem \cite{GL22}. The recent independent work of Khesin \etal\ \cite{KLP+25} proved that constant-rate LPN reduces to LSN even for $k=1$, while Lu \etal\ \cite{LPQR26} developed scrambling techniques for symplectic linear spaces and gave strong evidence, as our reconstruction suggests, that sympLPN does not reduce to LPN in the low-noise regime.
 
 \paragraph{Statistical query hardness.}
 The SQ model was introduced by Kearns \cite{Kea98} and developed by Blum \etal\ \cite{BFJ+94}. Feldman, Grigorescu, Reyzin, and Vempala \cite{FGR+17} gave the general SDA framework we use, and Diakonikolas \etal\ \cite{DKS17} applied it to high-dimensional robust estimation. Quantum algorithms that access only classical samples can achieve at most a quadratic Grover speed-up over classical algorithms. Since the SQ lower bound is exponential in $n$, such a speed-up does not affect the asymptotic security parameter, making SQ lower bounds relevant evidence for quantum hardness.
@@ -254,11 +254,11 @@ The $q_{\min}$ figures use the exact pairwise-correlation formula of Lemma~\ref{
 We review the natural decoder families and explain why each fails against LSN at constant noise.
 
 \paragraph{Linear decoders.}
-A linear query has the form $q(a,b) = \langle w, a \rangle + c \cdot b$. Its expectation under $D_L$ is
+A real-linear query has the form $q(a,b) = \langle w, a \rangle + c \cdot b$. Its expectation under $D_L$ is
 \[
 \E_{D_L}[q] = c \cdot \Pr[b=1] = c \cdot \bigl(p + 2^{-n}(1-2p)\bigr),
 \]
-which is independent of $L$. Hence linear decoders have exactly zero advantage.
+which is independent of $L$. Hence real-linear decoders have exactly zero $L$-identification power. F$_2$-linear queries can achieve advantage at most $(1-2p)2^{-n}$ (\Cref{thm:linear-sq}).
 
 \paragraph{Polynomial decoders.}
 The indicator $\mathbf{1}_L$ has an exact degree-$n$ polynomial representation
@@ -427,13 +427,17 @@ Under \Cref{conj:pencil} with $c=0$, every subset of size at least $|\Lagr(2n,\F
 \subsection{Adaptive Linear SQ is Blocked}
 \label{subsec:adaptive-linear}
 
-\begin{theorem}[Adaptive linear SQ impossibility]
+\begin{theorem}[Adaptive linear SQ barrier]
 \label{thm:linear-sq}
-For any linear query $q(a,b) = \langle w, a \rangle + c \cdot b$, the expectation $\E_{D_L}[q]$ is independent of $L$. Consequently, adaptive linear SQ algorithms have zero advantage.
+For any real-linear query $q(a,b) = \langle w, a \rangle + c \cdot b$, the expectation $\E_{D_L}[q]$ is independent of $L$. For any F$_2$-linear query $q(a,b)=\langle w,a\rangle \oplus c\cdot b$, the maximum distinguishing advantage against $D_0$ is $(1-2p)\,2^{-n}$; at $p=1/4$ this is $2^{-n-1}$.
 \end{theorem}
 
 \begin{proof}
-Direct computation: $\E_a[\langle w,a \rangle] = 0$ and $\E_{D_L}[b] = p + 2^{-n}(1-2p)$, which does not depend on $L$.
+For real-linear queries, direct computation gives $\E_a[\langle w,a\rangle]=0$ and $\E_{D_L}[b]=p+2^{-n}(1-2p)$, which is independent of $L$. For an F$_2$-linear query $q(a,b)=\langle w,a\rangle\oplus c\cdot b$: if $c=0$ then $\E_{D_L}[q]=1/2$ for every $L$; if $c=1$ and $w=0$, then $q=b$ and the advantage over $D_0$ is exactly $(1-2p)2^{-n}$. If $c=1$ and $w\neq 0$, write $q=b\oplus\langle w,a\rangle$. Under $D_L$ we have
+\[
+\E_{D_L}[q] = \frac12 + (1-2p)\bigl(2^{-n}-2\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]\bigr).
+\]
+If $w\in L^\perp$ then $\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]=0$ and the advantage is $(1-2p)2^{-n}$. If $w\notin L^\perp$ then $\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]=2^{-n-1}$ and the expectation collapses to $1/2$, giving advantage $0$. Thus no F$_2$-linear query has advantage larger than $(1-2p)2^{-n}$.
 \end{proof}
 
 
@@ -731,24 +735,28 @@ Beyond polynomial feature maps & OPEN & No proof or construction known \\
 \end{tabular}
 \end{table}
 
-The work of Lu \etal\ \cite{LPQR26} proves a strong barrier against \emph{linear} reductions sympLPN $\to$ LPN via the entropy-deficiency argument of Lu \etal\: isotropy constraints cost $C(n,2)$ bits of entropy, and any linear reduction destroys the error before uniformity is reached. Our \Cref{thm:linear-sq} gives a complementary, direct barrier in the SQ model.
+The work of Lu \etal\ \cite{LPQR26} proves, on our reading, a strong barrier against \emph{linear} reductions sympLPN $\to$ LPN in the low-noise regime via the entropy-deficiency argument of Lu \etal\: isotropy constraints cost $C(n,2)$ bits of entropy, and any linear reduction destroys the error before uniformity is reached. Our \Cref{thm:linear-sq} gives a complementary, direct barrier in the SQ model.
 
 A sharper, unconditional barrier comes from an information-theoretic floor:
 
 \begin{proposition}[Entropy floor]
 \label{prop:entropy-floor}
-Any reduction from $\mathrm{LSN}(n)$ to $\mathrm{LPN}(k)$ that preserves the secret (i.e., an adversary solving the LPN instance can recover the LSN secret with non-negligible probability) must satisfy $k = \Omega(n^2)$.
+Any reduction from $\mathrm{LSN}(n)$ to $\mathrm{LPN}(k)$ that preserves the secret with recovery probability $\alpha(n)$ must satisfy
+\[
+k \;\geq\; \alpha(n)\,H(L) - O(1) \;=\; \alpha(n)\,\Theta(n^2).
+\]
+In particular, constant success probability requires $k=\Omega(n^2)$, and success probability $1-o(1)$ requires $k \geq H(L)-o(n^2)$.
 \end{proposition}
 
 \begin{proof}
-The LSN secret space is $\Lagr(2n,\F_2)$ with $|\Lagr| = \prod_{i=1}^n (2^i+1)$. Hence $H(L) = \log_2|\Lagr| = n(n+1)/2 + \Theta(1)$, where the additive constant is $\log_2\prod_{i=1}^{\infty}(1+2^{-i}) \approx 1.25$. If a reduction outputs an $\mathrm{LPN}(k)$ instance whose secret determines $L$, Shannon's source coding theorem (or Fano's inequality) requires $k \geq H(L) - o(1) = \Omega(n^2)$.
+The LSN secret space is $\Lagr(2n,\F_2)$ with $|\Lagr| = \prod_{i=1}^n (2^i+1)$. Hence $H(L) = \log_2|\Lagr| = n(n+1)/2 + \Theta(1)$, where the additive constant is $\log_2\prod_{i=1}^{\infty}(1+2^{-i}) \approx 1.25$. If a reduction outputs an $\mathrm{LPN}(k)$ instance from which $L$ is recovered with probability $\alpha$, Fano's inequality gives $k \geq \alpha H(L) - H_2(1-\alpha) = \alpha H(L) - O(1)$.
 \end{proof}
 
-\paragraph{Concrete-security win-win.} For the parameter sets in \Cref{tab:parameters}, Proposition~\ref{prop:entropy-floor} forces $k \geq 862$ (80-bit), $k \geq 1432$ (100-bit), or $k \geq 2146$ (128-bit). The best known attack on $\mathrm{LPN}(k)$ (BKW \cite{BKW03}) requires time $2^{\Omega(k/\log k)}$. At these dimensions this yields $2^{88.4}$, $2^{136.6}$, and $2^{193.9}$ respectively---all exceeding the target security levels. We stress that this is a concrete-security observation, not an asymptotic impossibility: BKW on $\mathrm{LPN}(\Theta(n^2))$ runs in $2^{\Theta(n^2/\log n)}$, which is asymptotically smaller than brute-force on LSN ($2^{\Theta(n^2)}$). For the parameter range of interest, however, the entropy floor lands BKW well above the security budget.
+\paragraph{Concrete-security win-win.} For near-perfect recovery of $L$ (i.e., $\alpha=1-o(1)$ in Proposition~\ref{prop:entropy-floor}), the entropy floor forces $k \geq H(L)-o(n^2)$. For the parameter sets in \Cref{tab:parameters} this gives $k \geq 863$ (80-bit), $k \geq 2147$ (128-bit), $k \geq 4755$ (192-bit), or $k \geq 8387$ (256-bit). The best known attack on $\mathrm{LPN}(k)$ (BKW \cite{BKW03}) requires time $2^{\Omega(k/\log k)}$. At these dimensions this yields $2^{88.5}$, $2^{194.0}$, $2^{389.3}$, and $2^{643.5}$ respectively---all exceeding the target security levels. We stress that this is a concrete-security observation, not an asymptotic impossibility: BKW on $\mathrm{LPN}(\Theta(n^2))$ runs in $2^{\Theta(n^2/\log n)}$, which is asymptotically smaller than brute-force on LSN ($2^{\Theta(n^2)}$). For the parameter range of interest, however, the entropy floor lands BKW well above the security budget.
 
-\paragraph{Adaptivity does not increase degree.} A natural question is whether \emph{adaptive} degree-$D$ feature-map reductions circumvent the static degree barrier. They do not: in each round the reduction applies a feature map $\phi_j(a,b)$ to the raw samples $(a,b)$. The degree of $\phi_j$ is at most $D$, regardless of how $\phi_j$ was chosen. Composing $r$ such maps does not increase degree because the outputs of previous rounds are expectations (real numbers), not new samples; they are used to \emph{select} the next query, not to raise its algebraic degree. Consequently the effective degree of the entire transcript is bounded by $D$. When $D < n$, the Reed--Muller obstruction of \Cref{sec:polynomial} still applies: correlation with $\mathbf{1}_L$ is at most $2^{-n}$, requiring exponentially many samples. Thus adaptive degree-$D$ feature-map reductions are blocked for every $D < n$, independent of the number of rounds.
+\paragraph{Single-sample adaptivity does not increase degree.} A natural question is whether \emph{adaptive} degree-$D$ feature-map reductions circumvent the static degree barrier. For the restricted model in which the reduction is \emph{single-sample}---it may choose each $\phi_j$ adaptively, but applies it only to the raw samples $(a,b)$ and to the real-valued answers of previous queries---the answer is negative: in each round the feature map $\phi_j(a,b)$ has degree at most $D$, and the effective degree of the entire transcript is bounded by $D$. When $D < n$, the Reed--Muller obstruction of \Cref{sec:polynomial} still applies: correlation with $\mathbf{1}_L$ is at most $2^{-n}$, requiring exponentially many samples. Thus single-sample adaptive degree-$D$ feature-map reductions are blocked for every $D < n$, independent of the number of rounds.
 
-The remaining open question is whether a \emph{genuinely non-linear} reduction exists. We do not claim impossibility. Instead we observe a win-win structure: if such a reduction is found, it would likely improve random self-reductions for LPN itself, making it valuable even if it collapses LSN to the 6.5th family.
+The remaining open question is whether a \emph{multi-sample} or \emph{genuinely non-linear} adaptive reduction exists. Such a reduction could apply non-linear functions to \emph{fresh} samples generated from previous outputs, or could use adaptively chosen non-linear queries in a way that raises the algebraic degree of the transcript. We do not claim impossibility for this richer model.
 
 \paragraph{The symplectic structure is reduction-inert.}
 A sharper observation comes from the structure of the LSN samples themselves. The deterministic quadratic constraint $S_A = 0$ (the $\Omega$-Gram of the public matrix columns) is \emph{public} and \emph{$x$-free}: it depends only on the public matrix $A$, not on the secret $x$ or the noise. Consequently, $S_A=0$ adds no $x$-information to an attacker and provides no usable handle for a reductionist trying to embed LPN into LSN. This mirrors the accepted status of Ring-LWE, which is regarded as a lattice-family assumption by \emph{source} (ring structure native to the problem) rather than by reduction to plain LWE. We formalize this as:
@@ -766,7 +774,7 @@ Each invariant is preserved by the symplectic group $\mathrm{Sp}(2n)$ and destro
 
 \Cref{conj:source} is falsifiable: a single explicit reduction sympLPN $\to$ LPN that preserves any of the three invariants would refute the conjecture in its current form. It is not decidable by reduction analysis alone; it rests on the absence of such a reduction and the structural barriers documented above.
 
-\paragraph{The scrambling barrier at constant noise.} Lu \etal\ \cite{LPQR26} proved that \emph{linear} reductions sympLPN $\to$ LPN are impossible in the low-noise regime because isotropy constraints cost $C(n,2)$ bits of entropy and linear maps cannot randomize the public matrix before the noise is exhausted. At our constant noise $p=1/4$ this \emph{entropy argument disappears}: the total noise entropy $Nr \cdot H(p) \approx 1.8\times 10^4$ bits (for $n=65$) far exceeds the $C(n,2) = 2080$ bits of isotropy constraint. What survives is an \emph{algebraic} obstruction: $S_A=0$ is a deterministic quadratic relation among the public vectors. A linear scrambler preserves isotropy (detectable); a non-linear scrambler destroys the linear structure required by LPN; a random scrambler destroys the secret entirely. A computational probe at $n=3$ confirms that no simple scrambler (linear, quadratic, or random) simultaneously destroys $S_A=0$ and creates a fresh LPN secret-bit structure. The residual question---whether a sufficiently complex non-linear scrambler exists---is the same as Open Problem~2.
+\paragraph{The scrambling barrier at constant noise.} Lu \etal\ \cite{LPQR26} proved, as our reconstruction of their argument suggests, that \emph{linear} reductions sympLPN $\to$ LPN are impossible in the low-noise regime because isotropy constraints cost $C(n,2)$ bits of entropy and linear maps cannot randomize the public matrix before the noise is exhausted. At our constant noise $p=1/4$ this \emph{entropy argument disappears}: the total noise entropy $Nr \cdot H(p) \approx 1.8\times 10^4$ bits (for $n=65$) far exceeds the $C(n,2) = 2080$ bits of isotropy constraint. What survives is an \emph{algebraic} obstruction: $S_A=0$ is a deterministic quadratic relation among the public vectors. A linear scrambler preserves isotropy (detectable); a non-linear scrambler destroys the linear structure required by LPN; a random scrambler destroys the secret entirely. Direct inspection of the $n=3$ case shows that simple scramblers fall into one of three classes: a linear scrambler preserves isotropy (so $S_A=0$ remains detectable), a non-linear scrambler destroys the linear structure required by LPN, and a random scrambler destroys the secret entirely. None of these simple classes simultaneously destroys $S_A=0$ and creates a fresh LPN secret-bit structure. The residual question---whether a sufficiently complex non-linear scrambler exists---is the same as Open Problem~2.
 
 \section{Open Problems}
 \label{sec:open}
@@ -786,7 +794,7 @@ We state precisely the problems whose resolution would close the standard-model 
 
 \item \textbf{Pencil-extremality conjecture.} \label{open:sda} Prove \Cref{conj:pencil}: that isotropic pencils ($k \leq 2$) are extremal at scale $|\Lagr(2n,\F_2)|/2^{2n}$, giving average correlation $\leq 5\rho_{\mathrm{avg}}$ for every subset of that size. This would upgrade \Cref{thm:main-sq-cond} from a conditional to an unconditional worst-case bound.
 
-\item \textbf{Random self-reducibility of LSN.} Does LSN admit a public random self-reduction (without knowing the secret)? A positive answer would yield a tight multi-user security bound and improve the reduction in \Cref{subsubsec:kem-multiuser}. A negative answer would explain why the hybrid argument loses a factor $N$.
+\item \textbf{Sample freshness for rerandomized LSN.} Exact secret rerandomization is possible: applying a public symplectic matrix $S \in \mathrm{Sp}(2n)$ to the public part of each sample maps the secret $L$ to $S\cdot L$ while preserving labels. Does LSN admit a public transformation that yields \emph{fresh} (statistically independent) samples for the rerandomized secret? A positive answer would yield a tight multi-user security bound and improve the reduction in \Cref{subsubsec:kem-multiuser}. A negative answer would explain why the hybrid argument loses a factor $N$.
 \end{enumerate}
 
 \subsection{Honest Limitations of the Present Work}
@@ -801,7 +809,7 @@ We flag five practical gaps that a reader should weigh against the theoretical c
 
 \item \textbf{Full-protocol SNARK is future work.} \Cref{sec:snark} optimizes only the \emph{membership} sub-circuit ($n^2$ constraints). A complete zero-knowledge proof of correct encapsulation---including the polar encoder, the majority-vote decoder, and the random permutation---remains open. The comparison in Table~\ref{tab:r1cs} should be read as a lower bound on what a full SNARK would cost.
 
-\item \textbf{Loose multi-user reduction.} \Cref{subsubsec:kem-multiuser} uses a hybrid argument losing a factor $N$. A tight reduction would require random self-reducibility. We observe that LSN does \emph{not} admit the standard LPN-style random self-reduction: because $\mathbf{1}_L$ is non-linear, noise cannot be refreshed by combining public samples without knowing $L$. In practice the margin is comfortable ($q\gtrsim 2^{114}$), but the bound is not tight.
+\item \textbf{Loose multi-user reduction.} \Cref{subsubsec:kem-multiuser} uses a hybrid argument losing a factor $N$. A tight reduction would require sample freshness for a rerandomized secret. Exact secret rerandomization \emph{is} possible---applying a public symplectic matrix $S \in \mathrm{Sp}(2n)$ to the public part of each sample maps $L$ to $S\cdot L$ while preserving labels---but \emph{sample freshness} is blocked: because $\mathbf{1}_L$ is non-linear, one cannot generate independent fresh samples for the new secret from the old public samples alone without knowing $L$. In practice the margin is comfortable ($q\gtrsim 2^{114}$), but the bound is not tight.
 
 \item \textbf{Practical optimizations deferred.} The canonical noise rate $p=1/4$ is fixed; whether LSN remains viable at other rates is unanalyzed. The inner repetition code uses a majority-vote decoder for constant-time implementability, but MAP decoding would achieve a lower effective noise. No public-key compression analogous to structured LPN is known. These are engineering tuning degrees of freedom, not structural vulnerabilities.
 \end{enumerate}
@@ -862,7 +870,7 @@ is zero because $\Pr_{D_L}[h(a)=1] = \Pr_{D_0}[h(a)=1]$.
 
 \paragraph{Polynomial degree $<n$.} The exact polynomial representation of $\mathbf{1}_L$ has degree exactly $n$ and $2^n$ monomials. Any polynomial of degree $d < n$ cannot vanish on $L^c$, so its correlation with $\mathbf{1}_L$ is at most $2^{-n}$.
 
-\paragraph{Adaptive linear SQ.} For $q(a,b) = \langle w,a \rangle + cb$ we have $\E_{D_L}[q] = c(p + 2^{-n}(1-2p))$, independent of $L$. Since every query's expectation is $L$-independent, no sequence of adaptive linear queries can distinguish $\{D_L\}$ from $D_0$.
+\paragraph{Adaptive linear SQ.} For real-linear queries $q(a,b) = \langle w,a \rangle + cb$ we have $\E_{D_L}[q] = c(p + 2^{-n}(1-2p))$, independent of $L$. For F$_2$-linear queries the maximum advantage is $(1-2p)2^{-n}$ (\Cref{thm:linear-sq}). In either case the advantage is exponentially small in $n$, so adaptive linear SQ algorithms require exponentially many samples.
 
 \section{Extension to $\F_q$}
 \label{app:fq}
