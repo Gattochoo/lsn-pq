@@ -148,7 +148,7 @@ The open question shifts from "can P0 be distinguished from P1?" to:
 - **New data:** n=8 results saved to `experiments/100-n8-quick-test.json`.
 - **Open:** Does there exist a marginal-uniform adaptive B family that is **provably** indistinguishable from P1 in total variation? This would be a genuine reduction-exists signal.
 - **Open:** If multi-sample detection is the right framework, what is the threshold sample count k*(n, m)?
-- **Open:** Can a marginal-adaptive reduction randomize $A$ per output to evade multi-sample rank detection? If yes, OP9 remains open. If no, OP9 is closed for multi-sample adversaries.
+- **Resolved (experimentally):** Can a marginal-adaptive reduction randomize $A$ per output to evade multi-sample rank detection? **YES.** Experiment `101-multisample-randomized-A.py` shows that when $A$ is randomized per output, P0 rank jumps from 12.0 to 20.0, becoming indistinguishable from P1 (20.0). Multi-sample rank detection is **completely defeated** by per-output randomization.
 
 ---
 

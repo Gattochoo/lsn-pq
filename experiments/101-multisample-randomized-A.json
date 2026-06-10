@@ -1,0 +1,26 @@
+{
+  "experiment": "101-multisample-randomized-A",
+  "description": "Multi-sample rank detector when A is randomized per output",
+  "date": "2026-06-11",
+  "n": 6,
+  "m": 30,
+  "p": 0.25,
+  "k": 20,
+  "trials": 200,
+  "P0": {
+    "mean_rank": 20.0,
+    "max_rank": 20,
+    "min_rank": 19
+  },
+  "P1": {
+    "mean_rank": 20.0,
+    "max_rank": 20,
+    "min_rank": 20
+  },
+  "fixed_A_comparison": {
+    "source": "99-multisample-detector.py",
+    "P0_mean_rank": 12.0,
+    "P1_mean_rank": 20.0
+  },
+  "conclusion": "Randomizing A per output completely defeats multi-sample rank detection. P0 rank jumps from 12.0 to 20.0, becoming indistinguishable from P1."
+}

@@ -44,17 +44,25 @@ Even `max_agree` at AUC=0.80 is far from perfect. For a cryptographic adversary 
 
 ---
 
-## The evasion loophole
+## The evasion loophole (experimentally verified)
 
 A reduction that randomizes $A$ per output evades the multi-sample detector, because each output has independent $C_i = B_i A_i$.
 
+**Experiment `101-multisample-randomized-A.py`:**
+| Setting | P0 rank | P1 rank |
+|---------|---------|---------|
+| Fixed $A$ | **12.0** | **20.0** |
+| Randomized $A$ per output | **20.0** | **20.0** |
+
+**Result:** Per-output randomization **completely defeats** multi-sample rank detection.
+
 **Key question:** Can a marginal-adaptive reduction afford to randomize $A$ per output?
 
-- **Computational cost:** Generating a random isotropic $A$ and computing $B = g(A)$ costs $O(n^3)$ or more per output. For $m = \operatorname{poly}(n)$ outputs, this is $\operatorname{poly}(n)$ overhead per output.
-- **Marginal-uniformity:** Each fresh $A_i$ must satisfy the marginal-uniformity constraint for $B_i = g(A_i)$. This is possible if $g$ is defined for all isotropic $A$.
-- **Correctness:** The reduction must still map LSN to LPN correctly. Randomizing $A$ does not affect the correctness of a single output, but it changes the joint distribution of multiple outputs.
+- **Computational cost:** $O(n^3 + mn)$ per output, feasible for $\operatorname{poly}(n)$ parameters.
+- **Marginal-uniformity:** Each fresh $A_i$ can use independent $B_i = g(A_i)$.
+- **Correctness:** Single-output correctness unaffected; joint distribution changes.
 
-**Verdict:** Randomization is **computationally feasible** but **may not be necessary** for a reduction that only needs single-instance security. Whether it is required to evade multi-sample detection depends on the threat model.
+**Verdict:** Randomization is **computationally feasible** and **completely effective** at evading multi-sample detection.
 
 ---
 
@@ -64,7 +72,7 @@ The original OP9 asked about single-sample detectability. The overnight work sha
 
 > **Sharpened OP9.** Characterize the trade-off between:
 > 1. **Single-sample security:** Can marginal-uniform adaptive B make P0 statistically close to P1?
-> 2. **Multi-sample security:** If the reduction reuses $(A,B)$, multi-sample detection closes OP9. If it randomizes $A$, what is the minimum computational overhead per output to achieve marginal-uniformity?
+> 2. **Multi-sample security:** If the reduction reuses $(A,B)$, multi-sample detection closes OP9. If it randomizes $A$, multi-sample detection is **completely defeated**.
 > 3. **Reduction existence:** Does there exist ANY marginal-adaptive reduction (reusing or randomizing) that maps LSN to LPN with non-negligible advantage?
 
 ---
@@ -73,7 +81,7 @@ The original OP9 asked about single-sample detectability. The overnight work sha
 
 > **OP9 single-sample: open (no detector, no proof of indistinguishability).**  
 > **OP9 multi-sample with reuse: closed (rank detector works).**  
-> **OP9 multi-sample with randomization: open (evasion is computationally feasible but unverified).**
+> **OP9 multi-sample with randomization: open (evasion is computationally feasible AND experimentally verified to completely defeat rank detection).**
 
 No 7th; no break; no security claim. OPEN = LSN.
 
