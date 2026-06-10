@@ -1,0 +1,10 @@
+lsn-pq — The Lagrangian Subspace Noise Problem
+Copyright 2026 Kwanghoo Choo
+
+Code (experiments/, kat/, test_vectors/, and any future implementation code) is
+licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Documents (paper/, meta/, README.md) are licensed under the Creative Commons
+Attribution 4.0 International License, CC BY 4.0 (see LICENSE-docs).
+Attribution: "Kwanghoo Choo, The Lagrangian Subspace Noise Problem (lsn-pq),
+https://github.com/Gattochoo/lsn-pq".

@@ -57,4 +57,9 @@ re-derivation before entering the paper (`meta/2026-06-10-CLAUDE-*` adjudication
 
 ## License
 
-TBD (to be decided before public release announcement).
+Dual-licensed:
+
+- **Code** (`experiments/`, `kat/`, `test_vectors/`, future implementations): [Apache License 2.0](LICENSE) — permissive, with an explicit patent grant and retaliation clause.
+- **Documents** (`paper/`, `meta/`, this README): [CC BY 4.0](LICENSE-docs) — free to share and adapt with attribution.
+
+See `NOTICE` for the attribution line. No patents are or will be sought on the LSN constructions by the author; the scheme is offered royalty-free to maximize community analysis and adoption.
