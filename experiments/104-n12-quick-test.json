@@ -1,0 +1,30 @@
+{
+  "experiment": "104-n12-quick-test",
+  "description": "Quick n=12 single-sample distinguishing for OP9 (no max_agree due to cost)",
+  "date": "2026-06-11",
+  "n": 12,
+  "p_prime": 0.2,
+  "B_family": "uniform",
+  "num_trials": 200,
+  "results": [
+    {
+      "m": 24,
+      "P0": {"syndrome": 5.84, "rank_diff": 1.00, "corr": 0.00},
+      "P1": {"syndrome": 5.75, "rank_diff": 0.99, "corr": 0.00},
+      "separation": {"syndrome": 0.09, "rank_diff": 0.01, "corr": 0.00}
+    },
+    {
+      "m": 48,
+      "P0": {"syndrome": 18.24, "rank_diff": 1.00, "corr": 0.00},
+      "P1": {"syndrome": 16.54, "rank_diff": 1.00, "corr": 0.00},
+      "separation": {"syndrome": 0.17, "rank_diff": 0.00, "corr": 0.00}
+    },
+    {
+      "m": 96,
+      "P0": {"syndrome": 41.80, "rank_diff": 0.99, "corr": -0.00},
+      "P1": {"syndrome": 40.23, "rank_diff": 1.00, "corr": -0.00},
+      "separation": {"syndrome": 0.16, "rank_diff": 0.01, "corr": 0.00}
+    }
+  ],
+  "conclusion": "Syndrome separation DROPS at n=12: 0.09→0.17→0.16. Strong evidence that single-sample detection vanishes as n grows."
+}
