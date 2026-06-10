@@ -20,6 +20,7 @@
 | P1 E1 adv | `94c-e1-advanced-analysis.py` | ROC/AUC for 4 statistics | ✅ Done |
 | P6 ext | `99-multisample-detector.py` | Multi-sample rank detector | ✅ Done |
 | P6 theory | `meta/2026-06-12-multisample-theory.md` | Multi-sample theorem sketches | ✅ Drafted |
+| P4 formal | `meta/2026-06-12-marginal-uniformity-formal.md` | Marginal-uniformity formal def | ✅ Drafted |
 | P6 | This file | Handoff report | ✅ Updated |
 
 ---
@@ -135,11 +136,14 @@ The open question shifts from "can P0 be distinguished from P1?" to:
 7. **Multi-sample theorem formalization.**
    Theorem sketches (P0 rank = 2n, P1 rank = k) need rigorous probability bounds. Is this a clean independent win or does the evasion loophole (randomizing A) prevent a theorem?
 
+8. **Marginal-uniformity formal definition.**
+   Proposed TV-distance definition. Verified for `uniform` B (satisfies exact per-row marginal-uniformity) and `low_w3` (fails). Need Claude review before restating DRAFT conjecture.
+
 ---
 
 ## 5. Blocked points and open questions
 
-- **Blocked:** Formal verification that `uniform` B is exactly marginal-uniform (not just approximately). We measured overlap but not total variation distance.
+- **Blocked:** Formal verification that `uniform` B is exactly marginal-uniform (not just approximately). **Partially resolved:** exact per-row marginal-uniformity proven for `uniform` B (conditioned on rank(A)=n). `low_w3` shown to fail. Full matrix uniformity still open.
 - **Blocked:** n-scaling beyond n=6. Brute-force max_agreement is 2^n, so n=7 is 128 (feasible), n=8 is 256 (slow), n=9 is 512 (very slow).
 - **Open:** Does there exist a marginal-uniform adaptive B family that is **provably** indistinguishable from P1 in total variation? This would be a genuine reduction-exists signal.
 - **Open:** If multi-sample detection is the right framework, what is the threshold sample count k*(n, m)?
@@ -167,6 +171,7 @@ meta/2026-06-12-fq-barrier-sketch.md
 meta/2026-06-12-2nd-moment-detector-sketch.md
 meta/2026-06-12-multisample-detector-findings.md
 meta/2026-06-12-multisample-theory.md
+meta/2026-06-12-marginal-uniformity-formal.md
 meta/2026-06-12-OVERNIGHT-REPORT.md
 OVERNIGHT-LOG.md
 ```

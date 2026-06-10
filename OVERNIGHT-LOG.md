@@ -20,3 +20,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 05:20 | P6 theory | meta/2026-06-12-multisample-theory.md | Theorem sketches: P0 rank=2n, P1 rank=k; perfect separation for k>2n if C shared; evasion possible only if reduction randomizes A per output; conjecture on computational trade-off drafted
 05:25 | P6 final | meta/2026-06-12-OVERNIGHT-REPORT.md | Final update: all phases and fallbacks documented; 7 items awaiting Claude adjudication; handoff ready
 05:30 | P4 formal | meta/2026-06-12-marginal-uniformity-formal.md | Formal definition of marginal-uniform adaptive B proposed (TV distance); uniform B satisfies exact per-row marginal-uniformity; low_w3 fails; conjecture restated formally
+05:35 | P6 final | meta/2026-06-12-OVERNIGHT-REPORT.md | Final P6 update: 8 adjudication items, blocked points partially resolved; report complete
