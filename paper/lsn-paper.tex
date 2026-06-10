@@ -126,7 +126,10 @@ Our contributions are organized around proof, barriers, and constructions.
 
 Let $V = \F_2^{2n}$ with standard symplectic form
 \[
-\Omega(x,y) = \sum_{i=1}^n (x_{2i-1} y_{2i} + x_{2i} y_{2i-1}).
+\Omega(x,y) = \sum_{i=1}^n (x_i y_{n+i} + x_{n+i} y_i),
+\]
+\[
+\text{i.e. } \Omega(x,y) = x^{\!\top} J y \text{ with } J = \begin{psmallmatrix} 0 & I_n \\ I_n & 0 \end{psmallmatrix} \text{ (char 2)}.
 \]
 A subspace $L \subset V$ is \emph{isotropic} if $\Omega|_{L \times L} = 0$, and \emph{Lagrangian} if it is isotropic of dimension $n$; equivalently $L = L^{\perp_\Omega}$. We write $\Lagr(2n, \F_2)$ for the Lagrangian Grassmannian.
 
@@ -134,7 +137,7 @@ A subspace $L \subset V$ is \emph{isotropic} if $\Omega|_{L \times L} = 0$, and 
 $|\Lagr(2n, \F_2)| = \prod_{i=1}^n (2^i + 1) = 2^{n(n+1)/2 + O(1)}$.
 \end{proposition}
 
-The intersection of two Lagrangians has even codimension. For $L, L' \in \Lagr(2n)$ let $j = \dim(L \cap L')$. The distribution of $j$ is governed by the $q$-binomial coefficients at $q=2$:
+For $L, L' \in \Lagr(2n)$ let $j = \dim(L \cap L')$ denote the intersection dimension; every value $0 \le j \le n$ occurs. The distribution of $j$ is governed by the $q$-binomial coefficients at $q=2$:
 \begin{equation}
 \label{eq:j-distribution}
 \Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{|\Lagr(2n,\F_2)|}.
@@ -287,7 +290,7 @@ For uniform $L, L' \in \Lagr(2n, \F_2)$,
 Numerical evaluation shows that $\E[j] \to 0.76$ and $\operatorname{Var}(j) \to 0.60$ as $n \to \infty$.
 \end{theorem}
 
-The rapid decay of \Cref{eq:j-distribution} means that two random Lagrangians typically intersect in dimension $0$ or $1$; intersections of dimension $\geq 14$ occur with probability $< 2^{-100}$ for $n \geq 42$.
+The rapid decay of \Cref{eq:j-distribution} means that two random Lagrangians typically intersect in dimension $0$ or $1$; intersections of dimension $\geq 14$ occur with probability $< 2^{-100}$ for every $n \geq 14$ (the tail $\Pr[j=k] \approx 2^{-k(k+1)/2}$ is essentially independent of $n$).
 
 \subsection{The Diluted-LPN View}
 \label{subsec:diluted-lpn}
@@ -396,7 +399,7 @@ $n$ & $|\Lagr|$ & $m=2^{2n-2}$ & $m=2^{2n-1}$ & $m=2^{2n}$ & $m=2\cdot2^{2n}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
-Two trends are visible.  First, the success rate at the floor $m=2^{2n}$ \emph{increases} with $n$ ($46.5\%$, $62\%$, $75\%$), consistent with $2^{2n}$ being the asymptotic threshold (the constant factor in front appears to be below $1$ and to matter less as $n$ grows).  Second, halving the budget to $m=2^{2n-1}$ already drops recovery below $25\%$ even at $n=5$, so the threshold sits at the $2^{2n}$ scale rather than a constant factor below it.  These experiments \emph{empirically support} a $2^{2n}$ sample-complexity scale for the brute-force ML decoder, matching the pairwise floor of Lemma~\ref{lem:exact-corr}; they do not by themselves rule out a more sample-efficient decoder---the rigorous lower bound is the SQ query bound of \Cref{sec:sq}.
+Two trends are visible.  First, the success rate at the floor $m=2^{2n}$ \emph{increases} with $n$ ($46.5\%$, $62\%$, $75\%$), consistent with $2^{2n}$ being the asymptotic threshold (the constant factor in front appears to be below $1$ and to matter less as $n$ grows).  Second, halving the budget to $m=2^{2n-1}$ already drops recovery below $25\%$ even at $n=5$, so the threshold sits at the $2^{2n}$ scale rather than a constant factor below it.  These experiments \emph{empirically support} an exponential-in-$n$ sample-complexity scale for the brute-force ML decoder. We note that at these small $n$ the scales $2^{2n}$ and the information-theoretic recovery floor $\Theta(n^2 2^n)$ of \Cref{prop:chi2-sample} are numerically indistinguishable ($n^2 2^n = 72/256/800$ vs.\ $2^{2n} = 64/256/1024$), so the data do not discriminate between them; asymptotically the ML recovery threshold is governed by the $\Theta(n^2 2^n)$ floor, while $2^{2n}$ is the SQ-query scale of \Cref{sec:sq}. The experiments do not rule out a more sample-efficient decoder---the rigorous statement is the SQ query bound.
 
 \section{Statistical Query Lower Bound}
 \label{sec:sq}
@@ -540,7 +543,7 @@ For any real-linear query $q(a,b) = \langle w, a \rangle + c \cdot b$, the expec
 \end{theorem}
 
 \begin{proof}
-For real-linear queries, direct computation gives $\E_a[\langle w,a\rangle]=0$ and $\E_{D_L}[b]=p+2^{-n}(1-2p)$, which is independent of $L$. For an F$_2$-linear query $q(a,b)=\langle w,a\rangle\oplus c\cdot b$: if $c=0$ and $w\neq 0$ then $\E_{D_L}[q]=1/2$ for every $L$ (the constant query $w=0,c=0$ is trivially $L$-independent); if $c=1$ and $w=0$, then $q=b$ and the advantage over $D_0$ is exactly $(1-2p)2^{-n}$. If $c=1$ and $w\neq 0$, write $q=b\oplus\langle w,a\rangle$. Under $D_L$ we have
+For real-linear queries, direct computation gives that $\E_a[\langle w,a\rangle]$ is independent of $L$ (it equals $1/2$ for $w \neq 0$ and $0$ for $w=0$) and $\E_{D_L}[b]=p+2^{-n}(1-2p)$, which is independent of $L$. For an F$_2$-linear query $q(a,b)=\langle w,a\rangle\oplus c\cdot b$: if $c=0$ and $w\neq 0$ then $\E_{D_L}[q]=1/2$ for every $L$ (the constant query $w=0,c=0$ is trivially $L$-independent); if $c=1$ and $w=0$, then $q=b$ and the advantage over $D_0$ is exactly $(1-2p)2^{-n}$. If $c=1$ and $w\neq 0$, write $q=b\oplus\langle w,a\rangle$. Under $D_L$ we have
 \[
 \E_{D_L}[q] = \frac12 + (1-2p)\bigl(2^{-n}-2\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]\bigr).
 \]
