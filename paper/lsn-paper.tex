@@ -219,13 +219,21 @@ Cryptographic constructions and external hardness results use the \emph{batch} f
 Let $L \subset \F_2^{2n}$ be uniformly random Lagrangian, and let $A = (a_1,\dots,a_m) \in (\F_2^{2n})^m$ be a fixed sequence of query points (public parameters). The batch distribution $D_L^{(A)}$ outputs labels $b = (b_1,\dots,b_m)$ where $b_j = \mathbf{1}_L(a_j) \oplus e_j$ with independent $e_j \sim \operatorname{Bernoulli}(p)$. Given $A$ and $b$, recover $L$.
 \end{definition}
 
-The columns of $A$ may be uniform random, pseudorandom (as in our KEM, \Cref{sec:kem}), or structured. A structurally important special case is \emph{symplectic LPN} (sympLPN)~\cite{KLP+25,LPQR26}, where the columns of $A$ are \emph{isotropic}: they satisfy the deterministic public quadratic relation
-\[
-S_A \;:=\; A^{\top}\Omega A \;=\; 0,
-\]
-i.e., every pair of columns is orthogonal under the symplectic form. We denote this variant sympLPN$_{n,m,p}$.
+The columns of $A$ may be uniform random, pseudorandom (as in our KEM, \Cref{sec:kem}), or structured.
 
-\paragraph{Relationship.} Batch-LSN is \emph{easier} than membership-LSN for the adversary: the query points are known in advance, so each label conveys $\Theta(1)$ bits about $L$ (versus $\Theta(2^{-n})$ in the membership form; see \Cref{sec:info-floors}). Consequently, any hardness result for membership-LSN (SQ lower bounds, brute-force barriers) \emph{carries over} to batch-LSN and to sympLPN: if the harder oracle problem is secure, so is the easier batch variant. The converse reduction is non-trivial and not claimed. Throughout the paper we state which formulation each theorem addresses; unless noted otherwise, ``LSN'' refers to the membership form.
+\begin{definition}[sympLPN$_{n,m,p}$ \cite{KLP+25,LPQR26}]
+\label{def:symplpn}
+Let $A \in \F_2^{2n \times n}$ be a public matrix whose columns are \emph{isotropic}: $S_A := A^{\top}\Omega A = 0$ (every pair of columns is orthogonal under the symplectic form). Let $x \in \F_2^n$ be a secret vector, $e \sim \operatorname{Bernoulli}(p)^m$ a noise vector, and $y = Ax + e \in \F_2^m$. Given $(A,y)$, recover $x$.
+\end{definition}
+
+\paragraph{Relationship.}
+\begin{enumerate}
+\item \textbf{Batch-LSN with uniform $A$ $\equiv$ membership-LSN.} When the columns of $A$ are uniform and independent, the adversary's view $(A,b)$ in batch-LSN is identical in distribution to $m$ independent samples from the membership oracle. Hence SQ lower bounds and information-theoretic floors proved for membership-LSN transfer \emph{verbatim} to batch-LSN with uniform~$A$.
+\item \textbf{Pseudorandom $A$ (KEM).} Our KEM (\Cref{sec:kem}) uses a pseudorandom $A$ generated from a short seed. Security reduces to batch-LSN with uniform $A$ plus one PRG step.
+\item \textbf{sympLPN is a different problem.} True sympLPN (\Cref{def:symplpn}) has linear labels $y = Ax + e$ and secret $x$; the isotropic constraint $S_A = 0$ is a public quadratic relation on the public parameters. It is not equivalent to batch-LSN (membership labels) without a pinned bridge theorem. LPQR26 study sympLPN; our transport theorems (\Cref{sec:barriers}) use only the $S_A = 0$ structure and apply to both.
+\end{enumerate}
+
+Throughout the paper we state which formulation each theorem addresses; unless noted otherwise, ``LSN'' refers to the membership form.
 
 \subsection{Information-Theoretic Floors}
 \label{sec:info-floors}
@@ -236,12 +244,12 @@ The per-sample information content of membership-LSN is exponentially small, whi
 \label{prop:per-sample-mi}
 For membership-LSN with noise rate $p$,
 \[
-I\bigl(L; (a,b)\bigr) \;=\; H_2\bigl(p + 2^{-n}(1-2p)\bigr) - H_2(p) \;=\; \Theta(2^{-n}).
+I\bigl(L; (a,b)\bigr) \;=\; \Theta(2^{-n}).
 \]
 \end{proposition}
 
 \begin{proof}
-Given $L$, the label is $b = \mathbf{1}_L(a) \oplus e$ with $e \sim \operatorname{Bernoulli}(p)$, so $H(b \mid a, L) = H_2(p)$ exactly.  Marginalising over $L$, a uniformly random $a$ lies in $L$ with probability $2^{-n}$, hence $\Pr[b=1 \mid a] = p + 2^{-n}(1-2p)$ and $H(b \mid a) = H_2(p + 2^{-n}(1-2p))$.  The difference is $\Theta(2^{-n})$ by the Taylor expansion $H_2(p+\varepsilon) = H_2(p) + \varepsilon\log_2\frac{1-p}{p} + O(\varepsilon^2)$.
+Given $L$, the label is $b = \mathbf{1}_L(a) \oplus e$ with $e \sim \operatorname{Bernoulli}(p)$, so $H(b \mid a, L) = H_2(p)$ exactly.  For $a \neq 0$, a uniformly random $a$ lies in $L$ with probability $(2^n-1)/(2^{2n}-1) = 2^{-n} + O(2^{-2n})$, hence $\Pr[b=1 \mid a] = p + 2^{-n}(1-2p) + O(2^{-2n})$; for $a=0$ we have $\Pr[b=1 \mid a=0] = 1-p = H_2(p)$, but this occurs with probability $2^{-2n}$ and contributes negligibly.  Thus $H(b \mid a) = H_2(p + 2^{-n}(1-2p)) + O(2^{-2n})$ and the mutual information is $\Theta(2^{-n})$ by the Taylor expansion $H_2(p+\varepsilon) = H_2(p) + \varepsilon\log_2\frac{1-p}{p} + O(\varepsilon^2)$.
 \end{proof}
 
 \begin{proposition}[$\chi^2$ divergence and sample complexity]
@@ -257,7 +265,7 @@ Consequently any distinguisher (even computationally unbounded) needs $m = \Omeg
 From the likelihood-ratio calculation in \Cref{app:corr}, the squared likelihood ratio has expectation $\E_{D_0}[\ell_L^2] = \frac{(1-2p)^2}{p(1-p)} \cdot 2^{-n}$.  Since $\E_{D_0}[\ell_L]=0$, this is exactly $\chi^2(D_L \| D_0)$.  The standard $\chi^2$-based sample-complexity bound (Le Cam's method) gives $m = \Omega(1/\chi^2) = \Omega(2^n)$ for decision.  For search, Fano's inequality with $|\Lagr| = 2^{n(n+1)/2+O(1)}$ and per-sample information $\Theta(2^{-n})$ yields $m = \Omega(n^2 \cdot 2^n)$.
 \end{proof}
 
-\paragraph{Consequence for reductions.} Propositions~\ref{prop:per-sample-mi} and~\ref{prop:chi2-sample} imply that \emph{membership-LSN with $\operatorname{poly}(n)$ samples is information-theoretically secure}: no reduction, linear or non-linear, adaptive or static, can recover $L$ or distinguish $D_L$ from $D_0$ with only polynomially many samples.  This makes ``membership-LSN $\not\to$ LPN with $\operatorname{poly}(n)$ samples'' trivially true and cryptographically empty.  The hardness assumption that backs our KEM (\Cref{sec:kem}) and the barrier studied by LPQR26 is the \emph{batch} formulation (\Cref{def:lsn-batch}), where the query points are fixed and public and each label conveys $\Theta(1)$ bits about $L$.
+\paragraph{Consequence for reductions.} Propositions~\ref{prop:per-sample-mi} and~\ref{prop:chi2-sample} imply that \emph{membership-LSN with $\operatorname{poly}(n)$ samples is information-theoretically secure}: no reduction, linear or non-linear, adaptive or static, can recover $L$ or distinguish $D_L$ from $D_0$ with only polynomially many samples.  This makes ``membership-LSN $\not\to$ LPN with $\operatorname{poly}(n)$ samples'' trivially true and cryptographically empty.  The hardness assumption that backs our KEM (\Cref{sec:kem}) is \emph{batch-LSN with pseudorandom $A$} (\Cref{def:lsn-batch}).  The barrier studied by LPQR26 is \emph{sympLPN} (\Cref{def:symplpn}), a decoding problem with linear labels and public isotropic matrix.
 
 \subsection{Distance Distribution and Expected Intersection}
 \label{subsec:distance}
@@ -299,7 +307,7 @@ Bayes' rule: $\Pr[a \in L \mid b=1] = \Pr[b=1 \mid a \in L]\Pr[a \in L] / \Pr[b=
 \label{q:enrichment}
 Can any efficient selection rule (using past labeled samples and the symplectic structure) produce query points with $\Pr[a \in L] \geq (1+\delta)\,2^{-n}$ for non-negligible $\delta$?  In other words, can the $2^{-n}$ dilution be beaten?
 
-A negative answer would be the cleanest quantitative statement of what $\mathrm{LSN}\setminus\mathrm{LPN}$ is; a positive answer would yield a concrete attack improvement (and a step toward a $6.5$th-family demotion).  The SQ lower bounds of \Cref{sec:sq} already rule out enrichment for SQ-implementable selection rules, because any such rule is just a linear combination of SQ queries, and the correlation bounds limit its advantage to $2^{-n}$.
+A negative answer would be the cleanest quantitative statement of what $\mathrm{LSN}\setminus\mathrm{LPN}$ is; a positive answer would yield a concrete attack improvement (and a step toward a $6.5$th-family demotion).  The SQ lower bounds of \Cref{sec:sq} suggest that enrichment is impossible for SQ-implementable selection rules: any such rule is a linear combination of SQ queries, and the correlation bounds limit its advantage to $2^{-n}$. A formal reduction from enrichment to distinguishing would require a short lemma (omitted here).
 
 \subsection{Parameters}
 \label{subsec:parameters}
@@ -667,7 +675,7 @@ We use the random-oracle model (ROM) for the security proof.
 \begin{description}
 \item[$\mathsf{KeyGen}(1^\lambda)$:] Let $S \in \mathrm{Sp}(2n,\F_2)$ be a public symplectic matrix. Choose a symmetric matrix $M \leftarrow \mathrm{Sym}(n,\F_2)$ uniformly and define $L = S \cdot \{(x,Mx) : x \in \F_2^n\}$. Choose $\mathsf{seed} \leftarrow \{0,1\}^\lambda$. For $i=1,\dots,m$ (where $m=N \cdot r$), compute $x_i = \mathsf{PRG}(\mathsf{seed}, i)$ and $y_i = \mathbf{1}_L(x_i) \oplus e_i$. Output $\mathsf{pk} = (\mathsf{seed}, y_1,\dots,y_m)$ and $\mathsf{sk} = M$.
 
-\paragraph{Security remark.} Restricting to graph Lagrangians reduces the key-space size by a constant factor $|\mathrm{Sym}(n)| / |\Lagr| \to \prod_{i\ge1}(1+2^{-i})^{-1}\approx1/2.38$, which does not affect the asymptotic security parameter. The SQ lower bounds (Theorems~\ref{thm:main-sq-uncond} and~\ref{thm:main-sq-cond}) and the empirical brute-force barriers (\Cref{sec:decoders}) are proved for membership-LSN; because batch-LSN is easier for the adversary (\Cref{subsec:two-forms}), hardness of the membership form carries over to the batch formulation used here. Correlation structure is preserved under symplectic change of coordinates, so the bounds apply asymptotically unchanged. As a bonus, the secret key is more compact: $M$ requires only $n(n+1)/2$ bits versus $2n^2$ bits for a general basis representation.
+\paragraph{Security remark.} Restricting to graph Lagrangians reduces the key-space size by a constant factor $|\mathrm{Sym}(n)| / |\Lagr| \to \prod_{i\ge1}(1+2^{-i})^{-1}\approx1/2.38$, which does not affect the asymptotic security parameter. The SQ lower bounds (Theorems~\ref{thm:main-sq-uncond} and~\ref{thm:main-sq-cond}) and the empirical brute-force barriers (\Cref{sec:decoders}) are proved for membership-LSN; batch-LSN with uniform $A$ is identical in distribution to membership-LSN (\Cref{subsec:two-forms}), so these barriers transfer verbatim to the batch formulation used here (pseudorandom $A$ adds one PRG-indistinguishability step). Correlation structure is preserved under symplectic change of coordinates, so the bounds apply asymptotically unchanged. As a bonus, the secret key is more compact: $M$ requires only $n(n+1)/2$ bits versus $2n^2$ bits for a general basis representation.
 
 \item[Encaps:] Choose randomness $\rho=(s,u)$ with $s \leftarrow \{0,1\}^\lambda$ and $u \leftarrow \{0,1\}^K$. Compute a Fisher--Yates permutation $\pi = \mathsf{Permutation}(\mathsf{PRG}(s))$ over $[m]$, and let $\mathsf{indices} = \pi[:Nr]$. Group the selected indices into $N$ blocks of length $r$ and compute $v_j = \mathsf{majority}(y \text{ in block } j)$ for each block. Compute $c = \mathsf{PolarEncode}(u)$, set $\mathsf{ct} = (s, v \oplus c)$, and $K = \mathsf{Hash}(s, u)$.
 
@@ -807,8 +815,9 @@ Class & Status & Reason \\
 Linear (real)      & BLOCKED  & real-linear: $\E[q]$ $L$-independent; F$_2$-linear: $\leq (1-2p)2^{-n}$ \\
 Polynomial degree $< n$ & BLOCKED  & Error $\geq 2^{-n}$ \\
 Linear, $\rho=2n$ (full) & BLOCKED & Transport lemma; output Gram $\equiv 0$ (\Cref{thm:transport-fullrank}) \\
-Linear, $3n/2<\rho<2n$ (near-full) & BLOCKED & Gram rank $\le 2c<n$ (\Cref{thm:transport-nearfull}) \\
-Linear, $\rho\le 3n/2$ (mid/low) & OPEN & Entropy regime; LPQR26 App.~D + \Cref{prop:entropy-floor} \\
+Linear, $(3/2+\epsilon)n \le \rho < 2n$ (near-full) & BLOCKED & Gram rank $\le 2c \le (1-\epsilon)n$ (\Cref{thm:transport-nearfull}) \\
+Linear, $\rho \le (3/2-\epsilon)n$, $m=\Theta(n)$ & RULED OUT & LPQR26 App.~D (all fixed linear reductions) \\
+Linear, $\rho \le (3/2-\epsilon)n$, $m=\omega(n)$ & OPEN & Entropy regime; LPQR26 bound insufficient \\
 LPN($k=\Theta(n^2)$)   & VACUOUS  & \Cref{prop:entropy-floor} + BKW cost $2^{\Omega(n^2/\log n)}$ \\
 Multi-sample or beyond-poly & OPEN & No proof or construction known \\
 \hline
@@ -849,15 +858,15 @@ For the probability bound, $M$ has rank $2n$ (because $B^{+}$ has rank $2n$ and 
 
 \begin{theorem}[Transport lemma for near-full-rank linear reductions]
 \label{thm:transport-nearfull}
-Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = \rho = 2n-c$ where $1 \le c \le n-1$. Let $K = \ker B$ ($\dim K = c$). Then there exists a symmetric matrix $M \in \F_2^{m \times m}$ such that for every isotropic-column matrix $A$,
+Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = \rho = 2n-c$ where $1 \le c \le n-1$. Let $K = \ker B$ ($\dim K = c$). Then there exists a matrix $M \in \F_2^{m \times m}$ such that for every isotropic-column matrix $A$,
 \[
 \operatorname{rank}\bigl((BA)^{\top} M (BA)\bigr) \;\le\; 2c - \operatorname{rank}(\Omega|_K) \;\le\; 2c.
 \]
-In particular, an adversarial reduction can choose $K$ isotropic (possible for all $c \le n$), in which case the Gram rank of the output is at most $2c$ deterministically. A uniformly random matrix $C \in \F_2^{m \times n}$ satisfies $\operatorname{rank}(C^{\top} M C) \le 2c$ with probability at most $2^{-\Omega(n^2)}$ whenever $2c \le n - \Theta(1)$.
+In particular, an adversarial reduction can choose $K$ isotropic (possible for all $c \le n$), in which case the Gram rank of the output is at most $2c$ deterministically. A uniformly random matrix $C \in \F_2^{m \times n}$ satisfies $\operatorname{rank}(C^{\top} M C) \le 2c$ with probability at most $2^{-\Omega((n-2c)^2)}$.
 \end{theorem}
 
 \begin{proof}
-Write $B = P^{\top}$ with $P \in \F_2^{\rho \times 2n}$ of rank $\rho$. The set of symmetric matrices $N$ of the form $P^{\top}QP$ ($Q$ symmetric) is exactly the set of symmetric bilinear forms vanishing on $K$ from both sides. Fix a basis adapted to $K \oplus V$ with $\dim V = 2n-c$. In this basis the standard symplectic form $\Omega$ becomes a block matrix with blocks $\Omega_{KK}, \Omega_{KV}, \Omega_{VK}, \Omega_{VV}$. Adding a form $N$ that kills $K$ on both sides changes only the $VV$ block; the blocks $\Omega_{KK}, \Omega_{KV}, \Omega_{VK}$ remain fixed. We therefore obtain a \emph{minimal-rank completion} problem for the matrix
+Rank-factorize $B = \tilde{B} P$ with $\tilde{B} \in \F_2^{m \times \rho}$ full column rank and $P \in \F_2^{\rho \times 2n}$ full row rank. Then $(BA)^{\top} M (BA) = (PA)^{\top} (\tilde{B}^{\top} M \tilde{B}) (PA)$, and $Q := \tilde{B}^{\top} M \tilde{B}$ ranges over all of $\F_2^{\rho \times \rho}$ (lift: $M := (\tilde{B}^{+})^{\top} Q \tilde{B}^{+}$ for a left inverse $\tilde{B}^{+}$). The set of matrices $N$ of the form $P^{\top}QP$ is therefore exactly the set of bilinear forms vanishing on $K$ from both sides. Fix a basis adapted to $K \oplus V$ with $\dim V = 2n-c$. In this basis the standard symplectic form $\Omega$ becomes a block matrix with blocks $\Omega_{KK}, \Omega_{KV}, \Omega_{VK}, \Omega_{VV}$. Adding a form $N$ that kills $K$ on both sides changes only the $VV$ block; the blocks $\Omega_{KK}, \Omega_{KV}, \Omega_{VK}$ remain fixed. We therefore obtain a \emph{minimal-rank completion} problem for the matrix
 \[
 E = \begin{pmatrix} \Omega_{KK} & \Omega_{KV} \\ \Omega_{VK} & E_{VV} \end{pmatrix},
 \]
@@ -874,14 +883,18 @@ Since $\Omega$ is invertible, any $c$ rows (resp.\ columns) of $\Omega$ are line
 \]
 The minimum is achieved constructively by $E_{VV} = \Omega_{VK} \cdot G \cdot \Omega_{KV}$ with $G$ any generalized inverse of $\Omega_{KK}$ (over $\F_2$, obtained from a rank factorization). Setting $M$ to the matrix representing this optimal form in the original coordinates yields the first claim.
 
-For the probability bound, when $2c \le n-\Theta(1)$ the rank bound $2c$ is at most $n-\Theta(1)$. The uniform Gram $C^{\top}MC$ is an $n \times n$ symmetric matrix over $\F_2$; its rank is at least $n-O(1)$ with probability $1-2^{-\Omega(n^2)}$ (standard random symmetric matrix rank over $\F_2$). Hence the rank-$\le 2c$ event has exponentially small probability under the uniform distribution.
+For the probability bound, a uniformly random $n \times n$ symmetric matrix over $\F_2$ has corank $k$ with probability $2^{-\Theta(k^2)}$. Hence
+\[
+\Pr\bigl[\operatorname{rank}(C^{\top}MC) \le 2c\bigr] \;\le\; 2^{-\Omega((n-2c)^2)}.
+\]
+This is $1 - 2^{-\Omega(n^2)}$ only when $n - 2c = \Omega(n)$, i.e. $\rho \ge (3/2+\epsilon)n$ for any constant $\epsilon>0$.
 \end{proof}
 
 \paragraph{Rank stratification.} Together, \Cref{thm:transport-fullrank,thm:transport-nearfull} give a complete stratification of the fixed-$B$ linear-reduction landscape at any $m$ and any noise rate:
 \begin{itemize}
 \item $\rho = 2n$ (full rank): \textbf{BLOCKED} --- output Gram is identically zero (\Cref{thm:transport-fullrank}).
-\item $3n/2 < \rho < 2n$ (near-full): \textbf{BLOCKED} --- output Gram rank $\le 2c < n$ (\Cref{thm:transport-nearfull}), while the uniform Gram has rank $\approx n$.
-\item $\rho \le 3n/2$ (mid/low rank): \textbf{OPEN} --- the rank test dies ($2c \ge n$), and the barrier passes to the entropy-deficiency regime of Lu \etal\ \cite{LPQR26} (Appendix~D, Theorem~D.1) and the entropy argument of \Cref{prop:entropy-floor}. A quantitative bridge theorem that covers \emph{all} $B$-distributions simultaneously would close this strip entirely.
+\item $(3/2+\epsilon)n \le \rho < 2n$ (near-full): \textbf{BLOCKED} --- output Gram rank $\le 2c \le (1-\epsilon)n$ (\Cref{thm:transport-nearfull}), while the uniform Gram has rank $\approx n$ w.h.p.
+\item $\rho \le (3/2-\epsilon)n$ (mid/low rank): \textbf{OPEN} --- the rank test dies ($2c \ge (1+\epsilon)n$). At $m=\Theta(n)$, LPQR26 rule out \emph{all} fixed linear reductions (Appendix~D, Theorem~D.1); at $m=\omega(n)$ their bound is insufficient. The entropy argument of \Cref{prop:entropy-floor} gives a complementary barrier. A quantitative bridge theorem that covers \emph{all} $B$-distributions simultaneously would close this strip entirely.
 \end{itemize}
 This stratification applies to \emph{fixed/public} $B$ (per-realization). If the reduction draws $B$ from a high-entropy distribution conditioned on $BA$ being uniform, the matrix is randomized---but then the label noise $Be$ is killed by piling-up at $p=1/4$ (row weight $w$ gives bias $2^{-w}$). The two regimes are endpoint observations; the quantitative trade-off over all $B$-distributions is an open problem (see \Cref{sec:open}).
 
@@ -914,7 +927,7 @@ A sharper observation comes from the structure of the LSN samples themselves. Th
 The following three invariants of LSN have no analogue in standard LPN, and each is destroyed by every natural reduction class that has been proposed:
 \begin{enumerate}
 \item \textbf{Symplectic-Fourier self-duality.} The indicator $\mathbf{1}_L$ satisfies $\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \mathbf{1}_L$, where $\mathcal{F}_\Omega$ is the symplectic Fourier transform. A standard linear function $f(x)=\langle s,x\rangle$ has no such fixed-point property; its Fourier transform is a Dirac mass, not a function.
-\item \textbf{$x$-free quadratic constraint (sympLPN).} In the sympLPN variant (isotropic-column batch formulation; \Cref{def:lsn-batch}) the public matrix $A$ satisfies $S_A=0$ (the $\Omega$-Gram of columns is identically zero). This is a deterministic, public, quadratic constraint on the \emph{public parameters} alone. Our KEM uses pseudorandom rather than isotropic columns, so this invariant does not apply to the KEM instance distribution; it is a structural distinction of the sympLPN variant studied by LPQR26. LPN has no analogous public structure linking its samples.
+\item \textbf{$x$-free quadratic constraint (sympLPN).} In the sympLPN variant (\Cref{def:symplpn}) the public matrix $A$ satisfies $S_A=0$ (the $\Omega$-Gram of columns is identically zero). This is a deterministic, public, quadratic constraint on the \emph{public parameters} alone. Our KEM uses pseudorandom rather than isotropic columns, so this invariant does not apply to the KEM instance distribution; it is a structural distinction of the sympLPN variant studied by LPQR26. LPN has no analogous public structure linking its samples.
 \item \textbf{Stabilizer degeneracy.} Every LSN secret $L$ is a stabilizer state with stabilizer weight $\Omega(n)$. The secret space is the Lagrangian Grassmannian, not a vector space. LPN secrets are bare linear functions.
 \end{enumerate}
 Each invariant is preserved by the symplectic group $\mathrm{Sp}(2n)$ and destroyed by any of the blocked reductions: linear maps lose the self-duality (Lu \etal\ \cite{LPQR26}), degree-$D<n$ polynomial maps cannot represent $\mathbf{1}_L$ (Reed--Muller distance), and entropy-compressing maps discard the stabilizer structure (Proposition~\ref{prop:entropy-floor}).
@@ -930,7 +943,7 @@ Each invariant is preserved by the symplectic group $\mathrm{Sp}(2n)$ and destro
 We state precisely the problems whose resolution would close the standard-model gap.
 
 \begin{enumerate}
-\item \textbf{Statistical dimension under $S_A=0$ for sympLPN \cite{LPQR26}.} The full SQ proof is blocked by the deterministic quadratic symplectic relation $S_A=0$ (the $\Omega$-Gram of columns) that characterises the sympLPN variant (\Cref{def:lsn-batch}). Prove that conditioning on $S_A=0$ does not reduce the statistical dimension below $2^{\Omega(n)}$.
+\item \textbf{Statistical dimension under $S_A=0$ for sympLPN \cite{LPQR26}.} The full SQ proof is blocked by the deterministic quadratic symplectic relation $S_A=0$ (the $\Omega$-Gram of columns) that characterises the sympLPN variant (\Cref{def:symplpn}). Prove that conditioning on $S_A=0$ does not reduce the statistical dimension below $2^{\Omega(n)}$.
 
 \item \textbf{LPN(low-noise) $\to$ LSN.} In the cryptographically relevant regime $p=O(1/\sqrt{n})$, the reduction of \cite{KLP+25} is vacuous. Does a non-vacuous reduction exist, or can its non-existence be proved?
 

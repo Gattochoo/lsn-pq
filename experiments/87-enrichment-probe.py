@@ -1,5 +1,5 @@
 """
-85 — Enrichment probe: can past samples beat the 2^{-n} dilution?
+87 — Enrichment probe: can past samples beat the 2^{-n} dilution?
 
 For small n, we enumerate all Lagrangians, draw samples from a random secret L,
 compute the exact posterior P(L | samples), and measure the maximum posterior
