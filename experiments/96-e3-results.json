@@ -1,0 +1,370 @@
+{
+  "experiment": "96-e3-adaptive-B-families",
+  "description": "4 B families vs P1 on 4 statistics",
+  "results": [
+    {
+      "n": 4,
+      "m": 8,
+      "p_prime": 0.2,
+      "families": [
+        {
+          "B_family": "uniform",
+          "P0_means": {
+            "syndrome": 1.7135,
+            "rank_diff": 1.0,
+            "corr": 0.0149,
+            "max_agree": 6.6505
+          },
+          "P1_means": {
+            "syndrome": 1.4615,
+            "rank_diff": 1.0,
+            "corr": 0.0223,
+            "max_agree": 6.905
+          },
+          "separation": {
+            "syndrome": 0.2234,
+            "rank_diff": Infinity,
+            "corr": 0.0332,
+            "max_agree": 0.3123
+          }
+        },
+        {
+          "B_family": "low_w3",
+          "P0_means": {
+            "syndrome": 1.663,
+            "rank_diff": 1.0,
+            "corr": 0.0217,
+            "max_agree": 6.671
+          },
+          "P1_means": {
+            "syndrome": 1.488,
+            "rank_diff": 1.0,
+            "corr": 0.0266,
+            "max_agree": 6.898
+          },
+          "separation": {
+            "syndrome": 0.1571,
+            "rank_diff": Infinity,
+            "corr": 0.0216,
+            "max_agree": 0.2786
+          }
+        },
+        {
+          "B_family": "high_w",
+          "P0_means": {
+            "syndrome": 1.65,
+            "rank_diff": 1.0,
+            "corr": 0.0218,
+            "max_agree": 6.6765
+          },
+          "P1_means": {
+            "syndrome": 1.472,
+            "rank_diff": 1.0,
+            "corr": 0.0248,
+            "max_agree": 6.883
+          },
+          "separation": {
+            "syndrome": 0.1541,
+            "rank_diff": Infinity,
+            "corr": 0.0138,
+            "max_agree": 0.2391
+          }
+        },
+        {
+          "B_family": "all_ones",
+          "P0_means": {
+            "syndrome": 0.16,
+            "rank_diff": 1.0,
+            "corr": 1.0,
+            "max_agree": 7.84
+          },
+          "P1_means": {
+            "syndrome": 1.4845,
+            "rank_diff": 1.0,
+            "corr": 0.0262,
+            "max_agree": 6.9035
+          },
+          "separation": {
+            "syndrome": 1.1868,
+            "rank_diff": Infinity,
+            "corr": 6.1449,
+            "max_agree": 0.9799
+          }
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "m": 10,
+      "p_prime": 0.2,
+      "families": [
+        {
+          "B_family": "uniform",
+          "P0_means": {
+            "syndrome": 2.327,
+            "rank_diff": 1.0,
+            "corr": 0.0067,
+            "max_agree": 8.2895
+          },
+          "P1_means": {
+            "syndrome": 1.9805,
+            "rank_diff": 1.0,
+            "corr": 0.0111,
+            "max_agree": 8.6205
+          },
+          "separation": {
+            "syndrome": 0.2752,
+            "rank_diff": Infinity,
+            "corr": 0.0273,
+            "max_agree": 0.4021
+          }
+        },
+        {
+          "B_family": "low_w3",
+          "P0_means": {
+            "syndrome": 2.15,
+            "rank_diff": 1.0,
+            "corr": 0.011,
+            "max_agree": 8.3935
+          },
+          "P1_means": {
+            "syndrome": 1.9325,
+            "rank_diff": 1.0,
+            "corr": 0.0113,
+            "max_agree": 8.622
+          },
+          "separation": {
+            "syndrome": 0.1718,
+            "rank_diff": Infinity,
+            "corr": 0.0021,
+            "max_agree": 0.2731
+          }
+        },
+        {
+          "B_family": "high_w",
+          "P0_means": {
+            "syndrome": 2.274,
+            "rank_diff": 1.0,
+            "corr": 0.0112,
+            "max_agree": 8.2985
+          },
+          "P1_means": {
+            "syndrome": 1.9405,
+            "rank_diff": 1.0,
+            "corr": 0.0147,
+            "max_agree": 8.617
+          },
+          "separation": {
+            "syndrome": 0.2647,
+            "rank_diff": Infinity,
+            "corr": 0.0207,
+            "max_agree": 0.3779
+          }
+        },
+        {
+          "B_family": "all_ones",
+          "P0_means": {
+            "syndrome": 0.175,
+            "rank_diff": 1.0,
+            "corr": 1.0,
+            "max_agree": 9.825
+          },
+          "P1_means": {
+            "syndrome": 1.9405,
+            "rank_diff": 1.0,
+            "corr": 0.0152,
+            "max_agree": 8.6175
+          },
+          "separation": {
+            "syndrome": 1.3788,
+            "rank_diff": Infinity,
+            "corr": 7.9183,
+            "max_agree": 1.1122
+          }
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "m": 12,
+      "p_prime": 0.2,
+      "families": [
+        {
+          "B_family": "uniform",
+          "P0_means": {
+            "syndrome": 2.8975,
+            "rank_diff": 1.0,
+            "corr": -0.0039,
+            "max_agree": 9.998
+          },
+          "P1_means": {
+            "syndrome": 2.473,
+            "rank_diff": 1.0,
+            "corr": 0.0034,
+            "max_agree": 10.3355
+          },
+          "separation": {
+            "syndrome": 0.3107,
+            "rank_diff": Infinity,
+            "corr": 0.0571,
+            "max_agree": 0.4062
+          }
+        },
+        {
+          "B_family": "low_w3",
+          "P0_means": {
+            "syndrome": 2.745,
+            "rank_diff": 1.0,
+            "corr": 0.0054,
+            "max_agree": 10.0705
+          },
+          "P1_means": {
+            "syndrome": 2.461,
+            "rank_diff": 1.0,
+            "corr": 0.0099,
+            "max_agree": 10.372
+          },
+          "separation": {
+            "syndrome": 0.2084,
+            "rank_diff": Infinity,
+            "corr": 0.0329,
+            "max_agree": 0.3609
+          }
+        },
+        {
+          "B_family": "high_w",
+          "P0_means": {
+            "syndrome": 2.8335,
+            "rank_diff": 1.0,
+            "corr": -0.0031,
+            "max_agree": 10.04
+          },
+          "P1_means": {
+            "syndrome": 2.51,
+            "rank_diff": 1.0,
+            "corr": 0.005,
+            "max_agree": 10.314
+          },
+          "separation": {
+            "syndrome": 0.2313,
+            "rank_diff": Infinity,
+            "corr": 0.0626,
+            "max_agree": 0.3232
+          }
+        },
+        {
+          "B_family": "all_ones",
+          "P0_means": {
+            "syndrome": 0.138,
+            "rank_diff": 1.0,
+            "corr": 1.0,
+            "max_agree": 11.862
+          },
+          "P1_means": {
+            "syndrome": 2.4595,
+            "rank_diff": 1.0,
+            "corr": 0.0026,
+            "max_agree": 10.3635
+          },
+          "separation": {
+            "syndrome": 1.7375,
+            "rank_diff": Infinity,
+            "corr": 11.0079,
+            "max_agree": 1.4006
+          }
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "m": 24,
+      "p_prime": 0.2,
+      "families": [
+        {
+          "B_family": "uniform",
+          "P0_means": {
+            "syndrome": 8.5485,
+            "rank_diff": 1.0,
+            "corr": -0.0003,
+            "max_agree": 17.905
+          },
+          "P1_means": {
+            "syndrome": 7.3925,
+            "rank_diff": 1.0,
+            "corr": 0.0041,
+            "max_agree": 19.529
+          },
+          "separation": {
+            "syndrome": 0.3902,
+            "rank_diff": Infinity,
+            "corr": 0.0616,
+            "max_agree": 0.9762
+          }
+        },
+        {
+          "B_family": "low_w3",
+          "P0_means": {
+            "syndrome": 8.1865,
+            "rank_diff": 1.0,
+            "corr": 0.0081,
+            "max_agree": 18.434
+          },
+          "P1_means": {
+            "syndrome": 7.576,
+            "rank_diff": 1.0,
+            "corr": 0.0033,
+            "max_agree": 19.495
+          },
+          "separation": {
+            "syndrome": 0.2043,
+            "rank_diff": Infinity,
+            "corr": 0.0639,
+            "max_agree": 0.6323
+          }
+        },
+        {
+          "B_family": "high_w",
+          "P0_means": {
+            "syndrome": 8.302,
+            "rank_diff": 1.0,
+            "corr": 0.0013,
+            "max_agree": 18.0815
+          },
+          "P1_means": {
+            "syndrome": 7.52,
+            "rank_diff": 1.0,
+            "corr": 0.0037,
+            "max_agree": 19.567
+          },
+          "separation": {
+            "syndrome": 0.2529,
+            "rank_diff": Infinity,
+            "corr": 0.035,
+            "max_agree": 0.8356
+          }
+        },
+        {
+          "B_family": "all_ones",
+          "P0_means": {
+            "syndrome": 0.204,
+            "rank_diff": 1.0,
+            "corr": 1.0,
+            "max_agree": 23.796
+          },
+          "P1_means": {
+            "syndrome": 7.427,
+            "rank_diff": 1.0,
+            "corr": 0.0047,
+            "max_agree": 19.5465
+          },
+          "separation": {
+            "syndrome": 2.7102,
+            "rank_diff": Infinity,
+            "corr": 17.5565,
+            "max_agree": 2.2279
+          }
+        }
+      ]
+    }
+  ]
+}
