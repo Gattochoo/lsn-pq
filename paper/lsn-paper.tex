@@ -309,7 +309,22 @@ Bayes' rule: $\Pr[a \in L \mid b=1] = \Pr[b=1 \mid a \in L]\Pr[a \in L] / \Pr[b=
 \label{q:enrichment}
 Can any efficient selection rule (using past labeled samples and the symplectic structure) produce query points with $\Pr[a \in L] \geq (1+\delta)\,2^{-n}$ for non-negligible $\delta$?  In other words, can the $2^{-n}$ dilution be beaten?
 
-A negative answer would be the cleanest quantitative statement of what $\mathrm{LSN}\setminus\mathrm{LPN}$ is; a positive answer would yield a concrete attack improvement (and a step toward a $6.5$th-family demotion).  The SQ lower bounds of \Cref{sec:sq} suggest that enrichment is impossible for SQ-implementable selection rules: any such rule is a linear combination of SQ queries, and the correlation bounds limit its advantage to $2^{-n}$. A formal reduction from enrichment to distinguishing would require a short lemma (omitted here).
+A negative answer would be the cleanest quantitative statement of what $\mathrm{LSN}\setminus\mathrm{LPN}$ is; a positive answer would yield a concrete attack improvement (and a step toward a $6.5$th-family demotion).  The SQ lower bounds of \Cref{sec:sq} suggest that enrichment is impossible for SQ-implementable selection rules: any such rule is a linear combination of SQ queries, and the correlation bounds limit its advantage to $2^{-n}$. The following lemma makes the reduction from enrichment to distinguishing explicit.
+
+\begin{lemma}[Enrichment boosts SQ advantage]
+\label{lem:enrichment-sq}
+Let $\mathcal{R}$ be a selection rule that, using past samples from the membership-LSN oracle, outputs a query $a \in \F_2^{2n}$ such that $\Pr[a \in L] = (1+\delta)\,2^{-n}$ for some $\delta \ge 0$. Then the statistical query $\phi(a,b) = (-1)^b$ has advantage
+\[
+  \operatorname{Adv}(\phi) = 2|1-2p|(1+\delta)2^{-n}.
+\]
+In particular, the gain over the uniform-query baseline ($\delta=0$) is $\Delta\operatorname{Adv} = 2|1-2p|\cdot\delta\cdot 2^{-n}$.
+\end{lemma}
+
+\begin{proof}
+Under the null model ($b=e$) we have $\E[\phi] = \E[(-1)^e] = 1-2p$. Under the structured model, $\Pr[b=1 \mid a] = p + \mathbf{1}_L(a)(1-2p)$, so $\E[\phi \mid a] = 1-2\Pr[b=1 \mid a] = (1-2p)(1-2\mathbf{1}_L(a))$. Averaging over $a \sim \mathcal{R}$ gives $\E[\phi] = (1-2p)(1-2\Pr[a \in L]) = (1-2p)(1-2(1+\delta)2^{-n})$. The advantage is $|\E[\phi]-\E_{\text{null}}[\phi]| = |1-2p| \cdot 2(1+\delta)2^{-n}$.
+\end{proof}
+
+\Cref{lem:enrichment-sq} shows that any selection rule achieving $\delta = \Omega(1)$ yields an SQ distinguisher with advantage $\Omega(2^{-n})$, which is exactly the threshold ruled out by \Cref{thm:linear-sq} for linear SQ algorithms. Non-linear selection rules are not covered by this lemma; their analysis remains open.
 
 \subsection{Parameters}
 \label{subsec:parameters}
