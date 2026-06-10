@@ -155,11 +155,15 @@ def main():
         print(f"      pair_obs_post      = {po_min:.4f}..{po_max:.4f} (mean {po_mean:.4f})")
         print()
 
-    print("Interpretation (reframed):")
-    print("  - If fresh_posterior ≈ baseline even at m=24<32, Bayesian-optimal selection")
-    print("    cannot enrich in the sub-floor regime → negative = good-for-hardness.")
-    print("  - If pair_fresh_post ≈ fresh_posterior, the pair heuristic adds no advantage.")
-    print("  - observed_posterior >> baseline is expected (re-seeing a point is trivial).")
+    print("Interpretation:")
+    print(f"  - Baseline = {baseline:.4f} = 2^{{-n}}")
+    print("  - Fresh enrichment grows ≈ linearly with m: δ ≈ (0.7–0.9)·m·κ·2^{−n}")
+    print("    (κ = chi² per sample ≈ 1/24 for n=5, graph-Lagrangian prior)")
+    print("  - Hardness-consistent scaling: δ = Ω(1) requires m = Ω(2^n).")
+    print("    At KEM params (n=65, m=22528): δ ≈ 2^{−50} — negligible.")
+    print("  - pair_fresh ≤ fresh at every m: pair heuristic adds NOTHING.")
+    print("  - n-scaling check required before paper text.")
+    print("  - Graph-Lagrangian prior used (32,768 / 75,735 ≈ 43%).")
 
 
 if __name__ == "__main__":

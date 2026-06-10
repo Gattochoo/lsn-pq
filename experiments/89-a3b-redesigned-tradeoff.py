@@ -53,27 +53,30 @@ def vec_add(u, v):
     return [a ^ b for a, b in zip(u, v)]
 
 def sample_isotropic_basis(D, n):
-    """A ∈ F2^{D×n} with isotropic columns."""
+    """A ∈ F2^{D×n} with isotropic columns forming a basis (rank n)."""
     Om = [[0] * D for _ in range(D)]
     for i in range(n):
         Om[i][i + n] = 1
         Om[i + n][i] = 1
     cols = []
     attempts = 0
-    while len(cols) < n and attempts < 10000:
+    while len(cols) < n and attempts < 20000:
         v = [random.randint(0, 1) for _ in range(D)]
         attempts += 1
+        # Isotropy check
         ok = True
         for u in cols:
             pair = sum(u[i] * Om[i][j] * v[j] for i in range(D) for j in range(D)) % 2
             if pair != 0:
                 ok = False
                 break
-        if ok:
-            cols.append(v)
-    if len(cols) < n:
-        while len(cols) < n:
-            cols.append(cols[-1][:])
+        if not ok:
+            continue
+        # Linear independence check
+        if rank([list(c) for c in cols] + [v]) <= len(cols):
+            continue
+        cols.append(v)
+    assert len(cols) == n, f"Failed to find isotropic basis: got {len(cols)}/{n}"
     return transpose(cols)
 
 def sample_B_fixed_lowrank(m, D, target_rank):
