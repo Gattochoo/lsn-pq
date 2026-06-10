@@ -916,7 +916,7 @@ This is $1 - 2^{-\Omega(n^2)}$ only when $n - 2c = \Omega(n)$, i.e. $\rho \ge (3
 \end{itemize}
 This stratification applies to \emph{fixed/public} $B$ (per-realization). For $m < cn$ the Fannes bound is not triggered; this corner case is cryptographically irrelevant because $m$ must exceed the secret dimension $n$ for any reduction to have polynomially many samples. If the reduction draws $B$ from a high-entropy distribution conditioned on $BA$ being uniform, the matrix is randomized---but then the label noise $Be$ is killed by piling-up at $p=1/4$ (row weight $w$ gives bias $2^{-w}$). The remaining regime is the secret-$B$ model of \Cref{lem:affine-coset-bias}, where the quantitative trade-off is governed by the Gram-rank transition.
 
-\paragraph{B-visibility and the secret-$B$ regime.} The quantifier order of LPQR26's Theorem~D.2 is subtle: $B$ may be chosen as a function of $A$ provided only that the \emph{induced distribution} of $BA$ is uniform. This creates a \textbf{secret-$B$} regime in which the reduction matrix is not public. Our transport theorems (which require the realized $B$ to be available to the distinguisher) do not apply here.  The residual open question was whether label-signal bounds together with marginal $BA$-uniformity suffice to close the linear-reduction landscape at constant noise.  \Cref{thm:any-b-uniformity} resolves the \textbf{conditional-uniformity} case: when $BA$ is uniform conditioned on each fixed $A$, the reachability bound forces high-weight rows regardless of $B$'s visibility.  The \textbf{marginal-uniformity} case, where $B=g(A)$ yields uniform $BA$ marginally over $A$ but not conditionally, is not resolved: low-weight rows that vary with $A$ can evade the per-instance bound because $\bigcup_A R_w(A)$ may cover $\F_2^n$.  This marginal-adaptive corner remains open (Open Problem~\ref{open:marginal-adaptive}). In the \textbf{public-$B$} regime, by contrast, randomizing $B$ does not escape our rank-stratification barrier because the detector operates on the realized matrix. The secret-$B$ regime is loosely analogous to the gap between our membership-LSN and the stabilizer-decoding LSN of \cite{KLP+25,LPQR26}: in both settings the adversary does not fully observe the structure that generates the samples.
+\paragraph{B-visibility and the secret-$B$ regime.} The quantifier order of LPQR26's Theorem~D.2 is subtle: $B$ may be chosen as a function of $A$ provided only that the \emph{induced distribution} of $BA$ is uniform. This creates a \textbf{secret-$B$} regime in which the reduction matrix is not public. Our transport theorems (which require the realized $B$ to be available to the distinguisher) do not apply here.  The residual open question was whether label-signal bounds together with conditional $BA$-uniformity suffice to close the linear-reduction landscape in the conditional model at constant noise.  \Cref{thm:any-b-uniformity} resolves the \textbf{conditional-uniformity} case: when $BA$ is uniform conditioned on each fixed $A$, the reachability bound forces high-weight rows regardless of $B$'s visibility.  The \textbf{marginal-uniformity} case, where $B=g(A)$ yields uniform $BA$ marginally over $A$ but not conditionally, is not resolved: low-weight rows that vary with $A$ can evade the per-instance bound because $\bigcup_A R_w(A)$ may cover $\F_2^n$.  This marginal-adaptive corner remains open (Open Problem~\ref{open:marginal-adaptive}). In the \textbf{public-$B$} regime, by contrast, randomizing $B$ does not escape our rank-stratification barrier because the detector operates on the realized matrix. The secret-$B$ regime is loosely analogous to the gap between our membership-LSN and the stabilizer-decoding LSN of \cite{KLP+25,LPQR26}: in both settings the adversary does not fully observe the structure that generates the samples.
 
 The label-signal side of the secret-$B$ regime is controlled by the following affine-coset bias bound.
 
@@ -1060,6 +1060,86 @@ Each invariant is preserved by the symplectic group $\mathrm{Sp}(2n)$ and destro
 \Cref{conj:source} is falsifiable: a single explicit reduction (membership-LSN, batch-LSN, or sympLPN) $\to$ LPN that preserves any of the three invariants would refute the conjecture in its current form. It is not decidable by reduction analysis alone; it rests on the absence of such a reduction and the structural barriers documented above.
 
 \paragraph{The scrambling barrier at constant noise.} The LPQR26 linear barrier (Theorem D.2) applies at any noise rate $p=\omega(1/n)$, and at our constant noise $p=1/4$ its error-amplification step is in fact \emph{stronger}: a randomizing row of weight $w$ leaves per-bit bias $(1-2p)^w = 2^{-w}$ (piling-up), versus $\approx 1-2wp$ in the low-noise regime. The residual gap is therefore not about noise: linear reductions consuming $m=\omega(n)$ samples are ruled out in the conditional-uniformity model for all $m=\operatorname{poly}(n)$ by the reachability barrier (\Cref{thm:any-b-uniformity}).  The marginal-adaptive corner, in which $B=g(A)$ yields marginally-uniform $BA$ via low-weight rows that vary with $A$, is not covered by this argument and remains open (Open Problem~\ref{open:marginal-adaptive}).  What remains outside both regimes is only non-linear scramblers. For (ii) an algebraic obstruction remains: $S_A=0$ is a deterministic quadratic relation among the public vectors (our observation, distinct from the LPQR entropy argument). Direct inspection of the $n=3$ case shows that simple scramblers fall into one of three classes: a linear scrambler \emph{transports} the quadratic relation ($S'_{A'}=0$ with respect to the conjugated form $M^{-\top}\Omega M^{-1}$, so it remains detectable), a non-linear scrambler destroys the linear label structure required by LPN, and a random scrambler destroys the secret entirely. None of these simple classes simultaneously destroys $S_A=0$ and creates a fresh LPN secret-bit structure. The residual question --- whether a sufficiently complex non-linear scrambler exists --- is the same as Open Problem~2.
+
+\paragraph{Closing the marginal-adaptive corner via entropy counting.}
+The gap between conditional and marginal uniformity is bridged by an entropy-support argument that does not require per-instance uniformity.  The idea is simple: the isotropic basis $A$ carries entropy $H(A)=\Theta(n^{2})$, while each low-weight row of $B$ can only ``spend'' $O(n)$ bits of entropy on its output query.  If the total output entropy is $nm$ (uniformity), the budget forces most rows to have high weight.
+
+\begin{lemma}[Entropy-support bound for low-weight rows]
+\label{lem:m1}
+Let $A\in\F_2^{2n\times n}$ be a random isotropic basis and let $B=g(A,R)\in\F_2^{m\times 2n}$ be any randomized function of $A$.  Let $C=BA$ and suppose $\operatorname{SD}(C,\,\operatorname{Uniform}_{\F_2^{m\times n}})\le\delta$.  Let $w=\lfloor 0.19n\rfloor$.  Then the expected number of rows of $B$ with weight $\le w$ satisfies
+\[
+\E\bigl[\,\bigl|\{\,i:|b_i|\le w\,\}\bigr|\,\bigr]
+\;\le\;
+\frac{(3/2)n^{2}+n/2+\delta nm+O(1)}{0.094n}
+\;=\;16n+11\delta m+O(1).
+\]
+\end{lemma}
+
+\begin{proof}
+By the Fannes--Csisz\'{a}r continuity bound (Cover--Thomas \S17.3.3), $\operatorname{SD}(C,\text{Uniform})\le\delta$ implies $H(C)\ge nm-\delta nm-1$.  Conditioning on $A$ and using the chain rule,
+\[
+H(C)\;\le\;H(A)+H(C\mid A)\;=\;H(A)+\sum_{i=1}^{m}H(c_i\mid A,c_{<i})
+\;\le\;H(A)+\sum_{i=1}^{m}H(c_i\mid A).
+\]
+The entropy of $A$ is the log-cardinality of the Lagrangian Grassmannian,
+\[
+H(A)\;=\;\log_2|\Lagr(2n,\F_2)|\;=\;\frac{3}{2}n^{2}+\frac{n}{2}+O(1).
+\]
+
+For a low-weight row ($|b_i|\le w$), the conditional distribution of $c_i=b_i^{\!\top}A$ is supported on $R_w(A)$, so by \Cref{lem:reachability}
+\begin{align*}
+H(c_i\mid A)
+&\;\le\;\log_2|R_w(A)|\;\le\;\log_2\sum_{j=0}^{w}\binom{2n}{j} \\
+&\;\le\;2n\cdot H_2(w/2n)+\log_2(w+1)
+\;\le\;0.906n+O(\log n).
+\end{align*}
+For a row with $|b_i|>w$ we use the trivial bound $H(c_i\mid A)\le n$.
+
+Let $k$ be the (random) number of low-weight rows.  Then
+\[
+\sum_{i=1}^{m}H(c_i\mid A)\;\le\;k\cdot 0.906n+(m-k)\cdot n
+\;=\;nm-k\cdot 0.094n.
+\]
+Combining the three inequalities,
+\[
+nm-\delta nm-1
+\;\le\;(3/2)n^{2}+n/2+nm-k\cdot 0.094n+O(1),
+\]
+which rearranges to $k\cdot 0.094n\le(3/2)n^{2}+n/2+\delta nm+O(1)$.  Taking expectations over $A$ and $R$ gives the claimed bound.
+\end{proof}
+
+\Cref{lem:m1} is the missing piece for the marginal-adaptive model: it bounds the \emph{expected} number of low-weight rows using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification and recovery arguments of \Cref{cor:noise-amp,cor:recovery-barrier} then apply to those rows.
+
+\begin{lemma}[Distribution-mismatch death]
+\label{lem:m2}
+Let $p'\in(0,1/2)$ be a target noise parameter with $1-2p'\ge 1/\operatorname{poly}(n)$.  Consider any reduction outputting $m$ samples $(c_i,a_i)$.  If at least $m-16n-11\delta m$ rows have effective noise bias $\le 2^{-0.19n}$, then the output distribution $(C,y)$ satisfies
+\[
+\operatorname{SD}\bigl(\,(C,y),\;\mathrm{LPN}_{p'}\,\bigr)
+\;\ge\;
+1-\exp\!\bigl(-\Omega((m-16n-11\delta m)(1-2p')^{2})\bigr).
+\]
+In particular, for $m\ge Cn$ with any constant $C>16$ and $\delta=o(1)$, the statistical distance is $1-o(1)$.
+\end{lemma}
+
+\begin{proof}
+Standard LPN$_{p'}$ has identical noise bias $1-2p'$ on every row.  A row with bias $\le 2^{-0.19n}$ has squared Hellinger distance $\ge (1-2p'-2^{-0.19n})^{2}/4=(1-2p')^{2}/4-o(1)$ from the target Bernoulli$(p')$ noise.  By tensorization of Hellinger distance over independent rows and the relation $\operatorname{SD}\ge 1-\exp(-\frac12 H^{2})$ (see e.g. Le Cam \cite{LeCam86}), the cumulative Hellinger distance over the $m-16n-11\delta m$ mismatched rows gives the claimed bound.
+\end{proof}
+
+\begin{theorem}[Marginal-adaptive linear-reduction barrier]
+\label{thm:marginal-adaptive}
+Let $A\sim\operatorname{Uniform}(\Lagr(2n,\F_2))$ and let $B=g(A,R)\in\F_2^{m\times 2n}$ be any randomized adaptive matrix.  If $m\ge Cn$ for any constant $C>16$ and $\delta=o(1)$, then either:
+\begin{enumerate}
+\item $\operatorname{SD}(BA,\text{Uniform})>\delta$, or
+\item the output labels have effective noise $p'\ge \tfrac12-2^{-\Theta(n)}$ on all but $o(m)$ rows, so that $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for every $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$.
+\end{enumerate}
+Consequently, no marginal-adaptive linear reduction maps symplectic LPN to a usable standard LPN instance when $m\ge Cn$.
+\end{theorem}
+
+\begin{proof}
+If $\operatorname{SD}(BA,\text{Uniform})\le\delta$, \Cref{lem:m1} forces at least $m-16n-11\delta m=m-o(m)$ rows to have weight $>0.19n$.  By \Cref{cor:noise-amp} each such row has noise bias $\le 2^{-0.19n}$, i.e. $p'\ge \tfrac12-2^{-0.19n-1}$.  \Cref{lem:m2} then gives $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for any target $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$.
+\end{proof}
+
+\Cref{thm:marginal-adaptive} closes the marginal-adaptive corner for $m\ge Cn$ with $C>16$.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is the primary case of LPQR26 Appendix~D (their Theorem~D.2), which rules out decodability at constant noise for all fixed linear reductions with $m=(1+\epsilon)n$.  Combining their external result with our \Cref{thm:marginal-adaptive} yields a complete barrier for all $m=\operatorname{poly}(n)$ in the marginal-adaptive model as well.
 
 \section{Open Problems}
 \label{sec:open}
