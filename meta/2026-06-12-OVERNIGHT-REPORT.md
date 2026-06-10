@@ -19,6 +19,7 @@
 | P5d | `meta/2026-06-12-2nd-moment-detector-sketch.md` | 2nd-moment detector analysis | ✅ Drafted |
 | P1 E1 adv | `94c-e1-advanced-analysis.py` | ROC/AUC for 4 statistics | ✅ Done |
 | P6 ext | `99-multisample-detector.py` | Multi-sample rank detector | ✅ Done |
+| P6 theory | `meta/2026-06-12-multisample-theory.md` | Multi-sample theorem sketches | ✅ Drafted |
 | P6 | This file | Handoff report | ✅ Updated |
 
 ---
@@ -131,6 +132,9 @@ The open question shifts from "can P0 be distinguished from P1?" to:
 6. **Multi-sample detector: reuse-vs-randomize trade-off.**
    If a marginal-adaptive reduction reuses $(A,B)$, multi-sample rank detection closes OP9 for multi-sample adversaries. Can the reduction randomize $A$ per output while preserving marginal-uniformity and efficiency? This is the decisive question for OP9.
 
+7. **Multi-sample theorem formalization.**
+   Theorem sketches (P0 rank = 2n, P1 rank = k) need rigorous probability bounds. Is this a clean independent win or does the evasion loophole (randomizing A) prevent a theorem?
+
 ---
 
 ## 5. Blocked points and open questions
@@ -162,6 +166,7 @@ meta/2026-06-12-krawtchouk-concentration-draft.md
 meta/2026-06-12-fq-barrier-sketch.md
 meta/2026-06-12-2nd-moment-detector-sketch.md
 meta/2026-06-12-multisample-detector-findings.md
+meta/2026-06-12-multisample-theory.md
 meta/2026-06-12-OVERNIGHT-REPORT.md
 OVERNIGHT-LOG.md
 ```
