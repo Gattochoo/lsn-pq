@@ -73,12 +73,12 @@ The Learning Parity with Noise (LPN) problem, introduced by Blum \etal\ \cite{BF
 
 LPN has been the foundation for a wide range of cryptographic primitives, including OWFs, PKE, OT, and MPC \cite{ABW10,Ale11,DGM14,BCGI18}. Its main theoretical limitation is the absence of a worst-case hardness reduction comparable to Regev's LWE reduction from lattice problems \cite{Reg05}. LPN hardness is therefore treated as a \emph{primitive assumption}, accepted on the basis of sustained cryptanalytic resistance rather than reducibility.
 
-Post-quantum cryptography currently rests on six classical hardness families: multivariate quadratic equations (MQ), lattices (LWE/SIS), error-correcting codes (LPN/syndrome decoding), hash functions, Ising models, and tensor problems. A seventh family --- genuinely new, structurally distinct, and not reducible to the existing six --- has been sought since the inception of the field. LSN is the strongest current candidate for such a family.
+Post-quantum cryptography currently rests on a handful of established hardness families: lattices (LWE/SIS), error-correcting codes (LPN/syndrome decoding), multivariate quadratic equations (MQ), hash functions, and isogenies, with tensor and group-action problems emerging as further candidates. A genuinely new family --- structurally distinct and not reducible to the existing ones --- has been sought since the inception of the field. LSN is a leading candidate for such a family.
 
 \subsection{The LSN Problem}
 \label{subsec:lsn}
 
-We propose \emph{Lagrangian Subspace Noise} (LSN), also referred to as \emph{Learning Stabilizers with Noise} or \emph{symplectic LPN}. The secret is not a linear function but a Lagrangian subspace $L \subset \F_2^{2n}$ of a symplectic vector space. The learner receives samples
+We propose \emph{Lagrangian Subspace Noise} (LSN); its name and motivation come from the \emph{Learning Stabilizers with Noise} and \emph{symplectic LPN} problems of \cite{KLP+25,LPQR26}, and the precise relation between our membership formulation and theirs is discussed in \Cref{subsec:two-forms}. The secret is not a linear function but a Lagrangian subspace $L \subset \F_2^{2n}$ of a symplectic vector space. The learner receives samples
 \[
 (a_i, b_i) \quad \text{where} \quad b_i = \mathbf{1}_L(a_i) \oplus e_i,
 \]
@@ -89,7 +89,7 @@ with $a_i \sim \F_2^{2n}$ uniform, $e_i \sim \operatorname{Bernoulli}(p)$, and $
 \end{equation}
 This is exponentially larger than LPN's $2^n$ secrets, yet it is not an unstructured space: every secret satisfies the strong isotropy constraint $L = L^{\perp_\Omega}$. It is exactly this tension --- exponential size versus rigid structure --- that creates both the hardness and the technical difficulty of LSN.
 
-Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that \emph{their} stabilizer-decoding LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN (for linear reductions, proven in the constant-rate sample regime $m=\Theta(n)$; see \Cref{sec:barriers}). The precise relation between their LSN and our membership formulation is stated as an open positioning item in \Cref{subsec:two-forms}. These results position LSN as the strongest current candidate for a genuinely new post-quantum hardness family outside the six classical ones (multivariate-quadratic, lattice, code, hash, Ising, tensor).
+Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that \emph{their} stabilizer-decoding LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN (for linear reductions, proven in the constant-rate sample regime $m=\Theta(n)$; see \Cref{sec:barriers}). The precise relation between their LSN and our membership formulation is stated as an open positioning item in \Cref{subsec:two-forms}. These results position LSN as a leading candidate for a genuinely new post-quantum hardness family outside the established ones.
 
 \subsection{Contributions}
 \label{subsec:contributions}
@@ -584,7 +584,7 @@ We summarize the quantum attack landscape honestly.
 \paragraph{Blocked vectors.} The following quantum approaches have been analyzed and ruled out for LSN at constant noise:
 \begin{itemize}
 \item \textbf{Hidden Subgroup Problem.} The Lagrangian Grassmannian lacks a group structure with coset decomposition; no reduction to DHSP or abelian HSP is known.
-\item \textbf{Grover search.} Complexity $2^{n^2/2 + O(n)}$ exceeds all classical bounds.
+\item \textbf{Grover search.} Complexity $2^{n^2/4 + O(n)}$ (over the $2^{n^2/2}$-sized secret space) exceeds all classical bounds.
 \item \textbf{Quantum BKW.} Complexity $2^{O(n^2 / \log n)}$ is super-exponential in the security parameter.
 \end{itemize}
 
@@ -1219,6 +1219,8 @@ The moment generating function $C_n = \E[2^j]$ converges rapidly to $2$ as $n \t
 
 \section{Reduction Barrier Summary}
 \label{app:barrier}
+
+This appendix summarizes the SQ/feature-map barriers; for the full linear-reduction landscape (transport, entropy-continuity, reachability, and the open marginal-adaptive cell) see \Cref{tab:barriers} and \Cref{sec:barriers}.
 
 \paragraph{Linear.} For any linear classifier $h(a) = \langle w,a \rangle + t$, the advantage
 \[
