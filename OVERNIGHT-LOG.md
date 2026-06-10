@@ -26,3 +26,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 06:02 | P9 | meta/2026-06-12-op9-complexity-analysis.md | Computational complexity of multi-sample evasion: randomization feasible, overhead O(n^2/m)
 06:25 | P10 | experiments/101-multisample-randomized-A.py | Randomized A per output completely defeats multi-sample rank detection: P0 rank 12.0→20.0, indistinguishable from P1
 06:32 | P11 | meta/2026-06-12-OVERNIGHT-REPORT.md | Updated report with P7-P10 items; all phases documented
+06:42 | P12 | meta/2026-06-12-op9-future-directions.md | OP9 future directions: 5 open questions ranked, 3 recommended next steps
