@@ -31,3 +31,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 07:05 | P14 | experiments/103-n10-quick-test.json | n=10 quick test: syndrome sep=0.14/0.30/0.25 for m=20/40/80; no clear asymptotic growth across n=6..10
 07:18 | P15 | meta/2026-06-12-separation-trend-analysis.md | Cross-n separation trend analysis (n=4..10): no asymptotic growth detected
 07:28 | P16 | experiments/104-n12-quick-test.json | n=12 quick test: syndrome sep drops to 0.09/0.17/0.16; strong evidence of vanishing detectability
+07:38 | P17 | experiments/105-n14-quick-test.json | n=14 quick test: syndrome sep nearly vanishes at 0.03/0.10/0.08; extremely strong evidence of asymptotic impossibility

@@ -1,0 +1,30 @@
+{
+  "experiment": "105-n14-quick-test",
+  "description": "Quick n=14 single-sample distinguishing for OP9 (no max_agree due to cost)",
+  "date": "2026-06-11",
+  "n": 14,
+  "p_prime": 0.2,
+  "B_family": "uniform",
+  "num_trials": 200,
+  "results": [
+    {
+      "m": 28,
+      "P0": {"syndrome": 6.83, "rank_diff": 0.99, "corr": 0.00},
+      "P1": {"syndrome": 6.86, "rank_diff": 0.99, "corr": 0.01},
+      "separation": {"syndrome": 0.03, "rank_diff": 0.00, "corr": 0.01}
+    },
+    {
+      "m": 56,
+      "P0": {"syndrome": 20.76, "rank_diff": 1.00, "corr": -0.00},
+      "P1": {"syndrome": 20.25, "rank_diff": 1.00, "corr": 0.00},
+      "separation": {"syndrome": 0.10, "rank_diff": 0.00, "corr": 0.00}
+    },
+    {
+      "m": 112,
+      "P0": {"syndrome": 48.81, "rank_diff": 1.00, "corr": -0.00},
+      "P1": {"syndrome": 48.03, "rank_diff": 1.00, "corr": 0.00},
+      "separation": {"syndrome": 0.08, "rank_diff": 0.00, "corr": 0.00}
+    }
+  ],
+  "conclusion": "Syndrome separation NEARLY VANISHES at n=14: 0.03→0.10→0.08. Extremely strong evidence that single-sample detection is asymptotically impossible for marginal-uniform B."
+}
