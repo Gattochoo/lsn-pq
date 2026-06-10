@@ -1,0 +1,875 @@
+\documentclass[11pt,a4paper]{article}
+
+% ===== 한국어 통독용 번역판 (제출본 아님; 영어판 lsn-paper.tex가 정본) =====
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage[numbers]{natbib}
+\usepackage{xeCJK}
+\setCJKmainfont{Apple SD Gothic Neo}
+\setCJKsansfont{Apple SD Gothic Neo}
+\usepackage[margin=1in]{geometry}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{정리}[section]
+\newtheorem{lemma}[theorem]{보조정리}
+\newtheorem{corollary}[theorem]{따름정리}
+\newtheorem{proposition}[theorem]{명제}
+\newtheorem{conjecture}[theorem]{추측}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{정의}
+\newtheorem{remark}[theorem]{비고}
+\renewcommand{\proofname}{증명}
+\renewcommand{\abstractname}{초록}
+\renewcommand{\refname}{참고문헌}
+\renewcommand{\contentsname}{차례}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\LL}{\mathcal{L}}
+\newcommand{\E}{\mathbb{E}}
+\DeclareMathOperator{\Lagr}{Lagr}
+\DeclareMathOperator{\SDA}{SDA}
+\DeclareMathOperator{\VSTAT}{VSTAT}
+\DeclareMathOperator{\Adv}{Adv}
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\LSN}{\mathsf{LSN}}
+
+\title{라그랑지안 부분공간 잡음(LSN) 문제: \\ 포스트양자 암호의 새로운 프레임워크 \\[4pt] {\large (한국어 통독판 --- 정본은 영어판)}}
+\author{Kwanghoo Choo\thanks{ORCID: 0009-0005-5682-8098. Email: \texttt{gattochoo@gmail.com}. 본 문서는 영어 원본 \texttt{lsn-paper.pdf}의 한국어 번역판으로, 저자 통독·검토용이다. 제출본은 영어판이며 불일치 시 영어판이 우선한다.}}
+\date{2026년 6월}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+우리는 \textbf{라그랑지안 부분공간 잡음}(Lagrangian Subspace Noise, LSN) 문제를 도입한다. 이는 잡음 섞인 패리티 학습(LPN) 문제의 변형으로, 비밀이 선형 함수가 아니라 심플렉틱 벡터공간의 라그랑지안 부분공간이다. 비밀 공간인 라그랑지안 그라스마니안 $\Lagr(2n,\F_2)$의 크기는 $2^{n(n+1)/2+O(1)}$로 LPN의 $2^n$보다 지수적으로 크면서도 심플렉틱 형식에 의해 강하게 제약된다. 우리는 명시적 심플렉틱 스프레드를 통한 \textbf{무조건적} 지수 SQ(통계 질의) 하계 $\Omega(2^n)$과, 정밀하게 진술된 극값 추측 아래의 \textbf{조건부} $2^{2n-O(1)}$ 하계를, 점근 오차항 없는 정확한 쌍별 상관 공식과 함께 증명한다. 심플렉틱 LPN에서 표준 LPN으로 가는 선형 환원에 대해 거의-완전한 장벽 지형을 확립한다: 수송(transport) 기반 rank 층화가 모든 공개-행렬 선형 환원을 모든 표본 수와 잡음률에서 제거하고, 엔트로피-연속성 논증이 모든 고정 선형 환원을 제거하며, 엔트로피-support 계수 한계가 marginal-균등 적응 환원의 행 가운데 $O(n)$개를 제외한 전부에 선형 해밍 무게를 강제한다. 이로써 선형 지형의 네 칸 중 세 칸이 무조건적으로 닫히고, 네 번째 칸(marginal-적응)은 정밀하게 진술된 단일 미해결 문제로 환원된다. 나아가 멤버십 정식화와 디코딩 정식화를 정보이론적 바닥(floor)으로 분리하고, 일반 비선형 환원에 남는 표준모형 격차를 지도화한다. LSN으로부터 두 가지 암호 프리미티브를 구성한다: Siegel 차트 표현으로 $O(n^2)$개의 R1CS 제약만 필요한 간결 비대화 논증(LSN-SNARK; $n=65$에서 약 $4{,}225$개로, ZK-격자 증명의 수백만 개와 대비된다), 그리고 연접 폴라 부호 조정(reconciliation)을 쓰는 키 캡슐화 메커니즘(LSN-KEM; 80비트 보안에서 공개키 1.78~KB, 암호문 288~B). 모든 보안 주장은 정리·증거·추측으로 명시 분류되며, 남은 미해결 문제들은 정밀하게 진술된다.
+\end{abstract}
+
+\paragraph{\textbf{핵심어.}} 포스트양자 암호, 잡음 섞인 패리티 학습, 통계 질의 모형, 심플렉틱 기하, 폴라 부호, 영지식 증명.
+
+\paragraph{\textbf{LLM 사용 고지.}} 본 연구의 준비 과정에서 저자는 대형 언어모형(Claude, Kimi, Codex)을 문헌 조사, 수학적 탐색, 코드 프로토타이핑, 원고 작성 보조에 사용하였다. 도구 사용 후 저자가 내용을 검토·수정하였으며, 연구의 정확성·무결성·최종 내용에 대한 책임은 전적으로 저자에게 있다.
+
+\paragraph{\textbf{데이터·코드 공개.}} 모든 파이썬 프로토타입, 테스트 벡터, \LaTeX{} 소스는 \url{https://github.com/Gattochoo/lsn-pq}에 공개되어 있다.
+
+\section{서론}
+
+\subsection{배경}
+
+잡음 섞인 패리티 학습(LPN) 문제는 Blum \etal~\cite{BFKL94}이 도입한 것으로, 잡음 섞인 내적 $(a_i, \langle a_i, s\rangle \oplus e_i)$로부터 비밀 선형 함수 $s \in \F_2^k$를 복원하는 문제다. 수십 년의 암호분석에도 상수 잡음률의 LPN에 대한 다항시간 알고리즘은 알려져 있지 않다. 최선의 고전 공격은 BKW 알고리즘~\cite{BKW03}과 그 개량들로 $2^{O(n/\log n)}$의 준지수 시간이 들고, 양자 측에서는 Grover가 전수 키 탐색을 $2^k$에서 $2^{k/2}$로 줄일 뿐 최선의 고전 기법 대비 지수적 양자 가속은 보고된 바 없다~\cite{Kir11}.
+
+LPN은 OWF, PKE, OT, MPC 등 광범위한 암호 프리미티브의 토대가 되어 왔다. 이론적 한계는 Regev의 LWE 환원에 비견할 worst-case 하드니스 환원이 없다는 점이며, 따라서 LPN 하드니스는 환원 가능성보다 \emph{지속된 암호분석 저항}에 근거해 수용되는 원시 가정이다.
+
+포스트양자 암호는 현재 소수의 확립된 하드니스 family에 기대고 있다: 격자(LWE/SIS), 오류정정부호(LPN/신드롬 디코딩), 다변수 이차방정식(MQ), 해시함수, isogeny --- 그리고 텐서·군작용 문제가 신흥 후보로 떠오르고 있다. 기존 family로 환원되지 않는, 구조적으로 구별되는 진짜 새로운 family는 이 분야의 시작부터 추구되어 온 목표다. LSN은 그러한 family의 유력한(leading) 후보다.
+
+\subsection{LSN 문제}
+
+우리는 \emph{라그랑지안 부분공간 잡음}(LSN)을 제안한다. 이름과 동기는 \cite{KLP+25,LPQR26}의 \emph{Learning Stabilizers with Noise}와 \emph{symplectic LPN} 문제에서 왔으며, 우리의 멤버십 정식화와 그들 문제 사이의 정확한 관계는 \S\ref{subsec:two-forms}에서 논의한다. 비밀은 선형 함수가 아니라 심플렉틱 벡터공간의 라그랑지안 부분공간 $L \subset \F_2^{2n}$이다. 학습자는 표본
+\[
+(a_i, b_i), \qquad b_i = \mathbf{1}_L(a_i) \oplus e_i
+\]
+를 받는다. 여기서 $a_i \sim \F_2^{2n}$ 균등, $e_i \sim \operatorname{Bernoulli}(p)$, $\mathbf{1}_L$은 $L$의 지시함수다. 비밀 공간은 라그랑지안 그라스마니안으로
+\[
+|\Lagr(2n,\F_2)| = \prod_{i=1}^n (2^i+1) = 2^{n(n+1)/2 + O(1)}
+\]
+이다. 이는 LPN의 $2^n$보다 지수적으로 크지만 비구조적 공간이 아니다: 모든 비밀이 강한 등방성 제약 $L = L^{\perp_\Omega}$를 만족한다. 지수적 크기 대 강성 구조라는 이 긴장이 LSN의 하드니스와 기술적 난점을 동시에 만든다.
+
+Khesin \etal~\cite{KLP+25}, Poremba--Quek--Shor~\cite{PQS26}, Lu \etal~\cite{LPQR26}의 최근 독립 연구는 \emph{그들의} stabilizer-디코딩 LSN이 단일 논리 큐비트에서도 상수율 LPN 이상으로 어렵다는 것을 보였고, 심플렉틱 LPN을 표준 LPN으로 환원하는 데 대한 강한 장벽을 확립했다(선형 환원에 대해 상수율 표본 영역 $m=\Theta(n)$에서 증명; \S\ref{sec:barriers-ko} 참조). 그들의 LSN과 우리의 멤버십 정식화 사이의 정확한 관계는 \S\ref{subsec:two-forms}의 미해결 위치결정(positioning) 항목으로 명시한다. 이 결과들은 LSN을 기존 family 밖의 진짜 새로운 포스트양자 하드니스 family의 유력 후보로 자리매김한다.
+
+\subsection{기여}
+
+기여는 증명, 장벽, 구성의 세 축으로 정리된다.
+
+\begin{enumerate}
+\item \textbf{정확한 SQ 하계(\S\ref{sec:sq-ko}).} 명시적 심플렉틱 스프레드를 통한 무조건적 $\Omega(2^n)$ SQ 질의 하계와, pencil-극값 추측 아래의 조건부 $q \ge 2^{2n-O(1)}$ 하계를 증명한다. 둘 다 정확한 쌍별 상관 공식
+\[
+\langle D_L, D_{L'}\rangle = \frac{(1-2p)^2}{p(1-p)} \cdot 2^{j-2n}, \qquad j = \dim(L \cap L')
+\]
+에 기초한다. $p=1/4$에서 계수는 정확히 $4/3$이다. Markov 집중 논증은 평균상관 $O(2^{-2n})$의 크기 $2^{2n}$ 부분집합의 \emph{존재}를 주고, 더 강한 worst-case 한계는 미해결로 남는다. 결과는 적응적 SQ 알고리즘에도 성립한다.
+
+\item \textbf{환원 장벽(\S\ref{sec:barriers-ko}).} 선형 특성 사상은 LSN에 대해 0의 advantage를 가지며, 차수 $<n$ 다항 특성 사상은 오차가 적어도 $2^{-n}$이고, 적응적 선형 SQ 알고리즘의 advantage는 임의 잡음률 $p$에서 최대 $(1-2p)2^{-n}$임을 증명한다.
+
+\textbf{선형 환원 지형.} 수송 정리들이 모든 공개-$B$ 환원을 닫고, \cite{LPQR26}의 정리~D.1과 Fannes--Csisz\'ar 부등식이 모든 고정 $B$를 닫으며, 엔트로피-support 한계와 도달가능성(reachability) 정리가 조건부-균등 적응 $B$를 닫는다. marginal-적응 칸은 정밀한 미해결 문제로 제시한다.
+
+\textbf{두 정식화.} 멤버십 정식화와 batch/sympLPN 정식화를 분리하고, 전자에 대한 정보이론적 바닥을 증명한다.
+
+\item \textbf{암호 프리미티브(\S\ref{sec:primitives-ko}).}
+\begin{itemize}
+\item \textbf{LSN-SNARK:} Siegel 차트(그래프-라그랑지안) 표현으로 $O(n^2)$개의 R1CS 제약을 갖는 멤버십 SNARK. 검증된 제약 수: $n=8$에서 $64$, $n=41$에서 $1{,}681$, $n=65$에서 $4{,}225$.
+\item \textbf{LSN-KEM:} 연접 폴라 부호를 통한 CCA-보안 KEM. $p=1/4$의 직접 폴라 부호화는 실패하므로($Z_0 = 0.866$) 내부 반복부호와 외부 폴라 부호를 연접한다. $r=7$이면 유효잡음 $p'=0.0706$, SC 한계 $P_e < 2^{-81}$, 80비트 보안에서 PK 1.78~KB, CT 288~B. $r=11$이면 128비트 보안에서 $P_e < 2^{-149}$.
+\end{itemize}
+
+\item \textbf{엄밀한 단서(\S\ref{sec:open-ko}).} 모든 주장을 정리·증거·추측으로 분류한다. 완전한 공동체 수용을 위해 닫혀야 할 표준모형 격차 --- 비공허한 LPN(저잡음) $\to$ LSN 또는 LWE $\to$ LSN 환원의 부재 --- 를 명시한다.
+\end{enumerate}
+
+\section{예비 사항}
+
+\subsection{심플렉틱 벡터공간}
+
+$V = \F_2^{2n}$에 표준 심플렉틱 형식
+\[
+\Omega(x,y) = \sum_{i=1}^n (x_i y_{n+i} + x_{n+i} y_i), \qquad \text{즉 } \Omega(x,y) = x^{\!\top} J y, \; J = \begin{psmallmatrix} 0 & I_n \\ I_n & 0 \end{psmallmatrix} \ (\text{표수 } 2)
+\]
+를 준다. 부분공간 $L \subset V$가 \emph{등방}(isotropic)이라 함은 $\Omega|_{L\times L} = 0$인 것이고, 차원 $n$의 등방 부분공간을 \emph{라그랑지안}이라 한다(동치로 $L = L^{\perp_\Omega}$). 라그랑지안 그라스마니안을 $\Lagr(2n,\F_2)$로 쓴다.
+
+\begin{proposition}[라그랑지안 개수]
+$|\Lagr(2n,\F_2)| = \prod_{i=1}^n (2^i+1) = 2^{n(n+1)/2+O(1)}$.
+\end{proposition}
+
+$L, L' \in \Lagr(2n)$에 대해 $j = \dim(L \cap L')$로 쓰면 모든 값 $0 \le j \le n$이 발생하며, $j$의 분포는 $q=2$ 가우스 이항계수가 지배한다:
+\[
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{|\Lagr(2n,\F_2)|}.
+\]
+
+\subsection{심플렉틱 공간의 푸리에 변환}
+
+$f: \F_2^{2n} \to \R$의 비정규화 $\Omega$-푸리에 변환은 $\mathcal{F}_\Omega[f](\xi) = \sum_x f(x)(-1)^{\Omega(x,\xi)}$이다.
+
+\begin{lemma}[자기쌍대성]
+모든 $L \in \Lagr(2n,\F_2)$에 대해 $\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \cdot \mathbf{1}_L$.
+\end{lemma}
+
+\begin{proof}
+$\xi \in L$이면 모든 $x \in L$에서 $\Omega(x,\xi)=0$이므로 합은 $|L| = 2^n$. $\xi \notin L$이면 $\Omega(x_0,\xi)=1$인 $x_0 \in L$을 골라 대합 $x \mapsto x + x_0$이 반대 부호 항들을 짝지으므로 합은 $0$.
+\end{proof}
+
+\subsection{통계 질의(SQ) 모형}
+
+분포족 $\mathcal{D}$와 기준 분포 $D_0$에 대해, 평균상관 통계차원(SDA)~\cite{FGR+17}은
+\[
+\SDA(B(\mathcal{D},D_0),\gamma) = \max\Bigl\{d : \forall S \subseteq \mathcal{D},\ |S| \ge \tfrac{|\mathcal{D}|}{d} \Rightarrow \tfrac{1}{|S|^2}\textstyle\sum_{D,D' \in S}|\langle D,D'\rangle| \le \gamma\Bigr\}.
+\]
+
+\begin{theorem}[Feldman \etal~\cite{FGR+17}]
+$\SDA(B(\mathcal{D},D_0),\gamma) = d$이면, $\mathcal{D}$와 $D_0$를 성공확률 $\alpha > 1/2$로 구별하는 임의의 SQ 알고리즘은 $\VSTAT(1/(3\gamma))$에 $q \ge (2\alpha-1)d$회 질의해야 한다.
+\end{theorem}
+
+이 정리는 무작위 \emph{적응적} SQ 알고리즘에 적용되므로, 우리의 하계도 적응성을 자동으로 물려받는다.
+
+\subsection{표기}
+
+비밀 $L$, 잡음률 $p$의 LSN 분포를 $D_L$로, $b \sim \operatorname{Bernoulli}(p)$가 $a$와 독립인 잡음-전용 분포를 $D_0$로 쓴다. 로그는 달리 명시하지 않으면 밑이 2다.
+
+\section{관련 연구}
+
+\paragraph{LPN 기초와 암호분석.} LPN은 Blum--Furst--Kearns--Lipton~\cite{BFKL94}이 도입했다. 지배적 고전 공격은 BKW~\cite{BKW03}이며 고속 Walsh--Hadamard, 커버링 부호, 하이브리드 ISD 기법으로 최적화되었다. Lyubashevsky~\cite{Lyu05}는 다항 표본 변형을 주었고, Esser--K\"ubler--May~\cite{EKM17}가 통합 공격 프레임워크를 정리했다. 양자 가속은 Grover와 양자 BKW에 한정되며 지수적 개선은 보고된 바 없다.
+
+\paragraph{LPN 변형.} Ring-LPN, 구조화 잡음 LPN, LWR 등 효율 개선 변형이 많지만 모두 비밀 공간 크기가 $2^{O(n)}$이다. LSN은 비밀 공간이 $2^{n^2/2+O(n)}$이면서도 심플렉틱 선형대수로 다항시간 표집 가능하다는 점에서 근본적으로 다르다.
+
+\paragraph{심플렉틱·양자 부호.} 안정자(stabilizer) 부호는 고전 선형부호의 양자 유사물로 $\F_2^{2n}$의 라그랑지안 부분공간으로 자연스럽게 기술된다. Khesin \etal~\cite{KLP+25}은 상수율 LPN이 $k=1$에서도 \emph{그들의} stabilizer-디코딩 LSN으로 환원됨을 증명했고(우리 멤버십 정식화와의 관계는 미해결 위치결정 항목; \S\ref{subsec:two-forms}), Lu \etal~\cite{LPQR26}은 선형 환원이 상수율 표본 영역 $m=\Theta(n)$에서 sympLPN을 LPN으로 환원할 수 없음을 증명했다. $m=\omega(n)$에서는 그들의 한계가 오류 무게 $1/2-\delta$를 주는데, 이는 디코딩 가능성을 완전히 배제하기에 부족하다고 그들 스스로 언급한다(단, 장벽이 모든 $m=\operatorname{poly}(n)$으로 확장되리라 기대한다).
+
+\paragraph{SQ 하드니스.} SQ 모형은 Kearns~\cite{Kea98}가 도입했고 FGRV~\cite{FGR+17}가 우리가 쓰는 SDA 프레임워크를 주었다. 고전 표본만 접근하는 양자 알고리즘의 가속은 Grover의 이차 가속이 최대이므로, 지수적 SQ 하계는 양자 하드니스의 유관한 증거가 된다.
+
+\paragraph{부호 기반 암호와 폴라 부호.} McEliece, HQC, BIKE 등이 표준화 대상이며, 폴라 부호(Arikan~\cite{Ari09})는 용량 달성 부호로 리스트 디코딩(Tal--Vardy)과 유한길이 해석이 정비되어 있다. 우리는 보수적 파라미터 선택을 위해 Bhattacharyya 한계를 쓴다.
+
+\paragraph{포스트양자 KEM.} NIST 표준화는 Kyber(격자), Classic McEliece, HQC를 선정했다. LSN-KEM은 근본적으로 다른 가정 위에서 경쟁력 있는 크기를 제공한다.
+
+
+\section{LSN 문제: 정의와 기본 성질}
+
+\begin{definition}[멤버십-LSN$_{n,m,p}$]
+\label{def:lsn}
+$L \subset \F_2^{2n}$을 균등 무작위 라그랑지안이라 하자. LSN 분포 $D_L$은 $a \sim \F_2^{2n}$ 균등, $e \sim \operatorname{Bernoulli}(p)$를 표집해 $(a, b)$, $b = \mathbf{1}_L(a) \oplus e$를 출력한다. $D_L$에서 독립 표본 $m$개가 주어졌을 때 $L$을 복원하라.
+\end{definition}
+
+\paragraph{탐색 대 판정.} 본 논문의 모든 하드니스 결과는 \emph{판정} 문제 --- $D_L$을 잡음-전용 분포 $D_0$와 구별하기 --- 에 대해 진술된다. 탐색-판정 환원은 LPN과 같은 틀을 따른다: 판정 오라클과 후보 $L'$이 있으면 표본이 $D_{L'}$과 일치하는지 검정해 $L'=L$ 여부를 확인할 수 있고, 표준 하이브리드 논증이 판정 하드니스로부터 탐색 하드니스를 준다. 따라서 판정 LSN을 원시 가정으로 삼는다.
+
+\subsection{두 정식화}
+\label{subsec:two-forms}
+
+정의~\ref{def:lsn}은 \emph{멤버십}(오라클) 정식화다: 질의점 $a$가 표본마다 새로 무작위이고, 적대자는 라벨과 함께만 본다. 이는 SQ·정보이론 분석에 자연스러운 형태다. 암호 구성과 외부 하드니스 결과는 질의점들이 미리 고정되는 \emph{batch} 정식화를 쓴다.
+
+\begin{definition}[Batch-LSN$_{n,m,p}$]
+$L$을 균등 무작위 라그랑지안, $A = (a_1,\dots,a_m)$을 고정된 공개 질의점 열이라 하자. batch 분포 $D_L^{(A)}$는 독립 $e_j \sim \operatorname{Bernoulli}(p)$로 라벨 $b_j = \mathbf{1}_L(a_j) \oplus e_j$를 출력한다. $A$와 $b$로부터 $L$을 복원하라.
+\end{definition}
+
+$A$의 열은 균등 무작위, 의사난수(우리 KEM), 또는 구조화될 수 있다.
+
+\begin{definition}[sympLPN$_{n,p}$ \cite{KLP+25,LPQR26}]
+$A \in \F_2^{2n\times n}$을 열들이 \emph{등방}인 공개 행렬이라 하자: $S_A := A^{\!\top}\Omega A = 0$. 비밀 벡터 $x \in \F_2^n$, 잡음 $e \sim \operatorname{Bernoulli}(p)^{2n}$, $y = Ax + e \in \F_2^{2n}$. $(A,y)$로부터 $x$를 복원하라.
+\end{definition}
+
+\paragraph{상호 관계.}
+\begin{enumerate}
+\item \textbf{균등 $A$의 batch-LSN $\equiv$ 멤버십-LSN.} $A$의 열이 균등·독립이면 적대자의 view $(A,b)$는 멤버십 오라클의 $m$개 표본과 분포 동일하다. 따라서 멤버십-LSN에 대해 증명된 SQ 하계·정보 바닥은 균등-$A$ batch에 \emph{그대로} 이전된다.
+\item \textbf{의사난수 $A$ (KEM).} 우리 KEM은 짧은 시드에서 생성한 의사난수 $A$를 쓴다. 보안은 균등-$A$ batch-LSN에 PRG 단계 하나를 더해 환원된다.
+\item \textbf{sympLPN은 다른 문제다.} 진짜 sympLPN은 선형 라벨 $y = Ax+e$와 비밀 $x$를 가지며, 등방 제약 $S_A=0$은 공개 파라미터에 대한 공개 이차 관계다. pinned bridge 정리 없이는 batch-LSN(멤버십 라벨)과 동치가 아니다. LPQR26은 sympLPN을 연구하며, 우리의 수송 정리들은 공개 행렬의 $S_A=0$ 구조만 사용하므로 라벨 구조와 무관하게 등방 열을 갖는 임의 정식화에 적용된다.
+\item \textbf{미해결 위치결정 항목: 우리 멤버십-LSN 대 \cite{KLP+25,LPQR26}의 LSN.} 그들의 (고전적) LSN은 \emph{공개} 등방 행렬 $[A|B]$, 정크 레지스터 $x$, 비밀 논리열 $y$를 갖는다; 우리 멤버십-LSN은 공개 행렬이 없고 비밀이 라그랑지안 자체다. 두 정식화는 동치로 알려져 있지 않으며, 우리는 외부 하드니스 결과(예: 상수율 LPN $\le$ 그들의 LSN)를 우리 멤버십 정식화에 대해 주장하지 않는다. 이 다리의 확립 또는 반증은 미해결 정밀화 항목이다(미해결 문제 절 참조).
+\end{enumerate}
+
+논문 전체에서 각 정리가 어느 정식화를 다루는지 명시하며, 달리 없으면 ``LSN''은 멤버십 형태를 가리킨다.
+
+\subsection{정보이론적 바닥}
+
+멤버십-LSN의 표본당 정보량은 지수적으로 작아서, 다항 표본에서 멤버십 형태는 통계적으로 자명하게 안전하고, 하드니스 질문은 batch 정식화로 \emph{재조준}된다.
+
+\begin{proposition}[표본당 상호정보]
+잡음률 $p$의 멤버십-LSN에서 $I(L;(a,b)) = \Theta(2^{-n})$.
+\end{proposition}
+
+\begin{proof}
+$L$이 주어지면 $b = \mathbf{1}_L(a)\oplus e$이므로 $H(b\mid a,L) = H_2(p)$ 정확히. $a \neq 0$이면 균등 $a$가 $L$에 들어갈 확률은 $(2^n-1)/(2^{2n}-1) = 2^{-n} + O(2^{-2n})$이고, $a=0$이면 $\Pr[b=1\mid a=0]=1-p$로 그 엔트로피는 $H_2(1-p)=H_2(p)$이며 발생확률 $2^{-2n}$이라 기여가 무시된다. 따라서 $H(b\mid a) = H_2(p + 2^{-n}(1-2p)) + O(2^{-2n})$이고 테일러 전개로 상호정보는 $\Theta(2^{-n})$.
+\end{proof}
+
+\begin{proposition}[$\chi^2$ 발산과 표본 복잡도]
+\label{prop:chi2-sample}
+고정 라그랑지안 $L$에 대해 $\chi^2(D_L \| D_0) = \frac{(1-2p)^2}{p(1-p)} \cdot 2^{-n}$. 따라서 (계산력이 무한해도) 상수 advantage 판정에 $m = \Omega(2^n)$ 표본, 상수 확률 복원에 $m = \Omega(n^2 2^n)$ 표본이 필요하다.
+\end{proposition}
+
+\paragraph{환원에의 귀결.} 위 두 명제로 \emph{다항 표본의 멤버십-LSN은 정보이론적으로 안전}하다: 어떤 환원도(선형·비선형·적응 불문) 다항 표본만으로 $L$을 복원하거나 $D_L$/$D_0$를 구별할 수 없다. 그러므로 ``다항 표본 멤버십-LSN $\not\to$ LPN''은 자명하게 참이고 암호학적으로 공허하다. KEM을 받치는 가정은 \emph{의사난수 $A$의 batch-LSN}이고, LPQR26이 연구한 장벽은 \emph{sympLPN}(선형 라벨·공개 등방 행렬의 디코딩 문제)이다.
+
+\subsection{거리 분포와 기대 교차차원}
+
+\begin{theorem}[거리 분포]
+균등 $L, L' \in \Lagr(2n,\F_2)$에 대해
+\[
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{|\Lagr(2n,\F_2)|}.
+\]
+수치적으로 $n \to \infty$에서 $\E[j] \to 0.76$, $\operatorname{Var}(j) \to 0.60$.
+\end{theorem}
+
+이 빠른 감쇠로 무작위 두 라그랑지안은 통상 차원 $0$ 또는 $1$에서 만난다; 차원 $\ge 14$ 교차는 모든 $n \ge 14$에서 확률 $< 2^{-100}$이다(꼬리 $\Pr[j=k]\approx 2^{-k(k+1)/2}$는 $n$과 사실상 무관).
+
+\subsection{희석-LPN 관점}
+
+Siegel 차트 $L = \{(u, Mu)\}$($M$ 대칭)에서 라벨 $b=1$인 표본 $(a,b)$, $a=(u,v)$는 $n(n+1)/2$개 미지수 $M$에 대한 선형방정식 $v = Mu$ $n$개를 준다. 함정은 진짜 양성이 잡음에 파묻힌다는 것이다.
+
+\begin{proposition}[진짜 양성의 희석]
+라벨 $b=1$ 조건에서 질의점이 $L$에 들어 있을 사후확률은
+\[
+\Pr[a \in L \mid b=1] = \frac{(1-p)2^{-n}}{p + (1-2p)2^{-n}} = \Theta(2^{-n}).
+\]
+$p=1/4$에서 점근 상수는 $3$($\approx 3\cdot 2^{-n}$)이고, $n=3$에서는 정확히 $3/10$이다.
+\end{proposition}
+
+따라서 batch-LSN 탐색은 $\operatorname{Sym}(n,\F_2)$ 위의 \emph{$\varepsilon$-희석 LPN}으로 재구성된다: 확률 $\varepsilon \approx 3\cdot 2^{-n}$로 깨끗한 선형방정식 $n$개, 그 외엔 잡음. 계산적 질문은 다음의 \textbf{농축 질문}이 된다: 과거 표본과 심플렉틱 구조를 쓰는 효율적 선택 규칙이 $\Pr[a\in L] \ge (1+\delta)2^{-n}$인 질의점을 만들 수 있는가? 부정 답이면 $\mathrm{LSN}\setminus\mathrm{LPN}$이 무엇인지에 대한 가장 깔끔한 정량 진술이 되고, 긍정 답이면 구체적 공격 개선이다. SQ 하계는 선형-SQ로 구현 가능한 선택 규칙의 농축 불가능성을 시사하며, $\delta$-농축은 질의당 advantage를 $(1+\delta)$배 하므로 선형-SQ 구현가능 규칙에서는 정리의 질의당 상한을 초과한다; 일반(비선형·다중표본) 선택 규칙은 미해결이다. $n=5,6$의 경험적 프로브는 예측 스케일링 $\delta \approx c\,m\,2^{-n}$($c=\Theta(1)$)을 확인하며, $n=65$, $m=22{,}528$에서 $\delta \le 2^{-50}$으로 암호학적으로 무의미하다.
+
+\subsection{파라미터}
+
+\begin{table}[ht]
+\centering
+\caption{$p=1/4$의 LSN 보안 파라미터.}
+\begin{tabular}{@{}ccccc@{}}
+\hline
+보안 & $n$ & $\log_2(q_{\min})^{\text{(a)}}$ & $|\Lagr|$ & PK (KEM) \\
+\hline
+80비트  & 41  & 80.6  & $\sim 2^{861}$  & 1.78 KB \\
+128비트 & 65  & 128.6 & $\sim 2^{2145}$ & 2.78 KB \\
+192비트 & 97  & 192.6 & $\sim 2^{4753}$ & --- \\
+256비트 & 129 & 256.6 & $\sim 2^{8385}$ & --- \\
+\hline
+\end{tabular}
+\vspace{4pt}
+
+{\footnotesize $^{\text{(a)}}$ $q_{\min}$은 조건부 정리의 수치이고, 무조건적 스프레드 정리는 $\Omega(2^n)$을 준다.}
+\end{table}
+
+$q_{\min}$ 수치는 정확한 쌍별 상관 공식을 쓰므로 80비트 라인은 점근 여유 없이 $n=41$에서 정확히 충족된다. 지수의 상수가 $\approx 0.67 < 1$이므로 $2n < \lambda$인 파라미터는 엄밀한 상계 없이는 권장하지 않는다.
+
+\section{자연 디코더들이 실패하는 이유}
+
+상수 잡음의 LSN에 대해 자연스러운 디코더 family가 각각 왜 실패하는지 정리한다.
+
+\textbf{선형 디코더.} real-선형 질의 $q(a,b) = \langle w,a\rangle + c\cdot b$의 기댓값은 $c(p + 2^{-n}(1-2p))$로 $L$과 무관 --- $L$-식별력이 정확히 0이다. F$_2$-선형 질의는 최대 $(1-2p)2^{-n}$의 advantage를 갖는다.
+
+\textbf{다항 디코더.} $\mathbf{1}_L(x) = \prod_{j=1}^n (1 + \langle w_j, x\rangle)$ ($\{w_j\}$는 $L$ 소멸자의 기저)로 차수가 정확히 $n$이다. 차수 $<n$ 다항식은 오차가 $\ge 2^{-n}$이다.
+
+\textbf{리스트 디코딩.} 후보 라그랑지안 전체의 리스트 크기가 $2^{n^2/2+O(n)}$이라 $n \ge 41$에서 실행 불가능하다.
+
+\textbf{BKW와 ISD.} BKW는 비밀을 $n^2$비트 객체로 다뤄 $2^{\Omega(n^2/\log n)}$이 들고, ISD는 부호 앙상블(라그랑지안 지시함수)이 무작위 선형이 아니라 고도로 구조화되어 직접 적용되지 않는다.
+
+\textbf{구조적 공격.} 아주 낮은 잡음($p = o(1/n)$)에서는 양성 표본들의 span이 $L$을 드러내지만, 상수 잡음 $p=1/4$에서는 양성의 span이 $O(n)$ 표본 만에 전차원이 되어 구조적 공격이 무력하다.
+
+\textbf{경험적 표본 복잡도.} $n=3,4,5$에서 전체 라그랑지안 family의 transvection-궤도 열거로 brute-force ML 디코더를 실험했다. $m = 2^{2n}$에서 성공률 $46.5\%/62\%/75\%$로 $n$에 따라 증가하며, $m = 2^{2n-1}$로 줄이면 $25\%$ 아래로 떨어진다. 이 작은 $n$에서는 $2^{2n}$과 정보이론적 복원 바닥 $\Theta(n^2 2^n)$이 수치적으로 구별되지 않으므로($n^2 2^n = 72/256/800$ vs $2^{2n} = 64/256/1024$) 데이터가 둘을 판별하지 못한다; 점근적으로 ML 복원 임계는 $\Theta(n^2 2^n)$ 바닥이 지배하고 $2^{2n}$은 SQ-질의 스케일이다. 실험은 더 표본 효율적인 디코더를 배제하지 않는다 --- 엄밀한 진술은 SQ 질의 하계다.
+
+
+\section{통계 질의 하계}
+\label{sec:sq-ko}
+
+이 절은 주 기술 결과 --- 정확한 상관 공식을 갖춘 지수적 SQ 하계 --- 를 담는다.
+
+\subsection{정확한 쌍별 상관}
+
+잡음-전용 분포 $D_0$에 대한 $D_L$의 우도비는
+\[
+\ell_L(a,b) = \frac{dD_L}{dD_0}(a,b) - 1 = \mathbf{1}_L(a)\cdot\beta\cdot\Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\tfrac{p}{1-p}\Bigr), \qquad \beta = \tfrac{1-2p}{p}.
+\]
+
+\begin{lemma}[정확한 쌍별 상관]
+\label{lem:exact-corr-ko}
+$j = \dim(L\cap L')$인 $L, L' \in \Lagr(2n,\F_2)$에 대해
+\[
+\langle D_L, D_{L'}\rangle = \frac{(1-2p)^2}{p(1-p)}\cdot 2^{j-2n}.
+\]
+\end{lemma}
+
+\begin{proof}
+$D_0$ 아래에서 $a$와 $b$가 독립이므로 내적이 인수분해된다. 첫 인수는 $|L\cap L'|/2^{2n} = 2^{j-2n}$이고, 둘째 인수는
+\[
+\beta^2\Bigl(p + (1-p)\tfrac{p^2}{(1-p)^2}\Bigr) = \frac{(1-2p)^2}{p(1-p)}.
+\]
+$p=1/4$에서 계수는 정확히 $4/3$이다.
+\end{proof}
+
+\subsection{평균 상관}
+
+$j$에 대한 기대를 취하면 평균 쌍별 상관을 얻는다.
+
+\begin{lemma}[평균 상관]
+거리 분포로 계산한 $C_n = \E[2^j]$에 대해 $C_n \to 2$이고
+\[
+\rho_{\mathrm{avg}} = \frac{(1-2p)^2}{p(1-p)}\cdot C_n \cdot 2^{-2n}.
+\]
+\end{lemma}
+
+\subsection{SDA 집중}
+
+\begin{lemma}[저상관 부분집합의 존재]
+$\gamma = 2\rho_{\mathrm{avg}}$라 하자. 평균상관이 $\gamma$ 이하인 크기 $2^{2n}$의 부분집합 $\mathcal{D}' \subset \{D_L\}$이 존재한다.
+\end{lemma}
+
+\begin{proof}
+크기 $M = 2^{2n}$의 균등 무작위 부분집합 $S$를 보면 $\mathrm{Sp}(2n)$ 대칭성으로 $\E[\rho(S)] = \rho_{\mathrm{avg}}$이고 Markov 부등식으로 $\Pr[\rho(S) > 2\rho_{\mathrm{avg}}] < 1/2$. 따라서 그런 부분집합이 존재한다. \emph{모든} 크기-$2^{2n}$ 부분집합에 대한 worst-case 한계는 구조적 논증을 요한다(미해결 문제 절 참조).
+\end{proof}
+
+\subsection{무조건적 SQ 하계: 심플렉틱 스프레드}
+
+먼저 구체적 worst-case 약속(promise) 문제에 대한 무조건적 지수 하계를 준다. 이 하계는 질의 수와 VSTAT 강도 모두에서 조건부 평균-경우 하계보다 약하지만, 미증명 구조 가설을 요구하지 않는다.
+
+$V = \F_{2^n}\times\F_{2^n}$에 $\omega((a,b),(c,d)) = \operatorname{Tr}(ad)+\operatorname{Tr}(bc)$를 주면, \emph{Desarguesian 심플렉틱 스프레드} $\mathcal{S}^* = \{L_\lambda\}_{\lambda\in\F_{2^n}}\cup\{L_\infty\}$는 $d_0 = 2^n+1$개의 라그랑지안
+\[
+L_\lambda = \{(x, \lambda x)\}, \qquad L_\infty = \{0\}\times\F_{2^n}
+\]
+으로 이루어지고 쌍별로 가로지른다(transversal): 서로 다른 두 원소의 교차차원은 $0$이다.
+
+\begin{theorem}[무조건적 스프레드 하계]
+$\kappa = (1-2p)^2/(p(1-p))$, $1 \le t \le n-1$, $\bar\gamma_t = \kappa\cdot 2^{-(2n-t)}$라 하자. $|T| \ge 2^{n-t}$인 모든 $T \subseteq \mathcal{S}^*$는 대각 포함 평균상관이 $2\bar\gamma_t$ 이하다. 따라서 $\SDA(\mathcal{S}^*, 2\bar\gamma_t) \ge 2^t$이고, $\mathcal{S}^*$의 모든 $L$에서 올바른 SQ 알고리즘은 $\VSTAT(1/(6\bar\gamma_t))$에 $\Omega(2^t)$회 질의해야 한다.
+\end{theorem}
+
+$t = n-1$에서 VSTAT 강도 $O(2^n)$의 무조건적 $\Omega(2^n)$ 질의 하계를 얻는다.
+
+\begin{proof}
+서로 다른 $L, L' \in \mathcal{S}^*$는 $j=0$이므로 쌍별 상관이 정확히 $\kappa\cdot 2^{-2n} = \bar\gamma_t\cdot 2^{-t} \le \bar\gamma_t$. 대각 항은 각 $\beta = \kappa\cdot 2^{-n}$을 기여하므로 $|T| \ge 2^{n-t}$에서 평균은 $\bar\gamma_t + \beta/2^{n-t} \le 2\bar\gamma_t$. 따라서 $\SDA \ge |\mathcal{S}^*|/2^{n-t} \ge 2^t$이고 Feldman 정리($\alpha = 2/3$)가 질의 하계를 준다.
+\end{proof}
+
+\paragraph{정직성 주석.} (i) \textbf{worst-case 약속 전용:} 스프레드의 측도는 $2^n/2^{n(n+1)/2} \to 0$이므로 이 정리는 평균-경우(균등 $L$) 문제를 덮지 않고 약속 문제 ``$L \in \mathcal{S}^*$인가''만 보호한다. (ii) \textbf{VSTAT 트레이드오프:} 무조건 하계는 $\VSTAT(O(2^n))$에서 $\Omega(2^n)$ 질의, 조건부 하계는 $\VSTAT(\Theta(2^{2n}))$에서 $2^{2n-O(1)}$ 질의 --- 두 파라미터는 호환되지 않는다. (iii) 부분족 제한은 약속 문제에 대해 유효하다: 전체 family에서 올바른 알고리즘은 스프레드에서도 올바르다.
+
+\subsection{조건부 SQ 하계}
+
+더 강한 $2^{2n}$ 스케일 하계는 극값 부분집합에 대한 구조 추측에 의존한다.
+
+\begin{conjecture}[Pencil 극값성]
+\label{conj:pencil-ko}
+절대상수 $c$가 있어 크기 $\ge |\Lagr(2n,\F_2)|/2^{2n-c}$인 모든 부분집합 $\mathcal{D}' \subseteq \{D_L\}$의 평균상관이 $5\rho_{\mathrm{avg}}$ 이하다.
+\end{conjecture}
+
+동기: $k=2$ 등방 pencil은 임계값을 $4\rho_{\mathrm{avg}}$ 위로 강제하고($2^{\dim(L\cap L')}$ 기대비가 아래에서 $4$로 수렴), $k \ge 3$ pencil은 $n \ge 4$에서 크기 문턱 아래로 떨어지며, pencil과 무작위 채움의 혼합은 이차적으로 희석된다. 증명에는 근사-극값 부분집합의 분류가 필요하다.
+
+\begin{theorem}[조건부 주 SQ 하계]
+추측을 가정하면, LSN(균등 $L$)을 $D_0$와 확률 $>2/3$로 구별하는 임의 SQ 알고리즘은 $\VSTAT(1/(15\rho_{\mathrm{avg}}))$에 $q \ge 2^{2n-O(1)}$회 질의해야 한다.
+\end{theorem}
+
+\begin{theorem}[적응적 SQ]
+위 정리는 무작위 적응적 SQ 알고리즘에도 성립한다(Feldman 정리가 적응성을 포함).
+\end{theorem}
+
+\subsection{적응적 선형 SQ의 차단}
+
+\begin{theorem}[적응적 선형 SQ 장벽]
+real-선형 질의 $q(a,b) = \langle w,a\rangle + c\cdot b$의 기댓값 $\E_{D_L}[q]$는 $L$과 무관하다. F$_2$-선형 질의 $q(a,b) = \langle w,a\rangle \oplus c\cdot b$의 $D_0$ 대비 최대 구별 advantage는 $(1-2p)2^{-n}$이며, $p=1/4$에서 $2^{-n-1}$이다.
+\end{theorem}
+
+\begin{proof}
+real-선형: $\E_a[\langle w,a\rangle]$는 $L$과 무관하고($w\neq 0$이면 $1/2$, $w=0$이면 $0$) $\E_{D_L}[b] = p + 2^{-n}(1-2p)$도 $L$과 무관하다. F$_2$-선형: $c=0$, $w\neq 0$이면 $\E = 1/2$ ($L$ 무관); $c=1$, $w=0$이면 $q=b$로 advantage가 정확히 $(1-2p)2^{-n}$; $c=1$, $w\neq 0$이면
+\[
+\E_{D_L}[q] = \tfrac12 + (1-2p)\bigl(2^{-n} - 2\E_a[\langle w,a\rangle\mathbf{1}_L(a)]\bigr)
+\]
+이고, $w \in L^\perp$이면 $\E_a[\cdot]=0$이라 advantage $(1-2p)2^{-n}$, $w \notin L^\perp$이면 $\E_a[\cdot]=2^{-n-1}$이라 advantage $0$. 어느 경우도 $(1-2p)2^{-n}$을 넘지 못한다.
+\end{proof}
+
+\section{양자 분석}
+
+\paragraph{Grover 탐색.} 비밀 공간 크기가 $2^{n^2/2+O(n)}$이므로 Grover 탐색은 $2^{n^2/4+O(n)}$회 반복을 요하고, 반복마다 표본 평가 비용이 든다. $n \ge 4$에서 모든 고전 한계를 압도하므로 Grover는 실질 위협이 아니다.
+
+\paragraph{양자 BKW.} 내부 Walsh--Hadamard와 저무게 패리티 체크 탐색을 가속해 $2^{O(n^2/\log n)}$ --- $n \ge 4$에서 $n^2/\log n \gg 2n$이므로 SQ 하계를 초과하며 보안 파라미터 선정에 무관하다.
+
+\paragraph{고전 표본 접근.} LSN 표본이 고전 비트이므로 양자 알고리즘도 고전 질의 또는 표본공간 위 양자 보행으로 접근해야 한다. $2^{n^2/2}$ 크기 비밀공간의 Grover 탐색은 여전히 $2^{n^2/4}$회가 필요하다. 따라서 지수적 SQ 하계는 효율적 양자 알고리즘이 없다는 \emph{증거}(증명 아님)를 제공한다.
+
+\paragraph{다루지 않는 것.} LSN에 대한 양자 하계를 \emph{주장하지 않는다}. 양자 하드니스는 LWE·LPN과 같은 지위의 \textbf{추측}으로 취급한다. 엄밀한 양자 질의 하계는 SQ 모형을 넘는 새 기법이 필요하며 향후 과제다.
+
+
+\section{암호 프리미티브}
+\label{sec:primitives-ko}
+
+\subsection{LSN-SNARK}
+
+커밋된 라그랑지안 $L$에 대한 관계 ``$x \in L$''의 전처리 SNARK를 구성한다. \emph{Siegel 차트}(그래프-라그랑지안) 표현으로 R1CS 회로를 $O(n^3)$에서 $O(n^2)$ 제약으로 줄인다.
+
+\paragraph{Siegel 차트 표현.} 공개 심플렉틱 행렬 $S$를 고정하면 ``일반적'' 라그랑지안은 $L_M = S\cdot\{(x, Mx)\}$($M \in \mathrm{Sym}(n,\F_2)$ 대칭)으로 쓸 수 있다. 그래프 라그랑지안의 수는 $2^{n(n+1)/2}$로 전체 family와 상수배($\approx 2.38$)만 차이나므로 점근 보안에 영향이 없다: brute-force 복잡도는 $2^{n^2/2+O(n)}$로 유지되고, 상관 구조가 심플렉틱 좌표변환에 보존되므로 SQ 하계도 점근적으로 그대로 적용된다.
+
+\paragraph{$M$의 공개키 결박.} 공개키에 커밋 $c = \mathsf{Hash}(M)$(Poseidon 등 SNARK-친화 해시)을 추가한다. 이는 해시의 역상저항성을 둘째 가정으로 도입하며, 양자 역상 탐색($2^{128}$)이 LSN 수준 이상이 되도록 해시를 설정해 LSN이 병목이 되게 한다. 회로는 (1) 커밋 열기, (2) 멤버십 $x \in L_M$을 검증한다. $M$의 $n(n+1)/2$비트 해시는 $O(n)$ 제약만 추가하므로($n=65$에서 약 $300$--$500$개) 전체 회로는 $n^2 + O(n)$이다.
+
+\paragraph{멤버십 회로.} (1) 공개 역행렬 $S^{-1}$ 적용은 $\F_2$ 선형이라 제약 $0$개. (2) $b = Ma$ 검사는 행마다 길이-$n$ 내적으로, $a$를 witness로 두면 행당 AND $n$개, 총 $n^2$ 제약이다. $M$의 대칭성은 상삼각 $n(n+1)/2$개만 인코딩하므로 공짜다. $a$를 공개 입력으로 주면 행당 선형 제약 1개로 무너져 $\F_2$ R1CS에서 $n$개가 된다.
+
+\paragraph{검증된 제약 수.} $a$가 witness일 때 $n^2$ 예측이 정확하다: $n=8$에서 $64$, $n=41$에서 $1{,}681$, $n=65$에서 $4{,}225$. 공개 $a$ 최적화는 각각 $8$, $41$, $65$. Poseidon 커밋을 합친 전체 회로는 $n=65$에서 약 $4{,}500$--$4{,}700$.
+
+\paragraph{의의와 범위.} 멤버십 관계의 ZK 회로가 이례적으로 작다 --- SHA-256 한 블록($\approx 25{,}000$)의 약 $1/5$, 공개된 ZK-Kyber 회로(수백만)의 약 $1/1000$. 표는 \emph{핵심 관계} 회로의 비교다: 전체 서명/KEM 검증은 결박 오버헤드가 추가되며 그건 스킴 간에 비슷하다. 우리의 주장은 전체 프리미티브 기록이 아니라 \emph{멤버십 부회로}가 탁월하게 간결하다는 것이고, 이는 검증가능 PQ 암호화·재귀 SNARK 집적처럼 멤버십 검사가 비용을 지배하는 곳에 유용하다.
+
+\paragraph{배치 검증.} 같은 비밀 $M$ 아래 $k$개 원소의 멤버십을 증명할 때 커밋 검증은 한 번이고 추가 멤버십마다 $n^2$($a$ 공개 시 $n$)개만 늘어, $n=65$, $k=1000$에서 약 $4.2\times 10^6$ 제약 --- 증명당 수백만이 드는 ZK-Kyber 대비 약 $1000$배 이득이다.
+
+\subsection{LSN-KEM}
+
+\paragraph{왜 연접 부호인가.} $p=1/4$의 직접 폴라 부호화는 실패한다: BSC($p$)의 Bhattacharyya 파라미터 $Z_0 = 2\sqrt{p(1-p)} = 0.866$이 1에 너무 가까워 유한길이 $N=2048$에서 유용한 신뢰도가 안 나온다. 따라서 길이 $r$ 내부 반복부호(유효채널 BSC($p'$), $p' = \sum_{k=\lfloor r/2\rfloor+1}^{r}\binom{r}{k}p^k(1-p)^{r-k}$)와 길이 $N=2048$, 차원 $K=256$의 외부 폴라 부호(SCL, 리스트 $L=8$)를 연접한다.
+
+\begin{table}[ht]
+\centering
+\caption{연접 폴라 조정의 LSN-KEM 파라미터.}
+\begin{tabular}{@{}cccccc@{}}
+\hline
+보안 & $n$ & $r$ & $p'$ & SC 한계 & SCL 추정 \\
+\hline
+80비트  & 41 & 7  & 0.0706 & $2^{-81}$  & $2^{-89}$ \\
+128비트 & 65 & 11 & 0.0343 & $2^{-149}$ & $2^{-157}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{구성(ROM).}
+\textbf{KeyGen:} 공개 심플렉틱 $S$, 균등 대칭 $M$, $L = S\cdot\{(x,Mx)\}$, 시드 $\mathsf{seed}$. $i=1,\dots,m$($m = Nr$)에 대해 $x_i = \mathsf{PRG}(\mathsf{seed},i)$, $e_i \leftarrow \operatorname{Bernoulli}(p)$, $y_i = \mathbf{1}_L(x_i)\oplus e_i$. $\mathsf{pk} = (\mathsf{seed}, y_1,\dots,y_m)$, $\mathsf{sk} = M$.
+\textbf{Encaps:} $s$, $u$를 뽑고 Fisher--Yates 순열 $\pi = \mathsf{Permutation}(\mathsf{PRG}(s))$로 인덱스를 $N$개 블록(각 길이 $r$)으로 묶어 $v_j = \mathsf{majority}$를 계산, $c = \mathsf{PolarEncode}(u)$, $\mathsf{ct} = (s, t)$($t := v\oplus c$), $K = \mathsf{Hash}(s,u)$.
+\textbf{Decaps:} $\pi$와 블록을 재계산하고 비밀키로 $v'_j$를 얻어 $c' = t\oplus v'$를 SCL 디코딩, $K = \mathsf{Hash}(s,u')$(실패 시 $\perp$). 차이 $v\oplus v'$가 폴라 디코더가 보는 유효잡음이다.
+
+순열 기반 인덱스 표집은 중복 없는 인덱스를 보장한다. 공개키 크기는 $\lambda + Nr$비트, 암호문은 $\lambda + N$비트.
+
+\paragraph{구현 노트.} 소규모 파이썬 프로토타입에서 SCL 디코더 버그(BLER $=1.0$)와 Bhattacharyya 인덱싱 버그(natural-order 인터리빙 $z_{2i}=2z_i-z_i^2$, $z_{2i+1}=z_i^2$ 필요)를 발견·수정했고, 수정 후 모든 시험 구성에서 BLER $=0$을 얻었다. 이 짧은 길이·200회 시뮬레이션은 \emph{예비적}이다: BLER $\lesssim 1/200$만 보증하며 설계점 $2^{-80}$이나 설계길이 $N=2048$을 검증하지 않는다. 보수적 Bhattacharyya 한계가 설계 기준으로 유지되고, 완전한 $N=2048$ 검증은 프로덕션 Rust 구현으로 미룬다.
+
+\begin{theorem}[정확성]
+$r=7$에서 $\Pr[K \neq K'] < 2^{-80}$; $r=11$에서 $< 2^{-128}$.
+\end{theorem}
+
+\begin{theorem}[IND-CPA]
+LSN-KEM은 ROM에서 LSN 하드니스 가정 아래 IND-CPA 안전하다.
+\end{theorem}
+
+\begin{proof}[증명 개요]
+세 게임 홉: (1) PRG를 진짜 무작위로 교체(PRG 보안). (2) 공개키 라벨을 균등 무작위로 교체 --- LSN 챌린지 $(x_i, y_i^*)$를 받아 시드를 프로그래밍하는 직접 환원으로, $1/r$ 손실이 없다. (3) $v$가 균등이면 $t = v\oplus c$는 일회용 패드로 균등이고 $K = \mathsf{Hash}(s,u)$는 ROM에 의해 $\mathsf{ct}^*$와 독립인 균등이다.
+\end{proof}
+
+\begin{table}[ht]
+\centering
+\caption{KEM 크기 비교.}
+\begin{tabular}{@{}lcccc@{}}
+\hline
+스킴 & $|\mathsf{pk}|$ & $|\mathsf{ct}|$ & 가정 & 실패율 \\
+\hline
+Kyber-512 & 800 B & 768 B & Module-LWE & $2^{-164}$ \\
+HQC-128 & 2.25 KB & 4.50 KB & 신드롬 디코딩 & $2^{-128}$ \\
+LSN-80 & 1.78 KB & 288 B & LSN & $< 2^{-89}$ \\
+LSN-128 & 2.78 KB & 288 B & LSN & $< 2^{-157}$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{CCA 보안.} 암묵적 거부(implicit rejection)를 갖춘 Fujisaki--Okamoto 변환으로 IND-CCA를 얻는다. 기반 $\mathsf{Encaps}$는 $(s,u)$가 고정되면 결정적이다. CCA-Decaps는 디코딩한 $u'$로 \emph{재캡슐화}하여 $c_0' = c$인지 확인하고, 불일치·실패 시 $K = H(d,c)$를 출력한다(암묵적 거부).
+
+\begin{theorem}[IND-CCA]
+기반 KEM이 $\delta \le 2^{-80}$-정확하고 IND-CPA 안전하면, CCA-KEM은 ROM에서 IND-CCA 안전하다.
+\end{theorem}
+
+\paragraph{다중 사용자 보안.} 사용자들은 공개 $S$만 공유하고 나머지 모든 파라미터가 독립이므로, 표준 하이브리드 논증으로 $\varepsilon_1 \ge \varepsilon_N / N$. \textbf{키 재사용:} $q$회 캡슐화로 같은 비밀의 표본 $qNr$개가 노출되지만, 조건부 SQ 하계가 $q_{\mathsf{sq}} \ge 2^{2n-O(1)}$을 요구하므로 $q \gtrsim 2^{2n-O(1)}/(Nr)$ --- $n=65$에서 $q \gtrsim 2^{114}$로 현실적 위협 너머다. (표본 하나를 SQ 질의 하나로 취급하며, 수치 실험이 $2^{2n}$ \emph{표본} 문턱을 뒷받침한다.)
+
+\paragraph{구현 보안.} 모든 핵심 연산이 XOR·AND·비트 순열의 네이티브 $\F_2$ 연산이라 상수시간 구현이 \emph{수월}하다: 홀수 모듈러스 감산, 이산 가우시안, 거부 표집, 비밀 의존 분기가 전혀 없다. 비밀 데이터에 대한 유일한 비선형 연산은 내부 반복 디코더의 다수결(popcount)이며, 외부 폴라 SC 디코더는 깊이 $\log_2 N$의 고정 버터플라이 트리를 순회한다. 프로덕션 상수시간 Rust 구현(완전한 $N=2048$ 검증과 KAT 벡터 생성 포함)이 계획되어 있다.
+
+
+\section{환원 장벽과 표준모형 격차}
+\label{sec:barriers-ko}
+
+LSN 비밀의 유일한 비선형 연산은 내부 반복 디코더의 다수결이다. 이 절은 LSN을 LPN으로 환원하려는 모든 자연스러운 시도가 어디서 막히는지 지도화한다.
+
+\begin{table}[ht]
+\centering
+\caption{LSN의 환원 지형.}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{5.2cm}l>{\raggedright\arraybackslash}p{6.2cm}@{}}
+\hline
+클래스 (모형) & 상태 & 메커니즘 \\
+\hline
+real-선형 질의 (SQ) & 차단 & $\E[q]$가 $L$-무관; F$_2$-선형은 $\le (1-2p)2^{-n}$ \\
+다항 차수 $<n$ (SQ) & 차단 & RM 거리 (상관 $\le 2^{-n}$) \\
+단일표본 적응 차수-$D$ (SQ) & 차단 & 선택 $\neq$ 합성 \\
+고정 $B$, 임의 rank, $m \ge cn$ & 폐쇄 & D.1 + Fannes: SD $\ge d - 1/(mn)$ \\
+공개 $B$, $\rho \ge (3/2+\epsilon)n$ & 폐쇄 & 수송/Gram (구성적) \\
+적응 $B$, 조건부-균등 & 폐쇄 & 도달가능성 정리 \\
+적응 $B$, marginal-균등 & \textbf{미해결} & 보조정리 M1은 증명됨; M2는 조건부 \\
+비선형 / 다중표본 & 미해결 & 증명도 구성도 없음 \\
+\hline
+\end{tabular}
+\end{table}
+
+\paragraph{LPQR의 선형 장벽.} Lu \etal~\cite{LPQR26}은 선형 환원이 sympLPN을 LPN으로 환원할 수 없음을 증명한다(그들의 \S2.4와 부록~D): 임의의 \emph{고정} $B$에 대해 행렬 $BA$의 엔트로피가 $(1-d)mn$ 이하이므로(상수 $d$), 공개 행렬을 무작위화하려면 고엔트로피 $B$가 필요하고 그러면 출력 오류 무게가 Shannon 역정리 문턱을 넘는다. 그들의 부록~D에 따르면 증명은 일차적 암호 영역 $m=\Theta(n)$(출력 행 $m=(1+\epsilon)n$)을 겨냥하며, $m=\omega(n)$에서는 오류 무게 $>1/2-\delta$를 주지만 디코딩 가능성을 완전히 배제하기에 부족하다고 스스로 언급한다(단, 모든 $m=\operatorname{poly}(n)$으로의 확장을 기대한다). 우리의 정리는 잡음률 무관의 보완적 단일-질의 장벽 $(1-2p)2^{-n}$을 준다.
+
+\paragraph{엔트로피 바닥.}
+\begin{proposition}[엔트로피 바닥]
+회복확률 $\alpha(n)$으로 비밀을 보존하는 $\mathrm{LSN}(n) \to \mathrm{LPN}(k)$ 환원은 $k \ge \alpha(n)H(L) - O(1) = \alpha(n)\Theta(n^2)$를 만족해야 한다. 상수 성공확률이면 $k = \Omega(n^2)$.
+\end{proposition}
+
+\paragraph{구체-보안 win-win.} 근사-완전 회복($\alpha = 1-o(1)$)이면 $k \ge 863$ (80비트), $2147$ (128비트), $4755$ (192비트), $8387$ (256비트)이고, BKW 비용은 각각 $2^{88.5}, 2^{194.0}, 2^{389.3}, 2^{643.5}$로 전 목표 보안 수준을 초과한다. 이는 구체-보안 관찰이지 점근 불가능성이 아니다: BKW의 $2^{\Theta(n^2/\log n)}$은 LSN brute-force $2^{\Theta(n^2)}$보다 점근적으로 작다.
+
+\paragraph{단일표본 적응성은 차수를 올리지 못한다.} 환원이 \emph{단일표본}인 제한 모형 --- 각 $\phi_j$를 적응적으로 고르되 원시 표본 $(a,b)$에만 적용하고, 선택은 이전 답들의 함수 --- 에서는 답이 부정적이다: 전사(transcript)의 유효 차수가 $D$로 묶이고, $D < n$이면 Reed--Muller 장애가 그대로 적용된다. 남는 미해결 질문은 \emph{다중표본} 또는 \emph{진짜 비선형} 적응 환원의 존재이며, 이 풍부한 모형에 대한 불가능성은 주장하지 않는다. win-win 구조는 있다: 그런 환원이 발견되면 LPN 자체의 무작위 자기환원을 개선할 것이므로 LSN이 6.5번째 family로 강등되더라도 가치가 있다.
+
+\paragraph{수송 정리 (공개-$B$ 전멸).}
+\begin{theorem}[full-rank 수송]
+$B \in \F_2^{m\times 2n}$, $\operatorname{rank}(B) = 2n$, $B^+$를 좌역원이라 하고 $M := (B^+)^{\!\top}\Omega B^+$라 하자. 등방-열 행렬 $A$에 대해 $(BA)^{\!\top}M(BA) = A^{\!\top}\Omega A = 0$ 항등. 균등 무작위 $C$는 이 관계를 확률 $2^{-n^2/2+O(n)}$로만 만족하므로, 고정 full-rank 선형 환원의 출력은 균등 LPN 행렬 분포에서 통계거리 $1 - 2^{-\Theta(n^2)}$만큼 떨어져 있다.
+\end{theorem}
+
+\begin{theorem}[near-full-rank 수송]
+$\operatorname{rank}(B) = \rho = 2n - c$, $K = \ker B$이면, 모든 등방-열 $A$에 대해
+\[
+\operatorname{rank}\bigl((BA)^{\!\top}M(BA)\bigr) \le 2c - \operatorname{rank}(\Omega|_K) \le 2c
+\]
+인 $M$이 존재한다(최소-rank 완성으로 구성적; 등방 $K$를 고른 적대적 환원에서 정확히 $2c$). 균등 $C$가 $\operatorname{rank}(C^{\!\top}MC) \le 2c$일 확률은 $2^{-\Omega((n-2c)^2)}$이므로 $\rho \ge (3/2+\epsilon)n$ 전역이 차단된다.
+\end{theorem}
+
+\paragraph{$B$-가시성과 비밀-$B$ 영역.} 정리~D.2의 한정사 순서는 미묘하다: $B$는 $BA$의 \emph{유도 분포}가 균등이기만 하면 $A$의 함수여도 된다. 이는 환원 행렬이 공개되지 않는 \textbf{비밀-$B$} 영역을 만든다. 수송 정리들은 실현된 $B$를 구별자가 알아야 하므로 여기 적용되지 않는다. 도달가능성 정리는 \textbf{조건부-균등} 경우를 해결한다: $BA$가 각 고정 $A$ 조건부로 균등이면, $B$의 가시성과 무관하게 도달가능성 계수가 고무게 행을 강제한다. $B=g(A)$가 $A$ 위에서 marginal로만 균등인 \textbf{marginal-균등} 경우는 미해결이다: $A$에 따라 변하는 저무게 행은 $\bigcup_A R_w(A)$가 $\F_2^n$을 덮을 수 있어 인스턴스별 한계를 회피할 수 있다.
+
+\paragraph{아핀-코셋 bias 보조정리.} 비밀-$B$ 영역의 라벨 신호 측은 다음으로 통제된다: $b$가 아핀 부분공간 $\{b : b^{\!\top}A = c^{\!\top}\}$에서 균등이면
+\[
+\bigl|\E_{b,e}[(-1)^{b^{\!\top}e}]\bigr| \le 2^{-n}\cdot W_N(1-2p), \qquad N = \operatorname{nullspace}(A^{\!\top})
+\]
+(MacWilliams 항등식; $b_0 = 0$이면 등식). 균등 무작위 등방 $A$에 대한 기대로는 $\le 2^{-n} + (9/16)^n$($p=1/4$) --- 전공간 piling-up 기준선 $(3/4)^{2n}$과 같은 차수다. 즉 아핀 제약은 행당 라벨 bias를 실질적으로 키우지 못하며, 비밀-$B$ 트레이드오프는 bias 증폭이 아니라 Gram-rank 전이가 지배한다.
+
+\paragraph{도달가능성 장벽 (any-$B$, 조건부-균등).} $R_w(A) := \{b^{\!\top}A : |b| \le w\}$는 $|R_w(A)| \le \sum_{j\le w}\binom{2n}{j}$로 $A$와 무관하게 묶인다. $w = \lfloor 0.19n\rfloor$이면 $|R_w|/2^n \le 2^{-0.06n}$.
+
+\begin{theorem}[any-$B$ 균등성 강제 --- 조건부 모형]
+임의 등방 기저 $A$와 ($A$에 의존 가능한) 임의 $B$에 대해, 조건부 분포가 $\operatorname{SD}(BA\mid A, \mathrm{Uniform}) \le \delta$ (모든 $A$)를 만족하면 각 행이 $\Pr[|b_i| \le w \mid A] \le 2^{-0.06n} + \delta$. 따라서 $m = \operatorname{poly}(n)$, $\delta = o(1/m)$이면 확률 $1-o(1)$로 \emph{모든} 행의 무게가 $w$를 넘는다. 이 정리는 marginal-적응 모서리를 덮지 \emph{않는다}.
+\end{theorem}
+
+행무게 하한은 잡음을 증폭한다: 무게 $>w$ 행의 유효잡음은 $p' \ge \tfrac12 - 2^{-(w+1)}$ (piling-up)이고, 그런 잡음에서 $x$ 복원에는 $m = \Omega(n\cdot 2^{0.38n})$ 표본이 필요하다. 종합하면 \emph{조건부-균등 모형에서} 선형 환원 지형이 닫힌다: $BA$를 각 $A$ 조건부로 균등하게 만드는 환원은 고무게 행으로 강제되어 잡음이 $p' \ge \tfrac12 - 2^{-\Theta(n)}$로 증폭되고 $m = \operatorname{poly}(n)$에서 실패한다.
+
+\paragraph{marginal-적응 모서리: 엔트로피 계수와 남은 격차.} 조건부와 marginal 균등성의 간극은 엔트로피-support 논증으로 좁혀진다.
+
+\begin{lemma}[저무게 행의 엔트로피-support 한계 (M1)]
+$B = g(A,R)$ 임의, $C = BA$, $\operatorname{SD}(C, \mathrm{Uniform}) \le \delta$, $w = \lfloor 0.19n\rfloor$이면 무게 $\le w$인 행의 기대 개수는
+\[
+\E[k] \;\le\; \frac{\log_2 N(n) + m + \delta nm + O(1)}{0.094n} \;=\; 16n + 11\delta m + \frac{11m}{n} + O(1)
+\]
+($N(n)$은 등방 frame 수, $\log_2 N(n) = \tfrac{3}{2}n^2 + \tfrac{n}{2} + O(1)$).
+\end{lemma}
+
+\begin{proof}
+Fannes--Csisz\'ar 연속성으로 $H(C) \ge nm - \delta nm - 1$. 연쇄법칙과 부가법칙으로 $H(C) \le H(A) + \sum_i H(c_i \mid A)$, $H(A) \le \log_2 N(n)$. 지시자 $T_i = \mathbf{1}[|b_i| \le w]$를 쓰면 $H(c_i\mid A) \le 1 + n - \Pr[T_i]\cdot 0.094n$ (저무게면 support가 $R_w(A)$에 갇히므로). 합산·정리하면 주장을 얻는다.
+\end{proof}
+
+\begin{lemma}[분포-불일치 사망 (M2) --- \textbf{조건부; 미확립}]
+\textbf{상태: 휴리스틱.} 장애물: 출력 잡음 성분 $e_i' = \langle b_i, e\rangle$가 고정 $2n$비트 잡음 벡터 $e$의 $m$개 선형상이라 차원 $\le 2n$ 부분공간에 살고 $m = \omega(n)$에서 강하게 상관된다. 표준 우회 둘 다 벽에 부딪힌다: (i) 복원-환원 논증은 상관잡음에 견고해야 하나 $\le 2n$개 누출 행이 $x$를 과결정할 수 있고(비밀-$B$에서 솔버는 $B$를 모른다), (ii) 잡음-엔트로피 논증 $H(Be) \le O(n)$은 고정 $B$에선 성립하나 고엔트로피 무작위 $B$에선 실패한다($Be$가 거의 균등 가능). 다음이 증명된다면 marginal-적응 모서리가 닫힌다: bias $\le 2^{-0.19n}$인 행이 $m - o(m)$개면 $\operatorname{SD}((C,y), \mathrm{LPN}_{p'}) = 1 - o(1)$ (사용가능한 모든 $p'$).
+\end{lemma}
+
+\begin{theorem}[marginal-적응 선형 환원 장벽 --- \textbf{조건부}]
+\textbf{M2에 의존.} $A$ 균등, $B = g(A,R)$ 임의 적응 행렬, $m \ge Cn$ ($C > 16$), $\delta = o(1)$이라 하자. M1에 의해 $\operatorname{SD}(BA,\mathrm{Uniform}) \le \delta$이면 $m - o(m)$개 행의 무게가 $0.19n$을 넘어 유효 bias $\le 2^{-0.19n}$이다. M2가 성립하면 어떤 사용가능한 LPN 분포로도 사상이 불가능하다.
+\end{theorem}
+
+현 지형은 따라서: 고정-$B$ 폐쇄, 공개-$B$ 폐쇄, 조건부-균등 적응 폐쇄, marginal-적응 \emph{미해결}. $m = \Theta(n)$ ($m < Cn$) 잔여 영역은 marginal-균등 $B$ 전반에 대해 LPQR26 부록~D가 덮는다.
+
+\paragraph{상수 잡음의 스크램블링 장벽.} LPQR의 선형 장벽(정리 D.2)은 모든 $p = \omega(1/n)$에서 적용되며, 상수 잡음 $p=1/4$에서는 오류-증폭 단계가 오히려 \emph{강해진다}: 무게 $w$ 행의 비트당 bias가 $(1-2p)^w = 2^{-w}$ (piling-up, 저잡음의 $\approx 1-2wp$와 대조). $m=\omega(n)$ 표본을 쓰는 선형 환원은 조건부-균등 모형에서 도달가능성 장벽으로 배제되고, marginal-적응 모서리는 미해결로 남는다. 두 영역 밖에 남는 것은 비선형 스크램블러뿐이다. 대수적 장애가 남는다: $S_A = 0$은 공개 벡터들 사이의 결정론적 이차 관계다(LPQR 엔트로피 논증과 구별되는 우리의 관찰). $n=3$ 직접 검사로 단순 스크램블러들은 세 부류로 나뉜다: 선형 스크램블러는 이차 관계를 켤레 형식으로 \emph{수송}하고(탐지 가능), 비선형 스크램블러는 LPN에 필요한 선형 라벨 구조를 파괴하며, 무작위 스크램블러는 비밀을 통째로 파괴한다. 어느 부류도 $S_A=0$을 부수면서 신선한 LPN 비밀-비트 구조를 동시에 만들지 못한다.
+
+\paragraph{심플렉틱 구조는 환원-불활성이다.} 결정론적 이차 제약 $S_A = 0$은 \emph{공개}이고 \emph{$x$-무관}이므로 공격자에게 $x$-정보를 더하지 않고 환원자에게 쓸 손잡이도 주지 않는다. 이는 Ring-LWE가 평LWE 환원이 아니라 \emph{소스}(문제에 내재한 환 구조)에 의해 격자-family 가정으로 수용되는 지위와 평행하다.
+
+\begin{conjecture}[소스 신규성]
+LSN의 다음 세 불변량은 표준 LPN에 유사물이 없으며, 제안된 모든 자연 환원 클래스가 각각을 파괴한다: (1) 심플렉틱-푸리에 자기쌍대성 $\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n\mathbf{1}_L$; (2) $x$-무관 이차 제약 $S_A=0$ (sympLPN 변형; 우리 KEM은 의사난수 열을 쓰므로 KEM 인스턴스 분포에는 적용되지 않음); (3) 안정자 퇴화성(비밀 공간이 벡터공간이 아니라 라그랑지안 그라스마니안).
+\end{conjecture}
+
+이 추측은 반증가능하다: 세 불변량 중 하나라도 보존하는 명시적 환원 하나가 현 형태를 반증한다.
+
+\section{미해결 문제}
+\label{sec:open-ko}
+
+\begin{enumerate}
+\item \textbf{sympLPN의 $S_A=0$ 아래 통계차원.} $S_A=0$ 조건화가 통계차원을 $2^{\Omega(n)}$ 아래로 줄이지 않음을 증명하라.
+\item \textbf{LPN(저잡음) $\to$ LSN.} $p = O(1/\sqrt{n})$ 영역에서 \cite{KLP+25}의 환원은 공허하다. 비공허한 환원이 존재하는가, 또는 그 부재를 증명할 수 있는가?
+\item \textbf{LWE $\to$ LSN.} 격자 가정과의 다리.
+\item \textbf{worst-case 하드니스.} LSN의 worst-case 토대.
+\item \textbf{최적 폴라 부호율.} 복호 실패율 $2^{-128}$ 이하를 유지하며 외부 부호율 최대화.
+\item \textbf{Pencil-극값 추측.} 등방 pencil($k \le 2$)이 크기 $|\Lagr|/2^{2n}$ 스케일에서 극값임을 증명하라 --- 조건부 SQ 정리를 무조건으로 격상한다.
+\item \textbf{재무작위화 LSN의 표본 신선도.} 정확한 비밀 재무작위화는 가능하다(공개 심플렉틱 $S$ 적용이 라벨을 보존하며 $L \mapsto S\cdot L$). 재무작위화된 비밀에 대한 \emph{신선한}(통계적으로 독립인) 표본을 주는 공개 변환이 존재하는가? 긍정이면 타이트한 다중사용자 한계를 얻고, 부정이면 하이브리드 논증의 $N$배 손실이 설명된다.
+\item \textbf{멤버십-LSN $\leftrightarrow$ stabilizer-디코딩 LSN 다리.} 우리의 멤버십 정식화(비밀 라그랑지안, 공개 행렬 없음)와 \cite{KLP+25,LPQR26}의 LSN(공개 등방 행렬, 정크 레지스터, 비밀 논리열)을 관계지어라. 어느 방향의 환원이든 외부 하드니스 결과와 우리의 SQ 하계가 \emph{단일} 객체를 지지하게 만든다; 다리가 없으면 두 하드니스 사례는 누적이 아니라 평행이다.
+\item \textbf{marginal-적응 선형 환원.} 현 지형: 고정-$B$ 폐쇄, 공개-$B$ 폐쇄, 조건부-균등 적응 폐쇄, marginal-적응 \emph{미해결}. 결정적 질문: $Be$의 $\le 2n$차원 잡음 구조가 고엔트로피 비밀 $B$에서도 살아남는가, 아니면 적응 $B$가 $2n$개 잡음 비트로 $m$개의 독립 $\operatorname{Bernoulli}(p')$를 $C$에서 탐지 불가능하게 위조할 수 있는가? 어느 쪽 증명이든 이 모서리를 닫는다.
+\end{enumerate}
+
+\subsection{본 연구의 정직한 한계}
+
+(1) \textbf{표준모형 격차:} LSN 하드니스는 원시 가정이다 --- LWE급 worst-case 환원이 없다. (2) \textbf{SQ는 증거이지 증명이 아니다:} SQ 하계는 LPN·LWE에도 있으므로 family 구별자가 아니다. (3) \textbf{폴라 검증은 예비적:} 짧은 길이 시뮬레이션만 수행했고 설계점 검증은 Rust 구현으로 미룬다. (4) \textbf{느슨한 다중사용자 환원:} 정확한 비밀 재무작위화는 가능하지만 표본 신선도가 막혀 있어($\mathbf{1}_L$ 비선형성) 하이브리드가 $N$배를 잃는다. 실무 여유는 충분하다($q \gtrsim 2^{114}$). (5) \textbf{실용 최적화 유보:} $p=1/4$ 고정, 다수결 디코더(상수시간) 등은 엔지니어링 자유도다.
+
+\section*{부록 요약 (한국어판)}
+
+영어판의 부록 A--D는 각각 다음을 담는다: \textbf{A.} 쌍별 상관 공식의 자기완결 유도(우도비 인수분해; $p=1/4$에서 계수 $4/3$ 정확). \textbf{B.} $q$-이항 거리 분포의 유도($k$차원 등방 $W$를 포함하는 라그랑지안 수 = 심플렉틱 몫 $W^\perp/W$의 라그랑지안 수). \textbf{C.} SQ/특성사상 장벽 요약(전체 선형-환원 지형은 본문 표 참조). \textbf{D.} $\F_q$ 확장: $|\Lagr(2n,\F_q)| = \prod(q^i+1)$, 상관식의 $2 \to q$ 치환, $C_{n,q} \to 2$ (체 크기와 무관), 보안 파라미터의 $n$--$q$ 트레이드오프. 상세 수식은 영어판을 참조하라.
+
+
+\begin{thebibliography}{99}
+
+\bibitem[AAC+22]{AAC+22}
+C.~Adjiman, N.~Aragon, S.~Bettaieb, L.~Bidoux, O.~Blazy, J.-C.~Deneuville, P.~Gaborit, S.~Ghosh, A.~Hauteville, and G.~Zemor.
+HQC.
+NIST PQC Round 4 Submission, 2022.
+
+\bibitem[ABD+21]{ABD+21}
+M.~Albrecht, D.~Bernstein, T.~Chou, C.~Cid, J.~Gilcher, T.~Lange, V.~Maram, I.~von Maurich, R.~Misoczki, R.~Niederhagen, K.~Paterson, E.~Persichetti, C.~Peters, P.~Schwabe, N.~Sendrier, J.~Szefer, C.~Tjhai, M.~Tomlinson, and W.~Wang.
+Classic McEliece.
+NIST PQC Round 4 Submission, 2021.
+
+\bibitem[ABW10]{ABW10}
+A.~Akavia, S.~Goldwasser, and V.~Vaikuntanathan.
+Simultaneous hardcore bits and cryptography against memory attacks.
+In \emph{TCC}, pages 474--495. Springer, 2010.
+
+\bibitem[Ale11]{Ale11}
+A.~Aleknovich.
+More on average case vs approximation complexity.
+\emph{Computational Complexity}, 20(4):755--786, 2011.
+
+\bibitem[Ari09]{Ari09}
+E.~Arikan.
+Channel polarization: A method for constructing capacity-achieving codes for symmetric binary-input memoryless channels.
+\emph{IEEE Trans.\ Inform.\ Theory}, 55(7):3051--3073, 2009.
+
+\bibitem[BBB+18]{BBB+18}
+B.~B\"unz, J.~Bootle, D.~Boneh, A.~Poelstra, P.~Wuille, and G.~Maxwell.
+Bulletproofs: Short proofs for confidential transactions and more.
+In \emph{IEEE S\&P}, pages 315--334, 2018.
+
+\bibitem[BCTV14]{BCTV14}
+E.~Ben-Sasson, A.~Chiesa, D.~Tromer, and M.~Virza.
+Scalable zero knowledge via cycles of elliptic curves.
+In \emph{CRYPTO}, pages 276--294. Springer, 2014.
+
+\bibitem[BFJ+94]{BFJ+94}
+A.~Blum, M.~Furst, J.~Jackson, M.~Kearns, Y.~Mansour, and S.~Rudich.
+Weakly learning DNF and characterizing statistical query learning using Fourier analysis.
+In \emph{STOC}, pages 253--262. ACM, 1994.
+
+\bibitem[BFKL94]{BFKL94}
+A.~Blum, A.~Furst, M.~Kearns, and R.~Lipton.
+Cryptographic primitives based on hard learning problems.
+In \emph{CRYPTO}, pages 278--291. Springer, 1994.
+
+\bibitem[BKW03]{BKW03}
+A.~Blum, A.~Kalai, and H.~Wasserman.
+Noise-tolerant learning, the parity problem, and the statistical query model.
+\emph{J.\ ACM}, 50(4):506--519, 2003.
+
+\bibitem[BPR12]{BPR12}
+A.~Banerjee, C.~Peikert, and A.~Rosen.
+Pseudorandom functions and lattices.
+In \emph{EUROCRYPT}, pages 719--737. Springer, 2012.
+
+\bibitem[BCGI18]{BCGI18}
+E.~Boyle, G.~Conteau, N.~Gilboa, and Y.~Ishai.
+Compressing vector OLE.
+In \emph{ACM CCS}, pages 896--912, 2018.
+
+\bibitem[CRSS98]{CRSS98}
+A.~R.~Calderbank, E.~M.~Rains, P.~W.~Shor, and N.~J.~A.~Sloane.
+Quantum error correction via codes over GF(4).
+\emph{IEEE Trans.\ Inform.\ Theory}, 44(4):1369--1387, 1998.
+
+\bibitem[DKS17]{DKS17}
+I.~Diakonikolas, D.~M.~Kane, and A.~Stewart.
+Statistical query lower bounds for robust estimation of high-dimensional Gaussians and Gaussian mixtures.
+In \emph{FOCS}, pages 73--84. IEEE, 2017.
+
+\bibitem[DGM14]{DGM14}
+N.~D\"ottling, J.~M\"uller-Quade, and A.~Nascimento.
+IND-CCA secure cryptography based on a variant of the LPN problem.
+In \emph{ASIACRYPT}, pages 485--508. Springer, 2014.
+
+\bibitem[DP12]{DP12}
+Y.~Dodis, K.~Pietrzak, and D.~Wichs.
+Key derivation without entropy waste.
+In \emph{EUROCRYPT}, pages 93--110. Springer, 2012.
+
+\bibitem[EKM17]{EKM17}
+A.~Esser, R.~K\"ubler, and A.~May.
+LPN decoded.
+In \emph{CRYPTO}, pages 486--514. Springer, 2017.
+
+\bibitem[FO99]{FO99}
+E.~Fujisaki and T.~Okamoto.
+Secure integration of asymmetric and symmetric encryption schemes.
+In \emph{CRYPTO}, pages 537--554. Springer, 1999.
+
+\bibitem[FGR+17]{FGR+17}
+V.~Feldman, E.~Grigorescu, L.~Reyzin, and S.~Vempala.
+Statistical query lower bounds for robust estimation of high-dimensional Gaussians and Gaussian mixtures.
+In \emph{FOCS}, pages 211--220. IEEE, 2017.
+
+\bibitem[FV19]{FV19}
+A.~Fazeli and A.~Vardy.
+On the scaling exponent of binary polarization kernels.
+In \emph{IEEE ISIT}, pages 1472--1476, 2019.
+
+\bibitem[GGPR13]{GGPR13}
+R.~Gennaro, C.~Gentry, B.~Parno, and M.~Raykova.
+Quadratic span programs and succinct NIZKs without PCPs.
+In \emph{EUROCRYPT}, pages 626--645. Springer, 2013.
+
+\bibitem[GJL14]{GJL14}
+Q.~Guo, T.~Johansson, and C.~L\"ondahl.
+Solving LPN using covering codes.
+In \emph{ASIACRYPT}, pages 1--20. Springer, 2014.
+
+\bibitem[GL22]{GL22}
+S.~Gollakota and D.~Liang.
+PAC-learning noisy stabilizer states in the statistical query model.
+\emph{arXiv preprint}, 2022.
+
+\bibitem[Got97]{Got97}
+D.~Gottesman.
+Stabilizer codes and quantum error correction.
+PhD thesis, Caltech, 1997.
+
+\bibitem[Gro96]{Gro96}
+L.~K.~Grover.
+A fast quantum mechanical algorithm for database search.
+In \emph{STOC}, pages 212--219. ACM, 1996.
+
+\bibitem[Gro16]{Gro16}
+J.~Groth.
+On the size of pairing-based non-interactive arguments.
+In \emph{EUROCRYPT}, pages 305--326. Springer, 2016.
+
+\bibitem[HHK17]{HHK17}
+D.~Hofheinz, K.~H\"ovelmanns, and E.~Kiltz.
+A modular analysis of the Fujisaki--Okamoto transformation.
+In \emph{TCC}, pages 341--371. Springer, 2017.
+
+\bibitem[HKL+12]{HKL+12}
+S.~Heyse, E.~Kiltz, V.~Lyubashevsky, C.~Paar, and K.~Pietrzak.
+Lapin: An efficient authentication protocol based on ring-LPN.
+In \emph{FSE}, pages 346--365. Springer, 2012.
+
+\bibitem[HVU14]{HVU14}
+S.~H.~Hassani, R.~Urbanke, and S.~V.~Macris.
+Near-optimal finite-length scaling for polar codes over large alphabets.
+\emph{IEEE Trans.\ Inform.\ Theory}, 60(11):6960--6976, 2014.
+
+\bibitem[Kea98]{Kea98}
+M.~Kearns.
+Efficient noise-tolerant learning from statistical queries.
+\emph{J.\ ACM}, 45(6):983--1006, 1998.
+
+\bibitem[Kir11]{Kir11}
+P.~Kirchner.
+Improved generalized birthday attack.
+\emph{Cryptology ePrint Archive}, Report 2011/377, 2011.
+
+\bibitem[KLP+25]{KLP+25}
+A.~Khesin, J.~Lu, A.~Poremba, S.~Ramkumar, and V.~Vaikuntanathan.
+Hardness of decoding random quantum stabilizer codes.
+\emph{arXiv:2509.20697}, 2025.
+
+\bibitem[LF06]{LF06}
+E.~Levieil and P.-A.~Fouque.
+An improved LPN algorithm.
+In \emph{SCN}, pages 348--359. Springer, 2006.
+
+\bibitem[LPQR26]{LPQR26}
+J.~Lu, A.~Poremba, Y.~Quek, and S.~Ramkumar.
+Post-quantum cryptography from quantum stabilizer decoding.
+\emph{arXiv:2603.19110}, 2026.
+
+\bibitem[Lyu05]{Lyu05}
+V.~Lyubashevsky.
+The parity problem in the presence of noise, decoding random linear codes, and the subset sum problem.
+In \emph{APPROX-RANDOM}, pages 378--389. Springer, 2005.
+
+\bibitem[Mac71]{Mac71}
+I.~G.~Macdonald.
+Symmetric Functions and Hall Polynomials.
+Oxford University Press, 1971.
+
+\bibitem[McE78]{McE78}
+R.~J.~McEliece.
+A public-key cryptosystem based on algebraic coding theory.
+\emph{DSN Progress Report}, 44:114--116, 1978.
+
+\bibitem[MT09]{MT09}
+R.~Mori and T.~Tanaka.
+Performance and construction of polar codes on symmetric binary-input memoryless channels.
+In \emph{IEEE ISIT}, pages 1496--1500, 2009.
+
+\bibitem[NC00]{NC00}
+M.~A.~Nielsen and I.~L.~Chuang.
+Quantum Computation and Quantum Information.
+Cambridge University Press, 2000.
+
+\bibitem[NIS22]{NIS22}
+NIST.
+Post-quantum cryptography standardization, 2022.
+\url{https://csrc.nist.gov/projects/post-quantum-cryptography}.
+
+\bibitem[PHGR13]{PHGR13}
+B.~Parno, J.~Howell, C.~Gentry, and M.~Raykova.
+Pinocchio: Nearly practical verifiable computation.
+In \emph{IEEE S\&P}, pages 238--252, 2013.
+
+\bibitem[PQS26]{PQS26}
+A.~Poremba, Y.~Quek, and P.~Shor.
+Learning stabilizers with noise.
+\emph{arXiv:2410.18953}, 2025.
+
+\bibitem[Pra62]{Pra62}
+E.~Prange.
+The use of information sets in decoding cyclic codes.
+\emph{IRE Trans.\ Inform.\ Theory}, 8(5):5--9, 1962.
+
+\bibitem[Reg05]{Reg05}
+O.~Regev.
+On lattices, learning with errors, random linear codes, and cryptography.
+\emph{J.\ ACM}, 56(6):34, 2005.
+
+\bibitem[SAB+22]{SAB+22}
+P.~Schwabe, R.~Avanzi, J.~Bos, L.~Ducas, E.~Kiltz, T.~Lepoint, V.~Lyubashevsky, J.~M.~Schanck, G.~Seiler, and D.~Stehl\'e.
+CRYSTALS-Kyber.
+NIST PQC Round 3 Submission, 2022.
+
+\bibitem[Sei15]{Sei15}
+M.~Seidl.
+Polar coding: Finite-length aspects.
+PhD thesis, Friedrich-Alexander-Universit\"at Erlangen-N\"urnberg, 2015.
+
+\bibitem[Sho94]{Sho94}
+P.~W.~Shor.
+Algorithms for quantum computation: Discrete logarithms and factoring.
+In \emph{FOCS}, pages 124--134. IEEE, 1994.
+
+\bibitem[Tri12]{Tri12}
+P.~Trifonov.
+Efficient design and decoding of polar codes.
+\emph{IEEE Trans.\ Commun.}, 60(11):3221--3227, 2012.
+
+\bibitem[TV15]{TV15}
+I.~Tal and A.~Vardy.
+List decoding of polar codes.
+\emph{IEEE Trans.\ Inform.\ Theory}, 61(5):2213--2226, 2015.
+
+\bibitem[WS21]{WS21}
+A.~Wang and F.~Zhang.
+Revisiting the BKW algorithm for LPN.
+\emph{Cryptology ePrint Archive}, Report 2021/213, 2021.
+
+\bibitem[ZJW16]{ZJW16}
+B.-Y.~Zhang, L.~Jia, and M.-W.~Wang.
+Security analysis of LPN under perfect code cover.
+\emph{IEEE Access}, 4:3979--3986, 2016.
+
+\bibitem[komm]{komm}
+A.~Krohn.
+\texttt{komm}: An open-source library for communication systems.
+\url{https://github.com/ryukau/komm}, 2024.
+
+\end{thebibliography}
+
+\end{document}
