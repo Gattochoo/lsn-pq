@@ -552,13 +552,13 @@ $\operatorname{rank}(B) = \rho = 2n - c$, $K = \ker B$이면, 모든 등방-열 
 \begin{lemma}[저무게 행의 엔트로피-support 한계 (M1)]
 $B = g(A,R)$ 임의, $C = BA$, $\operatorname{SD}(C, \mathrm{Uniform}) \le \delta$, $w = \lfloor 0.19n\rfloor$이면 무게 $\le w$인 행의 기대 개수는
 \[
-\E[k] \;\le\; \frac{\log_2 N(n) + m + \delta nm + O(1)}{0.094n} \;=\; 16n + 11\delta m + \frac{11m}{n} + O(1)
+\E[k] \;\le\; 16n + 11\delta m + \frac{11m}{n} + O(1)
 \]
-($N(n)$은 등방 frame 수, $\log_2 N(n) = \tfrac{3}{2}n^2 + \tfrac{n}{2} + O(1)$).
+이다.
 \end{lemma}
 
 \begin{proof}
-Fannes--Csisz\'ar 연속성으로 $H(C) \ge nm - \delta nm - 1$. 연쇄법칙과 부가법칙으로 $H(C) \le H(A) + \sum_i H(c_i \mid A)$, $H(A) \le \log_2 N(n)$. 지시자 $T_i = \mathbf{1}[|b_i| \le w]$를 쓰면 $H(c_i\mid A) \le 1 + n - \Pr[T_i]\cdot 0.094n$ (저무게면 support가 $R_w(A)$에 갇히므로). 합산·정리하면 주장을 얻는다.
+Fannes--Csisz\'ar 연속성으로 $H(C) \ge nm - \delta nm - 1$. 연쇄법칙과 부가법칙으로 $H(C) \le H(A) + \sum_i H(c_i \mid A)$이고, $A$는 등방 기저이므로 $H(A) \le \log_2(|\Lagr(2n,\F_2)|\cdot|GL(n,\F_2)|) = \tfrac{3}{2}n^2 + \tfrac{n}{2} + O(1)$. 지시자 $T_i = \mathbf{1}[|b_i| \le w]$를 쓰면 $H(c_i\mid A) \le 1 + n - \Pr[T_i]\cdot 0.094n$ (저무게면 support가 $R_w(A)$에 갇히므로; $\log_2|R_w(A)| \le 0.906n$). 합산하면 $\E[k\mid A]\cdot 0.094n \le \tfrac{3}{2}n^2 + \tfrac{n}{2} + m + \delta nm + O(1)$이고, $0.094n$으로 나누면 주장을 얻는다.
 \end{proof}
 
 \begin{lemma}[분포-불일치 사망 (M2) --- \textbf{조건부; 미확립}]
