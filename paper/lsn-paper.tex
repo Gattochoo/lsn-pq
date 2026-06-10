@@ -915,6 +915,27 @@ This is $1 - 2^{-\Omega(n^2)}$ only when $n - 2c = \Omega(n)$, i.e. $\rho \ge (3
 \end{itemize}
 This stratification applies to \emph{fixed/public} $B$ (per-realization). If the reduction draws $B$ from a high-entropy distribution conditioned on $BA$ being uniform, the matrix is randomized---but then the label noise $Be$ is killed by piling-up at $p=1/4$ (row weight $w$ gives bias $2^{-w}$). The two regimes are endpoint observations; the quantitative trade-off over all $B$-distributions is an open problem (see \Cref{sec:open}).
 
+\paragraph{B-visibility and the secret-$B$ regime.} The quantifier order of LPQR26's Theorem~D.2 is subtle: $B$ may be chosen as a function of $A$ provided only that the \emph{induced distribution} of $BA$ is uniform. This creates a \textbf{secret-$B$} regime in which the reduction matrix is not public. Our transport theorems (which require the realized $B$ to be available to the distinguisher) do not apply here; the residual open question is whether label-signal bounds together with marginal $BA$-uniformity suffice to close the linear-reduction landscape at constant noise. In the \textbf{public-$B$} regime, by contrast, randomizing $B$ does not escape our rank-stratification barrier because the detector operates on the realized matrix. The secret-$B$ regime is loosely analogous to the gap between our membership-LSN and the stabilizer-decoding LSN of \cite{KLP+25,LPQR26}: in both settings the adversary does not fully observe the structure that generates the samples.
+
+The label-signal side of the secret-$B$ regime is controlled by the following affine-coset bias bound (proved via the MacWilliams identity; see the source-accuracy record for the derivation).
+
+\begin{lemma}[Affine-coset bias, expectation form]
+\label{lem:affine-coset-bias}
+Let $A \in \F_2^{D \times n}$ have rank $n$ and isotropic columns, let $c \in \F_2^n$, and let $b$ be uniform over the affine subspace $\{b \in \F_2^D : b^{\!\top} A = c^{\!\top}\}$. For $e \sim \operatorname{Bernoulli}(p)^{\otimes D}$,
+\[
+  \bigl|\E_{b,e}[(-1)^{b^{\!\top} e}]\bigr| \;\le\; 2^{-n} \cdot W_N(1-2p),
+\]
+where $W_N$ is the weight enumerator of $N = \operatorname{nullspace}(A^{\!\top})$ and $D = 2n$. In expectation over a uniformly random isotropic $A$,
+\[
+  \E_A\bigl|\E_{b,e}[(-1)^{b^{\!\top} e}]\bigr|
+  \;\le\; 2^{-n} + (1-p)^{2n}
+  \;=\; 2^{-n} + \Bigl(\frac{9}{16}\Bigr)^n \quad\text{at }p=1/4.
+\]
+When the coset offset $b_0=0$ every term in the MacWilliams sum is positive, so the bound is an equality.
+\end{lemma}
+
+At cryptographic $n$ the $2^{-n}$ term is negligible and the bias is dominated by $(9/16)^n$, which matches the full-space piling-up baseline $(3/4)^{2n}$. Thus, in expectation over random isotropic $A$, the affine constraint does not materially increase the per-row label bias; the secret-$B$ trade-off is governed by the Gram-rank transition, not by bias amplification.
+
 A sharper, unconditional barrier comes from an information-theoretic floor:
 
 \begin{proposition}[Entropy floor]

@@ -22,10 +22,10 @@ LPQR26 Theorem D.2 (pinned in `meta/LPQR26-appendixD-quotes.md`) states that $B 
 
 ### Key distinction
 
-- **Public-B model** (reduction matrix is known to the adversary): per-realization transport theorems apply. The adversary sees $B$ and can compute the optimal transportable form. Randomizing $B$ per realization does **not** help because the detector operates on the realized $B$.
-- **Secret-B model** (only the marginal distribution of $BA$ matters, per D.2 quantifier): the adversary does **not** see $B$. The Gram detector is inapplicable; the open question is whether the **label signal** ($|Be|$ distribution) plus the **marginal uniformity** of $BA$ suffice for a reduction.
+- **Public-B model** (the realized $B$ is available to the distinguisher): per-realization transport theorems apply. The distinguisher sees $B$ and can compute the optimal transportable form. Randomizing $B$ per realization does **not** help because the detector operates on the realized $B$.
+- **Secret-B model** (only the marginal distribution of $BA$ matters, per D.2 quantifier): the distinguisher does **not** see $B$. The Gram detector is inapplicable; the open question is whether the **label signal** ($|Be|$ distribution) plus the **marginal uniformity** of $BA$ suffice for a reduction.
 
-The bridge between our membership-LSN and LPQR26's stabilizer-decoding LSN lives entirely in the **secret-B** column: both formulations involve a secret that the adversary does not fully observe (the Lagrangian $L$ vs the logical bitstring $y$), and the public data is a marginal distribution over instances.
+The secret-$B$ regime is *loosely analogous* to the membership-LSN vs stabilizer-decoding LSN gap: in both settings the adversary does not fully observe the structure that generates the samples (the reduction matrix $B$ vs the Lagrangian $L$ / logical bitstring $y$). The analogy is motivational only; the two open problems (A3b reduction-matrix visibility and the form-equivalence bridge) remain distinct.
 
 ---
 

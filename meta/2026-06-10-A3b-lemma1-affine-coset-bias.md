@@ -63,15 +63,18 @@ At $n=5$: $(3/4)^{10} \approx 0.056$, matching the experiments.
 
 ## Random-isotropic bound
 
-For a **random isotropic** $A$, the nullspace $N$ is also a random $n$-dimensional isotropic subspace. Its expected weight enumerator at $1/2$ is
+For a **random isotropic** $A$, the nullspace $N = \operatorname{nullspace}(A^T)$ is the image $N = \Omega \cdot L$ of a uniformly random Lagrangian subspace $L \subset \mathbb{F}_2^D$ (by Sp-transitivity, every Lagrangian is equally likely). The weight enumerator expectation includes the zero vector ($B_0 = 1$):
 
-$$\mathbb{E}_A[W_N(1/2)] = \sum_{k=0}^D \binom{D}{k} 2^{-n} \,2^{-k} = 2^{-n}\left(\frac{3}{2}\right)^{2n} = \left(\frac{9}{8}\right)^n.$$
+$$\mathbb{E}_A[W_N(1/2)] = 1 + \sum_{k=1}^D \binom{D}{k} \frac{1}{2^n+1} \,2^{-k} = 1 + \frac{(3/2)^D - 1}{2^n+1} = 1 + \left(\frac{9}{8}\right)^n \cdot (1 - o(1)).$$
+
+(The factor $1/(2^n+1)$ is $\Pr[x \in N]$ for any non-zero $x$ by Sp-transitivity; it happens to equal $2^{-n}$ in the limit but the exact Lagrangian count $2^{n^2/2 + O(n)}$ gives the denominator $2^n+1$ via the isotropic-point count.)
 
 Thus the **expected** absolute bias over random isotropic $A$ is
 
-$$\mathbb{E}_A\bigl|\mathbb{E}_{b,e}[(-1)^{b^T e}]\bigr| \le 2^{-n} \cdot \left(\frac{9}{8}\right)^n = \left(\frac{9}{16}\right)^n = (1-p)^D.$$
+$$\mathbb{E}_A\bigl|\mathbb{E}_{b,e}[(-1)^{b^T e}]\bigr| \le 2^{-n} \cdot \left(1 + \left(\frac{9}{8}\right)^n\right) = 2^{-n} + \left(\frac{9}{16}\right)^n = 2^{-n} + (1-p)^D.$$
 
-In other words: for a random isotropic $A$, the affine-coset bias is **of the same order** as the full-space bias $(1-p)^D$. The affine constraint does not materially increase the bias; the piling-up decay is dominated by the ambient dimension $D = 2n$.
+At $n=3$: bound gives $2^{-3} + (9/16)^3 \approx 0.125 + 0.178 = 0.303$; the exact average over all 64 graph-Lagrangians is **0.250** (verified 64/64). The $+2^{-n}$ term is half the value at $n=3$ and negligible at cryptographic $n$ ($(9/8)^{65} \approx 2100$).  
+**Exactness remark:** when the coset offset $b_0 = 0$, every term in the MacWilliams sum is positive, so the bound is an **equality** (not just an upper bound).
 
 ---
 
@@ -87,7 +90,7 @@ $$\bigl|\mathbb{E}_{b,e}[(-1)^{b^T e}]\bigr| \le 2^{-n} \cdot 2^n = 1$$
 
 ## Implications for the A3b trade-off
 
-The lemma shows that the **label-bias** side of the trade-off is approximately flat: for any isotropic $A$ and any affine-coset row distribution, the per-row bias is $\Theta((1-p)^{2n}) = 2^{-\Theta(n)}$ (up to a constant factor $(9/8)^n$). The main variation in the experiments comes from:
+The lemma shows that the **label-bias** side of the trade-off is approximately flat: **in expectation over random isotropic $A$**, the per-row bias is $\Theta((1-p)^{2n}) = 2^{-\Theta(n)}$ (up to a constant factor $(9/8)^n$). The main variation in the experiments comes from:
 
 1. **Gram detectability** ($\min_Q \operatorname{rank}(\Omega + B^T Q B)$), which drops from $\ge n$ to $< n$ as $q$ increases;
 2. **BA uniformity** (rank of $BA$), which transitions from low-rank to full-rank.
