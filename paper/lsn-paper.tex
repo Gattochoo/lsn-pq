@@ -917,7 +917,7 @@ This stratification applies to \emph{fixed/public} $B$ (per-realization). If the
 
 \paragraph{B-visibility and the secret-$B$ regime.} The quantifier order of LPQR26's Theorem~D.2 is subtle: $B$ may be chosen as a function of $A$ provided only that the \emph{induced distribution} of $BA$ is uniform. This creates a \textbf{secret-$B$} regime in which the reduction matrix is not public. Our transport theorems (which require the realized $B$ to be available to the distinguisher) do not apply here; the residual open question is whether label-signal bounds together with marginal $BA$-uniformity suffice to close the linear-reduction landscape at constant noise. In the \textbf{public-$B$} regime, by contrast, randomizing $B$ does not escape our rank-stratification barrier because the detector operates on the realized matrix. The secret-$B$ regime is loosely analogous to the gap between our membership-LSN and the stabilizer-decoding LSN of \cite{KLP+25,LPQR26}: in both settings the adversary does not fully observe the structure that generates the samples.
 
-The label-signal side of the secret-$B$ regime is controlled by the following affine-coset bias bound (proved via the MacWilliams identity; see the source-accuracy record for the derivation).
+The label-signal side of the secret-$B$ regime is controlled by the following affine-coset bias bound.
 
 \begin{lemma}[Affine-coset bias, expectation form]
 \label{lem:affine-coset-bias}
@@ -933,6 +933,10 @@ where $W_N$ is the weight enumerator of $N = \operatorname{nullspace}(A^{\!\top}
 \]
 When the coset offset $b_0=0$ every term in the MacWilliams sum is positive, so the bound is an equality.
 \end{lemma}
+
+\begin{proof}
+Write $b = b_0 + Nz$ with $z \sim \operatorname{Uniform}(\F_2^n)$ and $N$ a basis of $\operatorname{nullspace}(A^{\!\top})$. Then $\E_b[(-1)^{b^{\!\top} e}] = (-1)^{b_0^{\!\top} e} \cdot \mathbf{1}_{e \in \operatorname{colspace}(A)}$, so $|\E_{b,e}[(-1)^{b^{\!\top} e}]| = \sum_{x \in \operatorname{colspace}(A)} p^{|x|}(1-p)^{D-|x|} = (1-p)^D \cdot W_{\operatorname{colspace}(A)}(p/(1-p))$. The MacWilliams identity with $t = p/(1-p)$ gives $(1-p)^D W_{\operatorname{colspace}(A)}(t) = 2^{-n} W_N(1-2p)$. For the expectation, $N = \Omega \cdot L$ is the image of a uniform Lagrangian $L$, so $\Pr[x \in N] = 1/(2^n+1)$ for every non-zero $x$ by $\mathrm{Sp}(2n)$-transitivity. Hence $\E_A[W_N(1/2)] = 1 + ((3/2)^D-1)/(2^n+1) \le 1+(9/8)^n$, yielding the claimed bound.
+\end{proof}
 
 At cryptographic $n$ the $2^{-n}$ term is negligible and the bias is dominated by $(9/16)^n$, which matches the full-space piling-up baseline $(3/4)^{2n}$. Thus, in expectation over random isotropic $A$, the affine constraint does not materially increase the per-row label bias; the secret-$B$ trade-off is governed by the Gram-rank transition, not by bias amplification.
 
