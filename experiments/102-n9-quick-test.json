@@ -1,0 +1,30 @@
+{
+  "experiment": "102-n9-quick-test",
+  "description": "Quick n=9 single-sample distinguishing for OP9 (no max_agree due to cost)",
+  "date": "2026-06-11",
+  "n": 9,
+  "p_prime": 0.2,
+  "B_family": "uniform",
+  "num_trials": 200,
+  "results": [
+    {
+      "m": 18,
+      "P0": {"syndrome": 4.32, "rank_diff": 0.99, "corr": -0.00},
+      "P1": {"syndrome": 4.08, "rank_diff": 0.98, "corr": -0.00},
+      "separation": {"syndrome": 0.24, "rank_diff": 0.01, "corr": 0.00}
+    },
+    {
+      "m": 36,
+      "P0": {"syndrome": 13.12, "rank_diff": 0.99, "corr": -0.00},
+      "P1": {"syndrome": 12.08, "rank_diff": 1.00, "corr": -0.00},
+      "separation": {"syndrome": 0.34, "rank_diff": 0.01, "corr": 0.00}
+    },
+    {
+      "m": 72,
+      "P0": {"syndrome": 31.66, "rank_diff": 0.99, "corr": -0.00},
+      "P1": {"syndrome": 27.50, "rank_diff": 1.00, "corr": -0.00},
+      "separation": {"syndrome": 0.42, "rank_diff": 0.01, "corr": 0.00}
+    }
+  ],
+  "conclusion": "Syndrome separation weakly increases with m (0.24→0.42) but remains far from strong. rank_diff and corr show no separation."
+}
