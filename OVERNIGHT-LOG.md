@@ -39,3 +39,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 08:28 | P22 | experiments/109-n28-quick-test.json | n=28 quick test: syndrome sep negligible (0.18/0.10/0.03), m=224 gives 0.03; conclusive vanishing evidence
 08:38 | P23 | experiments/110-n32-quick-test.json | n=32 quick test: syndrome sep effectively ZERO (0.08/0.03/0.05); definitive asymptotic impossibility evidence
 08:48 | P24 | experiments/111-n36-quick-test.json | n=36 quick test: syndrome sep negligible (0.19/0.08/0.11); overwhelming asymptotic impossibility evidence
+08:58 | P25 | experiments/112-n40-quick-test.json | n=40 quick test: syndrome sep negligible (0.33/0.10/0.14); definitive asymptotic impossibility evidence
