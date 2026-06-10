@@ -806,8 +806,9 @@ Class & Status & Reason \\
 \hline
 Linear (real)      & BLOCKED  & real-linear: $\E[q]$ $L$-independent; F$_2$-linear: $\leq (1-2p)2^{-n}$ \\
 Polynomial degree $< n$ & BLOCKED  & Error $\geq 2^{-n}$ \\
-Linear sample-red., $m=\Theta(n)$ & RULED OUT & LPQR26 (external) \\
-Linear sample-red., $m=\omega(n)$ & OPEN & LPQR26 bound insufficient (their caveat; extension expected) \\
+Linear, $\rho=2n$ (full) & BLOCKED & Transport lemma; output Gram $\equiv 0$ (\Cref{thm:transport-fullrank}) \\
+Linear, $3n/2<\rho<2n$ (near-full) & BLOCKED & Gram rank $\le 2c<n$ (\Cref{thm:transport-nearfull}) \\
+Linear, $\rho\le 3n/2$ (mid/low) & OPEN & Entropy regime; LPQR26 App.~D + \Cref{prop:entropy-floor} \\
 LPN($k=\Theta(n^2)$)   & VACUOUS  & \Cref{prop:entropy-floor} + BKW cost $2^{\Omega(n^2/\log n)}$ \\
 Multi-sample or beyond-poly & OPEN & No proof or construction known \\
 \hline
@@ -844,7 +845,45 @@ The identity follows from
 For the probability bound, $M$ has rank $2n$ (because $B^{+}$ has rank $2n$ and $\Omega$ is non-degenerate). Choose an invertible $P \in \F_2^{m \times m}$ such that $P^{\top} M P = \operatorname{diag}(J,\dots,J,0,\dots,0)$ with $n$ copies of $J = \begin{psmallmatrix}0&1\\1&0\end{psmallmatrix}$. Writing $P^{-1}C = [C_1; C_2]$ with $C_1 \in \F_2^{2n \times n}$, the condition $C^{\top} M C = 0$ is equivalent to $C_1^{\top} \operatorname{diag}(J,\dots,J) C_1 = 0$, i.e. the column space of $C_1$ is totally isotropic in the $2n$-dimensional symplectic space $(\F_2^{2n}, \operatorname{diag}(J,\dots,J))$. The number of $n$-dimensional totally isotropic subspaces of $\F_2^{2n}$ is $|\Lagr(2n,\F_2)| = \prod_{i=1}^n (2^i+1) = 2^{n(n+1)/2+O(1)}$, while the total number of $n$-dimensional subspaces is the Gaussian binomial ${2n \brack n}_2 = 2^{n^2+O(n)}$. Hence a uniformly random $C_1$ (equivalently, a uniformly random $C$) yields a totally isotropic column space with probability $2^{-n^2/2+O(n)}$.
 \end{proof}
 
-\Cref{thm:transport-fullrank} blocks full-rank linear reductions at \emph{every} $m \ge 2n$ and \emph{every} noise rate. The residual $m=\omega(n)$ gap is therefore reduced to near-full and mid-rank linear maps (see \Cref{tab:barriers}).
+\Cref{thm:transport-fullrank} blocks full-rank linear reductions at \emph{every} $m \ge 2n$ and \emph{every} noise rate. The next theorem closes the near-full-rank stratum as well.
+
+\begin{theorem}[Transport lemma for near-full-rank linear reductions]
+\label{thm:transport-nearfull}
+Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = \rho = 2n-c$ where $1 \le c \le n-1$. Let $K = \ker B$ ($\dim K = c$). Then there exists a symmetric matrix $M \in \F_2^{m \times m}$ such that for every isotropic-column matrix $A$,
+\[
+\operatorname{rank}\bigl((BA)^{\top} M (BA)\bigr) \;\le\; 2c - \operatorname{rank}(\Omega|_K) \;\le\; 2c.
+\]
+In particular, an adversarial reduction can choose $K$ isotropic (possible for all $c \le n$), in which case the Gram rank of the output is at most $2c$ deterministically. A uniformly random matrix $C \in \F_2^{m \times n}$ satisfies $\operatorname{rank}(C^{\top} M C) \le 2c$ with probability at most $2^{-\Omega(n^2)}$ whenever $2c \le n - \Theta(1)$.
+\end{theorem}
+
+\begin{proof}
+Write $B = P^{\top}$ with $P \in \F_2^{\rho \times 2n}$ of rank $\rho$. The set of symmetric matrices $N$ of the form $P^{\top}QP$ ($Q$ symmetric) is exactly the set of symmetric bilinear forms vanishing on $K$ from both sides. Fix a basis adapted to $K \oplus V$ with $\dim V = 2n-c$. In this basis the standard symplectic form $\Omega$ becomes a block matrix with blocks $\Omega_{KK}, \Omega_{KV}, \Omega_{VK}, \Omega_{VV}$. Adding a form $N$ that kills $K$ on both sides changes only the $VV$ block; the blocks $\Omega_{KK}, \Omega_{KV}, \Omega_{VK}$ remain fixed. We therefore obtain a \emph{minimal-rank completion} problem for the matrix
+\[
+E = \begin{pmatrix} \Omega_{KK} & \Omega_{KV} \\ \Omega_{VK} & E_{VV} \end{pmatrix},
+\]
+where $E_{VV}$ is free. The classical formula for the minimal rank of such a completion (classical minimal-rank-completion folklore) gives
+\[
+\min_{E_{VV}} \operatorname{rank}(E)
+= \operatorname{rank}\begin{pmatrix} \Omega_{KK} & \Omega_{KV} \end{pmatrix}
++ \operatorname{rank}\begin{pmatrix} \Omega_{KK} \\ \Omega_{VK} \end{pmatrix}
+- \operatorname{rank}(\Omega_{KK}).
+\]
+Since $\Omega$ is invertible, any $c$ rows (resp.\ columns) of $\Omega$ are linearly independent, so the two row- and column-ranks are exactly $c$. Hence
+\[
+\min_{E_{VV}} \operatorname{rank}(E) = 2c - \operatorname{rank}(\Omega|_K).
+\]
+The minimum is achieved constructively by $E_{VV} = \Omega_{VK} \cdot G \cdot \Omega_{KV}$ with $G$ any generalized inverse of $\Omega_{KK}$ (over $\F_2$, obtained from a rank factorization). Setting $M$ to the matrix representing this optimal form in the original coordinates yields the first claim.
+
+For the probability bound, when $2c \le n-\Theta(1)$ the rank bound $2c$ is at most $n-\Theta(1)$. The uniform Gram $C^{\top}MC$ is an $n \times n$ symmetric matrix over $\F_2$; its rank is at least $n-O(1)$ with probability $1-2^{-\Omega(n^2)}$ (standard random symmetric matrix rank over $\F_2$). Hence the rank-$\le 2c$ event has exponentially small probability under the uniform distribution.
+\end{proof}
+
+\paragraph{Rank stratification.} Together, \Cref{thm:transport-fullrank,thm:transport-nearfull} give a complete stratification of the fixed-$B$ linear-reduction landscape at any $m$ and any noise rate:
+\begin{itemize}
+\item $\rho = 2n$ (full rank): \textbf{BLOCKED} --- output Gram is identically zero (\Cref{thm:transport-fullrank}).
+\item $3n/2 < \rho < 2n$ (near-full): \textbf{BLOCKED} --- output Gram rank $\le 2c < n$ (\Cref{thm:transport-nearfull}), while the uniform Gram has rank $\approx n$.
+\item $\rho \le 3n/2$ (mid/low rank): \textbf{OPEN} --- the rank test dies ($2c \ge n$), and the barrier passes to the entropy-deficiency regime of Lu \etal\ \cite{LPQR26} (Appendix~D, Theorem~D.1) and the entropy argument of \Cref{prop:entropy-floor}. A quantitative bridge theorem that covers \emph{all} $B$-distributions simultaneously would close this strip entirely.
+\end{itemize}
+This stratification applies to \emph{fixed/public} $B$ (per-realization). If the reduction draws $B$ from a high-entropy distribution conditioned on $BA$ being uniform, the matrix is randomized---but then the label noise $Be$ is killed by piling-up at $p=1/4$ (row weight $w$ gives bias $2^{-w}$). The two regimes are endpoint observations; the quantitative trade-off over all $B$-distributions is an open problem (see \Cref{sec:open}).
 
 A sharper, unconditional barrier comes from an information-theoretic floor:
 
