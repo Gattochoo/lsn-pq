@@ -176,3 +176,28 @@ reduced to one quantitative enrichment question with small-n data (A5); possibly
 invariant theory behind conj:source (C1-deep). Every line is win-win: a failure mode of each is
 itself a publishable precision. `LSN ⊀ LPN` remains the door; these are the strata around the
 lock. No 7th; no break; no security claim. OPEN = LSN.
+
+---
+
+## Addendum (2026-06-10): prior in-house work to REUSE for A3 — do not redo
+
+Asked whether the rank/linear-algebra ground was covered before: the rank dichotomy itself is
+new, but the 2026-06-06 autonomous-run lanes (executor track — not Codex's OFA/Rust track, which
+was decoder/channel-level and contains no rank work) already verified the two pieces A3 leans on:
+
+1. **Lane C** (`meta/2026-06-06-lane-C-appendixD-entropy-deficiency-verified.md`,
+   `experiments/17-appendixD-entropy-deficiency.py`): LPQR **Thm D.1's entropy deficiency,
+   exactly counted** — full-rank isotropic frames N(n) = ∏(2^{2n−k+1} − 2^{k−1}),
+   log₂N ≈ (3/2)n² + n/2, deficiency d(n) → **1/4** (brute-confirmed n≤3, formula to n=32,
+   cross-checked against |Lagr|·#bases). This is the **B=identity case** of Thm D.1 and the
+   entropy half that the A3 **mid/low-rank stratum** hands over to — already verified, reuse.
+2. **Lane C4** (`meta/2026-06-06-lane-C4-symplectic-completion-verified.md`,
+   `experiments/20-thm16-symplectic-completion.py`): the KLP Thm 1.6 Stage-1 symplectic
+   completion engine — including the **full-column-rank F₂ solve** (`MᵀA' = T`, 200/200) that is
+   the same linear-algebra primitive as A3's left-inverse transport. Reuse the code patterns.
+3. **Pinning extension:** Lane C cites **Thm D.2** (the error-weight/Shannon-converse half) by
+   number; `meta/LPQR26-appendixD-quotes.md` currently pins only D.1 + prose. Extend the pin to
+   Thm D.2's exact statement + page while in the PDF.
+
+Net effect on A3: Kimi's genuinely new work is ONLY the rank stratification + transport theorem;
+the entropy stratum and the F₂ machinery are already on the shelf.
