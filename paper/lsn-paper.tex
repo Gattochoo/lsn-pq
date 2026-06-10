@@ -16,6 +16,8 @@
 
 % Page layout
 \usepackage[margin=1in]{geometry}
+\emergencystretch=1em
+\tolerance=1000
 
 % Theorem environments
 \theoremstyle{plain}
@@ -232,7 +234,7 @@ This is the special case $k=n$ of LPQR26's general sympLPN$(k,n,p)$; following L
 \item \textbf{Batch-LSN with uniform $A$ $\equiv$ membership-LSN.} When the columns of $A$ are uniform and independent, the adversary's view $(A,b)$ in batch-LSN is identical in distribution to $m$ independent samples from the membership oracle. Hence SQ lower bounds and information-theoretic floors proved for membership-LSN transfer \emph{verbatim} to batch-LSN with uniform~$A$.
 \item \textbf{Pseudorandom $A$ (KEM).} Our KEM (\Cref{sec:kem}) uses a pseudorandom $A$ generated from a short seed. Security reduces to batch-LSN with uniform $A$ plus one PRG step.
 \item \textbf{sympLPN is a different problem.} True sympLPN (\Cref{def:symplpn}) has linear labels $y = Ax + e$ and secret $x$; the isotropic constraint $S_A = 0$ is a public quadratic relation on the public parameters. It is not equivalent to batch-LSN (membership labels) without a pinned bridge theorem. LPQR26 study sympLPN; our transport theorems (\Cref{sec:barriers}) use only the $S_A = 0$ structure on the public matrix and therefore apply to any formulation with isotropic columns, regardless of the label structure.
-\item \textbf{Open positioning item: our membership-LSN vs.\ the LSN of \cite{KLP+25,LPQR26}.} Their (classical) LSN has a \emph{public} isotropic matrix $[A \mid B]$, a junk register $x$, and a secret logical string $y$; our membership-LSN has no public matrix and the secret is the Lagrangian itself. The two formulations are not known to be equivalent, and we do not claim the external hardness results (e.g.\ constant-rate LPN $\le$ their LSN) for our membership formulation. Establishing or refuting this bridge is an open precision item (cf.\ Open Problems, \Cref{sec:open}).
+\item \textbf{Open positioning item: our membership-LSN vs.\ \linebreak[0] the LSN of \cite{KLP+25,LPQR26}.} Their (classical) LSN has a \emph{public} isotropic matrix $[A \mid B]$, a junk register $x$, and a secret logical string $y$; our membership-LSN has no public matrix and the secret is the Lagrangian itself. The two formulations are not known to be equivalent, and we do not claim the external hardness results (e.g.\ constant-rate LPN $\le$ their LSN) for our membership formulation. Establishing or refuting this bridge is an open precision item (cf.\ Open Problems, \Cref{sec:open}).
 \end{enumerate}
 
 Throughout the paper we state which formulation each theorem addresses; unless noted otherwise, ``LSN'' refers to the membership form.
@@ -494,7 +496,7 @@ Hence $\SDA(\mathcal{S}^*, 2\bar\gamma_t) \geq |\mathcal{S}^*| / 2^{n-t} \geq 2^
 \end{proof}
 
 \paragraph{Honesty notes.}
-(i) \textbf{Worst-case promise only.} The spread has measure $|\mathcal{S}^*|/|\Lagr(2n,\F_2)| \sim 2^n / 2^{n(n+1)/2} \to 0$, so Theorem~\ref{thm:main-sq-uncond} does \emph{not} cover the average-case (uniform $L$) problem; it protects only the promise problem ``$L \in \mathcal{S}^*$?''.
+(i) \textbf{Worst-case promise only.} The spread has measure $|\mathcal{S}^*|/|\Lagr| \sim 2^n / 2^{n(n+1)/2} \to 0$. \Cref{thm:main-sq-uncond} does not cover the average-case problem; it protects only the promise problem ``$L \in \mathcal{S}^*$?''.
 (ii) \textbf{VSTAT trade-off.} The unconditional bound is $\Omega(2^n)$ queries at $\VSTAT(O(2^n))$; the conditional bound below is $2^{2n-O(1)}$ queries at $\VSTAT(\Theta(2^{2n}))$. The two parameters are not interchangeable.
 (iii) The subfamily restriction is valid for the promise problem: any algorithm solving LSN over the full family is correct on $\mathcal{S}^*$ a fortiori.
 
@@ -852,7 +854,7 @@ Consider a linear reduction that maps a sympLPN instance $(A, y)$ to an LPN inst
 
 \begin{theorem}[Transport lemma for full-rank linear reductions]
 \label{thm:transport-fullrank}
-Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = 2n$ and $m \ge 2n$. Let $B^{+} \in \F_2^{2n \times m}$ be any left inverse $(B^{+}B = I_{2n})$ and define $M := (B^{+})^{\top}\Omega B^{+} \in \F_2^{m \times m}$. Then for every isotropic-column matrix $A$,
+Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = 2n$ and $m \ge 2n$. Let $B^{+} \in \F_2^{2n \times m}$ be any left inverse $(B^{+}B = I_{2n})$ and define $M := (B^{+})^{\top}\Omega B^{+} \in \F_2^{m \times m}$. Then for every isotropic\-column\linebreak[0] matrix~$A$,
 \[
 (BA)^{\top} M (BA) \;=\; 0.
 \]
@@ -935,7 +937,13 @@ When the coset offset $b_0=0$ every term in the MacWilliams sum is positive, so 
 \end{lemma}
 
 \begin{proof}
-Write $b = b_0 + Nz$ with $z \sim \operatorname{Uniform}(\F_2^n)$ and $N$ a basis of $\operatorname{nullspace}(A^{\!\top})$. Then $\E_b[(-1)^{b^{\!\top} e}] = (-1)^{b_0^{\!\top} e} \cdot \mathbf{1}_{e \in \operatorname{colspace}(A)}$, so $|\E_{b,e}[(-1)^{b^{\!\top} e}]| = |\sum_{x \in \operatorname{colspace}(A)} (-1)^{b_0^{\!\top} x}\, p^{|x|}(1-p)^{D-|x|}| \le \sum_{x \in \operatorname{colspace}(A)} p^{|x|}(1-p)^{D-|x|} = (1-p)^D \cdot W_{\operatorname{colspace}(A)}(p/(1-p))$, with equality when $b_0 = 0$ (all terms positive). The MacWilliams identity with $t = p/(1-p)$ gives $(1-p)^D W_{\operatorname{colspace}(A)}(t) = 2^{-n} W_N(1-2p)$. For the expectation, $N = \Omega \cdot L$ is the image of a uniform Lagrangian $L$, so $\Pr[x \in N] = 1/(2^n+1)$ for every non-zero $x$ by $\mathrm{Sp}(2n)$-transitivity. Hence $\E_A[W_N(1/2)] = 1 + ((3/2)^D-1)/(2^n+1) \le 1+(9/8)^n$, yielding the claimed bound.
+Write $b = b_0 + Nz$ with $z \sim \operatorname{Uniform}(\F_2^n)$ and $N$ a basis of $\operatorname{nullspace}(A^{\!\top})$. Then
+\[
+\E_b[(-1)^{b^{\!\top} e}] = (-1)^{b_0^{\!\top} e} \cdot \mathbf{1}_{e \in \operatorname{colspace}(A)},
+\]
+so $|\E_{b,e}[(-1)^{b^{\!\top} e}]| \le \sum_{x \in \operatorname{colspace}(A)} p^{|x|}(1-p)^{D-|x|} = (1-p)^D \cdot W_{\operatorname{colspace}(A)}(p/(1-p))$, with equality when $b_0 = 0$.
+
+The MacWilliams identity with $t = p/(1-p)$ gives $(1-p)^D W_{\operatorname{colspace}(A)}(t) = 2^{-n} W_N(1-2p)$. For the expectation, $N = \Omega \cdot L$ is the image of a uniform Lagrangian $L$, so $\Pr[x \in N] = 1/(2^n+1)$ for every non-zero $x$ by $\mathrm{Sp}(2n)$-transitivity. Hence $\E_A[W_N(1/2)] = 1 + ((3/2)^D-1)/(2^n+1) \le 1+(9/8)^n$, yielding the claimed bound.
 \end{proof}
 
 At cryptographic $n$ the $2^{-n}$ term is negligible and the bias is dominated by $(9/16)^n$, which matches the full-space piling-up baseline $(3/4)^{2n}$. Thus, in expectation over random isotropic $A$, the affine constraint does not materially increase the per-row label bias; the secret-$B$ trade-off is governed by the Gram-rank transition, not by bias amplification.
