@@ -22,3 +22,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 05:30 | P4 formal | meta/2026-06-12-marginal-uniformity-formal.md | Formal definition of marginal-uniform adaptive B proposed (TV distance); uniform B satisfies exact per-row marginal-uniformity; low_w3 fails; conjecture restated formally
 05:35 | P6 final | meta/2026-06-12-OVERNIGHT-REPORT.md | Final P6 update: 8 adjudication items, blocked points partially resolved; report complete
 05:42 | P7 | meta/2026-06-12-op9-status-summary.md | OP9 status summary: single-sample open, multi-sample with reuse closed, randomization open
+05:55 | P8 | experiments/100-n8-quick-test.json | n=8 quick test: max_agree sep=0.21/0.71/1.43 for m=12/24/48; weak separation persists

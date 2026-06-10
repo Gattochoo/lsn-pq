@@ -1,0 +1,56 @@
+{
+  "experiment": "100-n8-quick-test",
+  "description": "Quick n=8 single-sample distinguishing for OP9",
+  "date": "2026-06-11",
+  "n": 8,
+  "p_prime": 0.2,
+  "B_family": "uniform",
+  "num_trials": 200,
+  "results": [
+    {
+      "m": 12,
+      "P0": {
+        "syndrome": {"mean": 2.00, "sep": 0.30},
+        "rank_diff": {"mean": 0.94, "sep": 0.26},
+        "corr": {"mean": -0.01, "sep": 0.08},
+        "max_agree": {"mean": 10.69, "sep": 0.21}
+      },
+      "P1": {
+        "syndrome": {"mean": 1.69},
+        "rank_diff": {"mean": 0.85},
+        "corr": {"mean": -0.00},
+        "max_agree": {"mean": 10.82}
+      }
+    },
+    {
+      "m": 24,
+      "P0": {
+        "syndrome": {"mean": 7.96, "sep": 0.21},
+        "rank_diff": {"mean": 0.99, "sep": 0.14},
+        "corr": {"mean": 0.01, "sep": 0.13},
+        "max_agree": {"mean": 18.88, "sep": 0.71}
+      },
+      "P1": {
+        "syndrome": {"mean": 7.48},
+        "rank_diff": {"mean": 1.00},
+        "corr": {"mean": -0.00},
+        "max_agree": {"mean": 19.70}
+      }
+    },
+    {
+      "m": 48,
+      "P0": {
+        "syndrome": {"mean": 19.64, "sep": 0.32},
+        "rank_diff": {"mean": 0.96, "sep": 0.27},
+        "corr": {"mean": 0.00, "sep": 0.17},
+        "max_agree": {"mean": 34.30, "sep": 1.43}
+      },
+      "P1": {
+        "syndrome": {"mean": 17.98},
+        "rank_diff": {"mean": 1.00},
+        "corr": {"mean": -0.00},
+        "max_agree": {"mean": 38.25}
+      }
+    }
+  ]
+}

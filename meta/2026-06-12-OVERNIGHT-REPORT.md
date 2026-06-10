@@ -144,7 +144,8 @@ The open question shifts from "can P0 be distinguished from P1?" to:
 ## 5. Blocked points and open questions
 
 - **Blocked:** Formal verification that `uniform` B is exactly marginal-uniform (not just approximately). **Partially resolved:** exact per-row marginal-uniformity proven for `uniform` B (conditioned on rank(A)=n). `low_w3` shown to fail. Full matrix uniformity still open.
-- **Blocked:** n-scaling beyond n=6. Brute-force max_agreement is 2^n, so n=7 is 128 (feasible), n=8 is 256 (slow), n=9 is 512 (very slow).
+- **Blocked:** n-scaling beyond n=6. Brute-force max_agreement is 2^n, so n=7 is 128 (feasible), n=8 is 256 (slow), n=9 is 512 (very slow). **Update:** n=8 quick test completed (200 trials, m=12/24/48). `max_agree` separation: 0.21 / 0.71 / 1.43. Still weak, but m=48 shows >1σ separation. No asymptotic signal yet.
+- **New data:** n=8 results saved to `experiments/100-n8-quick-test.json`.
 - **Open:** Does there exist a marginal-uniform adaptive B family that is **provably** indistinguishable from P1 in total variation? This would be a genuine reduction-exists signal.
 - **Open:** If multi-sample detection is the right framework, what is the threshold sample count k*(n, m)?
 - **Open:** Can a marginal-adaptive reduction randomize $A$ per output to evade multi-sample rank detection? If yes, OP9 remains open. If no, OP9 is closed for multi-sample adversaries.
