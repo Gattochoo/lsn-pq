@@ -22,6 +22,10 @@
 | P6 theory | `meta/2026-06-12-multisample-theory.md` | Multi-sample theorem sketches | ✅ Drafted |
 | P4 formal | `meta/2026-06-12-marginal-uniformity-formal.md` | Marginal-uniformity formal def | ✅ Drafted |
 | P6 | This file | Handoff report | ✅ Updated |
+| P7 | `meta/2026-06-12-op9-status-summary.md` | OP9 three-way status summary | ✅ Drafted |
+| P8 | `experiments/100-n8-quick-test.py` | n=8 scaling test (200 trials) | ✅ Done |
+| P9 | `meta/2026-06-12-op9-complexity-analysis.md` | Computational cost of evasion | ✅ Drafted |
+| P10 | `experiments/101-multisample-randomized-A.py` | Randomized-A evasion test | ✅ Done |
 
 ---
 

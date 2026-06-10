@@ -25,3 +25,4 @@ Format: `HH:MM | phase | file | one-line result (measured, not claimed)`
 05:55 | P8 | experiments/100-n8-quick-test.json | n=8 quick test: max_agree sep=0.21/0.71/1.43 for m=12/24/48; weak separation persists
 06:02 | P9 | meta/2026-06-12-op9-complexity-analysis.md | Computational complexity of multi-sample evasion: randomization feasible, overhead O(n^2/m)
 06:25 | P10 | experiments/101-multisample-randomized-A.py | Randomized A per output completely defeats multi-sample rank detection: P0 rank 12.0→20.0, indistinguishable from P1
+06:32 | P11 | meta/2026-06-12-OVERNIGHT-REPORT.md | Updated report with P7-P10 items; all phases documented
