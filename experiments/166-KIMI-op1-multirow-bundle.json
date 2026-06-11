@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "experiment": "op1-multi-row-bundle",
+    "description": "Multi-row bundle correlation for sympLPN SQ under S_A=0",
+    "date": "2026-06-11T19:23:22",
+    "parameters": {
+      "p": 0.25,
+      "sigma2": "4/3"
+    },
+    "notes": [
+      "k=1 corresponds to single-row model (settled as LPN in exp/165)",
+      "k=2n corresponds to batch model (vacuous per exp/163)",
+      "Bundle interpolates between these two extremes",
+      "Off-diag uses x=e_1, x'=e_2; diag uses x=e_1",
+      "All computations use exact Fractions; output is float"
+    ]
+  },
+  "results": [
+    {
+      "n": 2,
+      "num_matrices": 90,
+      "num_subspaces": 15,
+      "gl_size": 6,
+      "k_results": [
+        {
+          "k": 1,
+          "num_subsets": 4,
+          "diag_product_avg": 1.711111111111111,
+          "diag_correlation": 0.7111111111111111,
+          "offdiag_product_avg": 1.3555555555555556,
+          "offdiag_correlation": 0.35555555555555557
+        },
+        {
+          "k": 2,
+          "num_subsets": 6,
+          "diag_product_avg": 2.8962962962962964,
+          "diag_correlation": 1.8962962962962964,
+          "offdiag_product_avg": 1.803292181069959,
+          "offdiag_correlation": 0.8032921810699588
+        },
+        {
+          "k": 3,
+          "num_subsets": 4,
+          "diag_product_avg": 4.871604938271605,
+          "diag_correlation": 3.871604938271605,
+          "offdiag_product_avg": 2.34320987654321,
+          "offdiag_correlation": 1.34320987654321
+        },
+        {
+          "k": 4,
+          "num_subsets": 1,
+          "diag_product_avg": 8.163786008230453,
+          "diag_correlation": 7.163786008230453,
+          "offdiag_product_avg": 2.9753086419753085,
+          "offdiag_correlation": 1.9753086419753085
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "num_matrices": 22680,
+      "num_subspaces": 135,
+      "gl_size": 168,
+      "k_results": [
+        {
+          "k": 1,
+          "num_subsets": 6,
+          "diag_product_avg": 1.6772486772486772,
+          "diag_correlation": 0.6772486772486772,
+          "offdiag_product_avg": 1.3386243386243386,
+          "offdiag_correlation": 0.3386243386243386
+        },
+        {
+          "k": 2,
+          "num_subsets": 15,
+          "diag_product_avg": 2.8059964726631392,
+          "diag_correlation": 1.8059964726631392,
+          "offdiag_product_avg": 1.784103468547913,
+          "offdiag_correlation": 0.784103468547913
+        },
+        {
+          "k": 3,
+          "num_subsets": 20,
+          "diag_product_avg": 4.68724279835391,
+          "diag_correlation": 3.6872427983539096,
+          "offdiag_product_avg": 2.3665373309817754,
+          "offdiag_correlation": 1.3665373309817754
+        },
+        {
+          "k": 4,
+          "num_subsets": 15,
+          "diag_product_avg": 7.8226533411718595,
+          "diag_correlation": 6.8226533411718595,
+          "offdiag_product_avg": 3.1233836305441245,
+          "offdiag_correlation": 2.1233836305441245
+        },
+        {
+          "k": 5,
+          "num_subsets": 6,
+          "diag_product_avg": 13.048337579201776,
+          "diag_correlation": 12.048337579201776,
+          "offdiag_product_avg": 4.099457835260305,
+          "offdiag_correlation": 3.0994578352603046
+        },
+        {
+          "k": 6,
+          "num_subsets": 1,
+          "diag_product_avg": 21.75781130925164,
+          "diag_correlation": 20.75781130925164,
+          "offdiag_product_avg": 5.346933176562806,
+          "offdiag_correlation": 4.346933176562806
+        }
+      ]
+    }
+  ]
+}
