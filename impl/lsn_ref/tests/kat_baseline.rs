@@ -16,6 +16,7 @@
 use lsn_ref::{
     ToyKemParams, toy_divergent_wrong_secret_control, toy_find_wrong_secret_control,
     toy_kat_vector, toy_wrong_secret_control, toy_wrong_secret_control_to_json,
+    toy_wrong_secret_control_to_json_with_diagnostics,
 };
 
 #[test]
@@ -146,4 +147,34 @@ fn divergent_wrong_secret_control_forces_clean_majority_separation() {
         control.wrong_secret_decapsulated_key_hex
     );
     assert!(!control.wrong_secret_roundtrip_ok);
+}
+
+#[test]
+fn divergent_wrong_secret_control_json_self_labels_as_diagnostic() {
+    let params = ToyKemParams {
+        n: 2,
+        sample_count: 48,
+        repetition: 3,
+        polar_n: 16,
+        polar_k: 8,
+        public_noise_rate: 0.0,
+        decoder_design_p: 0.0343,
+    };
+
+    let control = toy_divergent_wrong_secret_control(params, 0xA11CE, 0xA11CF, 0xC0DE, 0xBEEF)
+        .expect("expected an honest-only divergent toy fixture");
+    let json = toy_wrong_secret_control_to_json_with_diagnostics(
+        "codex-lsn-ref-n2-paper-r7-divergent-kat",
+        &control,
+        "divergent-wrong-secret-diagnostic",
+        "diagnostic selector uses honest-only points; not a public-distribution KAT",
+    );
+
+    assert!(json.contains("\"selection_mode\": \"divergent-wrong-secret-diagnostic\""));
+    assert!(json.contains("\"diagnostic_only\": true"));
+    assert!(json.contains(
+        "\"diagnostic_note\": \"diagnostic selector uses honest-only points; not a public-distribution KAT\""
+    ));
+    assert!(json.contains("\"roundtrip_ok\": true"));
+    assert!(json.contains("\"wrong_secret_roundtrip_ok\": false"));
 }

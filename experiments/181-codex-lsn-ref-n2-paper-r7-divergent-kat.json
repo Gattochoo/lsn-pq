@@ -2,6 +2,9 @@
   "experiment": "codex-lsn-ref-n2-paper-r7-divergent-kat",
   "status": "toy reference KAT scaffold; not production constant-time; no security claim",
   "negative_control": "same public key and ciphertext, decapsulated with a wrong Lagrangian secret",
+  "selection_mode": "divergent-wrong-secret-diagnostic",
+  "diagnostic_only": true,
+  "diagnostic_note": "diagnostic selector uses honest-only points; not a public-distribution KAT",
   "roundtrip_ok": true,
   "wrong_secret_roundtrip_ok": false,
   "params": {

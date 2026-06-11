@@ -444,6 +444,27 @@ pub fn toy_wrong_secret_control_to_json(
     experiment: &str,
     control: &ToyWrongSecretControl,
 ) -> String {
+    toy_wrong_secret_control_to_json_inner(experiment, control, None)
+}
+
+pub fn toy_wrong_secret_control_to_json_with_diagnostics(
+    experiment: &str,
+    control: &ToyWrongSecretControl,
+    selection_mode: &str,
+    diagnostic_note: &str,
+) -> String {
+    toy_wrong_secret_control_to_json_inner(
+        experiment,
+        control,
+        Some((selection_mode, diagnostic_note)),
+    )
+}
+
+fn toy_wrong_secret_control_to_json_inner(
+    experiment: &str,
+    control: &ToyWrongSecretControl,
+    diagnostics: Option<(&str, &str)>,
+) -> String {
     let mut out = String::new();
     out.push_str("{\n");
     out.push_str(&format!(
@@ -452,6 +473,17 @@ pub fn toy_wrong_secret_control_to_json(
     ));
     out.push_str("  \"status\": \"toy reference KAT scaffold; not production constant-time; no security claim\",\n");
     out.push_str("  \"negative_control\": \"same public key and ciphertext, decapsulated with a wrong Lagrangian secret\",\n");
+    if let Some((selection_mode, diagnostic_note)) = diagnostics {
+        out.push_str(&format!(
+            "  \"selection_mode\": \"{}\",\n",
+            escape_json(selection_mode)
+        ));
+        out.push_str("  \"diagnostic_only\": true,\n");
+        out.push_str(&format!(
+            "  \"diagnostic_note\": \"{}\",\n",
+            escape_json(diagnostic_note)
+        ));
+    }
     out.push_str(&format!(
         "  \"roundtrip_ok\": {},\n",
         control.honest.encapsulated_key_hex == control.honest.decapsulated_key_hex

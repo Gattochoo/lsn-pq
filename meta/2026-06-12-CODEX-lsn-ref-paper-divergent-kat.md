@@ -33,7 +33,15 @@ Generated JSON:
 
 Size:
 
-- 192127 bytes
+- 192310 bytes
+
+Self-labeling fields now embedded in the generated JSON:
+
+| field | value |
+|---|---|
+| `selection_mode` | `divergent-wrong-secret-diagnostic` |
+| `diagnostic_only` | `true` |
+| `diagnostic_note` | `diagnostic selector uses honest-only points; not a public-distribution KAT` |
 
 Profile:
 
@@ -68,6 +76,10 @@ Observed fixture outcome:
    missing `n2-paper-r7-divergent`.
 4. Added the profile, selection-mode metadata, and release fixture generation.
 5. Generated and checked the JSON fixture.
+6. Follow-up guard: added `divergent_wrong_secret_control_json_self_labels_as_diagnostic`.
+   RED failed on missing `toy_wrong_secret_control_to_json_with_diagnostics`;
+   GREEN added diagnostic JSON metadata and wired only the divergent profile to
+   emit it.
 
 ## Verification
 
@@ -93,7 +105,7 @@ env CARGO_TARGET_DIR=/tmp/lsn-pq-lsnref-target \
 Result:
 
 ```text
-11 passed
+12 passed
 ```
 
 Fixture generation:
@@ -125,6 +137,15 @@ Result:
 verified experiments/181-codex-lsn-ref-n2-paper-r7-divergent-kat.json
 ```
 
+Legacy fixture compatibility checks:
+
+```text
+verified experiments/152-codex-lsn-ref-toy-kat.json
+verified experiments/153-codex-lsn-ref-n3-kat-search.json
+verified experiments/180-codex-lsn-ref-n2-noisy-kat.json
+verified experiments/181-codex-lsn-ref-n2-paper-r7-divergent-kat.json
+```
+
 ## Interpretation
 
 This successfully connects the KAT rail to the real `impl/polar_validation`
@@ -135,6 +156,10 @@ The result is still diagnostic. The selector deliberately uses knowledge of the
 wrong secret to force a clean-majority split. Therefore it should be used only
 as a regression/KAT plumbing artifact, not as evidence that the production
 public-sample KEM distribution has been implemented or validated.
+
+The generated JSON now carries the same warning at artifact level through
+`selection_mode`, `diagnostic_only`, and `diagnostic_note`, so the fixture remains
+self-describing even when viewed outside this note.
 
 ## Next P3 Step
 

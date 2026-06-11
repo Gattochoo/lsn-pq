@@ -17,7 +17,7 @@ use std::{env, fs, path::PathBuf};
 
 use lsn_ref::{
     ToyKemParams, toy_divergent_wrong_secret_control, toy_find_wrong_secret_control,
-    toy_wrong_secret_control_to_json,
+    toy_wrong_secret_control_to_json, toy_wrong_secret_control_to_json_with_diagnostics,
 };
 
 const HONEST_SECRET_SEED: u64 = 0xA11CE;
@@ -207,7 +207,19 @@ fn main() {
         )
         .expect("failed to build divergent wrong-secret diagnostic fixture"),
     };
-    let json = toy_wrong_secret_control_to_json(spec.experiment, &control);
+    let json = match spec.selection_mode {
+        SelectionMode::RandomPublicSamples => {
+            toy_wrong_secret_control_to_json(spec.experiment, &control)
+        }
+        SelectionMode::DivergentWrongSecretDiagnostic => {
+            toy_wrong_secret_control_to_json_with_diagnostics(
+                spec.experiment,
+                &control,
+                spec.selection_mode.as_str(),
+                "diagnostic selector uses honest-only points; not a public-distribution KAT",
+            )
+        }
+    };
 
     if let Some(check_path) = check {
         let expected =
