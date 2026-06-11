@@ -8,6 +8,7 @@ use lsn_ref::{
 fn main() {
     let mut profile = String::from("n2");
     let mut output = None;
+    let mut check = None;
 
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
@@ -19,6 +20,9 @@ fn main() {
                 output = Some(PathBuf::from(
                     args.next().expect("--output requires a path"),
                 ));
+            }
+            "--check" => {
+                check = Some(PathBuf::from(args.next().expect("--check requires a path")));
             }
             "--help" | "-h" => {
                 print_help();
@@ -70,6 +74,20 @@ fn main() {
     let output = output.unwrap_or(default_output);
     let json = toy_wrong_secret_control_to_json(experiment, &control);
 
+    if let Some(check_path) = check {
+        let expected =
+            fs::read_to_string(&check_path).expect("failed to read KAT fixture for checking");
+        if expected != json {
+            eprintln!(
+                "KAT check failed: generated profile {profile} differs from {}",
+                check_path.display()
+            );
+            std::process::exit(1);
+        }
+        eprintln!("verified {}", check_path.display());
+        return;
+    }
+
     if let Some(parent) = output.parent() {
         fs::create_dir_all(parent).expect("failed to create output directory");
     }
@@ -80,6 +98,7 @@ fn main() {
 fn print_help() {
     eprintln!(
         "lsn_toy_kat [--profile n2|n3-search] [--output PATH]\n\
-         Writes a deterministic toy LSN-KEM KAT vector with a wrong-secret negative control."
+         lsn_toy_kat [--profile n2|n3-search] --check PATH\n\
+         Writes or verifies a deterministic toy LSN-KEM KAT vector with a wrong-secret negative control."
     );
 }
