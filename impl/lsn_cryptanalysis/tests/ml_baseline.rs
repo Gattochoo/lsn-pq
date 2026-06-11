@@ -118,6 +118,8 @@ fn sampled_candidate_ml_json_records_elapsed_ms_when_available() {
         trials: 1,
         candidate_count: 256,
         successes: 0,
+        strict_successes: 0,
+        tie_successes: 0,
         avg_secret_score: 96.0,
         avg_best_false_score: 101.0,
         avg_secret_margin: -5.0,
@@ -128,6 +130,34 @@ fn sampled_candidate_ml_json_records_elapsed_ms_when_available() {
     let json = sampled_candidate_ml_results_to_json("codex-p2-elapsed-smoke", &[result]);
 
     assert!(json.contains("\"elapsed_ms\": 1234"));
+}
+
+#[test]
+fn sampled_candidate_ml_json_records_strict_and_tie_success_counts() {
+    let result = SampledCandidateMlTrialResult {
+        n: 11,
+        total_dim: 22,
+        sample_count: 65_536,
+        noise_rate: 0.25,
+        trials: 2,
+        candidate_count: 4_194_304,
+        successes: 2,
+        strict_successes: 0,
+        tie_successes: 2,
+        avg_secret_score: 49_224.5,
+        avg_best_false_score: 49_224.5,
+        avg_secret_margin: 0.0,
+        seed: 0xB017DA,
+        elapsed_ms: None,
+    };
+
+    let json = sampled_candidate_ml_results_to_json("codex-p2-tie-smoke", &[result]);
+
+    assert!(json.contains("\"successes\": 2"));
+    assert!(json.contains("\"strict_successes\": 0"));
+    assert!(json.contains("\"tie_successes\": 2"));
+    assert!(json.contains("\"strict_success_rate\": 0.0000000000"));
+    assert!(json.contains("\"tie_success_rate\": 1.0000000000"));
 }
 
 #[test]

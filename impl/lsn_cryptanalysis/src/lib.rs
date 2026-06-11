@@ -113,6 +113,8 @@ pub struct SampledCandidateMlTrialResult {
     pub trials: usize,
     pub candidate_count: usize,
     pub successes: usize,
+    pub strict_successes: usize,
+    pub tie_successes: usize,
     pub avg_secret_score: f64,
     pub avg_best_false_score: f64,
     pub avg_secret_margin: f64,
@@ -126,6 +128,22 @@ impl SampledCandidateMlTrialResult {
             0.0
         } else {
             self.successes as f64 / self.trials as f64
+        }
+    }
+
+    pub fn strict_success_rate(&self) -> f64 {
+        if self.trials == 0 {
+            0.0
+        } else {
+            self.strict_successes as f64 / self.trials as f64
+        }
+    }
+
+    pub fn tie_success_rate(&self) -> f64 {
+        if self.trials == 0 {
+            0.0
+        } else {
+            self.tie_successes as f64 / self.trials as f64
         }
     }
 }
@@ -792,6 +810,8 @@ pub fn run_sampled_candidate_ml_trials(
     let total_dim = 2 * n;
     let mut rng = XorShift64::new(seed);
     let mut successes = 0usize;
+    let mut strict_successes = 0usize;
+    let mut tie_successes = 0usize;
     let mut secret_score_sum = 0i64;
     let mut best_false_score_sum = 0i64;
     let mut secret_margin_sum = 0i64;
@@ -821,6 +841,11 @@ pub fn run_sampled_candidate_ml_trials(
             }
         }
 
+        if secret_score > best_false_score {
+            strict_successes += 1;
+        } else if secret_score == best_false_score {
+            tie_successes += 1;
+        }
         if best_index == 0 {
             successes += 1;
         }
@@ -838,6 +863,8 @@ pub fn run_sampled_candidate_ml_trials(
         trials,
         candidate_count,
         successes,
+        strict_successes,
+        tie_successes,
         avg_secret_score: secret_score_sum as f64 / denom,
         avg_best_false_score: best_false_score_sum as f64 / denom,
         avg_secret_margin: secret_margin_sum as f64 / denom,
@@ -868,6 +895,8 @@ pub fn run_sampled_candidate_ml_budget_trials(
     let max_candidate_count = *candidate_counts.iter().max().unwrap();
     let mut rng = XorShift64::new(seed);
     let mut successes = vec![0usize; candidate_counts.len()];
+    let mut strict_successes = vec![0usize; candidate_counts.len()];
+    let mut tie_successes = vec![0usize; candidate_counts.len()];
     let mut secret_score_sums = vec![0i64; candidate_counts.len()];
     let mut best_false_score_sums = vec![0i64; candidate_counts.len()];
     let mut secret_margin_sums = vec![0i64; candidate_counts.len()];
@@ -908,6 +937,11 @@ pub fn run_sampled_candidate_ml_budget_trials(
                 }
             }
 
+            if secret_score > best_false_score {
+                strict_successes[index] += 1;
+            } else if secret_score == best_false_score {
+                tie_successes[index] += 1;
+            }
             if best_index == 0 {
                 successes[index] += 1;
             }
@@ -929,6 +963,8 @@ pub fn run_sampled_candidate_ml_budget_trials(
             trials,
             candidate_count,
             successes: successes[index],
+            strict_successes: strict_successes[index],
+            tie_successes: tie_successes[index],
             avg_secret_score: secret_score_sums[index] as f64 / denom,
             avg_best_false_score: best_false_score_sums[index] as f64 / denom,
             avg_secret_margin: secret_margin_sums[index] as f64 / denom,
@@ -960,6 +996,8 @@ pub fn run_sampled_candidate_ml_budget_trials_streaming(
     let max_candidate_count = *candidate_counts.iter().max().unwrap();
     let mut rng = XorShift64::new(seed);
     let mut successes = vec![0usize; candidate_counts.len()];
+    let mut strict_successes = vec![0usize; candidate_counts.len()];
+    let mut tie_successes = vec![0usize; candidate_counts.len()];
     let mut secret_score_sums = vec![0i64; candidate_counts.len()];
     let mut best_false_score_sums = vec![0i64; candidate_counts.len()];
     let mut secret_margin_sums = vec![0i64; candidate_counts.len()];
@@ -986,6 +1024,11 @@ pub fn run_sampled_candidate_ml_budget_trials_streaming(
         }
 
         for (index, &best_false_score) in best_false_scores.iter().enumerate() {
+            if secret_score > best_false_score {
+                strict_successes[index] += 1;
+            } else if secret_score == best_false_score {
+                tie_successes[index] += 1;
+            }
             if secret_score >= best_false_score {
                 successes[index] += 1;
             }
@@ -1007,6 +1050,8 @@ pub fn run_sampled_candidate_ml_budget_trials_streaming(
             trials,
             candidate_count,
             successes: successes[index],
+            strict_successes: strict_successes[index],
+            tie_successes: tie_successes[index],
             avg_secret_score: secret_score_sums[index] as f64 / denom,
             avg_best_false_score: best_false_score_sums[index] as f64 / denom,
             avg_secret_margin: secret_margin_sums[index] as f64 / denom,
@@ -1719,6 +1764,22 @@ pub fn sampled_candidate_ml_results_to_json(
         out.push_str(&format!(
             "      \"success_rate\": {:.10},\n",
             result.success_rate()
+        ));
+        out.push_str(&format!(
+            "      \"strict_successes\": {},\n",
+            result.strict_successes
+        ));
+        out.push_str(&format!(
+            "      \"strict_success_rate\": {:.10},\n",
+            result.strict_success_rate()
+        ));
+        out.push_str(&format!(
+            "      \"tie_successes\": {},\n",
+            result.tie_successes
+        ));
+        out.push_str(&format!(
+            "      \"tie_success_rate\": {:.10},\n",
+            result.tie_success_rate()
         ));
         out.push_str(&format!(
             "      \"avg_secret_score\": {:.6},\n",
