@@ -161,6 +161,26 @@ pub struct BkwBucketTrialResult {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub struct BucketCertificateTrialResult {
+    pub n: usize,
+    pub total_dim: usize,
+    pub sample_count: usize,
+    pub noise_rate: f64,
+    pub trials: usize,
+    pub bucket_bits: usize,
+    pub bucket_count: usize,
+    pub avg_observed_bucket_count: f64,
+    pub avg_bucket_sample_count: f64,
+    pub avg_global_label_rate: f64,
+    pub avg_bucket_rate_variance: f64,
+    pub avg_matched_random_variance: f64,
+    pub avg_excess_bucket_rate_variance: f64,
+    pub avg_projected_secret_bucket_count: f64,
+    pub avg_projected_secret_bucket_fraction: f64,
+    pub seed: u64,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct BkwNoiseModelRow {
     pub initial_noise_rate: f64,
     pub rounds: usize,
@@ -389,6 +409,146 @@ pub fn bkw_bucket_observable(
         avg_delta_in_secret_when_label_equal: rate(delta_in_secret_equal, equal_count),
         avg_delta_in_secret_when_label_unequal: rate(delta_in_secret_unequal, unequal_count),
         seed: 0,
+    }
+}
+
+pub fn bucket_rate_certificate(
+    n: usize,
+    samples: &[LsnSample],
+    secret: &Lagrangian,
+    bucket_bits: usize,
+) -> BucketCertificateTrialResult {
+    let total_dim = 2 * n;
+    assert!(
+        bucket_bits <= total_dim,
+        "bucket bits exceed ambient dimension"
+    );
+    assert!(
+        bucket_bits <= 24,
+        "bucket certificate screen caps in-memory buckets at 2^24"
+    );
+
+    let bucket_count = 1usize << bucket_bits;
+    let bucket_mask = (bucket_count - 1) as u32;
+    let mut counts = vec![0usize; bucket_count];
+    let mut positives = vec![0usize; bucket_count];
+    let mut positive_total = 0usize;
+
+    for sample in samples {
+        assert!(
+            (sample.point as usize) < (1usize << total_dim),
+            "sample point outside ambient universe"
+        );
+        let bucket = (sample.point & bucket_mask) as usize;
+        counts[bucket] += 1;
+        if sample.label {
+            positives[bucket] += 1;
+            positive_total += 1;
+        }
+    }
+
+    let global_label_rate = rate(positive_total, samples.len());
+    let mut observed_bucket_count = 0usize;
+    let mut bucket_rate_variance_sum = 0.0;
+    let mut matched_random_variance_sum = 0.0;
+
+    for (&count, &positive_count) in counts.iter().zip(positives.iter()) {
+        if count == 0 {
+            continue;
+        }
+        observed_bucket_count += 1;
+        let bucket_rate = positive_count as f64 / count as f64;
+        let deviation = bucket_rate - global_label_rate;
+        bucket_rate_variance_sum += deviation * deviation;
+        matched_random_variance_sum += global_label_rate * (1.0 - global_label_rate) / count as f64;
+    }
+
+    let observed_denom = observed_bucket_count.max(1) as f64;
+    let bucket_rate_variance = bucket_rate_variance_sum / observed_denom;
+    let matched_random_variance = matched_random_variance_sum / observed_denom;
+    let projected_secret_bucket_count = secret
+        .iter()
+        .map(|point| (point & bucket_mask) as usize)
+        .collect::<HashSet<_>>()
+        .len();
+
+    BucketCertificateTrialResult {
+        n,
+        total_dim,
+        sample_count: samples.len(),
+        noise_rate: 0.0,
+        trials: 1,
+        bucket_bits,
+        bucket_count,
+        avg_observed_bucket_count: observed_bucket_count as f64,
+        avg_bucket_sample_count: if observed_bucket_count == 0 {
+            0.0
+        } else {
+            samples.len() as f64 / observed_bucket_count as f64
+        },
+        avg_global_label_rate: global_label_rate,
+        avg_bucket_rate_variance: bucket_rate_variance,
+        avg_matched_random_variance: matched_random_variance,
+        avg_excess_bucket_rate_variance: bucket_rate_variance - matched_random_variance,
+        avg_projected_secret_bucket_count: projected_secret_bucket_count as f64,
+        avg_projected_secret_bucket_fraction: projected_secret_bucket_count as f64
+            / bucket_count as f64,
+        seed: 0,
+    }
+}
+
+pub fn run_bucket_certificate_trials(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    trials: usize,
+    bucket_bits: usize,
+    seed: u64,
+) -> BucketCertificateTrialResult {
+    let total_dim = 2 * n;
+    let mut rng = XorShift64::new(seed);
+    let mut observed_bucket_count_sum = 0.0;
+    let mut bucket_sample_count_sum = 0.0;
+    let mut global_label_rate_sum = 0.0;
+    let mut bucket_rate_variance_sum = 0.0;
+    let mut matched_random_variance_sum = 0.0;
+    let mut excess_bucket_rate_variance_sum = 0.0;
+    let mut projected_secret_bucket_count_sum = 0.0;
+    let mut projected_secret_bucket_fraction_sum = 0.0;
+
+    for _ in 0..trials {
+        let secret = random_lagrangian(n, 8 * total_dim.max(1), &mut rng);
+        let samples = sample_lsn(&secret, sample_count, noise_rate, total_dim, &mut rng);
+        let result = bucket_rate_certificate(n, &samples, &secret, bucket_bits);
+
+        observed_bucket_count_sum += result.avg_observed_bucket_count;
+        bucket_sample_count_sum += result.avg_bucket_sample_count;
+        global_label_rate_sum += result.avg_global_label_rate;
+        bucket_rate_variance_sum += result.avg_bucket_rate_variance;
+        matched_random_variance_sum += result.avg_matched_random_variance;
+        excess_bucket_rate_variance_sum += result.avg_excess_bucket_rate_variance;
+        projected_secret_bucket_count_sum += result.avg_projected_secret_bucket_count;
+        projected_secret_bucket_fraction_sum += result.avg_projected_secret_bucket_fraction;
+    }
+
+    let denom = trials.max(1) as f64;
+    BucketCertificateTrialResult {
+        n,
+        total_dim,
+        sample_count,
+        noise_rate,
+        trials,
+        bucket_bits,
+        bucket_count: 1usize << bucket_bits,
+        avg_observed_bucket_count: observed_bucket_count_sum / denom,
+        avg_bucket_sample_count: bucket_sample_count_sum / denom,
+        avg_global_label_rate: global_label_rate_sum / denom,
+        avg_bucket_rate_variance: bucket_rate_variance_sum / denom,
+        avg_matched_random_variance: matched_random_variance_sum / denom,
+        avg_excess_bucket_rate_variance: excess_bucket_rate_variance_sum / denom,
+        avg_projected_secret_bucket_count: projected_secret_bucket_count_sum / denom,
+        avg_projected_secret_bucket_fraction: projected_secret_bucket_fraction_sum / denom,
+        seed,
     }
 }
 
@@ -1095,6 +1255,86 @@ pub fn bkw_results_to_json(experiment: &str, results: &[BkwBucketTrialResult]) -
         out.push_str(&format!(
             "      \"avg_delta_in_secret_when_label_unequal\": {:.10},\n",
             result.avg_delta_in_secret_when_label_unequal
+        ));
+        out.push_str(&format!("      \"seed\": {}\n", result.seed));
+        out.push_str("    }");
+        if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
+pub fn bucket_certificate_results_to_json(
+    experiment: &str,
+    results: &[BucketCertificateTrialResult],
+) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str("  \"attack\": \"bucket_positive_rate_certificate\",\n");
+    out.push_str(
+        "  \"threat_model\": \"attacker observes public points and noisy membership labels; secret only used for diagnostic projection-size reporting\",\n",
+    );
+    out.push_str(
+        "  \"adjudication\": \"P2 non-xor certificate screen; evidence, not proof; OPEN = LSN\",\n",
+    );
+    out.push_str("  \"results\": [\n");
+    for (i, result) in results.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"n\": {},\n", result.n));
+        out.push_str(&format!("      \"total_dim\": {},\n", result.total_dim));
+        out.push_str(&format!(
+            "      \"sample_count\": {},\n",
+            result.sample_count
+        ));
+        out.push_str(&format!(
+            "      \"noise_rate\": {:.10},\n",
+            result.noise_rate
+        ));
+        out.push_str(&format!("      \"trials\": {},\n", result.trials));
+        out.push_str(&format!("      \"bucket_bits\": {},\n", result.bucket_bits));
+        out.push_str(&format!(
+            "      \"bucket_count\": {},\n",
+            result.bucket_count
+        ));
+        out.push_str(&format!(
+            "      \"avg_observed_bucket_count\": {:.6},\n",
+            result.avg_observed_bucket_count
+        ));
+        out.push_str(&format!(
+            "      \"avg_bucket_sample_count\": {:.6},\n",
+            result.avg_bucket_sample_count
+        ));
+        out.push_str(&format!(
+            "      \"avg_global_label_rate\": {:.10},\n",
+            result.avg_global_label_rate
+        ));
+        out.push_str(&format!(
+            "      \"avg_bucket_rate_variance\": {:.12},\n",
+            result.avg_bucket_rate_variance
+        ));
+        out.push_str(&format!(
+            "      \"avg_matched_random_variance\": {:.12},\n",
+            result.avg_matched_random_variance
+        ));
+        out.push_str(&format!(
+            "      \"avg_excess_bucket_rate_variance\": {:.12},\n",
+            result.avg_excess_bucket_rate_variance
+        ));
+        out.push_str(&format!(
+            "      \"avg_projected_secret_bucket_count\": {:.6},\n",
+            result.avg_projected_secret_bucket_count
+        ));
+        out.push_str(&format!(
+            "      \"avg_projected_secret_bucket_fraction\": {:.10},\n",
+            result.avg_projected_secret_bucket_fraction
         ));
         out.push_str(&format!("      \"seed\": {}\n", result.seed));
         out.push_str("    }");

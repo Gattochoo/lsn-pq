@@ -1,9 +1,9 @@
 use lsn_cryptanalysis::{
     CompactLagrangians, LsnSample, XorShift64, bkw_noise_after_rounds, bkw_xor_noise_rate,
-    brute_force_ml_decode, compact_ml_decode, enumerate_lagrangians, positive_basis_isd_decode,
-    random_lagrangian, results_to_json, run_bkw_bucket_trials, run_isd_budget_trials,
-    run_isd_trials, run_ml_trials, run_span_trials, sample_lsn, span_of_positives_decode,
-    span_results_to_json, symplectic_form,
+    brute_force_ml_decode, bucket_rate_certificate, compact_ml_decode, enumerate_lagrangians,
+    positive_basis_isd_decode, random_lagrangian, results_to_json, run_bkw_bucket_trials,
+    run_isd_budget_trials, run_isd_trials, run_ml_trials, run_span_trials, sample_lsn,
+    span_of_positives_decode, span_results_to_json, symplectic_form,
 };
 
 #[test]
@@ -224,4 +224,17 @@ fn bkw_xor_noise_recurrence_squares_bias() {
     assert!((bkw_xor_noise_rate(0.25) - 0.375).abs() < 1e-12);
     assert!((bkw_noise_after_rounds(0.25, 2) - 0.46875).abs() < 1e-12);
     assert!((bkw_noise_after_rounds(0.25, 3) - 0.498046875).abs() < 1e-12);
+}
+
+#[test]
+fn bucket_rate_certificate_detects_clean_projection_variance() {
+    let mut rng = XorShift64::new(0xCE471F);
+    let secret = random_lagrangian(4, 64, &mut rng);
+    let samples = sample_lsn(&secret, 4096, 0.0, 8, &mut rng);
+
+    let result = bucket_rate_certificate(4, &samples, &secret, 6);
+
+    assert_eq!(result.bucket_bits, 6);
+    assert!(result.avg_projected_secret_bucket_count <= 16.0);
+    assert!(result.avg_excess_bucket_rate_variance > 0.001);
 }
