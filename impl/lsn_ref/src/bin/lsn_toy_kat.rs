@@ -18,6 +18,7 @@ use std::{env, fs, path::PathBuf};
 use lsn_ref::{
     ToyKemParams, toy_divergent_wrong_secret_control, toy_find_wrong_secret_control,
     toy_wrong_secret_control_to_json, toy_wrong_secret_control_to_json_with_diagnostics,
+    toy_wrong_secret_control_to_json_with_public_selection,
 };
 
 const HONEST_SECRET_SEED: u64 = 0xA11CE;
@@ -33,11 +34,19 @@ struct ProfileSpec {
     wrong_secret_seed_trials: usize,
     preflight_only_reason: Option<&'static str>,
     selection_mode: SelectionMode,
+    json_metadata: JsonMetadata,
 }
 
 #[derive(Clone, Copy)]
 enum SelectionMode {
     RandomPublicSamples,
+    DivergentWrongSecretDiagnostic,
+}
+
+#[derive(Clone, Copy)]
+enum JsonMetadata {
+    None,
+    PublicSelection,
     DivergentWrongSecretDiagnostic,
 }
 
@@ -100,6 +109,7 @@ fn main() {
             wrong_secret_seed_trials: 1,
             preflight_only_reason: None,
             selection_mode: SelectionMode::RandomPublicSamples,
+            json_metadata: JsonMetadata::None,
         },
         "n2-noisy" => ProfileSpec {
             default_output: PathBuf::from("experiments/180-codex-lsn-ref-n2-noisy-kat.json"),
@@ -117,6 +127,7 @@ fn main() {
             wrong_secret_seed_trials: 4096,
             preflight_only_reason: None,
             selection_mode: SelectionMode::RandomPublicSamples,
+            json_metadata: JsonMetadata::None,
         },
         "n2-paper-r7" => ProfileSpec {
             default_output: PathBuf::from("experiments/181-codex-lsn-ref-n2-paper-r7-kat.json"),
@@ -136,6 +147,27 @@ fn main() {
                 "small-n toy majority gate did not yield a wrong-secret negative-control fixture",
             ),
             selection_mode: SelectionMode::RandomPublicSamples,
+            json_metadata: JsonMetadata::None,
+        },
+        "n2-paper-r7-public" => ProfileSpec {
+            default_output: PathBuf::from(
+                "experiments/185-codex-lsn-ref-n2-paper-r7-public-kat.json",
+            ),
+            experiment: "codex-lsn-ref-n2-paper-r7-public-kat",
+            params: ToyKemParams {
+                n: 2,
+                sample_count: 2048 * 7,
+                repetition: 7,
+                polar_n: 2048,
+                polar_k: 256,
+                public_noise_rate: 0.25,
+                decoder_design_p: 0.0706,
+            },
+            wrong_secret_seed_start: 0xA11D0,
+            wrong_secret_seed_trials: 1,
+            preflight_only_reason: None,
+            selection_mode: SelectionMode::RandomPublicSamples,
+            json_metadata: JsonMetadata::PublicSelection,
         },
         "n2-paper-r7-divergent" => ProfileSpec {
             default_output: PathBuf::from(
@@ -155,6 +187,7 @@ fn main() {
             wrong_secret_seed_trials: 1,
             preflight_only_reason: None,
             selection_mode: SelectionMode::DivergentWrongSecretDiagnostic,
+            json_metadata: JsonMetadata::DivergentWrongSecretDiagnostic,
         },
         "n3-search" => ProfileSpec {
             default_output: PathBuf::from("experiments/153-codex-lsn-ref-n3-kat-search.json"),
@@ -172,6 +205,7 @@ fn main() {
             wrong_secret_seed_trials: 1024,
             preflight_only_reason: None,
             selection_mode: SelectionMode::RandomPublicSamples,
+            json_metadata: JsonMetadata::None,
         },
         other => panic!("unknown --profile: {other}"),
     };
@@ -207,11 +241,14 @@ fn main() {
         )
         .expect("failed to build divergent wrong-secret diagnostic fixture"),
     };
-    let json = match spec.selection_mode {
-        SelectionMode::RandomPublicSamples => {
-            toy_wrong_secret_control_to_json(spec.experiment, &control)
-        }
-        SelectionMode::DivergentWrongSecretDiagnostic => {
+    let json = match spec.json_metadata {
+        JsonMetadata::None => toy_wrong_secret_control_to_json(spec.experiment, &control),
+        JsonMetadata::PublicSelection => toy_wrong_secret_control_to_json_with_public_selection(
+            spec.experiment,
+            &control,
+            spec.selection_mode.as_str(),
+        ),
+        JsonMetadata::DivergentWrongSecretDiagnostic => {
             toy_wrong_secret_control_to_json_with_diagnostics(
                 spec.experiment,
                 &control,
@@ -244,22 +281,26 @@ fn main() {
 
 fn print_help() {
     eprintln!(
-        "lsn_toy_kat [--profile n2|n2-noisy|n2-paper-r7|n2-paper-r7-divergent|n3-search] [--output PATH]\n\
-         lsn_toy_kat [--profile n2|n2-noisy|n2-paper-r7|n2-paper-r7-divergent|n3-search] --check PATH\n\
-         lsn_toy_kat [--profile n2|n2-noisy|n2-paper-r7|n2-paper-r7-divergent|n3-search] --describe\n\
+        "lsn_toy_kat [--profile n2|n2-noisy|n2-paper-r7|n2-paper-r7-public|n2-paper-r7-divergent|n3-search] [--output PATH]\n\
+         lsn_toy_kat [--profile n2|n2-noisy|n2-paper-r7|n2-paper-r7-public|n2-paper-r7-divergent|n3-search] --check PATH\n\
+         lsn_toy_kat [--profile n2|n2-noisy|n2-paper-r7|n2-paper-r7-public|n2-paper-r7-divergent|n3-search] --describe\n\
          Writes or verifies a deterministic toy LSN-KEM KAT vector with a wrong-secret negative control."
     );
 }
 
 fn profile_description_json(profile: &str, spec: &ProfileSpec) -> String {
     format!(
-        "{{\n  \"profile\": \"{}\",\n  \"experiment\": \"{}\",\n  \"default_output\": \"{}\",\n  \"status\": \"profile description only; does not generate a KAT fixture\",\n  \"preflight_only\": {},\n  \"preflight_only_reason\": \"{}\",\n  \"selection_mode\": \"{}\",\n  \"params\": {{\n    \"n\": {},\n    \"sample_count\": {},\n    \"repetition\": {},\n    \"polar_N\": {},\n    \"polar_K\": {},\n    \"public_noise_rate\": {:.10},\n    \"decoder_design_p\": {:.10}\n  }},\n  \"seeds\": {{\n    \"honest_secret_seed\": {},\n    \"wrong_secret_seed_start\": {},\n    \"wrong_secret_seed_trials\": {},\n    \"sample_seed\": {},\n    \"noise_seed\": {},\n    \"encaps_seed\": {}\n  }}\n}}\n",
+        "{{\n  \"profile\": \"{}\",\n  \"experiment\": \"{}\",\n  \"default_output\": \"{}\",\n  \"status\": \"profile description only; does not generate a KAT fixture\",\n  \"preflight_only\": {},\n  \"preflight_only_reason\": \"{}\",\n  \"selection_mode\": \"{}\",\n  \"diagnostic_only\": {},\n  \"params\": {{\n    \"n\": {},\n    \"sample_count\": {},\n    \"repetition\": {},\n    \"polar_N\": {},\n    \"polar_K\": {},\n    \"public_noise_rate\": {:.10},\n    \"decoder_design_p\": {:.10}\n  }},\n  \"seeds\": {{\n    \"honest_secret_seed\": {},\n    \"wrong_secret_seed_start\": {},\n    \"wrong_secret_seed_trials\": {},\n    \"sample_seed\": {},\n    \"noise_seed\": {},\n    \"encaps_seed\": {}\n  }}\n}}\n",
         profile,
         spec.experiment,
         spec.default_output.display(),
         spec.preflight_only_reason.is_some(),
         spec.preflight_only_reason.unwrap_or(""),
         spec.selection_mode.as_str(),
+        matches!(
+            spec.json_metadata,
+            JsonMetadata::DivergentWrongSecretDiagnostic
+        ),
         spec.params.n,
         spec.params.sample_count,
         spec.params.repetition,

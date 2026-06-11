@@ -529,7 +529,22 @@ pub fn toy_wrong_secret_control_to_json_with_diagnostics(
     toy_wrong_secret_control_to_json_inner(
         experiment,
         control,
-        Some((selection_mode, diagnostic_note)),
+        Some(ToyWrongSecretJsonMetadata::Diagnostic {
+            selection_mode,
+            diagnostic_note,
+        }),
+    )
+}
+
+pub fn toy_wrong_secret_control_to_json_with_public_selection(
+    experiment: &str,
+    control: &ToyWrongSecretControl,
+    selection_mode: &str,
+) -> String {
+    toy_wrong_secret_control_to_json_inner(
+        experiment,
+        control,
+        Some(ToyWrongSecretJsonMetadata::PublicSelection { selection_mode }),
     )
 }
 
@@ -685,10 +700,20 @@ pub fn toy_public_wrong_secret_preflight_scan_to_json(
     out
 }
 
+enum ToyWrongSecretJsonMetadata<'a> {
+    PublicSelection {
+        selection_mode: &'a str,
+    },
+    Diagnostic {
+        selection_mode: &'a str,
+        diagnostic_note: &'a str,
+    },
+}
+
 fn toy_wrong_secret_control_to_json_inner(
     experiment: &str,
     control: &ToyWrongSecretControl,
-    diagnostics: Option<(&str, &str)>,
+    metadata: Option<ToyWrongSecretJsonMetadata<'_>>,
 ) -> String {
     let mut out = String::new();
     out.push_str("{\n");
@@ -698,16 +723,30 @@ fn toy_wrong_secret_control_to_json_inner(
     ));
     out.push_str("  \"status\": \"toy reference KAT scaffold; not production constant-time; no security claim\",\n");
     out.push_str("  \"negative_control\": \"same public key and ciphertext, decapsulated with a wrong Lagrangian secret\",\n");
-    if let Some((selection_mode, diagnostic_note)) = diagnostics {
-        out.push_str(&format!(
-            "  \"selection_mode\": \"{}\",\n",
-            escape_json(selection_mode)
-        ));
-        out.push_str("  \"diagnostic_only\": true,\n");
-        out.push_str(&format!(
-            "  \"diagnostic_note\": \"{}\",\n",
-            escape_json(diagnostic_note)
-        ));
+    if let Some(metadata) = metadata {
+        match metadata {
+            ToyWrongSecretJsonMetadata::PublicSelection { selection_mode } => {
+                out.push_str(&format!(
+                    "  \"selection_mode\": \"{}\",\n",
+                    escape_json(selection_mode)
+                ));
+                out.push_str("  \"diagnostic_only\": false,\n");
+            }
+            ToyWrongSecretJsonMetadata::Diagnostic {
+                selection_mode,
+                diagnostic_note,
+            } => {
+                out.push_str(&format!(
+                    "  \"selection_mode\": \"{}\",\n",
+                    escape_json(selection_mode)
+                ));
+                out.push_str("  \"diagnostic_only\": true,\n");
+                out.push_str(&format!(
+                    "  \"diagnostic_note\": \"{}\",\n",
+                    escape_json(diagnostic_note)
+                ));
+            }
+        }
     }
     out.push_str(&format!(
         "  \"roundtrip_ok\": {},\n",

@@ -130,6 +130,59 @@ fn cli_describes_divergent_paper_r7_diagnostic_profile() {
 }
 
 #[test]
+fn cli_describes_public_paper_r7_profile_with_found_seed() {
+    let output = Command::new(kat_bin())
+        .args(["--profile", "n2-paper-r7-public", "--describe"])
+        .output()
+        .expect("failed to run lsn_toy_kat describe");
+    assert!(
+        output.status.success(),
+        "describe failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let json = String::from_utf8_lossy(&output.stdout);
+    assert!(json.contains("\"profile\": \"n2-paper-r7-public\""));
+    assert!(json.contains("\"selection_mode\": \"random-public-samples\""));
+    assert!(json.contains("\"preflight_only\": false"));
+    assert!(json.contains("\"diagnostic_only\": false"));
+    assert!(json.contains("\"wrong_secret_seed_start\": 659920"));
+    assert!(json.contains("\"wrong_secret_seed_trials\": 1"));
+    assert!(json.contains("\"polar_N\": 2048"));
+    assert!(json.contains("\"polar_K\": 256"));
+}
+
+#[test]
+fn cli_generates_public_paper_r7_fixture_with_self_label() {
+    let path = temp_fixture_path("paper_r7_public");
+
+    let generate_status = Command::new(kat_bin())
+        .args(["--profile", "n2-paper-r7-public", "--output"])
+        .arg(&path)
+        .status()
+        .expect("failed to run lsn_toy_kat public paper-r7 generator");
+    assert!(generate_status.success());
+
+    let json = fs::read_to_string(&path).expect("failed to read generated public paper-r7 fixture");
+    assert!(json.contains("\"experiment\": \"codex-lsn-ref-n2-paper-r7-public-kat\""));
+    assert!(json.contains("\"selection_mode\": \"random-public-samples\""));
+    assert!(json.contains("\"diagnostic_only\": false"));
+    assert!(!json.contains("\"diagnostic_note\""));
+    assert!(json.contains("\"wrong_secret_seed\": 659920"));
+    assert!(json.contains("\"roundtrip_ok\": true"));
+    assert!(json.contains("\"wrong_secret_roundtrip_ok\": false"));
+
+    let check_status = Command::new(kat_bin())
+        .args(["--profile", "n2-paper-r7-public", "--check"])
+        .arg(&path)
+        .status()
+        .expect("failed to run lsn_toy_kat public paper-r7 checker");
+    assert!(check_status.success());
+
+    let _ = fs::remove_file(path);
+}
+
+#[test]
 fn cli_check_rejects_mismatched_fixture_negative_control() {
     let path = temp_fixture_path("mismatched_n3");
     fs::write(&path, "{ \"experiment\": \"wrong fixture\" }\n")
