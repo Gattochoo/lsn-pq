@@ -902,6 +902,42 @@ pub fn run_sampled_candidate_ml_budget_trials(
         .collect()
 }
 
+pub fn run_sampled_candidate_ambient_ml_trials(
+    n: usize,
+    sample_ratios: &[f64],
+    noise_rates: &[f64],
+    trials: usize,
+    seed: u64,
+) -> Vec<SampledCandidateMlTrialResult> {
+    assert!(n > 0, "n must be positive");
+    assert!(
+        sample_ratios.iter().all(|ratio| *ratio > 0.0),
+        "sample ratios must be positive"
+    );
+    assert!(
+        noise_rates.iter().all(|p| (0.0..=0.5).contains(p)),
+        "noise rates must be in [0, 0.5]"
+    );
+
+    let base = 1usize << (2 * n);
+    let candidate_count = base;
+    let mut results = Vec::new();
+    for &ratio in sample_ratios {
+        let sample_count = ((base as f64) * ratio).round() as usize;
+        for &noise_rate in noise_rates {
+            results.extend(run_sampled_candidate_ml_budget_trials(
+                n,
+                sample_count,
+                noise_rate,
+                trials,
+                &[candidate_count],
+                seed ^ ((n as u64) << 44) ^ sample_count as u64 ^ noise_rate.to_bits(),
+            ));
+        }
+    }
+    results
+}
+
 pub fn run_sampled_candidate_false_max_budget_trials(
     n: usize,
     sample_count: usize,

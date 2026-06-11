@@ -2,7 +2,7 @@ use lsn_cryptanalysis::{
     CompactLagrangians, LsnSample, XorShift64, bkw_noise_after_rounds, bkw_xor_noise_rate,
     brute_force_ml_decode, bucket_rate_certificate, compact_ml_decode, enumerate_lagrangians,
     positive_basis_isd_decode, random_lagrangian, results_to_json, run_bkw_bucket_trials,
-    run_isd_budget_trials, run_isd_trials, run_ml_trials,
+    run_isd_budget_trials, run_isd_trials, run_ml_trials, run_sampled_candidate_ambient_ml_trials,
     run_sampled_candidate_false_max_budget_trials, run_sampled_candidate_ml_budget_trials,
     run_sampled_candidate_ml_trials, run_span_trials, sample_lsn, sampled_candidate_ml_model_row,
     span_of_positives_decode, span_results_to_json, symplectic_form,
@@ -285,4 +285,16 @@ fn sampled_candidate_false_max_runner_excludes_secret_candidate() {
     assert!(results[0].avg_secret_margin_to_false_max > 0.0);
     assert!(results[1].avg_secret_margin_to_false_max > 0.0);
     assert!(results[1].avg_best_false_score >= results[0].avg_best_false_score);
+}
+
+#[test]
+fn sampled_candidate_ambient_runner_uses_universe_sized_cloud() {
+    let results = run_sampled_candidate_ambient_ml_trials(4, &[0.5], &[0.0], 2, 0xA0B1_C2D3_E4F5);
+
+    assert_eq!(results.len(), 1);
+    assert_eq!(results[0].n, 4);
+    assert_eq!(results[0].sample_count, 128);
+    assert_eq!(results[0].candidate_count, 256);
+    assert_eq!(results[0].successes, 2);
+    assert!(results[0].avg_secret_margin > 0.0);
 }
