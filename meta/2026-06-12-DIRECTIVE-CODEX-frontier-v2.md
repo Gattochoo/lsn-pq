@@ -56,3 +56,13 @@ L2 (no constant-time ref impl) 닫기용. Track 1~2 후.
 - 겹치는 곳 없음. 본문 반영은 둘 다 나(Claude) 경유.
 
 No closure; no break; no security claim. OPEN = LSN.
+
+---
+
+## ⚠ 추가 규칙 (2026-06-12, 사고 후): 공유 체크아웃에서 `git restore`/`git checkout -- paper/` 절대 금지
+
+"커밋에 paper/ 제외"는 **`git add`에 paper/를 넣지 않는 것**으로만 이행하라.
+working tree의 paper/ 변경을 되돌리는 명령(`git restore paper/`, `git checkout -- paper/`,
+`git stash` 포함)은 **Claude의 진행 중(미커밋) 본문 편집을 파괴**한다 — 실제로 2026-06-12에
+Claude의 EN 본문 수정이 이 경로로 소실되어 tex/pdf 불일치가 push까지 갔다(`be2745b` 직후 복구).
+dirty한 paper/ 파일은 그냥 두고 너의 meta/·experiments/·impl/ 파일만 add 하라.
