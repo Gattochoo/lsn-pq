@@ -54,7 +54,7 @@ KLP+25's authors explicitly write that "the usual strategy [secret$\to$secret] i
 
 ### (i) Query points $a_i$
 
-Our definition requires $a_i \sim \mathrm{Unif}(\F_2^{2n})$ marginally. For a fixed $y$, their noisy codeword $w = [A \mid B][r;y] + e$ is uniform over $\F_2^{2n}$ (since $[A \mid B]$ is full-rank and $r$ is uniform), so **marginal uniformity is satisfiable**: we can set $a_i = w_i$.
+Our definition requires $a_i \sim \mathrm{Unif}(\F_2^{2n})$ marginally. For a fixed $y$, their noisy codeword $w = [A \mid B][r;y] + e$ is uniform over the $n$-dimensional coset $\mathrm{colspan}(A) + B y$ (not over all of $\F_2^{2n}$), since $r$ varies only over $\F_2^n$ while $y$ is fixed. Thus **marginal uniformity over $\F_2^{2n}$ fails already at the single-sample level**: $w$ is confined to a set of size $2^n$ inside $2^{2n}$ ($n=2$: $4/16$; $n=3$: $8/64$). Full-rankness of $[A \mid B]$ guarantees uniformity only when $[r;y]$ is jointly uniform.
 
 However, the membership label $\mathbf{1}_L(a_i)$ must correlate with $y$. For a fixed secret Lagrangian $L$, the label depends only on $L$. To recover $y$ from $L$, we need $L = L(y)$, which forces us into locus (iii). Moreover, if the reduction algorithm must choose $L$ without knowing $y$ in advance, the query distribution must simultaneously serve all possible $y$ — a joint uniformity condition that is stricter than marginal uniformity and is not automatically satisfied by their sampling procedure.
 

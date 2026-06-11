@@ -1,0 +1,36 @@
+{
+  "experiment": "codex-p2-sampled-ambient-size-candidate-ml",
+  "attack": "sampled_candidate_ml_planted_secret",
+  "threat_model": "attacker observes public points and noisy membership labels; experiment plants the secret among random Lagrangian decoys to measure ML score separation without full orbit enumeration",
+  "adjudication": "P2 sampled-candidate ML screen; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 32768,
+      "noise_rate": 0.2500000000,
+      "trials": 8,
+      "candidate_count": 1048576,
+      "successes": 7,
+      "success_rate": 0.8750000000,
+      "avg_secret_score": 24524.125000,
+      "avg_best_false_score": 24515.875000,
+      "avg_secret_margin": 8.250000,
+      "seed": 4598362139756740849
+    },
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 32768,
+      "noise_rate": 0.5000000000,
+      "trials": 8,
+      "candidate_count": 1048576,
+      "successes": 0,
+      "success_rate": 0.0000000000,
+      "avg_secret_score": 16342.750000,
+      "avg_best_false_score": 16370.375000,
+      "avg_secret_margin": -27.625000,
+      "seed": 4602865739384111345
+    }
+  ]
+}
