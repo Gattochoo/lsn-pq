@@ -1,8 +1,8 @@
 use lsn_cryptanalysis::{
     CompactLagrangians, LsnSample, XorShift64, brute_force_ml_decode, compact_ml_decode,
-    enumerate_lagrangians, positive_basis_isd_decode, results_to_json, run_isd_budget_trials,
-    run_isd_trials, run_ml_trials, run_span_trials, sample_lsn, span_of_positives_decode,
-    span_results_to_json,
+    enumerate_lagrangians, positive_basis_isd_decode, random_lagrangian, results_to_json,
+    run_bkw_bucket_trials, run_isd_budget_trials, run_isd_trials, run_ml_trials, run_span_trials,
+    sample_lsn, span_of_positives_decode, span_results_to_json, symplectic_form,
 };
 
 #[test]
@@ -190,4 +190,27 @@ fn isd_budget_runner_preserves_attempt_budgets() {
     assert_eq!(results[0].successes, 2);
     assert_eq!(results[1].successes, 2);
     assert_eq!(results[0].avg_positive_count, results[1].avg_positive_count);
+}
+
+#[test]
+fn random_lagrangian_walk_preserves_isotropic_subspace() {
+    let mut rng = XorShift64::new(0x5A17);
+    let lagrangian = random_lagrangian(6, 64, &mut rng);
+    let points = lagrangian.iter().copied().collect::<Vec<_>>();
+
+    assert_eq!(points.len(), 64);
+    for (i, &a) in points.iter().enumerate() {
+        for &b in &points[i..] {
+            assert!(!symplectic_form(a, b, 6));
+        }
+    }
+}
+
+#[test]
+fn bkw_bucket_runner_has_noiseless_positive_control() {
+    let results = run_bkw_bucket_trials(4, 512, 0.0, 2, 4, 16, 0xB00B1E);
+
+    assert_eq!(results.trials, 2);
+    assert!(results.avg_pairs > 0.0);
+    assert!(results.avg_delta_in_secret_when_label_equal > results.delta_in_secret_floor);
 }

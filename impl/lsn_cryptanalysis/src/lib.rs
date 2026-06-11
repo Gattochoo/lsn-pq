@@ -142,6 +142,25 @@ impl IsdTrialResult {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub struct BkwBucketTrialResult {
+    pub n: usize,
+    pub total_dim: usize,
+    pub sample_count: usize,
+    pub noise_rate: f64,
+    pub trials: usize,
+    pub bucket_bits: usize,
+    pub pair_limit_per_bucket: usize,
+    pub avg_pairs: f64,
+    pub avg_label_xor_rate: f64,
+    pub avg_matched_random_xor_rate: f64,
+    pub avg_label_xor_excess: f64,
+    pub delta_in_secret_floor: f64,
+    pub avg_delta_in_secret_when_label_equal: f64,
+    pub avg_delta_in_secret_when_label_unequal: f64,
+    pub seed: u64,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct XorShift64 {
     state: u64,
 }
@@ -222,6 +241,19 @@ pub fn enumerate_lagrangians(n: usize) -> Vec<Lagrangian> {
     out
 }
 
+pub fn random_lagrangian(n: usize, walk_steps: usize, rng: &mut XorShift64) -> Lagrangian {
+    assert!(n > 0, "n must be positive");
+    assert!(2 * n <= 32, "bitmask model supports dimension at most 32");
+
+    let mut lagrangian = standard_lagrangian(n);
+    let universe = 1usize << (2 * n);
+    for _ in 0..walk_steps {
+        let v = rng.next_index(universe) as u32;
+        lagrangian = apply_transvection(&lagrangian, v, n);
+    }
+    lagrangian
+}
+
 pub fn sample_lsn(
     secret: &Lagrangian,
     sample_count: usize,
@@ -249,6 +281,156 @@ pub fn sample_lsn(
         });
     }
     samples
+}
+
+pub fn bkw_bucket_observable(
+    n: usize,
+    samples: &[LsnSample],
+    secret: &Lagrangian,
+    bucket_bits: usize,
+    pair_limit_per_bucket: usize,
+) -> BkwBucketTrialResult {
+    let total_dim = 2 * n;
+    assert!(
+        bucket_bits <= total_dim,
+        "bucket bits exceed ambient dimension"
+    );
+    assert!(
+        pair_limit_per_bucket > 0,
+        "pair limit per bucket must be positive"
+    );
+
+    let bucket_count = 1usize << bucket_bits;
+    let bucket_mask = (bucket_count - 1) as u32;
+    let mut buckets = vec![Vec::<LsnSample>::new(); bucket_count];
+    let mut positive_count = 0usize;
+
+    for sample in samples {
+        assert!(
+            (sample.point as usize) < (1usize << total_dim),
+            "sample point outside ambient universe"
+        );
+        if sample.label {
+            positive_count += 1;
+        }
+        buckets[(sample.point & bucket_mask) as usize].push(*sample);
+    }
+
+    let mut pairs = 0usize;
+    let mut label_xor_count = 0usize;
+    let mut equal_count = 0usize;
+    let mut unequal_count = 0usize;
+    let mut delta_in_secret_equal = 0usize;
+    let mut delta_in_secret_unequal = 0usize;
+
+    for bucket in buckets {
+        let mut bucket_pairs = 0usize;
+        'outer: for i in 0..bucket.len() {
+            for j in (i + 1)..bucket.len() {
+                let a = bucket[i];
+                let b = bucket[j];
+                let label_xor = a.label ^ b.label;
+                let delta = a.point ^ b.point;
+                let delta_in_secret = secret.contains(&delta);
+
+                pairs += 1;
+                bucket_pairs += 1;
+                if label_xor {
+                    label_xor_count += 1;
+                    unequal_count += 1;
+                    if delta_in_secret {
+                        delta_in_secret_unequal += 1;
+                    }
+                } else {
+                    equal_count += 1;
+                    if delta_in_secret {
+                        delta_in_secret_equal += 1;
+                    }
+                }
+
+                if bucket_pairs >= pair_limit_per_bucket {
+                    break 'outer;
+                }
+            }
+        }
+    }
+
+    let q = if samples.is_empty() {
+        0.0
+    } else {
+        positive_count as f64 / samples.len() as f64
+    };
+    let matched_random_xor_rate = 2.0 * q * (1.0 - q);
+    let label_xor_rate = rate(label_xor_count, pairs);
+
+    BkwBucketTrialResult {
+        n,
+        total_dim,
+        sample_count: samples.len(),
+        noise_rate: 0.0,
+        trials: 1,
+        bucket_bits,
+        pair_limit_per_bucket,
+        avg_pairs: pairs as f64,
+        avg_label_xor_rate: label_xor_rate,
+        avg_matched_random_xor_rate: matched_random_xor_rate,
+        avg_label_xor_excess: label_xor_rate - matched_random_xor_rate,
+        delta_in_secret_floor: 2f64.powi(-(n as i32)),
+        avg_delta_in_secret_when_label_equal: rate(delta_in_secret_equal, equal_count),
+        avg_delta_in_secret_when_label_unequal: rate(delta_in_secret_unequal, unequal_count),
+        seed: 0,
+    }
+}
+
+pub fn run_bkw_bucket_trials(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    trials: usize,
+    bucket_bits: usize,
+    pair_limit_per_bucket: usize,
+    seed: u64,
+) -> BkwBucketTrialResult {
+    let total_dim = 2 * n;
+    let mut rng = XorShift64::new(seed);
+    let mut pair_sum = 0.0;
+    let mut label_xor_rate_sum = 0.0;
+    let mut matched_random_xor_rate_sum = 0.0;
+    let mut label_xor_excess_sum = 0.0;
+    let mut delta_equal_sum = 0.0;
+    let mut delta_unequal_sum = 0.0;
+
+    for _ in 0..trials {
+        let secret = random_lagrangian(n, 8 * total_dim.max(1), &mut rng);
+        let samples = sample_lsn(&secret, sample_count, noise_rate, total_dim, &mut rng);
+        let result =
+            bkw_bucket_observable(n, &samples, &secret, bucket_bits, pair_limit_per_bucket);
+        pair_sum += result.avg_pairs;
+        label_xor_rate_sum += result.avg_label_xor_rate;
+        matched_random_xor_rate_sum += result.avg_matched_random_xor_rate;
+        label_xor_excess_sum += result.avg_label_xor_excess;
+        delta_equal_sum += result.avg_delta_in_secret_when_label_equal;
+        delta_unequal_sum += result.avg_delta_in_secret_when_label_unequal;
+    }
+
+    let denom = trials.max(1) as f64;
+    BkwBucketTrialResult {
+        n,
+        total_dim,
+        sample_count,
+        noise_rate,
+        trials,
+        bucket_bits,
+        pair_limit_per_bucket,
+        avg_pairs: pair_sum / denom,
+        avg_label_xor_rate: label_xor_rate_sum / denom,
+        avg_matched_random_xor_rate: matched_random_xor_rate_sum / denom,
+        avg_label_xor_excess: label_xor_excess_sum / denom,
+        delta_in_secret_floor: 2f64.powi(-(n as i32)),
+        avg_delta_in_secret_when_label_equal: delta_equal_sum / denom,
+        avg_delta_in_secret_when_label_unequal: delta_unequal_sum / denom,
+        seed,
+    }
 }
 
 pub fn brute_force_ml_decode(samples: &[LsnSample], lagrangians: &[Lagrangian]) -> MlGuess {
@@ -807,8 +989,86 @@ pub fn isd_results_to_json(experiment: &str, results: &[IsdTrialResult]) -> Stri
     out
 }
 
+pub fn bkw_results_to_json(experiment: &str, results: &[BkwBucketTrialResult]) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str("  \"attack\": \"bkw_bucket_pair_observable\",\n");
+    out.push_str(
+        "  \"threat_model\": \"attacker observes public points and noisy membership labels; secret only used for diagnostic enrichment\",\n",
+    );
+    out.push_str(
+        "  \"adjudication\": \"P2 BKW adaptation screen; evidence, not proof; OPEN = LSN\",\n",
+    );
+    out.push_str("  \"results\": [\n");
+    for (i, result) in results.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"n\": {},\n", result.n));
+        out.push_str(&format!("      \"total_dim\": {},\n", result.total_dim));
+        out.push_str(&format!(
+            "      \"sample_count\": {},\n",
+            result.sample_count
+        ));
+        out.push_str(&format!(
+            "      \"noise_rate\": {:.10},\n",
+            result.noise_rate
+        ));
+        out.push_str(&format!("      \"trials\": {},\n", result.trials));
+        out.push_str(&format!("      \"bucket_bits\": {},\n", result.bucket_bits));
+        out.push_str(&format!(
+            "      \"pair_limit_per_bucket\": {},\n",
+            result.pair_limit_per_bucket
+        ));
+        out.push_str(&format!("      \"avg_pairs\": {:.6},\n", result.avg_pairs));
+        out.push_str(&format!(
+            "      \"avg_label_xor_rate\": {:.10},\n",
+            result.avg_label_xor_rate
+        ));
+        out.push_str(&format!(
+            "      \"avg_matched_random_xor_rate\": {:.10},\n",
+            result.avg_matched_random_xor_rate
+        ));
+        out.push_str(&format!(
+            "      \"avg_label_xor_excess\": {:.10},\n",
+            result.avg_label_xor_excess
+        ));
+        out.push_str(&format!(
+            "      \"delta_in_secret_floor\": {:.10},\n",
+            result.delta_in_secret_floor
+        ));
+        out.push_str(&format!(
+            "      \"avg_delta_in_secret_when_label_equal\": {:.10},\n",
+            result.avg_delta_in_secret_when_label_equal
+        ));
+        out.push_str(&format!(
+            "      \"avg_delta_in_secret_when_label_unequal\": {:.10},\n",
+            result.avg_delta_in_secret_when_label_unequal
+        ));
+        out.push_str(&format!("      \"seed\": {}\n", result.seed));
+        out.push_str("    }");
+        if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
 pub fn lagrangian_count(n: usize) -> usize {
     (1..=n).map(|i| (1usize << i) + 1).product()
+}
+
+fn rate(numerator: usize, denominator: usize) -> f64 {
+    if denominator == 0 {
+        0.0
+    } else {
+        numerator as f64 / denominator as f64
+    }
 }
 
 fn escape_json(input: &str) -> String {
