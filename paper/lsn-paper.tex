@@ -377,7 +377,7 @@ where $\{w_j\}$ is a basis for the annihilator of $L$. Any polynomial of degree 
 The list size needed to enumerate all candidate Lagrangians is $|\Lagr| = 2^{n^2/2 + O(n)}$. Even with pruning, list decoding is infeasible for $n \geq 41$.
 
 \paragraph{BKW and ISD.}
-BKW would require treating the secret as an $n^2$-bit object, giving complexity $2^{\Omega(n^2 / \log n)}$. Information-set decoding does not apply directly because the code ensemble (Lagrangian indicators) is highly structured rather than random linear.  We screened both attack families empirically: positive-basis ISD at $n=5$ succeeds in only $3/10$ trials even with $50\,000$ attempts, far above the $2^{2n}=1024$ brute-force scale; a BKW-style bucket-pair screen shows no scalable signal at $n=6\!\!\sim\!\!8$ because the label-xor noise growth $p\mapsto2p(1-p)$ kills any remaining structure after one or two rounds.
+BKW would require treating the secret as an $n^2$-bit object, giving complexity $2^{\Omega(n^2 / \log n)}$. Information-set decoding does not apply directly because the code ensemble (Lagrangian indicators) is highly structured rather than random linear.  We screened both attack families empirically: positive-basis ISD at $n=5$ succeeds in only $3/10$ trials even with $50\,000$ attempts, far above the $2^{2n}=1024$ brute-force scale; a BKW-style bucket-pair screen shows no scalable signal at $n=6$--$8$ because the label-xor noise growth $p\mapsto2p(1-p)$ kills any remaining structure after one or two rounds.
 
 \paragraph{Structural attacks.}
 For very low noise ($p = o(1/n)$), the span of the positive samples reveals $L$. At constant noise $p=1/4$, \cite{LPQR26} and our experiments show that structural attacks are ineffective: the span of positives has full dimension after $O(n)$ samples.  A direct span-of-positives decoder recovers $L$ perfectly at $p=0$ (sanity check) and fails at $p=1/4$ for every measured trial ($n=3,4,5$), because false positives span the ambient space.
@@ -857,7 +857,7 @@ Consider a linear reduction that maps a sympLPN instance $(A, y)$ to an LPN inst
 
 \begin{theorem}[Transport lemma for full-rank linear reductions]
 \label{thm:transport-fullrank}
-Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = 2n$ and $m \ge 2n$. Let $B^{+} \in \F_2^{2n \times m}$ be any left inverse $(B^{+}B = I_{2n})$ and define $M := (B^{+})^{\top}\Omega B^{+} \in \F_2^{m \times m}$. Then for every isotropic\-column\linebreak[0] matrix~$A$,
+Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = 2n$ and $m \ge 2n$. Let $B^{+} \in \F_2^{2n \times m}$ be any left inverse $(B^{+}B = I_{2n})$ and define $M := (B^{+})^{\top}\Omega B^{+} \in \F_2^{m \times m}$. Then for every isotropic-column matrix~$A$,
 \[
 (BA)^{\top} M (BA) \;=\; 0.
 \]
@@ -939,6 +939,10 @@ where $W_N$ is the weight enumerator of $N = \operatorname{nullspace}(A^{\!\top}
 When the coset offset $b_0=0$ every term in the MacWilliams sum is positive, so the bound is an equality.
 \end{lemma}
 
+\begin{proof}
+Write $b = b_0 + Nz$ with $z \sim \operatorname{Uniform}(\F_2^n)$ and $N$ a basis of $\operatorname{nullspace}(A^{\!\top})$. Then $\E_b[(-1)^{b^{\!\top} e}] = (-1)^{b_0^{\!\top} e} \cdot \mathbf{1}_{e \in \operatorname{colspace}(A)}$, so $|\E_{b,e}[(-1)^{b^{\!\top} e}]| = |\sum_{x \in \operatorname{colspace}(A)} (-1)^{b_0^{\!\top} x}\, p^{|x|}(1-p)^{D-|x|}| \le \sum_{x \in \operatorname{colspace}(A)} p^{|x|}(1-p)^{D-|x|} = (1-p)^D \cdot W_{\operatorname{colspace}(A)}(p/(1-p))$, with equality when $b_0 = 0$ (all terms positive). The MacWilliams identity with $t = p/(1-p)$ gives $(1-p)^D W_{\operatorname{colspace}(A)}(t) = 2^{-n} W_N(1-2p)$. For the expectation, $N = \Omega \cdot L$ is the image of a uniform Lagrangian $L$, so $\Pr[x \in N] = 1/(2^n+1)$ for every non-zero $x$ by $\mathrm{Sp}(2n)$-transitivity. Hence $\E_A[W_N(1/2)] = 1 + ((3/2)^D-1)/(2^n+1) \le 1+(9/8)^n$, yielding the claimed bound.
+\end{proof}
+
 The expectation bound can be upgraded to a high-probability statement.  Write $W := W_N(1/2)-1 = \sum_{v\neq 0} \mathbf{1}_{v\in N}\,2^{-|v|}$.  The exact first two moments are
 \[
   \E[W] = \frac{(3/2)^{2n}-1}{2^n+1}, \qquad
@@ -949,7 +953,11 @@ with $p=\tfrac{1}{2^n+1}$, $q=\tfrac{1}{(2^{n-1}+1)(2^n+1)}$, $D=(5/4)^{2n}-1$, 
   C = \!\!\sum_{\substack{v\neq v'\\ v,v'\neq 0}}\!\! (-1)^{\Omega(v,v')}2^{-|v|-|v'|}
     = (7/4)^{2n} - 2(3/2)^{2n} - (5/4)^{2n} + 2
 \]
-factorises over the $n$ symplectic coordinate blocks, each contributing $\sum_{a,b,x,y\in\{0,1\}}(-1)^{ay+bx}2^{-(a+b+x+y)} = (7/4)^2$ (see \Cref{app:krawtchouk} for the full derivation).  Consequently $\operatorname{Var}[W]/\E[W]^2 = O\!\bigl((50/81)^n\bigr)$, and Chebyshev's inequality gives the following.
+factorises over the $n$ symplectic coordinate blocks, each block contributing
+\[
+\sum_{a,b,x,y\in\{0,1\}}(-1)^{ay+bx}\,2^{-(a+b+x+y)} = (7/4)^2
+\]
+(see \Cref{app:krawtchouk} for the full derivation).  Consequently $\operatorname{Var}[W]/\E[W]^2 = O\!\bigl((50/81)^n\bigr)$, and Chebyshev's inequality gives the following.
 
 \begin{lemma}[Affine-coset bias, w.h.p.]
 \label{lem:affine-coset-bias-whp}
@@ -1123,7 +1131,7 @@ The entropy of $A$ is at most the log-support of the isotropic-frame distributio
 nm-\delta nm-1
 \;\le\;(3/2)n^{2}+n/2+m+nm-\E[k\mid A]\cdot0.094n+O(1),
 \]
-which rearranges to $\E[k\mid A]\cdot0.094n\le(3/2)n^{2}+n/2+m+\delta nm+O(1)$.  Since $(3/2)n^{2}+n/2$ divided by $0.094n$ is $16n+O(1)$, taking expectations over $A$ and $R$ gives the claimed bound.
+which rearranges to $\E[k\mid A]\cdot0.094n\le(3/2)n^{2}+n/2+m+\delta nm+O(1)$.  Since $(3/2)n^{2}+n/2$ divided by $0.094n$ is at most $16n+O(1)$, taking expectations over $A$ and $R$ gives the claimed bound.
 \end{proof}
 
 \Cref{lem:m1} bounds the \emph{expected} number of low-weight rows in the marginal-adaptive model using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification argument of \Cref{cor:noise-amp} and the recovery argument of \Cref{cor:recovery-barrier} then apply to those rows.
