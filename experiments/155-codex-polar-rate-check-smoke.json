@@ -1,0 +1,44 @@
+{
+  "experiment": "codex-p1b-polar-rate-sweep-n2048",
+  "bound_convention": "SC block-error bound uses 0.5 * sum selected Bhattacharyya Z_i; raw sum is also recorded",
+  "target_log2_half_sum_bound": -40.000000,
+  "adjudication": "engineering polar-rate sweep only; no closure, no break, OPEN = LSN",
+  "rows": [
+    {
+      "N": 128,
+      "K": 8,
+      "p": 0.0343000000,
+      "rate": 0.062500000000,
+      "bhattacharyya_sum_bound": 3.912588670009e-15,
+      "half_sum_bound": 1.956294335004e-15,
+      "log2_bhattacharyya_sum_bound": -47.860798,
+      "log2_half_sum_bound": -48.860798,
+      "target_log2_half_sum_bound": -40.000000,
+      "passes_half_sum_target": true
+    },
+    {
+      "N": 128,
+      "K": 12,
+      "p": 0.0343000000,
+      "rate": 0.093750000000,
+      "bhattacharyya_sum_bound": 5.448536496544e-13,
+      "half_sum_bound": 2.724268248272e-13,
+      "log2_bhattacharyya_sum_bound": -40.739196,
+      "log2_half_sum_bound": -41.739196,
+      "target_log2_half_sum_bound": -40.000000,
+      "passes_half_sum_target": true
+    },
+    {
+      "N": 128,
+      "K": 16,
+      "p": 0.0343000000,
+      "rate": 0.125000000000,
+      "bhattacharyya_sum_bound": 1.633548170077e-11,
+      "half_sum_bound": 8.167740850386e-12,
+      "log2_bhattacharyya_sum_bound": -35.833200,
+      "log2_half_sum_bound": -36.833200,
+      "target_log2_half_sum_bound": -40.000000,
+      "passes_half_sum_target": false
+    }
+  ]
+}

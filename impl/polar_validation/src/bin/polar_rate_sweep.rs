@@ -11,6 +11,7 @@ struct Args {
     k_step: usize,
     target_log2: f64,
     output: PathBuf,
+    check: Option<PathBuf>,
 }
 
 fn main() {
@@ -44,6 +45,19 @@ fn main() {
     }
 
     let json = polar_rate_rows_to_json("codex-p1b-polar-rate-sweep-n2048", args.target_log2, &rows);
+    if let Some(check_path) = args.check {
+        let expected = fs::read_to_string(&check_path).expect("failed to read rate fixture");
+        if expected != json {
+            eprintln!(
+                "rate check failed: generated JSON differs from {}",
+                check_path.display()
+            );
+            std::process::exit(1);
+        }
+        eprintln!("verified {}", check_path.display());
+        return;
+    }
+
     if let Some(parent) = args.output.parent() {
         fs::create_dir_all(parent).expect("failed to create output directory");
     }
@@ -59,6 +73,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     let mut k_step = 1usize;
     let mut target_log2 = -128.0;
     let mut output = PathBuf::from("experiments/polar-rate-sweep.json");
+    let mut check = None;
 
     let mut i = 0;
     while i < raw.len() {
@@ -78,6 +93,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
             "--k-step" => k_step = parse_value(key, value)?,
             "--target-log2" => target_log2 = parse_value(key, value)?,
             "--output" => output = PathBuf::from(value),
+            "--check" => check = Some(PathBuf::from(value)),
             other => return Err(format!("unknown argument {other}")),
         }
         i += 2;
@@ -104,6 +120,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
         k_step,
         target_log2,
         output,
+        check,
     })
 }
 
@@ -130,6 +147,7 @@ fn print_help() {
     eprintln!(
         "polar-rate-sweep [--n N] [--p-values P1,P2] [--k-start K0]\n\
          [--k-end K1] [--k-step STEP] [--target-log2 LOG2] [--output PATH]\n\
-         Sweeps the conservative half-sum Bhattacharyya SC block-error bound."
+         [--check PATH]\n\
+         Sweeps or verifies the conservative half-sum Bhattacharyya SC block-error bound."
     );
 }
