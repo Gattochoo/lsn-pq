@@ -936,6 +936,27 @@ where $W_N$ is the weight enumerator of $N = \operatorname{nullspace}(A^{\!\top}
 When the coset offset $b_0=0$ every term in the MacWilliams sum is positive, so the bound is an equality.
 \end{lemma}
 
+The expectation bound can be upgraded to a high-probability statement.
+
+\begin{lemma}[Affine-coset bias, high-probability form]
+\label{lem:affine-coset-bias-whp}
+The weight enumerator $W := W_N(1/2)-1 = \sum_{v\neq 0} \mathbf{1}_{v\in N}\,2^{-|v|}$ has exact first two moments
+\[
+  \E[W] = \frac{(3/2)^{2n}-1}{2^n+1}, \qquad
+  \operatorname{Var}[W] = p(1{-}p)\,D + q\,S_0 - p^2 T,
+\]
+with $p=\tfrac{1}{2^n+1}$, $q=\tfrac{1}{(2^{n-1}+1)(2^n+1)}$, $D=(5/4)^{2n}-1$, $T=((3/2)^{2n}-1)^2-D$, and $S_0=\tfrac12(T+C)$, where the character sum
+\[
+  C = \!\!\sum_{\substack{v\neq v'\\ v,v'\neq 0}}\!\! (-1)^{\Omega(v,v')}2^{-|v|-|v'|}
+    = (7/4)^{2n} - 2(3/2)^{2n} - (5/4)^{2n} + 2
+\]
+is evaluated by factorising $\Omega$ over the $n$ symplectic coordinate blocks, each contributing $\sum_{a,b,x,y\in\{0,1\}}(-1)^{ay+bx}2^{-(a+b+x+y)} = (7/4)^2$. Consequently $\operatorname{Var}[W]/\E[W]^2 = O\!\bigl((50/81)^n\bigr)$, and Chebyshev's inequality gives, for a uniformly random isotropic $A$,
+\[
+  \bigl|\E_{b,e}[(-1)^{b^{\!\top} e}]\bigr| \;\le\; \bigl(2^{-n} + (9/16)^n\bigr)\bigl(1+o(1)\bigr)
+  \qquad\text{with probability } 1 - 2^{-\Omega(n)}.
+\]
+\end{lemma}
+
 \begin{proof}
 Write $b = b_0 + Nz$ with $z \sim \operatorname{Uniform}(\F_2^n)$ and $N$ a basis of $\operatorname{nullspace}(A^{\!\top})$. Then
 \[
