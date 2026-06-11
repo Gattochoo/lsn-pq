@@ -1,0 +1,1413 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[numbers]{natbib}
+
+% Page layout
+\usepackage[margin=1in]{geometry}
+\emergencystretch=1em
+\tolerance=1000
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+% Notation shortcuts
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\LL}{\mathcal{L}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prb}{\Pr}
+\DeclareMathOperator{\Lagr}{Lagr}
+\DeclareMathOperator{\SDA}{SDA}
+\DeclareMathOperator{\VSTAT}{VSTAT}
+\DeclareMathOperator{\Adv}{Adv}
+\DeclareMathOperator{\Var}{Var}
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\LSN}{\mathsf{LSN}}
+
+\title{The Lagrangian Subspace Noise Problem: \\ Statistical-Query Lower Bounds and Barriers for Linear Reductions}
+\author{Kwanghoo Choo\thanks{ORCID: \href{https://orcid.org/0009-0005-5682-8098}{0009-0005-5682-8098}. Email: \texttt{gattochoo@gmail.com}. \textcopyright~2026 Kwanghoo Choo. Licensed under CC BY 4.0.}\\ \normalsize Independent Researcher}
+\date{June 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We study the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem in which the secret is a Lagrangian subspace of a symplectic vector space over $\F_2$ rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form; closely related problems were recently introduced by Khesin et al.\ and Lu et al. Our results are of three kinds. (1)~\emph{Lower bounds.} We prove an exact pairwise-correlation formula for the membership formulation, with no asymptotic error term, and derive from it an unconditional Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, as well as a conditional $2^{2n-O(1)}$ bound under a precisely stated extremality conjecture. We further prove exact closed forms for the second and third subset moments of the isotropic row ensemble, showing that fixed-size row bundles converge to the unconstrained LPN ensemble at rate $O(4^{-n})$. (2)~\emph{Barriers.} We establish a near-complete impossibility landscape for linear reductions from symplectic LPN to standard LPN: a transport-based rank stratification rules out every public-matrix linear reduction at all sample counts and noise rates; an entropy-continuity argument rules out every fixed linear reduction; and an entropy-support counting bound forces all but $O(n)$ rows of any marginally-uniform adaptive reduction to have linear Hamming weight. Three of the four cells of the linear landscape are thereby closed unconditionally; the fourth (marginal-adaptive) is reduced to a single precisely stated open problem. (3)~\emph{Separations.} We separate the membership and decoding formulations by information-theoretic floors, give a precise positioning against the stabilizer-decoding formulation, and state the standard-model gap that remains for general non-linear reductions. Every claim in the paper is a proved theorem, an explicitly labeled piece of empirical evidence, or an explicitly labeled conjecture.
+\end{abstract}
+
+\paragraph{\textbf{Keywords.}} Post-quantum cryptography, Learning Parity with Noise, statistical query model, symplectic geometry, lower bounds, black-box reductions.
+
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{Background}
+\label{subsec:background}
+
+The Learning Parity with Noise (LPN) problem, introduced by Blum \etal\ \cite{BFKL94}, asks to recover a secret linear function $s \in \F_2^k$ given noisy inner products $(a_i, \langle a_i, s \rangle \oplus e_i)$. Despite decades of cryptanalytic effort, no polynomial-time algorithm is known for LPN with constant noise rate. The best classical attacks run in sub-exponential time $2^{O(n / \log n)}$ using the Blum--Kalai--Wasserman (BKW) algorithm \cite{BKW03} and its modern refinements \cite{LF06,Lyu05,EKM17,GJL14,ZJW16,WS21}. Grover's algorithm reduces the naive key-search cost from $2^k$ to $2^{k/2}$ \cite{Gro96}, and quantum variants of BKW remain the dominant quantum threat; no published exponential quantum speed-up over the best classical methods is known \cite{Kir11}.
+
+LPN has been the foundation for a wide range of cryptographic primitives, including OWFs, PKE, OT, and MPC \cite{ABW10,Ale11,DGM14,BCGI18}. Its main theoretical limitation is the absence of a worst-case hardness reduction comparable to Regev's LWE reduction from lattice problems \cite{Reg05}. LPN hardness is therefore treated as a \emph{primitive assumption}, accepted on the basis of sustained cryptanalytic resistance rather than reducibility.
+
+Post-quantum cryptography currently rests on a handful of established hardness families: lattices (LWE/SIS), error-correcting codes (LPN/syndrome decoding), multivariate quadratic equations (MQ), hash functions, and isogenies, with tensor and group-action problems emerging as further candidates. Shor's algorithm \cite{Sho94} breaks the integer-factoring and discrete-logarithm assumptions underlying classical public-key cryptography, motivating the search for quantum-resistant alternatives. A genuinely new family --- structurally distinct and not reducible to the existing ones --- has been sought since the inception of the field. LSN is a leading candidate for such a family.
+
+\subsection{The LSN Problem}
+\label{subsec:lsn}
+
+We propose \emph{Lagrangian Subspace Noise} (LSN); its name and motivation come from the \emph{Learning Stabilizers with Noise} and \emph{symplectic LPN} problems of \cite{KLP+25,LPQR26}, and the precise relation between our membership formulation and theirs is discussed in \Cref{subsec:two-forms}. The secret is not a linear function but a Lagrangian subspace $L \subset \F_2^{2n}$ of a symplectic vector space. The learner receives samples
+\[
+(a_i, b_i) \quad \text{where} \quad b_i = \mathbf{1}_L(a_i) \oplus e_i,
+\]
+with $a_i \sim \F_2^{2n}$ uniform, $e_i \sim \operatorname{Bernoulli}(p)$, and $\mathbf{1}_L$ the indicator of $L$. The secret space is the Lagrangian Grassmannian:
+\begin{equation}
+\label{eq:lagr-count}
+|\Lagr(2n, \F_2)| = \prod_{i=1}^n (2^i + 1) = 2^{n(n+1)/2 + O(1)}.
+\end{equation}
+This is exponentially larger than LPN's $2^n$ secrets, yet it is not an unstructured space: every secret satisfies the strong isotropy constraint $L = L^{\perp_\Omega}$. It is exactly this tension --- exponential size versus rigid structure --- that creates both the hardness and the technical difficulty of LSN.
+
+Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that \emph{their} stabilizer-decoding LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN (for linear reductions, proven in the constant-rate sample regime $m=\Theta(n)$; see \Cref{sec:barriers}). The precise relation between their LSN and our membership formulation is stated as an open positioning item in \Cref{subsec:two-forms}. These results position LSN as a leading candidate for a genuinely new post-quantum hardness family outside the established ones.
+
+\subsection{Contributions}
+\label{subsec:contributions}
+
+Our contributions are organized around lower bounds, exact moment computations, and reduction barriers.
+
+\begin{enumerate}
+    \item \textbf{Exact SQ lower bound (\Cref{sec:sq}).} We prove an unconditional $\Omega(2^n)$ SQ query lower bound via an explicit symplectic spread, and a conditional $q \geq 2^{2n - O(1)}$ bound under a pencil-extremality conjecture. Both rest on an exact pairwise-correlation formula
+    \[
+    \langle D_L, D_{L'} \rangle = \frac{(1-2p)^2}{p(1-p)} \cdot 2^{j-2n},
+    \]
+    where $j = \dim(L \cap L')$ and $\langle D_L, D_{L'} \rangle$ denotes the pairwise correlation. For $p=1/4$ the coefficient is exactly $4/3$. A Markov concentration argument shows that a subset of size $2^{2n}$ with average correlation $O(2^{-2n})$ exists; the stronger worst-case bound remains open. The results hold for adaptive SQ algorithms.
+
+    \item \textbf{Reduction barriers (\Cref{sec:barriers}).} We prove that linear feature maps give zero advantage against LSN; polynomial feature maps of degree $< n$ have error at least $2^{-n}$; and adaptive linear SQ algorithms have advantage at most $(1-2p)2^{-n}$ at any noise rate $p$.
+    
+    \textbf{Linear-reduction landscape.} Transport theorems (\Cref{thm:transport-fullrank} and \Cref{thm:transport-nearfull}) close all public-$B$ reductions; Theorem~D.1 of \cite{LPQR26} with the Fannes--Csisz\'ar inequality closes all fixed $B$; the entropy-support bound (\Cref{lem:m1}) and the reachability theorem (\Cref{thm:any-b-uniformity}) close conditionally-uniform adaptive $B$. The marginal-adaptive cell is posed as a precise open problem (\Cref{open:marginal-adaptive}).
+    
+    \textbf{Two formulations.} We separate the membership and batch/sympLPN formulations and prove information-theoretic floors for the former (\Cref{sec:info-floors}).
+
+    \item \textbf{Exact moments of the isotropic row ensemble (\Cref{sec:moments}).} For the symplectic-LPN public matrix ensemble (uniform full-rank matrices with pairwise symplectically orthogonal columns), we prove exact closed forms for the second and third all-ones subset moments. Writing $u = 2^{2n-2}$, the per-orbit pair counts are $u(u-1)/2$, $u(u-2)/2$, and $u(u-4)/8$, giving
+    \[
+    m_2 = \frac{(2n-1)u^2-(4n-3)u}{4(2n-1)(4u^2-5u+1)}, \qquad
+    m_3 = \frac{u(u-4)}{16(4u^2-5u+1)},
+    \]
+    with $m_j = (1/4)^j - \Theta(4^{-n})$. Consequently every fixed-size bundle of rows of the isotropic ensemble converges to the unconstrained LPN ensemble at rate $O(4^{-n})$: conditioning on the symplectic relation $S_A=0$ does not help a constant-size statistical test.
+
+    \item \textbf{Explicit claim classification (\Cref{sec:open}).} Every claim is classified as theorem, evidence, or conjecture. We state explicitly the standard-model gap --- the absence of a non-vacuous LPN(low-noise) $\to$ LSN or LWE $\to$ LSN reduction --- that remains open.
+\end{enumerate}
+
+\paragraph{Applications.} LSN supports cryptographic constructions --- a key-encapsulation mechanism via concatenated polar-code reconciliation and a succinct argument system exploiting the Siegel-chart representation of Lagrangians --- which are developed in a separate companion report available with the code repository. The present paper is concerned only with the hardness landscape of the problem itself.
+
+\section{Preliminaries}
+\label{sec:prelim}
+
+\subsection{Symplectic Vector Spaces}
+\label{subsec:symplectic}
+
+Let $V = \F_2^{2n}$ with standard symplectic form
+\[
+\Omega(x,y) = \sum_{i=1}^n (x_i y_{n+i} + x_{n+i} y_i),
+\]
+\[
+\text{i.e. } \Omega(x,y) = x^{\!\top} J y \text{ with } J = \begin{psmallmatrix} 0 & I_n \\ I_n & 0 \end{psmallmatrix} \text{ (char 2)}.
+\]
+A subspace $L \subset V$ is \emph{isotropic} if $\Omega|_{L \times L} = 0$, and \emph{Lagrangian} if it is isotropic of dimension $n$; equivalently $L = L^{\perp_\Omega}$. We write $\Lagr(2n, \F_2)$ for the Lagrangian Grassmannian.
+
+\begin{proposition}[Lagrangian count \cite{Mac71}]
+$|\Lagr(2n, \F_2)| = \prod_{i=1}^n (2^i + 1) = 2^{n(n+1)/2 + O(1)}$.
+\end{proposition}
+
+For $L, L' \in \Lagr(2n)$ let $j = \dim(L \cap L')$ denote the intersection dimension; every value $0 \le j \le n$ occurs. The distribution of $j$ is governed by the $q$-binomial coefficients at $q=2$:
+\begin{equation}
+\label{eq:j-distribution}
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{|\Lagr(2n,\F_2)|}.
+\end{equation}
+
+\subsection{Fourier Transform on the Symplectic Space}
+\label{subsec:fourier}
+
+The unnormalized $\Omega$-Fourier transform of $f \colon \F_2^{2n} \to \R$ is
+\[
+\mathcal{F}_\Omega[f](\xi) = \sum_{x \in \F_2^{2n}} f(x) (-1)^{\Omega(x, \xi)}.
+\]
+
+\begin{lemma}[Self-duality]
+For every $L \in \Lagr(2n,\F_2)$,
+\[
+\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \cdot \mathbf{1}_L.
+\]
+\end{lemma}
+
+\begin{proof}
+If $\xi \in L$, then $\Omega(x,\xi)=0$ for all $x \in L$, so the sum is $|L|=2^n$. If $\xi \notin L$, choose $x_0 \in L$ with $\Omega(x_0,\xi)=1$; the involution $x \mapsto x+x_0$ pairs terms of opposite sign, so the sum is $0$.
+\end{proof}
+
+\subsection{Statistical Query Model}
+\label{subsec:sq}
+
+Let $\mathcal{D}$ be a class of distributions and $D_0$ a reference distribution. The \emph{statistical dimension with average correlation} \cite{FGR+17} is
+\[
+\SDA(B(\mathcal{D},D_0),\gamma) = \max\Bigl\{d : \forall S \subseteq \mathcal{D}, |S| \geq \frac{|\mathcal{D}|}{d} \Rightarrow \frac{1}{|S|^2}\sum_{D,D' \in S} |\langle D,D' \rangle| \leq \gamma\Bigr\}.
+\]
+
+\begin{theorem}[Feldman \etal\ \cite{FGR+17}]
+\label{thm:feldman}
+If $\SDA(B(\mathcal{D},D_0),\gamma) = d$, any SQ algorithm distinguishing $\mathcal{D}$ from $D_0$ with success probability $\alpha > 1/2$ requires $q \geq (2\alpha - 1)d$ queries to $\VSTAT(1/(3\gamma))$.
+\end{theorem}
+
+The theorem applies to randomized \emph{adaptive} SQ algorithms, so our lower bound will inherit adaptivity automatically.
+
+\subsection{Notation}
+\label{subsec:notation}
+
+We write $D_L$ for the LSN distribution with secret $L$ and noise rate $p$, and $D_0$ for the noise-only distribution in which $b \sim \operatorname{Bernoulli}(p)$ independently of $a$. All logarithms are base $2$ unless stated otherwise.
+
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{LPN foundations and cryptanalysis.}
+LPN was introduced by Blum, Furst, Kearns, and Lipton \cite{BFKL94} as a foundation for cryptographic primitives. The dominant classical attack is BKW \cite{BKW03}, later optimized with fast Walsh--Hadamard transforms \cite{LF06}, covering codes \cite{GJL14,ZJW16}, and hybrid information-set-decoding techniques \cite{EKM17,WS21}. Lyubashevsky \cite{Lyu05} gave a polynomial-sample variant, and a comprehensive unified attack framework was developed by Esser, K{\"u}bler, and May \cite{EKM17}. Quantum speed-ups are limited to Grover \cite{Gro96} and quantum BKW \cite{Kir11}; no published exponential improvement is known.
+
+\paragraph{LPN variants.}
+Many structured variants have been proposed to improve efficiency: Ring-LPN \cite{HKL+12}, LPN with structured noise \cite{DP12}, and the Learning with Rounding (LWR) problem \cite{BPR12}. All of these retain a secret space of size $2^{O(n)}$. LSN differs fundamentally in that its secret space has size $2^{n^2/2 + O(n)}$ while remaining polynomial-time sampleable via symplectic linear algebra.
+
+\paragraph{Symplectic and quantum coding.}
+Stabilizer codes, the quantum analogue of classical linear codes, are naturally described by Lagrangian subspaces of $\F_2^{2n}$ \cite{Got97,CRSS98,NC00}. Quantum state tomography of stabilizer states under depolarizing noise is a closely related learning problem \cite{GL22}. The recent independent work of Khesin \etal\ \cite{KLP+25} proved that constant-rate LPN reduces to \emph{their} stabilizer-decoding LSN even for $k=1$ (the relation to our membership formulation is an open positioning item; \Cref{subsec:two-forms}), while Lu \etal\ \cite{LPQR26} proved that linear reductions cannot reduce sympLPN to LPN in the constant-rate sample regime $m=\Theta(n)$; for $m=\omega(n)$ their bound shows error weight $1/2-\delta$, which they note is not sufficient to fully rule out decodability (though they expect the barrier to extend to all $m=\operatorname{poly}(n)$).
+
+\paragraph{Statistical query hardness.}
+The SQ model was introduced by Kearns \cite{Kea98} and developed by Blum \etal\ \cite{BFJ+94}. Feldman, Grigorescu, Reyzin, and Vempala \cite{FGR+17} gave the general SDA framework we use, and Diakonikolas \etal\ \cite{DKS17} applied it to high-dimensional robust estimation. Quantum algorithms that access only classical samples can achieve at most a quadratic Grover speed-up over classical algorithms. Since the SQ lower bound is exponential in $n$, such a speed-up does not affect the asymptotic security parameter, making SQ lower bounds relevant evidence for quantum hardness.
+
+\paragraph{Code-based cryptography.}
+Code-based cryptography dates to McEliece \cite{McE78} and Prange \cite{Pra62}; modern standards include Classic McEliece \cite{ABD+21} and HQC \cite{AAC+22}. LSN sits in this tradition --- its hardness is a decoding-flavoured assumption --- but the secret is a subspace rather than a codeword, and the public structure is symplectic rather than linear-random.
+
+\section{The LSN Problem}
+\label{sec:lsn-problem}
+
+\begin{definition}[Membership-LSN$_{n,m,p}$]
+\label{def:lsn}
+Let $L \subset \F_2^{2n}$ be uniformly random Lagrangian. The LSN distribution $D_L$ over $\F_2^{2n} \times \F_2$ is generated by sampling $a \sim \F_2^{2n}$, $e \sim \operatorname{Bernoulli}(p)$, and outputting $(a, b)$ where $b = \mathbf{1}_L(a) \oplus e$. Given $m$ independent samples from $D_L$, recover $L$.
+\end{definition}
+
+\paragraph{Search vs.~decision.} All hardness results in this paper are stated for the \emph{decisional} problem: distinguishing $D_L$ from the noise-only distribution $D_0$ (where $b \sim \operatorname{Bernoulli}(p)$ independently of $a$). The search-to-decision reduction follows the same template as for LPN~\cite{BFKL94}: given a decision oracle and a candidate Lagrangian $L'$, one can verify whether $L'=L$ by testing whether the samples are consistent with $D_{L'}$; a standard hybrid argument then yields search hardness from decision hardness. We therefore treat decisional LSN as the primitive assumption.
+
+\subsection{Two Formulations}
+\label{subsec:two-forms}
+
+Definition~\ref{def:lsn} is the \emph{membership} (oracle) formulation: the query point $a$ is freshly random for every sample, and the adversary sees it only together with its label. This is the natural form for statistical-query and information-theoretic analysis.
+
+Cryptographic constructions and external hardness results use the \emph{batch} formulation, where all query points are fixed in advance.
+
+\begin{definition}[Batch-LSN$_{n,m,p}$]
+\label{def:lsn-batch}
+Let $L \subset \F_2^{2n}$ be uniformly random Lagrangian, and let $A = (a_1,\dots,a_m) \in (\F_2^{2n})^m$ be a fixed sequence of query points (public parameters). The batch distribution $D_L^{(A)}$ outputs labels $b = (b_1,\dots,b_m)$ where $b_j = \mathbf{1}_L(a_j) \oplus e_j$ with independent $e_j \sim \operatorname{Bernoulli}(p)$. Given $A$ and $b$, recover $L$.
+\end{definition}
+
+The columns of $A$ may be uniform random, pseudorandom (as in applications that derive $A$ from a short seed), or structured.
+
+\begin{definition}[sympLPN$_{n,p}$ \cite{KLP+25,LPQR26}]
+\label{def:symplpn}
+Let $A \in \F_2^{2n \times n}$ be a public matrix whose columns are \emph{isotropic}: $S_A := A^{\top}\Omega A = 0$ (every pair of columns is orthogonal under the symplectic form). Let $x \in \F_2^n$ be a secret vector, $e \sim \operatorname{Bernoulli}(p)^{2n}$ a noise vector, and $y = Ax + e \in \F_2^{2n}$. Given $(A,y)$, recover $x$.
+This is the special case $k=n$ of LPQR26's general sympLPN$(k,n,p)$; following LPQR26, the error is drawn from the symplectic representation of the depolarizing distribution, and for simplicity of analysis we state the problem with independent Bernoulli noise, which preserves all barrier results.
+\end{definition}
+
+\paragraph{Relationship.}
+\begin{enumerate}
+\item \textbf{Batch-LSN with uniform $A$ $\equiv$ membership-LSN.} When the columns of $A$ are uniform and independent, the adversary's view $(A,b)$ in batch-LSN is identical in distribution to $m$ independent samples from the membership oracle. Hence SQ lower bounds and information-theoretic floors proved for membership-LSN transfer \emph{verbatim} to batch-LSN with uniform~$A$.
+\item \textbf{Pseudorandom $A$.} Applications may generate $A$ pseudorandomly from a short seed; security then reduces to batch-LSN with uniform $A$ plus one PRG step.
+\item \textbf{sympLPN is a different problem.} True sympLPN (\Cref{def:symplpn}) has linear labels $y = Ax + e$ and secret $x$; the isotropic constraint $S_A = 0$ is a public quadratic relation on the public parameters. It is not equivalent to batch-LSN (membership labels) without a pinned bridge theorem. LPQR26 study sympLPN; our transport theorems (\Cref{sec:barriers}) use only the $S_A = 0$ structure on the public matrix and therefore apply to any formulation with isotropic columns, regardless of the label structure.
+\item \textbf{Open positioning item: our membership-LSN vs.\ \linebreak[0] the LSN of \cite{KLP+25,LPQR26}.} Their (classical) LSN has a \emph{public} matrix $[A \mid B]$ --- the $n$ columns of $A$ are pairwise symplectically orthogonal and span a Lagrangian, and the $k$ columns of $B$ are likewise mutually isotropic and jointly independent of $A$; the concatenated matrix is \emph{not} itself isotropic, since $n$ is the maximal isotropic dimension --- a junk register $x$, and a secret logical string $y$. Each sample is a noisy codeword $[A \mid B] \cdot [x; y] + e$ under symplectic depolarizing noise, with a fresh public matrix per sample in the multi-sample variant $\mathrm{LSN}^m$. Our membership-LSN has no public matrix and the secret is the Lagrangian itself. The two formulations are not known to be equivalent, and we do not claim the external hardness results (e.g.\ constant-rate LPN $\le$ their LSN) for our membership formulation. Establishing or refuting this bridge is an open precision item (cf.\ Open Problems, \Cref{sec:open}).
+\end{enumerate}
+
+Throughout the paper we state which formulation each theorem addresses; unless noted otherwise, ``LSN'' refers to the membership form.
+
+\subsection{Information-Theoretic Floors}
+\label{sec:info-floors}
+
+The per-sample information content of membership-LSN is exponentially small, which makes the membership form statistically trivial at polynomial sample complexity and \emph{re-points} the hardness question to the batch formulation.
+
+\begin{proposition}[Per-sample mutual information]
+\label{prop:per-sample-mi}
+For membership-LSN with noise rate $p$,
+\[
+I\bigl(L; (a,b)\bigr) \;=\; \Theta(2^{-n}).
+\]
+\end{proposition}
+
+\begin{proof}
+Given $L$, the label is $b = \mathbf{1}_L(a) \oplus e$ with $e \sim \operatorname{Bernoulli}(p)$, so $H(b \mid a, L) = H_2(p)$ exactly.  For $a \neq 0$, a uniformly random $a$ lies in $L$ with probability $(2^n-1)/(2^{2n}-1) = 2^{-n} + O(2^{-2n})$, hence $\Pr[b=1 \mid a] = p + 2^{-n}(1-2p) + O(2^{-2n})$; for $a=0$ we have $\Pr[b=1 \mid a=0] = 1-p$, and its entropy is $H_2(1-p) = H_2(p)$, but this occurs with probability $2^{-2n}$ and contributes negligibly.  Thus $H(b \mid a) = H_2(p + 2^{-n}(1-2p)) + O(2^{-2n})$ and the mutual information is $\Theta(2^{-n})$ by the Taylor expansion $H_2(p+\varepsilon) = H_2(p) + \varepsilon\log_2\frac{1-p}{p} + O(\varepsilon^2)$.
+\end{proof}
+
+\begin{proposition}[$\chi^2$ divergence and sample complexity]
+\label{prop:chi2-sample}
+For any fixed Lagrangian $L$, the $\chi^2$ divergence from $D_0$ is
+\[
+\chi^2(D_L \| D_0) \;=\; \frac{(1-2p)^2}{p(1-p)} \cdot 2^{-n}.
+\]
+Consequently any distinguisher (even computationally unbounded) needs $m = \Omega(2^n)$ samples to tell $D_L$ from $D_0$ with constant advantage, and any search algorithm needs $m = \Omega(n^2 \cdot 2^n)$ samples to recover $L$ with constant probability.
+\end{proposition}
+
+\begin{proof}
+From the likelihood-ratio calculation in \Cref{app:corr}, the squared likelihood ratio has expectation $\E_{D_0}[\ell_L^2] = \frac{(1-2p)^2}{p(1-p)} \cdot 2^{-n}$.  Since $\E_{D_0}[\ell_L]=0$, this is exactly $\chi^2(D_L \| D_0)$.  The standard $\chi^2$-based sample-complexity bound (Le Cam's method) gives $m = \Omega(1/\chi^2) = \Omega(2^n)$ for decision.  For search, Fano's inequality with $|\Lagr| = 2^{n(n+1)/2+O(1)}$ and per-sample information $\Theta(2^{-n})$ yields $m = \Omega(n^2 \cdot 2^n)$.
+\end{proof}
+
+\paragraph{Consequence for reductions.} Propositions~\ref{prop:per-sample-mi} and~\ref{prop:chi2-sample} imply that \emph{membership-LSN with $\operatorname{poly}(n)$ samples is information-theoretically secure}: no reduction, linear or non-linear, adaptive or static, can recover $L$ or distinguish $D_L$ from $D_0$ with only polynomially many samples.  This makes ``membership-LSN $\not\to$ LPN with $\operatorname{poly}(n)$ samples'' trivially true and cryptographically empty.  The hardness assumption relevant to applications is \emph{batch-LSN with pseudorandom $A$} (\Cref{def:lsn-batch}).  The barrier studied by LPQR26 is \emph{sympLPN} (\Cref{def:symplpn}), a decoding problem with linear labels and public isotropic matrix.
+
+\subsection{Distance Distribution and Expected Intersection}
+\label{subsec:distance}
+
+The correlation between two LSN distributions depends only on the dimension $j = \dim(L \cap L')$ of the intersection of their secrets. The distribution of $j$ is:
+
+\begin{theorem}[Distance distribution]
+\label{thm:distance}
+For uniform $L, L' \in \Lagr(2n, \F_2)$,
+\[
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{|\Lagr(2n,\F_2)|}.
+\]
+Numerical evaluation shows that $\E[j] \to 0.76$ and $\operatorname{Var}(j) \to 0.60$ as $n \to \infty$.
+\end{theorem}
+
+The rapid decay of \Cref{eq:j-distribution} means that two random Lagrangians typically intersect in dimension $0$ or $1$; intersections of dimension $\geq 14$ occur with probability $< 2^{-100}$ for every $n \geq 14$ (the tail $\Pr[j=k] \approx 2^{-k(k+1)/2}$ is essentially independent of $n$).
+
+\subsection{The Diluted-LPN View}
+\label{subsec:diluted-lpn}
+
+In the Siegel chart $L = \{(u, Mu) : u \in \F_2^n\}$ with $M \in \operatorname{Sym}(n,\F_2)$, a sample $(a,b)$ with $a=(u,v)$ and $b=1$ reveals $n$ linear equations $v = Mu$ in the $n(n+1)/2$ unknown entries of $M$.  The catch is that true positives are drowned in noise.
+
+\begin{proposition}[Dilution of true positives]
+\label{prop:dilution}
+Conditioned on the label $b=1$, the posterior probability that the query point lies in $L$ is
+\[
+\Pr[a \in L \mid b=1] \;=\; \frac{(1-p)\,2^{-n}}{p + (1-2p)\,2^{-n}} \;=\; \Theta(2^{-n}).
+\]
+At $p=1/4$ the exact constant is $3$ asymptotically ($\approx 3\cdot 2^{-n}$ for large $n$); for $n=3$ it is exactly $3/10$.
+\end{proposition}
+
+\begin{proof}
+Bayes' rule: $\Pr[a \in L \mid b=1] = \Pr[b=1 \mid a \in L]\Pr[a \in L] / \Pr[b=1] = (1-p)\cdot 2^{-n} / (p + (1-2p)2^{-n})$.
+\end{proof}
+
+\Cref{prop:dilution} reframes batch-LSN search as an \emph{$\varepsilon$-diluted LPN} problem over $\operatorname{Sym}(n,\F_2)$: with probability $\varepsilon \approx 3\cdot 2^{-n}$ a sample yields $n$ clean linear equations in $M$; otherwise it yields noise.  This is LPN with secret dimension $n(n+1)/2$ at an extreme dilution rate.  The computational question becomes:
+
+\paragraph{Enrichment question.}
+\label{q:enrichment}
+Can any efficient selection rule (using past labeled samples and the symplectic structure) produce query points with $\Pr[a \in L] \geq (1+\delta)\,2^{-n}$ for non-negligible $\delta$?  In other words, can the $2^{-n}$ dilution be beaten?
+
+A negative answer would be the cleanest quantitative statement of what $\mathrm{LSN}\setminus\mathrm{LPN}$ is; a positive answer would yield a concrete attack improvement (and a step toward a $6.5$th-family demotion).  The SQ lower bounds of \Cref{sec:sq} suggest that enrichment is impossible for SQ-implementable selection rules: any such rule is a linear combination of SQ queries, and the correlation bounds limit its advantage to $2^{-n}$. The following lemma makes the reduction from enrichment to distinguishing explicit.
+
+\begin{lemma}[Enrichment boosts SQ advantage]
+\label{lem:enrichment-sq}
+Let $\mathcal{R}$ be a selection rule that, using past samples from the membership-LSN oracle, outputs a query $a \in \F_2^{2n}$ such that $\Pr[a \in L] = (1+\delta)\,2^{-n}$ for some $\delta \ge 0$. Then the statistical query $\phi(a,b) = (-1)^b$ has advantage
+\[
+  \operatorname{Adv}(\phi) = 2|1-2p|(1+\delta)2^{-n}.
+\]
+In particular, the gain over the uniform-query baseline ($\delta=0$) is $\Delta\operatorname{Adv} = 2|1-2p|\cdot\delta\cdot 2^{-n}$.
+\end{lemma}
+
+\begin{proof}
+Under the null model ($b=e$) we have $\E[\phi] = \E[(-1)^e] = 1-2p$. Under the structured model, $\Pr[b=1 \mid a] = p + \mathbf{1}_L(a)(1-2p)$, so $\E[\phi \mid a] = 1-2\Pr[b=1 \mid a] = (1-2p)(1-2\mathbf{1}_L(a))$. Averaging over $a \sim \mathcal{R}$ gives $\E[\phi] = (1-2p)(1-2\Pr[a \in L]) = (1-2p)(1-2(1+\delta)2^{-n})$. The advantage is $|\E[\phi]-\E_{\text{null}}[\phi]| = |1-2p| \cdot 2(1+\delta)2^{-n}$.
+\end{proof}
+
+A $\delta$-enrichment would scale the per-query advantage by $(1+\delta)$; for selection rules implementable by linear SQ this exceeds the per-query ceiling of \Cref{thm:linear-sq}, while general (non-linear, multi-sample) selection rules remain open.  Empirical probes confirm the predicted scaling $\delta \approx c\,m\,2^{-n}$ with $c=\Theta(1)$.  The exact constant depends on the prior, the sample-size regime, and the estimator; at $n=65$ and $m=22{,}528$ the enrichment is $\delta \le 2^{-50}$, far below any cryptographically relevant threshold.
+
+\subsection{Parameters}
+\label{subsec:parameters}
+
+\Cref{tab:parameters} gives the exact security parameters derived in \Cref{sec:sq}.
+
+\begin{table}[ht]
+\centering
+\caption{LSN security parameters for $p=1/4$.}
+\label{tab:parameters}
+\begin{tabular}{@{}cccc@{}}
+\hline
+Security & $n$ & $\log_2(q_{\min})^{\text{(a)}}$ & $|\Lagr|$ \\
+\hline
+80-bit  & 41  & 80.4  & $\sim 2^{861}$  \\
+128-bit & 65  & 128.4 & $\sim 2^{2145}$ \\
+192-bit & 97  & 192.4 & $\sim 2^{4753}$ \\
+256-bit & 129 & 256.4 & $\sim 2^{8385}$ \\
+\hline
+\end{tabular}
+\vspace{4pt}
+\noindent {\footnotesize $^{\text{(a)}}$ The $q_{\min}$ figures use the conditional bound of \Cref{thm:main-sq-cond}; the unconditional spread bound (\Cref{thm:main-sq-uncond}) gives $\Omega(2^n)$.}
+\end{table}
+
+The $q_{\min}$ figures follow from the fully explicit bound $q \ge \tfrac13 \cdot 2^{2n}$ of \Cref{thm:main-sq-cond} (no hidden asymptotic constants), built on the exact pairwise-correlation formula of Lemma~\ref{lem:exact-corr}: $\log_2 q_{\min} = 2n - \log_2 3 \approx 2n - 1.585$, so the $80$-bit line is met at $n=41$ with $0.4$ bits of slack. Since the multiplicative constant $\tfrac13$ is below $1$, parameters with $2n < \lambda + 1.6$ are not advised without a rigorous upper bound.
+
+\section{Decoder Landscape}
+\label{sec:decoders}
+
+We review the natural decoder families and explain why each fails against LSN at constant noise.
+
+\paragraph{Linear decoders.}
+A real-linear query has the form $q(a,b) = \langle w, a \rangle + c \cdot b$. Its expectation under $D_L$ is
+\[
+\E_{D_L}[q] = c \cdot \Pr[b=1] = c \cdot \bigl(p + 2^{-n}(1-2p)\bigr),
+\]
+which is independent of $L$. Hence real-linear decoders have exactly zero $L$-identification power. F$_2$-linear queries can achieve advantage at most $(1-2p)2^{-n}$ (\Cref{thm:linear-sq}).
+
+\paragraph{Polynomial decoders.}
+The indicator $\mathbf{1}_L$ has an exact degree-$n$ polynomial representation
+\[
+\mathbf{1}_L(x) = \prod_{j=1}^n (1 + \langle w_j, x \rangle)
+\]
+where $\{w_j\}$ is a basis for the annihilator of $L$. Any polynomial of degree $< n$ misses at least one factor and therefore has error $\geq 2^{-n}$.
+
+\paragraph{List decoding.}
+The list size needed to enumerate all candidate Lagrangians is $|\Lagr| = 2^{n^2/2 + O(n)}$. Even with pruning, list decoding is infeasible for $n \geq 41$.
+
+\paragraph{BKW and ISD.}
+BKW would require treating the secret as an $n^2$-bit object, giving complexity $2^{\Omega(n^2 / \log n)}$. Information-set decoding does not apply directly because the code ensemble (Lagrangian indicators) is highly structured rather than random linear.  We screened both attack families empirically: positive-basis ISD at $n=5$ succeeds in only $3/10$ trials even with $50\,000$ attempts, far above the $2^{2n}=1024$ brute-force scale; a BKW-style bucket-pair screen shows no scalable signal at $n=6$--$8$ because the label-xor noise growth $p\mapsto2p(1-p)$ kills any remaining structure after one or two rounds.
+
+\paragraph{Structural attacks.}
+For very low noise ($p = o(1/n)$), the span of the positive samples reveals $L$. At constant noise $p=1/4$, \cite{LPQR26} and our experiments show that structural attacks are ineffective: the span of positives has full dimension after $O(n)$ samples.  A direct span-of-positives decoder recovers $L$ perfectly at $p=0$ (sanity check) and fails at $p=1/4$ for every measured trial ($n=3,4,5$), because false positives span the ambient space.
+
+\paragraph{Empirical sample-complexity lower bound.}
+We ran brute-force experiments for $n=3,4,5$ using transvection-orbit enumeration of the full Lagrangian family.  In each trial we sampled $L\leftarrow\Lagr$ uniformly, drew $m$ noisy samples from $\LSN_{L,1/4}$, and let a brute-force decoder enumerate all Lagrangians, picking the one with the highest agreement.  The recovery success rates (200 trials for $n=3$, 50 for $n=4$, 20 for $n=5$) were:
+\begin{center}
+\begin{tabular}{@{}cccccc@{}}
+\toprule
+$n$ & $|\Lagr|$ & $m=2^{2n-2}$ & $m=2^{2n-1}$ & $m=2^{2n}$ & $m=2\cdot2^{2n}$ \\
+\midrule
+3 & 135 & $11.5\%$ & $18.5\%$ & $46.5\%$ & $80.0\%$ \\
+4 & 2{,}295 & $6.0\%$ & $24.0\%$ & $62.0\%$ & $98.0\%$ \\
+5 & 75{,}735 & $5.0\%$ & $20.0\%$ & $75.0\%$ & $100\%$~(20/20) \\
+\bottomrule
+\end{tabular}
+\end{center}
+Two trends are visible.  First, the success rate at the floor $m=2^{2n}$ \emph{increases} with $n$ ($46.5\%$, $62\%$, $75\%$), consistent with $2^{2n}$ being the asymptotic threshold.  Second, halving the budget to $m=2^{2n-1}$ already drops recovery below $25\%$ even at $n=5$.  These experiments empirically support an exponential-in-$n$ sample-complexity scale for the brute-force ML decoder.  A Rust cross-check at $n=5$ (compact count-aggregated scorer, 20 trials) gave consistent results: $0.25$ at $m=512$, $0.90$ at $m=1024$, $1.00$ at $m=2048$.  We note that at these small $n$ the scales $2^{2n}$ and the information-theoretic recovery floor $\Theta(n^2 2^n)$ of \Cref{prop:chi2-sample} are numerically indistinguishable, so the data do not discriminate between them; asymptotically the ML recovery threshold is governed by the $\Theta(n^2 2^n)$ floor, while $2^{2n}$ is the SQ-query scale of \Cref{sec:sq}. The experiments do not rule out a more sample-efficient decoder---the rigorous statement is the SQ query bound.
+
+\section{Statistical Query Lower Bound}
+\label{sec:sq}
+
+This section contains the main technical result: an exponential SQ lower bound with an exact correlation formula.
+
+\subsection{Exact Pairwise Correlation}
+\label{subsec:exact-corr}
+
+Let $D_0$ be the noise-only distribution. The likelihood ratio of $D_L$ with respect to $D_0$ is
+\[
+\ell_L(a,b) = \frac{dD_L}{dD_0}(a,b) - 1
+            = \mathbf{1}_L(a) \cdot \beta \cdot \Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0} \frac{p}{1-p}\Bigr),
+\]
+where $\beta = (1-2p)/p$.
+
+\begin{lemma}[Exact pairwise correlation]
+\label{lem:exact-corr}
+For $L,L' \in \Lagr(2n,\F_2)$ with $j = \dim(L \cap L')$,
+\begin{equation}
+\label{eq:exact-corr}
+\langle D_L, D_{L'} \rangle
+= \frac{(1-2p)^2}{p(1-p)} \cdot 2^{j-2n}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Because $a$ and $b$ are independent under $D_0$, the inner product factors:
+\[
+\langle D_L, D_{L'} \rangle
+= \E_a[\mathbf{1}_L(a) \mathbf{1}_{L'}(a)] \cdot
+  \E_b\Bigl[\beta^2 \Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\frac{p}{1-p}\Bigr)^2\Bigr].
+\]
+The first factor is $|L \cap L'| / 2^{2n} = 2^{j-2n}$. The second factor is
+\[
+\beta^2 \Bigl(p + (1-p)\frac{p^2}{(1-p)^2}\Bigr)
+= \frac{(1-2p)^2}{p^2} \cdot \frac{p}{1-p}
+= \frac{(1-2p)^2}{p(1-p)}.
+\]
+Multiplying yields \Cref{eq:exact-corr}. For $p=1/4$ the coefficient is exactly $4/3$.
+\end{proof}
+
+\subsection{Average Correlation}
+\label{subsec:avg-corr}
+
+Taking expectation over $j$ gives the average pairwise correlation.
+
+\begin{lemma}[Average correlation]
+Let $C_n = \E[2^j]$ computed from \Cref{thm:distance}. Then $C_n \to 2$ and
+\[
+\rho_{\mathrm{avg}}
+= \frac{(1-2p)^2}{p(1-p)} \cdot C_n \cdot 2^{-2n}.
+\]
+\end{lemma}
+
+\subsection{SDA Concentration}
+\label{subsec:sda}
+
+\begin{lemma}[Existence of low-correlation subset]
+\label{lem:sda}
+Let $\gamma = 2\rho_{\mathrm{avg}}$. There exists a subset $\mathcal{D}' \subset \{D_L\}$ of size $|\mathcal{D}'| = 2^{2n}$ with average correlation at most $\gamma$.
+\end{lemma}
+
+\begin{proof}
+Consider a uniformly random subset $S \subset \Lagr(2n)$ of size $M = 2^{2n}$. By symmetry of the Lagrangian Grassmannian under $\mathrm{Sp}(2n)$, $\E[\rho(S)] = \rho_{\mathrm{avg}}$. Markov's inequality gives
+\[
+\Pr[\rho(S) > 2\rho_{\mathrm{avg}}] < \frac{\E[\rho(S)]}{2\rho_{\mathrm{avg}}} = \frac{1}{2}.
+\]
+Hence with probability at least $1/2$, a random subset of size $2^{2n}$ has average correlation at most $\gamma = 2\rho_{\mathrm{avg}}$. This proves existence of such a subset. A worst-case bound over \emph{all} subsets of size $2^{2n}$ would require a structural argument; we discuss this in \Cref{sec:open}.
+\end{proof}
+
+\subsection{Unconditional SQ Bound: The Symplectic Spread}
+\label{subsec:spread-bound}
+
+We first give an unconditional exponential lower bound on a concrete worst-case promise problem. The bound is weaker in both query count and VSTAT strength than the conditional average-case bound of \Cref{thm:main-sq-cond}, but it requires no unproven structural hypothesis.
+
+Let $V = \F_{2^n} \times \F_{2^n}$ with symplectic form $\omega((a,b),(c,d)) = \operatorname{Tr}(ad) + \operatorname{Tr}(bc)$, where $\operatorname{Tr}$ is the trace from $\F_{2^n}$ to $\F_2$. The \emph{Desarguesian symplectic spread} $\mathcal{S}^* = \{L_\lambda\}_{\lambda \in \F_{2^n}} \cup \{L_\infty\}$ consists of $d_0 = 2^n+1$ Lagrangians
+\[
+L_\lambda = \{(x, \lambda x) : x \in \F_{2^n}\}, \qquad L_\infty = \{0\} \times \F_{2^n},
+\]
+which are pairwise transversal: $\dim(L \cap L') = 0$ for all distinct $L, L' \in \mathcal{S}^*$.
+
+\begin{theorem}[Unconditional spread bound]
+\label{thm:main-sq-uncond}
+Let $\kappa = (1-2p)^2/(p(1-p))$ and fix $1 \leq t \leq n-1$. Set $\bar\gamma_t = \kappa \cdot 2^{-(2n-t)}$. Every subset $T \subseteq \mathcal{S}^*$ with $|T| \geq 2^{n-t}$ has diagonal-inclusive average correlation at most $2\bar\gamma_t$. Consequently $\SDA(\mathcal{S}^*, 2\bar\gamma_t) \geq 2^t$, and any SQ algorithm that is correct on every $L \in \mathcal{S}^*$ requires $\Omega(2^t)$ queries to $\VSTAT(1/(6\bar\gamma_t))$.
+\end{theorem}
+
+At $t = n-1$ this yields an unconditional $\Omega(2^n)$ query lower bound at VSTAT strength $O(2^n)$.
+
+\begin{proof}
+For distinct $L, L' \in \mathcal{S}^*$ we have $j = \dim(L \cap L') = 0$, so by Lemma~\ref{lem:exact-corr} the pairwise correlation is exactly $\langle D_L, D_{L'}\rangle = \kappa \cdot 2^{-2n} = \bar\gamma_t \cdot 2^{-t} \leq \bar\gamma_t$. The diagonal terms contribute $\beta = \kappa \cdot 2^{-n}$ each, so for $|T| \geq 2^{n-t}$
+\[
+\frac{1}{|T|^2}\sum_{D,D' \in T} |\langle D,D'\rangle|
+\;\leq\; \frac{|T|^2 \cdot \bar\gamma_t + |T| \cdot \beta}{|T|^2}
+\;\leq\; \bar\gamma_t + \frac{\beta}{2^{n-t}}
+\;\leq\; 2\bar\gamma_t.
+\]
+Hence $\SDA(\mathcal{S}^*, 2\bar\gamma_t) \geq |\mathcal{S}^*| / 2^{n-t} \geq 2^t$. Applying \Cref{thm:feldman} with $\alpha = 2/3$ gives the query bound.
+\end{proof}
+
+\paragraph{Remarks.}
+(i) \textbf{Worst-case promise only.} The spread has measure $|\mathcal{S}^*|/|\Lagr| \sim 2^n / 2^{n(n+1)/2} \to 0$. \Cref{thm:main-sq-uncond} does not cover the average-case problem; it protects only the promise problem ``$L \in \mathcal{S}^*$?''.
+(ii) \textbf{VSTAT trade-off.} The unconditional bound is $\Omega(2^n)$ queries at $\VSTAT(O(2^n))$; the conditional bound below is $2^{2n-O(1)}$ queries at $\VSTAT(\Theta(2^{2n}))$. The two parameters are not interchangeable.
+(iii) The subfamily restriction is valid for the promise problem: any algorithm solving LSN over the full family is correct on $\mathcal{S}^*$ a fortiori.
+
+\subsection{Conditional SQ Bound}
+\label{subsec:main-sq}
+
+The stronger $2^{2n}$-scale bound rests on a structural conjecture about extremal subsets.
+
+\begin{conjecture}[Pencil extremality]
+\label{conj:pencil}
+There is an absolute constant $c$ such that every subset $\mathcal{D}' \subseteq \{D_L\}$ of size $|\mathcal{D}'| \geq |\Lagr(2n,\F_2)| / 2^{2n-c}$ has average correlation at most $5\rho_{\mathrm{avg}}$.
+\end{conjecture}
+
+Motivation: $k=2$ isotropic pencils force any threshold above $4\rho_{\mathrm{avg}}$ (their expected $2^{\dim(L\cap L')}$ ratio tends to $4$ from below), while $k \geq 3$ pencils fall below the size threshold $|\Lagr|/2^{2n}$ for $n \geq 4$, and mixtures of pencils with random fill dilute quadratically. A proof would require classifying near-extremal subsets.
+
+\begin{theorem}[Conditional main SQ lower bound]
+\label{thm:main-sq-cond}
+Assume \Cref{conj:pencil}. Any SQ algorithm distinguishing LSN (uniform $L$) from $D_0$ with probability $> 2/3$ requires $q \geq 2^{2n - O(1)}$ queries to $\VSTAT(1/(15\rho_{\mathrm{avg}}))$.
+\end{theorem}
+
+\begin{proof}
+Under \Cref{conj:pencil} with $c=0$, every subset of size at least $|\Lagr(2n,\F_2)| / 2^{2n}$ has average correlation at most $5\rho_{\mathrm{avg}}$. Hence $\SDA(B(\{D_L\},D_0), 5\rho_{\mathrm{avg}}) \geq 2^{2n}$. Applying \Cref{thm:feldman} with $\alpha = 2/3$ and $\gamma = 5\rho_{\mathrm{avg}}$ yields $q \geq (4/3 - 1) \cdot 2^{2n} = 2^{2n - O(1)}$ queries to $\VSTAT(1/(15\rho_{\mathrm{avg}}))$.
+\end{proof}
+
+\begin{theorem}[Adaptive SQ]
+\Cref{thm:main-sq-cond} holds for randomized adaptive SQ algorithms.
+\end{theorem}
+
+\begin{proof}
+\Cref{thm:feldman} applies to randomized adaptive SQ algorithms \cite[Theorem 3.7]{FGR+17}, so the bound is inherited directly.
+\end{proof}
+
+\subsection{Adaptive Linear SQ is Blocked}
+\label{subsec:adaptive-linear}
+
+\begin{theorem}[Adaptive linear SQ barrier]
+\label{thm:linear-sq}
+For any real-linear query $q(a,b) = \langle w, a \rangle + c \cdot b$, the expectation $\E_{D_L}[q]$ is independent of $L$. For any F$_2$-linear query $q(a,b)=\langle w,a\rangle \oplus c\cdot b$, the maximum distinguishing advantage against $D_0$ is $(1-2p)\,2^{-n}$; at $p=1/4$ this is $2^{-n-1}$.
+\end{theorem}
+
+\begin{proof}
+For real-linear queries, direct computation gives that $\E_a[\langle w,a\rangle]$ is independent of $L$ (it equals $1/2$ for $w \neq 0$ and $0$ for $w=0$) and $\E_{D_L}[b]=p+2^{-n}(1-2p)$, which is independent of $L$. For an F$_2$-linear query $q(a,b)=\langle w,a\rangle\oplus c\cdot b$: if $c=0$ and $w\neq 0$ then $\E_{D_L}[q]=1/2$ for every $L$ (the constant query $w=0,c=0$ is trivially $L$-independent); if $c=1$ and $w=0$, then $q=b$ and the advantage over $D_0$ is exactly $(1-2p)2^{-n}$. If $c=1$ and $w\neq 0$, write $q=b\oplus\langle w,a\rangle$. Under $D_L$ we have
+\[
+\E_{D_L}[q] = \frac12 + (1-2p)\bigl(2^{-n}-2\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]\bigr).
+\]
+If $w\in L^\perp$ then $\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]=0$ and the advantage is $(1-2p)2^{-n}$. If $w\notin L^\perp$ then $\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]=2^{-n-1}$ and the expectation collapses to $1/2$, giving advantage $0$. Thus no F$_2$-linear query has advantage larger than $(1-2p)2^{-n}$.
+\end{proof}
+
+
+\section{Exact Moments of the Isotropic Row Ensemble}
+\label{sec:moments}
+
+The barriers of \Cref{sec:barriers} concern the \emph{symplectic-LPN} formulation, whose public matrix $A \in \F_2^{2n \times n}$ is a uniform full-rank matrix with pairwise symplectically orthogonal columns (equivalently, a uniform ordered basis of a uniform Lagrangian; we call this the \emph{isotropic ensemble} $\mathcal{A}_n$). A natural question --- Open Problem~1 below --- is whether conditioning on the symplectic relation $S_A = 0$ changes the statistical behaviour of the rows of $A$ enough to affect SQ hardness. In this section we answer the question exactly at the level of second and third subset moments: we prove closed forms showing that the row ensemble of $\mathcal{A}_n$ deviates from the unconstrained LPN row ensemble by $\Theta(4^{-n})$, so that no statistical test of constant bundle size can exploit the symplectic conditioning.
+
+Fix two distinct non-zero secrets $x, x' \in \F_2^n$. Over $\F_2$, any two distinct non-zero vectors are linearly independent, and $\mathrm{GL}(n,2)$ acts transitively on such ordered pairs; since the ensemble $\mathcal{A}_n$ is invariant under right multiplication by $\mathrm{GL}(n,2)$ (change of basis of the Lagrangian), all quantities below are independent of the choice of $(x,x')$, and we take $(x,x') = (e_1, e_2)$. Let $a_1, \dots, a_{2n} \in \F_2^n$ denote the rows of $A$, define the \emph{quadrant} $Q = \{\, i : \langle a_i, x\rangle = \langle a_i, x'\rangle = 1 \,\}$ and $t = |Q|$, and define the subset moments
+\[
+m_j \;:=\; \E_{A \sim \mathcal{A}_n}\!\left[\binom{t}{j}\Big/\binom{2n}{j}\right]
+\;=\; \Pr\bigl[\text{$j$ uniformly chosen distinct rows all lie in } Q\bigr].
+\]
+For the \emph{unconstrained} ensemble ($A$ uniform over $\F_2^{2n\times n}$, rows i.i.d.\ uniform) one has $m_j = (1/4)^j$ exactly. The question is how far the isotropic ensemble deviates.
+
+\paragraph{Reduction to column pairs.} With $(x,x')=(e_1,e_2)$, row $i$ lies in $Q$ iff the $i$-th bits of the first two columns $c_1, c_2$ of $A$ are both $1$. Thus $m_j$ depends only on the joint distribution of $(c_1, c_2)$, which by Witt's extension theorem (transitivity of $\mathrm{Sp}(2n,\F_2)$ on ordered pairs of distinct non-zero vectors spanning a totally isotropic $2$-space) is uniform over the set of ordered \emph{isotropic pairs}
+\[
+\mathcal{P} = \{(c_1,c_2) : c_1, c_2 \in \F_2^{2n}\setminus\{0\},\; c_1 \neq c_2,\; \Omega(c_1,c_2)=0\},
+\qquad |\mathcal{P}| = (2^{2n}-1)(2^{2n-1}-2).
+\]
+By linearity of expectation over $j$-subsets $S \subseteq [2n]$,
+\[
+m_j = \E_{S}\,\Pr_{(c_1,c_2)}\bigl[\,c_1|_S = c_2|_S = \mathbf{1}\,\bigr],
+\]
+so it suffices to count, for each orbit of $j$-subsets $S$ under the symplectic coordinate symmetries, the number $q_S$ of isotropic pairs that are all-ones on $S$.
+
+\paragraph{The counting lemmas.} Write $u := 2^{2n-2}$, let $v_0$ be the indicator vector of $S$, $W_S = \{w : w|_S = 0\}$, and $V_S = v_0 + W_S$ (so $|V_S| = 2^{2n-|S|}$ and $0 \notin V_S$). For fixed $c_1 \in V_S$, the condition $\Omega(c_1, c_2) = 0$ on $c_2 = v_0 + w_2 \in V_S$ is the affine condition $\Omega(c_1, w_2) = \Omega(c_1, v_0)$ on $w_2 \in W_S$. Two short computations in characteristic 2 show: (i) if $c_1 \in W_S^{\perp_\Omega}$ the condition is automatically satisfied by all $w_2 \in W_S$, and (ii) $w_2 = w_1$ (i.e.\ $c_2 = c_1$) always satisfies it. Since $W_S^{\perp_\Omega} = \{c : \operatorname{supp}(c) \subseteq \sigma(S)\}$, where $\sigma$ is the fixed-point-free involution pairing coordinate $i$ with $i \pm n$, membership of $c_1 \in V_S \cap W_S^{\perp_\Omega}$ requires $S \subseteq \operatorname{supp}(c_1) \subseteq \sigma(S)$.
+
+\begin{lemma}[Symplectic-pair $2$-subsets]
+\label{lem:sym2}
+If $S = \{i, i+n\}$, then $q_{\mathrm{sym2}} = u(u-1)/2$.
+\end{lemma}
+
+\begin{lemma}[Generic $2$-subsets]
+\label{lem:gen2}
+If $S = \{i,j\}$ with $j \neq \sigma(i)$, then $q_{\mathrm{gen2}} = u(u-2)/2$.
+\end{lemma}
+
+\begin{lemma}[$3$-subsets]
+\label{lem:three}
+For every $3$-subset $S$ (either orbit), $q_{3} = u(u-4)/8$. In particular $q_3 = 0$ at $n=2$ ($u=4$), explaining $m_3 = 0$ there.
+\end{lemma}
+
+\begin{proof}[Proof of Lemmas~\ref{lem:sym2}--\ref{lem:three}]
+In each case $q_S = \sum_{c_1 \in V_S}(|V_S \cap c_1^{\perp_\Omega}| - 1)$, the $-1$ removing $c_2 = c_1$ (always isotropic with itself), and $|V_S \cap c_1^{\perp_\Omega}|$ equals $|V_S|$ if $c_1 \in W_S^{\perp_\Omega}$ and $|V_S|/2$ otherwise, by the affine-condition classification above.
+
+\emph{Lemma~\ref{lem:sym2}.} Here $|S|=2$, $|V_S| = u$, and $\sigma(S) = S$, so $c_1 \in V_S \cap W_S^{\perp_\Omega}$ forces $S \subseteq \operatorname{supp}(c_1) \subseteq S$, i.e.\ $c_1 = v_0 = e_i + e_{i+n}$: exactly one such $c_1$, contributing $u-1$; the remaining $u-1$ choices contribute $u/2-1$ each. Total $(u-1) + (u-1)(u/2-1) = u(u-1)/2$.
+
+\emph{Lemma~\ref{lem:gen2}.} Now $S \cap \sigma(S) = \emptyset$ (a $2$-set is $\sigma$-invariant only if it is a symplectic pair), so $S \subseteq \operatorname{supp}(c_1) \subseteq \sigma(S)$ is impossible: no $c_1 \in V_S$ lies in $W_S^{\perp_\Omega}$, and $q = u(u/2-1) = u(u-2)/2$.
+
+\emph{Lemma~\ref{lem:three}.} A $3$-set cannot be $\sigma$-invariant ($\sigma$ is a fixed-point-free involution, so invariant sets have even size), so again $V_S \cap W_S^{\perp_\Omega} = \emptyset$ for \emph{both} orbits; with $|V_S| = u/2$, $q = (u/2)(u/4-1) = u(u-4)/8$.
+\end{proof}
+
+\begin{theorem}[Closed forms for $m_2, m_3$]
+\label{thm:mj-closed}
+With $u = 2^{2n-2}$ and $P = (2^{2n}-1)(2^{2n-1}-2)$,
+\begin{align*}
+m_2 \;&=\; \frac{n\,q_{\mathrm{sym2}} + \bigl(\binom{2n}{2}-n\bigr)q_{\mathrm{gen2}}}{\binom{2n}{2}\,P}
+\;=\; \frac{(2n-1)u^2-(4n-3)u}{4(2n-1)(4u^2-5u+1)},\\
+m_3 \;&=\; \frac{q_3}{P} \;=\; \frac{u(u-4)}{16(4u^2-5u+1)}.
+\end{align*}
+Both 3-subset orbits contribute equally, so $m_3$ is independent of $n$ given $u$. Asymptotically
+\[
+\frac{1}{16} - m_2 = \frac{3}{64u} + O(u^{-2}), \qquad
+\frac{1}{64} - m_3 = \frac{11}{256u} + O(u^{-2}),
+\]
+i.e.\ both moments converge to their unconstrained values $(1/4)^j$ at rate $\Theta(4^{-n})$.
+\end{theorem}
+
+\begin{proof}
+Immediate from Lemmas~\ref{lem:sym2}--\ref{lem:three}: average $q_S$ over the orbit decomposition of $j$-subsets ($n$ symplectic pairs and $\binom{2n}{2}-n$ generic pairs for $j=2$; $n(2n-2)$ pair-containing and $8\binom{n}{3}$ generic triples for $j=3$) and divide by $P$. The rational simplifications and the asymptotic expansions are routine; they were additionally machine-verified symbolically, and the closed forms were checked against exact enumeration for $n = 2,\dots,6$ and against a blind prediction-then-enumeration test at $n=7$ ($P = 134{,}176{,}770$ ordered pairs), all matching as exact fractions.
+\end{proof}
+
+\paragraph{First moment.} For completeness, the first moment is elementary: the row marginal of $\mathcal{A}_n$ is the mixture $\mu_{\mathrm{row}} = \tfrac{1}{2^n+1}\,\delta_0 + \tfrac{2^n}{2^n+1}\,\mathrm{Unif}(\F_2^n \setminus \{0\})$. Indeed, row $i$ of $A$ is zero iff the Lagrangian $L = \operatorname{colspan}(A)$ lies in the coordinate hyperplane $\{x : x_i = 0\} = e_{\sigma(i)}^{\perp_\Omega}$, which by $L = L^{\perp_\Omega}$ happens iff $e_{\sigma(i)} \in L$ --- an event of probability exactly $1/(2^n+1)$ by $\mathrm{Sp}$-transitivity on non-zero vectors; uniformity over non-zero rows follows from $\mathrm{GL}(n,2)$-invariance. This gives $m_1 = 2^{2n-2}/(2^{2n}-1) = \tfrac14 + \Theta(4^{-n})$.
+
+\begin{corollary}[Fixed-size bundles are LPN-like]
+\label{cor:bundle}
+Let $\sigma^2 = (1-2p)^2/(p(1-p))$ and consider the $k$-row bundle moment
+$V_k = \sum_{j=0}^{k}\binom{k}{j}\sigma^{2j} m_j$, which controls the pairwise SQ correlation of $k$-row bundle examples drawn from the isotropic ensemble. For every fixed $k \le 3$\,--\,moment order,
+$V_k = (1+\sigma^2/4)^k\bigl(1 + O(4^{-n})\bigr)$:
+the isotropic ensemble is indistinguishable from the unconstrained LPN ensemble by any constant-size statistical test, up to an exponentially small advantage.
+\end{corollary}
+
+Two qualifications. First, the closed forms above cover $j \le 3$; the general-$j$ moments (in particular $j = \Theta(n)$, which govern bundles of growing size) remain open. Second, exact enumeration further shows that the bundle correlation is \emph{sub-multiplicative} in $k$ --- the isotropic coupling slightly \emph{reduces} correlation relative to independent rows --- so the conditioning helps rather than harms the lower-bound side at every measured size; we do not yet have a closed form for this suppression. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
+
+\section{Quantum Analysis}
+\label{sec:quantum}
+
+\subsection{Grover Search}
+\label{subsec:grover}
+
+The secret space has size $|\Lagr(2n,\F_2)| = 2^{n^2/2 + O(n)}$. A Grover search over this space requires $2^{n^2/4 + O(n)}$ iterations, each costing at least $\Omega(mn)$ to evaluate an LSN sample set. The total cost $2^{n^2/4 + O(n)}$ dominates all classical bounds for $n \geq 4$, so Grover is not a practical threat.
+
+\subsection{Quantum BKW}
+\label{subsec:qbkw}
+
+A quantum version of BKW can speed up the inner Walsh--Hadamard transform and the search for low-weight parity checks, yielding complexity $2^{O(n^2 / \log n)}$ \cite{Kir11}. Since $n^2/\log n \gg 2n$ for all $n \geq 4$, this exceeds the SQ lower bound and is irrelevant for security parameter selection.
+
+\subsection{Quantum SQ}
+\label{subsec:quantum-sq}
+
+Because LSN samples are classical bits, any quantum algorithm must either access them through classical queries or perform a quantum walk over the sample space. A Grover search over the $2^{n^2/2}$-sized secret space still requires $2^{n^2/4}$ iterations (\Cref{subsec:grover}), far above the security parameter. Thus the exponential SQ lower bound provides evidence (not proof) that no efficient quantum algorithm solves LSN.
+
+\begin{conjecture}[Quantum LSN]
+\label{conj:quantum}
+Any quantum algorithm solving LSN$_{n,m,p}$ with constant $p$ requires $\Omega(2^n)$ queries.
+\end{conjecture}
+
+\subsection{Dihedral Hidden Subgroup}
+\label{subsec:dhsp}
+
+The Lagrangian Grassmannian is not a group; it lacks a transitive abelian structure. Consequently, no reduction to the dihedral hidden-subgroup problem or its generalizations is known.
+
+\subsection{What Is and Is Not Covered}
+\label{subsec:quantum-covered}
+
+We summarize the quantum attack landscape.
+
+\paragraph{Blocked vectors.} The following quantum approaches have been analyzed and ruled out for LSN at constant noise:
+\begin{itemize}
+\item \textbf{Hidden Subgroup Problem.} The Lagrangian Grassmannian lacks a group structure with coset decomposition; no reduction to DHSP or abelian HSP is known.
+\item \textbf{Grover search.} Complexity $2^{n^2/4 + O(n)}$ (over the $2^{n^2/2}$-sized secret space) exceeds all classical bounds.
+\item \textbf{Quantum BKW.} Complexity $2^{O(n^2 / \log n)}$ is super-exponential in the security parameter.
+\end{itemize}
+
+\paragraph{Not covered.} We do \emph{not} claim a quantum lower bound for LSN. Quantum hardness is treated as a \textbf{conjecture} (\Cref{conj:quantum}), analogous to the status of LWE and LPN. A rigorous quantum query lower bound would require new techniques beyond the SQ model and is left as future work.
+
+\section{Reduction Barriers and the Standard-Model Gap}
+\label{sec:barriers}
+
+\Cref{tab:barriers} summarizes the status of natural reductions.
+
+\begin{table}[ht]
+\centering
+\caption{Reduction landscape for LSN.}
+\label{tab:barriers}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.8cm}l>{\raggedright\arraybackslash}p{6.5cm}@{}}
+\hline
+Class (model) & Status & Mechanism \\
+\hline
+Real-linear queries (SQ) & BLOCKED & $\E[q]$ $L$-independent; F$_2$-linear $\leq (1-2p)2^{-n}$ (\Cref{thm:linear-sq}) \\
+Poly degree $< n$ (SQ) & BLOCKED & RM distance (correlation $\leq 2^{-n}$) \\
+Single-sample adaptive deg-$D$ (SQ) & BLOCKED & selection $\neq$ composition \\
+Fixed $B$, any rank, $m \ge cn$ & ruled out & D.1 + Fannes: SD $\geq d-1/(mn)$ \\
+Public $B$, $\rho \ge (3/2+\epsilon)n$ & ruled out & transport/Gram (constructive) \\
+Adaptive $B$, conditional-uniform & ruled out & reachability (\Cref{thm:any-b-uniformity}) \\
+Adaptive $B$, marginal-uniform & \textbf{OPEN} & \Cref{lem:m1} proven half; \Cref{lem:m2} conditional (\Cref{open:marginal-adaptive}) \\
+Non-linear / multi-sample & OPEN & no proof or construction known \\
+\hline
+\end{tabular}
+\end{table}
+
+Lu \etal~\cite{LPQR26} prove that linear reductions cannot reduce sympLPN to LPN (their \S2.4 and Appendix~D): for any \emph{fixed} $B \in \F_2^{m\times 2n}$ the matrix $BA$ has entropy at most $(1-d)mn$ for a constant $d$, so randomizing the public matrix forces a high-entropy $B$, which drives the output error weight past the Shannon-converse threshold. Per their Appendix~D, the proof targets the primary cryptographic regime $m=\Theta(n)$ (output rows $m=(1+\epsilon)n$); for $m=\omega(n)$ it shows error weight larger than $1/2-\delta$ for any constant $\delta$, which they note is not sufficient to fully rule out decodability, though they state they expect the barrier to extend to all $m=\operatorname{poly}(n)$. Our \Cref{thm:linear-sq} gives a complementary single-query barrier of $(1-2p)2^{-n}$ at any noise rate.
+
+\subsection{Full-rank linear reductions are impossible}
+\label{subsec:full-rank-linear}
+
+LPQR26 leave open the case $m=\omega(n)$ (their bound shows error weight $>1/2-\delta$, which they note is insufficient to fully rule out decodability). We close the full-rank sub-case unconditionally, via a transport lemma that LPQR26 do not use.
+
+Consider a linear reduction that maps a sympLPN instance $(A, y)$ to an LPN instance $(U, z)$ by outputting $U = BA$ for a public matrix $B \in \F_2^{m \times 2n}$. The input columns satisfy $S_A = A^{\top}\Omega A = 0$.
+
+\begin{theorem}[Transport lemma for full-rank linear reductions]
+\label{thm:transport-fullrank}
+Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = 2n$ and $m \ge 2n$. Let $B^{+} \in \F_2^{2n \times m}$ be any left inverse $(B^{+}B = I_{2n})$ and define $M := (B^{+})^{\top}\Omega B^{+} \in \F_2^{m \times m}$. Then for every isotropic-column matrix~$A$,
+\[
+(BA)^{\top} M (BA) \;=\; 0.
+\]
+A uniformly random matrix $C \in \F_2^{m \times n}$ satisfies $C^{\top} M C = 0$ with probability at most $2^{-n^2/2 + O(n)}$. Consequently, the output distribution of any fixed full-rank linear reduction is supported on a proper algebraic subset of $\F_2^{m \times n}$ and has statistical distance $1 - 2^{-\Theta(n^2)}$ from the uniform matrix distribution used in LPN.
+\end{theorem}
+
+\begin{proof}
+The identity follows from
+\begin{align*}
+(BA)^{\top} M (BA)
+&= A^{\top} B^{\top} (B^{+})^{\top} \Omega B^{+} B A \\
+&= A^{\top} (B^{+}B)^{\top} \Omega (B^{+}B) A
+= A^{\top}\Omega A = 0.
+\end{align*}
+
+For the probability bound, $M$ has rank $2n$ (because $B^{+}$ has rank $2n$ and $\Omega$ is non-degenerate). Choose an invertible $P \in \F_2^{m \times m}$ such that $P^{\top} M P = \operatorname{diag}(J,\dots,J,0,\dots,0)$ with $n$ copies of $J = \begin{psmallmatrix}0&1\\1&0\end{psmallmatrix}$. Writing $P^{-1}C = [C_1; C_2]$ with $C_1 \in \F_2^{2n \times n}$, the condition $C^{\top} M C = 0$ is equivalent to $C_1^{\top} \operatorname{diag}(J,\dots,J) C_1 = 0$, i.e. the column space of $C_1$ is totally isotropic in the $2n$-dimensional symplectic space $(\F_2^{2n}, \operatorname{diag}(J,\dots,J))$. The number of $n$-dimensional totally isotropic subspaces of $\F_2^{2n}$ is $|\Lagr(2n,\F_2)| = \prod_{i=1}^n (2^i+1) = 2^{n(n+1)/2+O(1)}$, while the total number of $n$-dimensional subspaces is the Gaussian binomial ${2n \brack n}_2 = 2^{n^2+O(n)}$. Hence a uniformly random $C_1$ (equivalently, a uniformly random $C$) yields a totally isotropic column space with probability $2^{-n^2/2+O(n)}$.
+\end{proof}
+
+\Cref{thm:transport-fullrank} blocks full-rank linear reductions at \emph{every} $m \ge 2n$ and \emph{every} noise rate. The next theorem closes the near-full-rank stratum as well.
+
+\begin{theorem}[Transport lemma for near-full-rank linear reductions]
+\label{thm:transport-nearfull}
+Let $B \in \F_2^{m \times 2n}$ with $\operatorname{rank}(B) = \rho = 2n-c$ where $1 \le c \le n-1$. Let $K = \ker B$ ($\dim K = c$). Then there exists a matrix $M \in \F_2^{m \times m}$ such that for every isotropic-column matrix $A$,
+\[
+\operatorname{rank}\bigl((BA)^{\top} M (BA)\bigr) \;\le\; 2c - \operatorname{rank}(\Omega|_K) \;\le\; 2c.
+\]
+In particular, an adversarial reduction can choose $K$ isotropic (possible for all $c \le n$), in which case the Gram rank of the output is at most $2c$ deterministically. A uniformly random matrix $C \in \F_2^{m \times n}$ satisfies $\operatorname{rank}(C^{\top} M C) \le 2c$ with probability at most $2^{-\Omega((n-2c)^2)}$.
+\end{theorem}
+
+\begin{proof}
+Rank-factorize $B = \tilde{B} P$ with $\tilde{B} \in \F_2^{m \times \rho}$ full column rank and $P \in \F_2^{\rho \times 2n}$ full row rank. Then $(BA)^{\top} M (BA) = (PA)^{\top} (\tilde{B}^{\top} M \tilde{B}) (PA)$, and $Q := \tilde{B}^{\top} M \tilde{B}$ ranges over all of $\F_2^{\rho \times \rho}$ (lift: $M := (\tilde{B}^{+})^{\top} Q \tilde{B}^{+}$ for a left inverse $\tilde{B}^{+}$). The set of matrices $N$ of the form $P^{\top}QP$ is therefore exactly the set of bilinear forms vanishing on $K$ from both sides. Fix a basis adapted to $K \oplus V$ with $\dim V = 2n-c$. In this basis the standard symplectic form $\Omega$ becomes a block matrix with blocks $\Omega_{KK}, \Omega_{KV}, \Omega_{VK}, \Omega_{VV}$. Adding a form $N$ that kills $K$ on both sides changes only the $VV$ block; the blocks $\Omega_{KK}, \Omega_{KV}, \Omega_{VK}$ remain fixed. We therefore obtain a \emph{minimal-rank completion} problem for the matrix
+\[
+E = \begin{pmatrix} \Omega_{KK} & \Omega_{KV} \\ \Omega_{VK} & E_{VV} \end{pmatrix},
+\]
+where $E_{VV}$ is free. The classical formula for the minimal rank of such a completion (classical minimal-rank-completion folklore) gives
+\[
+\min_{E_{VV}} \operatorname{rank}(E)
+= \operatorname{rank}\begin{pmatrix} \Omega_{KK} & \Omega_{KV} \end{pmatrix}
++ \operatorname{rank}\begin{pmatrix} \Omega_{KK} \\ \Omega_{VK} \end{pmatrix}
+- \operatorname{rank}(\Omega_{KK}).
+\]
+Since $\Omega$ is invertible, any $c$ rows (resp.\ columns) of $\Omega$ are linearly independent, so the two row- and column-ranks are exactly $c$. Hence
+\[
+\min_{E_{VV}} \operatorname{rank}(E) = 2c - \operatorname{rank}(\Omega|_K).
+\]
+The minimum is achieved constructively by $E_{VV} = \Omega_{VK} \cdot G \cdot \Omega_{KV}$ with $G$ any generalized inverse of $\Omega_{KK}$ (over $\F_2$, obtained from a rank factorization). A symmetric g-inverse always exists: $G^* := G^{\top} \Omega_{KK} G$ satisfies $\Omega_{KK} G^* \Omega_{KK} = \Omega_{KK}$ and $(G^*)^{\top} = G^*$, yielding a symmetric $E_{VV}$ and hence a symmetric matrix $M$ representing the optimal form in the original coordinates. This justifies the corank-probability bound, which assumes a symmetric Gram matrix.
+
+For the probability bound, a uniformly random $n \times n$ symmetric matrix over $\F_2$ has corank $k$ with probability $2^{-\Theta(k^2)}$. Hence
+\[
+\Pr\bigl[\operatorname{rank}(C^{\top}MC) \le 2c\bigr] \;\le\; 2^{-\Omega((n-2c)^2)}.
+\]
+This is $1 - 2^{-\Omega(n^2)}$ only when $n - 2c = \Omega(n)$, i.e. $\rho \ge (3/2+\epsilon)n$ for any constant $\epsilon>0$.
+\end{proof}
+
+\paragraph{Rank stratification.} Together, \Cref{thm:transport-fullrank} and \Cref{thm:transport-nearfull} give a complete stratification of the fixed-$B$ linear-reduction landscape at any $m$ and any noise rate:
+\begin{itemize}
+\item $\rho = 2n$ (full rank): \textbf{BLOCKED} --- output Gram is identically zero (\Cref{thm:transport-fullrank}).
+\item $(3/2+\epsilon)n \le \rho < 2n$ (near-full): \textbf{BLOCKED} --- output Gram rank $\le 2c \le (1-\epsilon)n$ (\Cref{thm:transport-nearfull}), while the uniform Gram has rank $\approx n$ w.h.p.
+\item $\rho \le (3/2-\epsilon)n$ (mid/low rank): \textbf{ruled out} for fixed $B$ at $m \ge cn$ --- the rank test dies, but the output matrix $BA$ is statistically far from uniform. By LPQR26's Theorem~D.1, $H(BA) \le (1-d)mn$ for a constant $d > 0$; the Fannes--Csisz\'{a}r continuity inequality gives $\operatorname{SD}(BA, \operatorname{Uniform}) \ge d - 1/(mn)$. At $n=41$, $m=82$ ($m=2n$), the frame entropy $H(A) \le (3/2)n^2 + n/2$ gives $d \ge 1/4 - 1/(4n) \approx 0.244$, so this distance is at least $0.24$. Since any LPN solver expects a uniform matrix, the reduction fails regardless of rank. The rank-stratification theorems above retain value as \emph{constructive} distinguishers (explicitly exhibiting the defect), whereas the Fannes argument is non-constructive but covers all ranks uniformly.
+\end{itemize}
+This stratification applies to \emph{fixed/public} $B$ (per-realization). For $m < cn$ the Fannes bound is not triggered; this corner case is cryptographically irrelevant because $m$ must exceed the secret dimension $n$ for any reduction to have polynomially many samples. If the reduction draws $B$ from a high-entropy distribution conditioned on $BA$ being uniform, the matrix is randomized---but then the label noise $Be$ is killed by piling-up at $p=1/4$ (row weight $w$ gives bias $2^{-w}$). The remaining regime is the secret-$B$ model of \Cref{lem:affine-coset-bias}, where the quantitative trade-off is governed by the Gram-rank transition.
+
+\paragraph{B-visibility and the secret-$B$ regime.} The quantifier order of LPQR26's Theorem~D.2 is subtle: $B$ may be chosen as a function of $A$ provided only that the \emph{induced distribution} of $BA$ is uniform. This creates a \textbf{secret-$B$} regime in which the reduction matrix is not public. Our transport theorems (which require the realized $B$ to be available to the distinguisher) do not apply here.  The residual open question was whether label-signal bounds together with conditional $BA$-uniformity suffice to close the linear-reduction landscape in the conditional model at constant noise.  \Cref{thm:any-b-uniformity} resolves the \textbf{conditional-uniformity} case: when $BA$ is uniform conditioned on each fixed $A$, the reachability bound forces high-weight rows regardless of $B$'s visibility.  The \textbf{marginal-uniformity} case, where $B=g(A)$ yields uniform $BA$ marginally over $A$ but not conditionally, is not resolved: low-weight rows that vary with $A$ can evade the per-instance bound because $\bigcup_A R_w(A)$ may cover $\F_2^n$.  This marginal-adaptive corner remains open (Open Problem~\ref{open:marginal-adaptive}). In the \textbf{public-$B$} regime, by contrast, randomizing $B$ does not escape our rank-stratification barrier because the detector operates on the realized matrix. The secret-$B$ regime is loosely analogous to the gap between our membership-LSN and the stabilizer-decoding LSN of \cite{KLP+25,LPQR26}: in both settings the adversary does not fully observe the structure that generates the samples.
+
+The label-signal side of the secret-$B$ regime is controlled by the following affine-coset bias bound.
+
+\begin{lemma}[Affine-coset bias, expectation form]
+\label{lem:affine-coset-bias}
+Let $A \in \F_2^{D \times n}$ have rank $n$ and isotropic columns, let $c \in \F_2^n$, and let $b$ be uniform over the affine subspace $\{b \in \F_2^D : b^{\!\top} A = c^{\!\top}\}$. For $e \sim \operatorname{Bernoulli}(p)^{\otimes D}$,
+\[
+  \bigl|\E_{b,e}[(-1)^{b^{\!\top} e}]\bigr| \;\le\; 2^{-n} \cdot W_N(1-2p),
+\]
+where $W_N$ is the weight enumerator of $N = \operatorname{nullspace}(A^{\!\top})$ and $D = 2n$. In expectation over a uniformly random isotropic $A$,
+\[
+  \E_A\bigl|\E_{b,e}[(-1)^{b^{\!\top} e}]\bigr|
+  \;\le\; 2^{-n} + (1-p)^{2n}
+  \;=\; 2^{-n} + \Bigl(\frac{9}{16}\Bigr)^n \quad\text{at }p=1/4.
+\]
+When the coset offset $b_0=0$ every term in the MacWilliams sum is positive, so the bound is an equality.
+\end{lemma}
+
+\begin{proof}
+Write $b = b_0 + Nz$ with $z \sim \operatorname{Uniform}(\F_2^n)$ and $N$ a basis of $\operatorname{nullspace}(A^{\!\top})$. Then $\E_b[(-1)^{b^{\!\top} e}] = (-1)^{b_0^{\!\top} e} \cdot \mathbf{1}_{e \in \operatorname{colspace}(A)}$, so $|\E_{b,e}[(-1)^{b^{\!\top} e}]| = |\sum_{x \in \operatorname{colspace}(A)} (-1)^{b_0^{\!\top} x}\, p^{|x|}(1-p)^{D-|x|}| \le \sum_{x \in \operatorname{colspace}(A)} p^{|x|}(1-p)^{D-|x|} = (1-p)^D \cdot W_{\operatorname{colspace}(A)}(p/(1-p))$, with equality when $b_0 = 0$ (all terms positive). The MacWilliams identity with $t = p/(1-p)$ gives $(1-p)^D W_{\operatorname{colspace}(A)}(t) = 2^{-n} W_N(1-2p)$. For the expectation, $N = \Omega \cdot L$ is the image of a uniform Lagrangian $L$, so $\Pr[x \in N] = 1/(2^n+1)$ for every non-zero $x$ by $\mathrm{Sp}(2n)$-transitivity. Hence $\E_A[W_N(1/2)] = 1 + ((3/2)^D-1)/(2^n+1) \le 1+(9/8)^n$, yielding the claimed bound.
+\end{proof}
+
+The expectation bound can be upgraded to a high-probability statement.  Write $W := W_N(1/2)-1 = \sum_{v\neq 0} \mathbf{1}_{v\in N}\,2^{-|v|}$.  The exact first two moments are
+\[
+  \E[W] = \frac{(3/2)^{2n}-1}{2^n+1}, \qquad
+  \operatorname{Var}[W] = p(1{-}p)\,D + q\,S_0 - p^2 T,
+\]
+with $p=\tfrac{1}{2^n+1}$, $q=\tfrac{1}{(2^{n-1}+1)(2^n+1)}$, $D=(5/4)^{2n}-1$, $T=((3/2)^{2n}-1)^2-D$, and $S_0=\tfrac12(T+C)$.  The character sum
+\[
+  C = \!\!\sum_{\substack{v\neq v'\\ v,v'\neq 0}}\!\! (-1)^{\Omega(v,v')}2^{-|v|-|v'|}
+    = (7/4)^{2n} - 2(3/2)^{2n} - (5/4)^{2n} + 2
+\]
+factorises over the $n$ symplectic coordinate blocks, each block contributing
+\[
+\sum_{a,b,x,y\in\{0,1\}}(-1)^{ay+bx}\,2^{-(a+b+x+y)} = (7/4)^2
+\]
+(see \Cref{app:krawtchouk} for the full derivation).  Consequently $\operatorname{Var}[W]/\E[W]^2 = O\!\bigl((50/81)^n\bigr)$, and Chebyshev's inequality gives the following.
+
+\begin{lemma}[Affine-coset bias, w.h.p.]
+\label{lem:affine-coset-bias-whp}
+For a uniformly random full-rank isotropic $A \in \F_2^{2n \times n}$ and uniformly random noise $e$,
+\[
+  \bigl|\E_{e}\bigl[(-1)^{b^{\!\top} e}\bigr]\bigr|
+  \;\le\; \bigl(2^{-n} + (9/16)^n\bigr)\bigl(1+o(1)\bigr)
+  \qquad\text{with probability } 1 - 2^{-\Omega(n)}.
+\]
+\end{lemma}
+
+Thus, except with exponentially small probability, the per-row label bias of the secret-$B$ regime is bounded by $(9/16)^n(1+o(1))$; the secret-$B$ trade-off is governed by the Gram-rank transition, not by bias amplification.
+
+\paragraph{Low-weight reachability barrier (any-$B$).}
+The preceding affine-coset bound controls the per-row label signal when the reduction is forced into a high-rank affine subspace.  A complementary barrier applies to \emph{any} $B$ model (adaptive or fixed, public or secret) under the \textbf{conditional-uniformity} hypothesis ($\operatorname{SD}(BA\mid A)\le\delta$ for each fixed $A$).  It closes the linear-reduction landscape in this conditional model at constant noise $p=1/4$ for all $m=\operatorname{poly}(n)$.  The counting argument is independent of $A$, but the hypothesis is per-instance: the marginal-adaptive corner, where $B=g(A)$ yields marginally-uniform $BA$ via low-weight rows that vary with $A$, remains open (see \Cref{open:marginal-adaptive}).
+
+Let $A\in\F_2^{2n\times n}$ be any isotropic basis and let $B\in\F_2^{m\times 2n}$ be any matrix (possibly depending on $A$).  For $w\ge 0$ define the \emph{reachability set}
+\[
+R_w(A) \;:=\; \{\,b^{\!\top} A \;:\; b\in\F_2^{2n},\; |b|\le w \,\} \subseteq \F_2^{n}.
+\]
+Every row of $BA$ that is produced with a row of $B$ of weight at most $w$ must lie in $R_w(A)$.  The cardinality of $R_w(A)$ is bounded independently of $A$:
+
+\begin{lemma}[Reachability bound]
+\label{lem:reachability}
+For every $A\in\F_2^{2n\times n}$ and every $w\ge 0$,
+\[
+|R_w(A)| \;\le\; \sum_{j=0}^{w} \binom{2n}{j}.
+\]
+\end{lemma}
+
+\begin{proof}
+Each $b\in\F_2^{2n}$ with $|b|\le w$ contributes at most one element $b^{\!\top}A$ to $R_w(A)$.  The number of such $b$ is exactly $\sum_{j=0}^{w}\binom{2n}{j}$.
+\end{proof}
+
+For $w=\lfloor 0.19n\rfloor$ and large $n$, the binomial sum is at most $2^{2n\cdot H(0.095)}<2^{0.94n}$, where $H(\cdot)$ is the binary entropy function.  Hence
+\begin{equation}
+\label{eq:reach-mass}
+\frac{|R_w(A)|}{2^{n}} \;\le\; 2^{-0.06n}.
+\end{equation}
+This ratio is exponentially small, regardless of $A$.
+
+\begin{theorem}[Any-$B$ uniformity forcing]
+\label{thm:any-b-uniformity}
+Let $A\in\F_2^{2n\times n}$ be any isotropic basis and let $B\in\F_2^{m\times 2n}$ be any matrix (possibly depending on~$A$).  Let $w=\lfloor 0.19n\rfloor$ and suppose that the conditional distribution satisfies $\operatorname{SD}(BA\mid A,\,\operatorname{Uniform}_{\F_2^{n}})\le\delta$ for every $A$.  Then for every row $b_i$ of~$B$,
+\[
+\Pr\bigl[\,|b_i|\le w \mid A\,\bigr] \;\le\; \frac{|R_w(A)|}{2^{n}} + \delta \;\le\; 2^{-0.06n}+\delta.
+\]
+In particular, if $m\le\operatorname{poly}(n)$ and $\delta=o(1/m)$, then with probability $1-o(1)$ over the randomness of the reduction \emph{every} row of $B$ has weight $>w$.
+
+The bound is \emph{monotone in the uniformity gap}: if $\operatorname{SD}(BA\mid A)\le\delta$ then the same conclusion holds with $\delta$ replaced by the actual gap.  The theorem does \emph{not} apply to the marginal model where only $\operatorname{SD}(BA,\text{Uniform})\le\delta$ is required (averaged over $A$): low-weight rows that vary with $A$ can yield marginally-uniform output while evading the per-instance reachability bound.
+\end{theorem}
+
+\begin{proof}
+If $|b_i|\le w$ then $c_i=b_i^{\!\top}A\in R_w(A)$.  Under a uniform distribution on $\F_2^{n}$ the probability of $R_w(A)$ is $|R_w(A)|/2^{n}\le 2^{-0.06n}$.  Since $\operatorname{SD}(BA,\text{Uniform})\le\delta$, the actual probability is at most $2^{-0.06n}+\delta$.  A union bound over $m$ rows gives
+\[
+\Pr[\exists i:\,|b_i|\le w]\;\le\; m\bigl(2^{-0.06n}+\delta\bigr)\;=\;o(1)
+\]
+when $m=\operatorname{poly}(n)$ and $\delta\le 1/(4mn)$.
+\end{proof}
+
+\Cref{thm:any-b-uniformity} applies to adaptive $B$, secret $B$, and any distribution over $B$, \emph{provided the conditional-uniformity hypothesis holds}: $BA$ must be close to uniform conditioned on each fixed $A$. In that model, once $BA$ is forced to be uniform (otherwise the output is distinguishable from standard LPN), every row of $B$ must have weight $>0.19n$. The theorem does \emph{not} cover the marginal-adaptive corner (\Cref{open:marginal-adaptive}).
+
+The row-weight lower bound immediately amplifies the noise.
+
+\begin{corollary}[Noise amplification]
+\label{cor:noise-amp}
+Under the hypotheses of \Cref{thm:any-b-uniformity}, every output label $a_i=\langle b_i,e\rangle+\langle c_i,x\rangle$ has effective noise parameter
+\[
+p' \;\ge\; \frac{1-(1-2p)^{w+1}}{2} \;=\; \frac{1-2^{-(w+1)}}{2}
+\]
+at $p=1/4$.  For $w=\lfloor 0.19n\rfloor$ this gives $p'\ge \tfrac12-2^{-0.19n-1}$.
+\end{corollary}
+
+\begin{proof}
+The label noise is the XOR of $|b_i|$ independent $\operatorname{Bernoulli}(p)$ variables.  The bias of XOR of $w'$ i.i.d. $\operatorname{Bernoulli}(p)$ bits is $(1-2p)^{w'}$.  Since $|b_i|>w$, the bias is at most $(1-2p)^{w+1}=2^{-(w+1)}$, which translates to the stated $p'$.
+\end{proof}
+
+Finally, the amplified noise forces an information-theoretic sample lower bound.
+
+\begin{corollary}[Recovery barrier]
+\label{cor:recovery-barrier}
+No algorithm can recover $x\in\F_2^{n}$ from $m$ samples with per-sample noise $p'\ge \tfrac12-2^{-0.19n-1}$ with probability $>1/3$ unless
+\[
+m \;=\; \Omega\bigl(n\,\cdot\,2^{0.38n}\bigr).
+\]
+In particular, any linear reduction from symplectic LPN to standard LPN that produces uniform queries requires super-polynomially many output samples.
+\end{corollary}
+
+\begin{proof}
+Each sample carries at most $1-h_2(p')$ bits of information about $x$, where $h_2$ is the binary entropy function.  For $p'=\tfrac12-\epsilon$ with $\epsilon=2^{-0.19n-1}$, we have $1-h_2(p')=\Theta(\epsilon^2)=\Theta(2^{-0.38n})$.  To resolve $n$ bits of entropy requires $m\ge n/\Theta(2^{-0.38n})=\Omega(n\cdot 2^{0.38n})$.
+\end{proof}
+
+Together, \Cref{lem:reachability}, \Cref{thm:any-b-uniformity}, \Cref{cor:noise-amp}, and \Cref{cor:recovery-barrier} close the linear-reduction landscape \emph{in the conditional-uniformity model}: any linear reduction that makes $BA$ uniform \emph{conditioned on each $A$} is forced into high-weight rows, which amplifies the noise to $p'\ge \tfrac12-2^{-\Theta(n)}$, and recovery then requires $m=2^{\Theta(n)}$.  At $m=\operatorname{poly}(n)$ the reduction fails in this model, for every $B$ model, every isotropic $A$, and every noise rate $p=\Theta(1)$.  The marginal-adaptive corner, where $B$ may depend on $A$ in a way that yields uniform $BA$ marginally but not conditionally, is not covered by this argument.
+
+A sharper, unconditional barrier comes from an information-theoretic floor:
+
+\begin{proposition}[Entropy floor]
+\label{prop:entropy-floor}
+Any reduction from $\mathrm{LSN}(n)$ to $\mathrm{LPN}(k)$ that preserves the secret with recovery probability $\alpha(n)$ must satisfy
+\[
+k \;\geq\; \alpha(n)\,H(L) - O(1) \;=\; \alpha(n)\,\Theta(n^2).
+\]
+In particular, constant success probability requires $k=\Omega(n^2)$, and success probability $1-o(1)$ requires $k \geq H(L)-o(n^2)$.
+\end{proposition}
+
+\begin{proof}
+The LSN secret space is $\Lagr(2n,\F_2)$ with $|\Lagr| = \prod_{i=1}^n (2^i+1)$. Hence $H(L) = \log_2|\Lagr| = n(n+1)/2 + \Theta(1)$, where the additive constant is $\log_2\prod_{i=1}^{\infty}(1+2^{-i}) \approx 1.25$. If a reduction outputs an $\mathrm{LPN}(k)$ instance from which $L$ is recovered with probability $\alpha$, Fano's inequality gives $k \geq \alpha H(L) - H_2(1-\alpha) = \alpha H(L) - O(1)$.
+\end{proof}
+
+\paragraph{Concrete-security win-win.} For near-perfect recovery of $L$ (i.e., $\alpha=1-o(1)$ in Proposition~\ref{prop:entropy-floor}), the entropy floor forces $k \geq H(L)-o(n^2)$. For the parameter sets in \Cref{tab:parameters} this gives $k \geq 863$ (80-bit), $k \geq 2147$ (128-bit), $k \geq 4755$ (192-bit), or $k \geq 8387$ (256-bit). The best known attack on $\mathrm{LPN}(k)$ (BKW \cite{BKW03}) requires time $2^{\Omega(k/\log k)}$. At these dimensions this yields $2^{88.5}$, $2^{194.0}$, $2^{389.3}$, and $2^{643.5}$ respectively---all exceeding the target security levels. We stress that this is a concrete-security observation, not an asymptotic impossibility: BKW on $\mathrm{LPN}(\Theta(n^2))$ runs in $2^{\Theta(n^2/\log n)}$, which is asymptotically smaller than brute-force on LSN ($2^{\Theta(n^2)}$). For the parameter range of interest, however, the entropy floor lands BKW well above the security budget.
+
+\paragraph{Single-sample adaptivity does not increase degree.} A natural question is whether \emph{adaptive} degree-$D$ feature-map reductions circumvent the static degree barrier. For the restricted model in which the reduction is \emph{single-sample}---it may choose each $\phi_j$ adaptively, but applies it only to the raw samples $(a,b)$, with the choice of $\phi_j$ made as a function of previous answers---the answer is negative: in each round the feature map $\phi_j(a,b)$ has degree at most $D$, and the effective degree of the entire transcript is bounded by $D$. When $D < n$, the Reed--Muller obstruction of \Cref{sec:decoders} still applies: correlation with $\mathbf{1}_L$ is at most $2^{-n}$, requiring exponentially many samples. Thus single-sample adaptive degree-$D$ feature-map reductions are blocked for every $D < n$, independent of the number of rounds.
+
+The remaining open question is whether a \emph{multi-sample} or \emph{genuinely non-linear} adaptive reduction exists. Such a reduction could apply non-linear functions to \emph{fresh} samples generated from previous outputs, or could use adaptively chosen non-linear queries in a way that raises the algebraic degree of the transcript. We do not claim impossibility for this richer model. We do note a win-win structure: a reduction in this richer model would likely improve random self-reductions for LPN itself, making it valuable even if it collapses LSN to the 6.5th family.
+
+\paragraph{The symplectic structure is reduction-inert.}
+A sharper observation comes from the structure of the LSN samples themselves. The deterministic quadratic constraint $S_A = 0$ (the $\Omega$-Gram of the public matrix columns) is \emph{public} and \emph{$x$-free}: it depends only on the public matrix $A$, not on the secret $x$ or the noise. Consequently, $S_A=0$ adds no $x$-information to an attacker and provides no usable handle for a reductionist trying to embed LPN into LSN. This mirrors the accepted status of Ring-LWE, which is regarded as a lattice-family assumption by \emph{source} (ring structure native to the problem) rather than by reduction to plain LWE. We formalize this as:
+
+\begin{conjecture}[Source novelty]
+\label{conj:source}
+The following three invariants of LSN have no analogue in standard LPN, and each is destroyed by every natural reduction class that has been proposed:
+\begin{enumerate}
+\item \textbf{Symplectic-Fourier self-duality.} The indicator $\mathbf{1}_L$ satisfies $\mathcal{F}_\Omega[\mathbf{1}_L] = 2^n \mathbf{1}_L$, where $\mathcal{F}_\Omega$ is the symplectic Fourier transform. A standard linear function $f(x)=\langle s,x\rangle$ has no such fixed-point property; its Fourier transform is a Dirac mass, not a function.
+\item \textbf{$x$-free quadratic constraint (sympLPN).} In the sympLPN variant (\Cref{def:symplpn}) the public matrix $A$ satisfies $S_A=0$ (the $\Omega$-Gram of columns is identically zero). This is a deterministic, public, quadratic constraint on the \emph{public parameters} alone. Our KEM uses pseudorandom rather than isotropic columns, so this invariant does not apply to the KEM instance distribution; it is a structural distinction of the sympLPN variant studied by LPQR26. LPN has no analogous public structure linking its samples.
+\item \textbf{Stabilizer degeneracy.} Every LSN secret $L$ is a stabilizer state with stabilizer weight $\Omega(n)$. The secret space is the Lagrangian Grassmannian, not a vector space. LPN secrets are bare linear functions.
+\end{enumerate}
+Each invariant is preserved by the symplectic group $\mathrm{Sp}(2n)$ and destroyed by any of the blocked reductions: linear maps lose the self-duality (Lu \etal\ \cite{LPQR26}), degree-$D<n$ polynomial maps cannot represent $\mathbf{1}_L$ (Reed--Muller distance), and entropy-compressing maps discard the stabilizer structure (Proposition~\ref{prop:entropy-floor}).
+\end{conjecture}
+
+\Cref{conj:source} is falsifiable: a single explicit reduction (membership-LSN, batch-LSN, or sympLPN) $\to$ LPN that preserves any of the three invariants would refute the conjecture in its current form. It is not decidable by reduction analysis alone; it rests on the absence of such a reduction and the structural barriers documented above.
+
+\paragraph{The scrambling barrier at constant noise.} The LPQR26 linear barrier (Theorem D.2) applies at any noise rate $p=\omega(1/n)$, and at our constant noise $p=1/4$ its error-amplification step is in fact \emph{stronger}: a randomizing row of weight $w$ leaves per-bit bias $(1-2p)^w = 2^{-w}$ (piling-up), versus $\approx 1-2wp$ in the low-noise regime. The residual gap is therefore not about noise: linear reductions consuming $m=\omega(n)$ samples are ruled out in the conditional-uniformity model for all $m=\operatorname{poly}(n)$ by the reachability barrier (\Cref{thm:any-b-uniformity}).  The marginal-adaptive corner, in which $B=g(A)$ yields marginally-uniform $BA$ via low-weight rows that vary with $A$, is not covered by this argument and remains open (Open Problem~\ref{open:marginal-adaptive}).  What remains outside both regimes is only non-linear scramblers. For (ii) an algebraic obstruction remains: $S_A=0$ is a deterministic quadratic relation among the public vectors (our observation, distinct from the LPQR entropy argument). Direct inspection of the $n=3$ case shows that simple scramblers fall into one of three classes: a linear scrambler \emph{transports} the quadratic relation ($S'_{A'}=0$ with respect to the conjugated form $M^{-\top}\Omega M^{-1}$, so it remains detectable), a non-linear scrambler destroys the linear label structure required by LPN, and a random scrambler destroys the secret entirely. None of these simple classes simultaneously destroys $S_A=0$ and creates a fresh LPN secret-bit structure. The residual question --- whether a sufficiently complex non-linear scrambler exists --- is the same as Open Problem~2.
+
+\paragraph{The marginal-adaptive corner: entropy-support bound.}
+The gap between conditional and marginal uniformity is bridged by an entropy-support argument that does not require per-instance uniformity.  The idea is simple: the isotropic basis $A$ carries entropy $H(A)=\Theta(n^{2})$, while each low-weight row of $B$ can only ``spend'' $O(n)$ bits of entropy on its output query.  If the total output entropy is $nm$ (uniformity), the budget forces most rows to have high weight.
+
+\begin{lemma}[Entropy-support bound for low-weight rows]
+\label{lem:m1}
+Let $A\in\F_2^{2n\times n}$ be a random isotropic basis and let $B=g(A,R)\in\F_2^{m\times 2n}$ be any randomized function of $A$.  Let $C=BA$ and suppose $\operatorname{SD}(C,\,\operatorname{Uniform}_{\F_2^{m\times n}})\le\delta$.  Let $w=\lfloor 0.19n\rfloor$.  Then the expected number of rows of $B$ with weight $\le w$ satisfies
+\[
+\E\bigl[\,\bigl|\{\,i:|b_i|\le w\,\}\bigr|\,\bigr]
+\;\le\;
+16n+11\delta m+\frac{11m}{n}+O(1),
+\]
+\end{lemma}
+
+\begin{proof}
+By the Fannes--Csisz\'{a}r continuity bound (Cover--Thomas \S17.3.3), $\operatorname{SD}(C,\text{Uniform})\le\delta$ implies $H(C)\ge nm-\delta nm-1$.  Conditioning on $A$ and using the chain rule,
+\[
+H(C)\;\le\;H(A)+H(C\mid A)\;=\;H(A)+\sum_{i=1}^{m}H(c_i\mid A,c_{<i})
+\;\le\;H(A)+\sum_{i=1}^{m}H(c_i\mid A).
+\]
+Let $T_i$ be the indicator of the event $|b_i|\le w$.  Then
+\begin{align*}
+H(c_i\mid A)
+&\;\le\;H(T_i,c_i\mid A)
+\;=\;H(T_i\mid A)+H(c_i\mid T_i,A) \\
+&\;\le\;1+\Pr[T_i=1\mid A]\cdot0.906n+\Pr[T_i=0\mid A]\cdot n,
+\end{align*}
+where the first term is at most $1$ because $T_i$ is binary, the second uses \Cref{lem:reachability} ($|R_w(A)|\le2^{0.906n}$), and the third uses the trivial bound $H(c_i\mid A)\le n$.  Simplifying,
+\[
+H(c_i\mid A)\;\le\;1+n-\Pr[T_i=1\mid A]\cdot0.094n.
+\]
+Summing over $i$ and letting $k=\sum_i T_i$,
+\[
+\sum_{i=1}^{m}H(c_i\mid A)
+\;\le\;m+nm-\E[k\mid A]\cdot0.094n.
+\]
+The entropy of $A$ is at most the log-support of the isotropic-frame distribution, $H(A)\le (3/2)n^{2}+n/2+O(1)$.  Combining with the Fannes--Csisz\'{a}r bound $H(C)\ge nm-\delta nm-1$ and the chain rule,
+\[
+nm-\delta nm-1
+\;\le\;(3/2)n^{2}+n/2+m+nm-\E[k\mid A]\cdot0.094n+O(1),
+\]
+which rearranges to $\E[k\mid A]\cdot0.094n\le(3/2)n^{2}+n/2+m+\delta nm+O(1)$.  Since $(3/2)n^{2}+n/2$ divided by $0.094n$ is at most $16n+O(1)$, taking expectations over $A$ and $R$ gives the claimed bound.
+\end{proof}
+
+\Cref{lem:m1} bounds the \emph{expected} number of low-weight rows in the marginal-adaptive model using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification argument of \Cref{cor:noise-amp} and the recovery argument of \Cref{cor:recovery-barrier} then apply to those rows.
+
+\begin{lemma}[Distribution-mismatch death --- \textbf{conditional}]
+\label{lem:m2}
+\textbf{Status: heuristic, not yet established.}  The obstacle is that the output noise components $e'_i=\langle b_i,e\rangle$ are $m$ linear images of the fixed $2n$-bit symplectic-LPN noise vector $e$; they therefore live in a subspace of dimension at most $2n$ and are heavily correlated when $m=\omega(n)$.  Both standard repair strategies hit walls: (i)~a recovery-reduction argument needs \Cref{cor:recovery-barrier} to be robust to correlated noise, but the $\le 2n$ leak-rows could over-determine $x\in\F_2^{n}$ (and the solver does not know $B$); (ii)~a noise-entropy argument $H(Be)\le H(e)=O(n)$ holds for fixed $B$ but fails for random high-entropy $B$ (since $Be$ can be near-uniform).  The $\le 2n$-dimensional noise structure is both why the corner is plausibly closed and why no clean argument closes it yet.
+
+\emph{If} the following statement could be proved, it would close the marginal-adaptive corner: Let $p'\in(0,1/2)$ with $1-2p'\ge 1/\operatorname{poly}(n)$.  Consider any reduction outputting $m$ samples $(c_i,a_i)$ with $a_i=\langle c_i,x\rangle+e'_i$ where $e'_i$ has bias $\le 2^{-0.19n}$ on all but $\ell=o(m)$ rows.  Then
+\[
+\operatorname{SD}\bigl(\,(C,y),\;\mathrm{LPN}_{p'}\,\bigr)
+\;\ge\;
+1-o(1)
+\]
+provided $m\ge \frac{4n}{(1-2p')^{2}}\cdot\operatorname{polylog}(n)$.
+\end{lemma}
+
+\begin{theorem}[Marginal-adaptive linear-reduction barrier --- \textbf{conditional}]
+\label{thm:marginal-adaptive}
+\textbf{Depends on \Cref{lem:m2}.}  Let $A\sim\operatorname{Uniform}(\Lagr(2n,\F_2))$ and let $B=g(A,R)\in\F_2^{m\times 2n}$ be any randomized adaptive matrix.  \Cref{lem:m1} shows that if $\operatorname{SD}(BA,\text{Uniform})\le\delta$ and $m\ge Cn$ ($C>16$), at least $m-o(m)$ rows have weight $>0.19n$, hence effective noise bias $\le 2^{-0.19n}$.  If \Cref{lem:m2} holds, this yields $\operatorname{SD}((C,y),\mathrm{LPN}_{p'})=1-o(1)$ for every $p'$ with $1-2p'\ge 1/\operatorname{poly}(n)$, and no marginal-adaptive linear reduction maps symplectic LPN to a usable standard LPN instance when $m\ge Cn$.
+\end{theorem}
+
+\Cref{thm:marginal-adaptive} is a \textbf{conditional} barrier: \Cref{lem:m1} is proven, but \Cref{lem:m2} remains open because of the correlated-noise obstacle described above.  The status map is therefore: fixed-$B$ \textbf{ruled out}, public-$B$ \textbf{ruled out}, conditionally-uniform adaptive \textbf{ruled out}, marginal-adaptive \textbf{open}.  The remaining regime $m=\Theta(n)$ with $m<Cn$ is covered by LPQR26 Appendix~D (their Theorem~D.2) for fixed $B$ (any rank, including low-rank).
+
+\section{Open Problems}
+\label{sec:open}
+
+We state precisely the problems whose resolution would close the standard-model gap.
+
+\begin{enumerate}
+\item \textbf{Statistical dimension under $S_A=0$ for sympLPN \cite{LPQR26}.} The full SQ proof is blocked by the deterministic quadratic symplectic relation $S_A=0$ (the $\Omega$-Gram of columns) that characterises the sympLPN variant (\Cref{def:symplpn}). Prove that conditioning on $S_A=0$ does not reduce the statistical dimension below $2^{\Omega(n)}$. \Cref{sec:moments} resolves this exactly for statistical tests of bounded bundle size (the conditioned moments deviate from the unconstrained ones by $\Theta(4^{-n})$ at orders $j \le 3$); the regime of growing bundle size, equivalently general-$j$ moments, remains open.
+
+\item \textbf{LPN(low-noise) $\to$ LSN.} In the cryptographically relevant regime $p=O(1/\sqrt{n})$, the reduction of \cite{KLP+25} is vacuous. Does a non-vacuous reduction exist, or can its non-existence be proved?
+
+\item \textbf{LWE $\to$ LSN.} A reduction from LWE (or worst-case lattice problems) to LSN would provide the gold-standard foundation currently missing.
+
+\item \textbf{Quantum lower bound.} Prove \Cref{conj:quantum}: any quantum algorithm solving LSN requires $\Omega(2^n)$ queries.
+
+\item \textbf{Pencil-extremality conjecture.} \label{open:sda} Prove \Cref{conj:pencil}: that isotropic pencils ($k \leq 2$) are extremal at scale $|\Lagr(2n,\F_2)|/2^{2n}$, giving average correlation $\leq 5\rho_{\mathrm{avg}}$ for every subset of that size. This would upgrade \Cref{thm:main-sq-cond} from a conditional to an unconditional worst-case bound.
+
+\item \textbf{Sample freshness for rerandomized LSN.} Exact secret rerandomization is possible: applying a public symplectic matrix $S \in \mathrm{Sp}(2n)$ to the public part of each sample maps the secret $L$ to $S\cdot L$ while preserving labels. Does LSN admit a public transformation that yields \emph{fresh} (statistically independent) samples for the rerandomized secret? A positive answer would yield tight multi-user security bounds for LSN-based constructions; a negative answer would explain why hybrid arguments lose a factor of the number of users.
+
+\item \textbf{Membership-LSN $\leftrightarrow$ stabilizer-decoding LSN bridge.} Relate our membership formulation (\Cref{def:lsn}; secret Lagrangian, no public matrix) to the LSN of \cite{KLP+25,LPQR26} (public stabilizer matrix $[A \mid B]$ with a Lagrangian $A$-block, noisy-codeword samples, secret logical string). A reduction in either direction would let the external hardness results (constant-rate LPN $\le$ their LSN; Theorem~6.6 of \cite{KLP+25} attaches this hardness already to the \emph{single-sample} Search variant) and our SQ lower bounds support a \emph{single} object; absent a bridge, the two hardness cases remain parallel rather than cumulative. A reduction THEIR $\le$ OUR must embed the $k$-bit logical secret into our $\Theta(n^2)$-bit Lagrangian secret without the junk register that \cite{KLP+25} (Lemma~6.5) exploit to bypass the analogous dimension mismatch: from the single-sample hardness carrier it meets an information-budget obstruction shared with \Cref{open:marginal-adaptive} (one noisy codeword carries $O(n)$ secret-correlated bits, while membership recovery needs $\Omega(n^2)$ labels); the multi-sample variant instead meets a frame-alignment obstruction (the secret arrives in a fresh public frame per sample, whereas ours is one fixed Lagrangian). The reverse direction is blocked by code visibility (a public $[A \mid B]$ would encode our secret $L$). None of these is an impossibility result; each blocks only the natural maps.
+
+\item \textbf{Marginal-adaptive linear reductions (sharpened).} \label{open:marginal-adaptive} In the isotropic-to-LPN reduction model, the distinguisher receives the public matrix $C=BA$ and the noisy output $y=Cx+e$.  Strong empirical evidence (Experiments~6--9) shows that single-sample recovery of $x$ vanishes as $n\to\infty$.  A rigorous information-theoretic proof --- showing that the conditional mutual information $I(x;y|C)$ is $o(n)$ for typical random $C$ --- remains open.  Previous Fisher-information and total-variation approaches targeted the wrong quantity: they bounded $I(x;y)$, but since the secret $x$ is independent of the public $C$ one has $I(x;y) \le I(x;y\mid C)$, so a bound on $I(x;y)$ does not bound the operative quantity $I(x;y\mid C)$.
+
+The status map for the linear-reduction landscape is: fixed-$B$ \textbf{ruled out}, public-$B$ \textbf{ruled out}, conditionally-uniform adaptive \textbf{ruled out}, marginal-adaptive \textbf{open}.  \Cref{lem:m1} shows that any marginal-adaptive $B=g(A)$ with uniform $BA$ must have $m-o(m)$ rows of weight $>0.19n$ (hence effective noise bias $\le 2^{-0.19n}$), but \Cref{lem:m2} is not yet established because the output noise $e'=Be$ is $m$ linear images of a fixed $2n$-bit symplectic-LPN noise vector and therefore lives in a subspace of dimension at most $2n$.  The decisive question: \emph{Does the $\le 2n$-dimensional noise structure of $Be$ survive a high-entropy secret $B$, or can adaptive $B$ fake $m$ independent $\operatorname{Bernoulli}(p')$ from $2n$ noise bits undetectably in $C$?}  A proof either way would close the marginal-adaptive corner.
+\end{enumerate}
+
+\subsection{Limitations of the Present Work}
+\label{subsec:limitations}
+
+We state explicitly the gaps a reader should weigh against the results above.
+
+\begin{enumerate}
+\item \textbf{No worst-case foundation.} LSN hardness is a primitive assumption: there is no reduction from a worst-case problem in the style of Regev's reduction for LWE, and no non-vacuous reduction from low-noise LPN or from LWE is known (Open Problems~2--3).
+
+\item \textbf{SQ bounds are evidence, not proof.} Exponential SQ lower bounds also hold for LPN and LWE; they bound a restricted (if natural and historically predictive) class of algorithms and do not distinguish hardness families. The unconditional bound of \Cref{thm:main-sq-uncond} moreover protects only a promise subfamily.
+
+\item \textbf{Two results are conditional.} The $2^{2n-O(1)}$ SQ bound depends on the pencil-extremality conjecture (\Cref{conj:pencil}), and the marginal-adaptive barrier (\Cref{thm:marginal-adaptive}) depends on \Cref{lem:m2}, which remains unproven; both dependencies are stated where they occur.
+
+\item \textbf{Moment results cover bounded order.} The closed forms of \Cref{sec:moments} cover subset moments of order $j \le 3$; the regime $j = \Theta(n)$, which governs bundles of growing size, is open.
+
+\item \textbf{Quantum hardness is conjectural.} We rule out the natural quantum attack families (\Cref{sec:quantum}) but prove no quantum query lower bound; \Cref{conj:quantum} has the same epistemic status as the corresponding conjectures for LPN and LWE.
+\end{enumerate}
+
+\appendix
+
+\section{Full Proof of Pairwise Correlation}
+\label{app:corr}
+
+Here we give a self-contained derivation of \Cref{lem:exact-corr}. Let $D_0$ be the distribution on $\F_2^{2n} \times \F_2$ in which $a$ is uniform and $b \sim \operatorname{Bernoulli}(p)$ independently. For a fixed Lagrangian $L$, the LSN distribution $D_L$ has density
+\[
+D_L(a,b) = \frac{1}{2^{2n}} \Bigl( (1-p)\mathbf{1}_{b=\mathbf{1}_L(a)} + p\mathbf{1}_{b \neq \mathbf{1}_L(a)} \Bigr).
+\]
+The likelihood ratio is
+\[
+\frac{D_L(a,b)}{D_0(a,b)} = 1 + \mathbf{1}_L(a) \cdot \beta \cdot \Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\frac{p}{1-p}\Bigr),
+\]
+where $\beta = (1-2p)/p$. Therefore
+\[
+\ell_L(a,b) = \mathbf{1}_L(a) \cdot \beta \cdot \Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\frac{p}{1-p}\Bigr).
+\]
+For two secrets $L,L'$ with $j = \dim(L \cap L')$,
+\begin{align*}
+\langle D_L, D_{L'} \rangle
+&= \E_{D_0}[\ell_L \ell_{L'}] \\
+&= \E_a[\mathbf{1}_L(a)\mathbf{1}_{L'}(a)] \cdot
+   \beta^2 \E_b\Bigl[\Bigl(\mathbf{1}_{b=1} - \mathbf{1}_{b=0}\frac{p}{1-p}\Bigr)^2\Bigr] \\
+&= 2^{j-2n} \cdot \beta^2 \Bigl( p + (1-p)\frac{p^2}{(1-p)^2} \Bigr) \\
+&= 2^{j-2n} \cdot \frac{(1-2p)^2}{p(1-p)}.
+\end{align*}
+Setting $p=1/4$ gives the coefficient $(1/2)^2 / (1/4 \cdot 3/4) = (1/4)/(3/16) = 4/3$ exactly.
+
+\section{Q-Binomial Distance Distribution}
+\label{app:qbin}
+
+The number of $k$-dimensional subspaces of $\F_2^n$ is the Gaussian binomial coefficient
+\[
+{n \brack k}_2 = \prod_{i=0}^{k-1} \frac{2^{n-i}-1}{2^{k-i}-1}.
+\]
+To count pairs of Lagrangians with intersection dimension $k$, fix a $k$-dimensional isotropic subspace $W$. The number of Lagrangians containing $W$ equals the number of Lagrangians in the symplectic quotient $W^\perp / W \cong \F_2^{2(n-k)}$, namely $\prod_{i=1}^{n-k}(2^i+1)$. Summing over all $k$-dimensional subspaces $W \subseteq L$ and using the identity $\prod_{i=1}^{n-k}(2^i+1) = 2^{(n-k)(n-k+1)/2} \prod_{i=1}^{n-k}(1+2^{-i})$, the exact probability is
+\[
+\Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{\prod_{i=1}^n (2^i+1)}.
+\]
+The moment generating function $C_n = \E[2^j]$ converges rapidly to $2$ as $n \to \infty$.
+
+\section{Full Proof of the Affine-Coset Bias Bound}
+\label{app:krawtchouk}
+
+Let $N \subset \F_2^{2n}$ be a uniform random Lagrangian.  For $\lambda \in (0,1)$ define the weight enumerator $W_N(\lambda) := \sum_{v \in N} \lambda^{|v|}$.  In \Cref{lem:affine-coset-bias-whp} we need $\lambda=1/2$.
+
+\paragraph{Exact moments.}  Write $p := \Pr[v \in N \setminus \{0\}] = 1/(2^n+1)$ and $q := \Pr[v,v' \in N \setminus \{0\} \mid v \neq v',\; \Omega(v,v')=0] = 1/((2^{n-1}+1)(2^n+1))$.  Let $X_v := \mathbf{1}_{v \in N}$ and $W := W_N(1/2)-1 = \sum_{v \neq 0} X_v\,2^{-|v|}$.  Then
+\[
+\E[W] = \frac{(3/2)^{2n}-1}{2^n+1}, \qquad
+\Var[W] = p(1-p)\,D + q\,S_0 - p^2 T,
+\]
+where $D = (5/4)^{2n}-1$, $T = ((3/2)^{2n}-1)^2-D$, and $S_0 = \tfrac12(T+C)$ with
+\[
+C = \sum_{\substack{v\neq v'\\ v,v'\neq 0}} (-1)^{\Omega(v,v')}2^{-|v|-|v'|}
+  = (7/4)^{2n} - 2(3/2)^{2n} - (5/4)^{2n} + 2.
+\]
+
+\paragraph{Block factorisation of $C$.}  Decompose $v=(a,b)$, $v'=(x,y)$ with $a,b,x,y \in \F_2^n$.  The symplectic form factorises coordinate-wise: $\Omega(v,v') = \sum_{i=1}^n (a_i y_i + b_i x_i)$.  Hence
+\[
+\sum_{v,v' \in \F_2^{2n}} (-1)^{\Omega(v,v')} 2^{-|v|-|v'|}
+= \prod_{i=1}^n \underbrace{\sum_{a,b,x,y\in\{0,1\}} (-1)^{ay+bx} 2^{-(a+b+x+y)}}_{=\,49/16 = (7/4)^2}
+= (7/4)^{2n}.
+\]
+Removing the terms with $v=0$ or $v'=0$ (each contributes $(3/2)^{2n}$) and adding back the double-counted $(0,0)$ term yields $C$ as above.
+
+\paragraph{Asymptotic decay.}  Keeping only dominant exponentials in each symbol,
+\begin{align*}
+p(1-p)D &= (25/32)^n + O((25/64)^n), \\
+qS_0 &= (81/64)^n + (49/64)^n + O((9/16)^n), \\
+p^2T &= (81/64)^n + O((9/16)^n).
+\end{align*}
+The $(81/64)^n$ terms cancel exactly because $\tfrac{q}{2}-p^2 = -1/(2(2^{n-1}+1)(2^n+1)^2)$.  Therefore
+\[
+\Var[W] = (25/32)^n + (49/64)^n + O((9/16)^n) + O((25/64)^n).
+\]
+Since $\E[W] = (9/8)^n(1+o(1))$, we obtain $\Var[W]/\E[W]^2 = O((50/81)^n)$.
+
+\paragraph{Chebyshev concentration.}  Choose $\varepsilon_n = (50/81)^{n/4}$.  Then
+\[
+\Pr\bigl[|W-\E[W]| \ge \varepsilon_n \E[W]\bigr]
+\le \frac{\Var[W]}{\varepsilon_n^2 \E[W]^2}
+= O((50/81)^{n/2}) = 2^{-\Omega(n)}.
+\]
+On this high-probability event,
+\[
+\frac{W_N(1/2)-1}{2^n} = \frac{(9/8)^n}{2^n}(1+o(1)) = (9/16)^n(1+o(1)),
+\]
+which yields the bound of \Cref{lem:affine-coset-bias-whp}.
+
+\section{Reduction Barrier Summary}
+\label{app:barrier}
+
+This appendix summarizes the SQ/feature-map barriers; for the full linear-reduction landscape (transport, entropy-continuity, reachability, and the open marginal-adaptive cell) see \Cref{tab:barriers} and \Cref{sec:barriers}.
+
+\paragraph{Linear.} For any linear classifier $h(a) = \langle w,a \rangle + t$, the advantage
+\[
+\Adv(h) = \bigl| \Pr_{D_L}[h(a)=1] - \Pr_{D_0}[h(a)=1] \bigr|
+\]
+is zero because $\Pr_{D_L}[h(a)=1] = \Pr_{D_0}[h(a)=1]$.
+
+\paragraph{Polynomial degree $<n$.} The exact polynomial representation of $\mathbf{1}_L$ has degree exactly $n$ and $2^n$ monomials. Any polynomial of degree $d < n$ cannot vanish on $L^c$, so its correlation with $\mathbf{1}_L$ is at most $2^{-n}$.
+
+\paragraph{Adaptive linear SQ.} For real-linear queries $q(a,b) = \langle w,a \rangle + cb$ we have $\E_{D_L}[q] = c(p + 2^{-n}(1-2p))$, independent of $L$. For F$_2$-linear queries the maximum advantage is $(1-2p)2^{-n}$ (\Cref{thm:linear-sq}). In either case the advantage is exponentially small in $n$, so adaptive linear SQ algorithms require exponentially many samples.
+
+\section{Extension to $\F_q$}
+\label{app:fq}
+
+All results in the main text are stated over $\F_2$. Here we sketch the extension to arbitrary finite fields $\F_q$, which widens the parameter space and allows a trade-off between block length $n$ and field size $q$.
+
+\subsection{Symplectic Spaces over $\F_q$}
+\label{subsec:fq-symplectic}
+
+Let $q$ be a prime power and $V = \F_q^{2n}$ equipped with a non-degenerate alternating bilinear form $\Omega(x,y) = x^T J y$ where $J = \begin{psmallmatrix} 0 & I_n \\ -I_n & 0 \end{psmallmatrix}$. A subspace $L \subset V$ is \emph{Lagrangian} if it is maximal isotropic; then $\dim L = n$ and $|\Lagr(2n,\F_q)| = \prod_{i=1}^n (q^i+1)$.
+
+For fixed $L$ and $j = \dim(L \cap L')$, the number of Lagrangians $L'$ with intersection dimension $j$ is
+\[
+N_j(n,q) = {n \brack j}_q \cdot q^{(n-j)(n-j+1)/2},
+\]
+where ${n \brack j}_q$ is the Gaussian binomial coefficient. Summing over $j$ recovers $|\Lagr(2n,\F_q)|$.
+
+\subsection{Exact Correlation over $\F_q$}
+\label{subsec:fq-corr}
+
+The label remains binary ($b \in \F_2$) even though the ambient space is $\F_q^{2n}$, so the SQ machinery of Feldman \etal\ applies without modification. The likelihood ratio calculation is identical with $2$ replaced by $q$:
+
+\begin{lemma}[$\F_q$ pairwise correlation]
+\label{lem:fq-corr}
+For $L,L' \in \Lagr(2n,\F_q)$ with $j = \dim(L \cap L')$,
+\[
+\langle D_L, D_{L'} \rangle = \frac{(1-2p)^2}{p(1-p)} \cdot \frac{q^j}{q^{2n}}.
+\]
+\end{lemma}
+
+\begin{lemma}[$\F_q$ average correlation]
+\label{lem:fq-avg}
+Let $C_{n,q} = \E[q^j]$ computed via the $q$-binomial distribution. Then
+\[
+\rho_{\mathrm{avg}} = \frac{(1-2p)^2}{p(1-p)} \cdot C_{n,q} \cdot q^{-2n}.
+\]
+Numerically, $C_{n,q} \to 2$ as $n \to \infty$ for every $q$ (the limit is independent of the field size).
+\end{lemma}
+
+\subsection{Security Parameters over $\F_q$}
+\label{subsec:fq-params}
+
+The SQ lower bound becomes $q_{\mathrm{queries}} \geq q^{2n-O(1)}$. One ``bit'' of security corresponds to $\log_2(q)$ field operations, so the effective bit-security is $2n \log_2(q)$. \Cref{tab:fq-params} gives the block lengths $n$ needed for target security levels.
+
+\begin{table}[ht]
+\centering
+\caption{LSN parameters over $\F_q$ for $p=1/4$.}
+\label{tab:fq-params}
+\begin{tabular}{@{}ccccc@{}}
+\hline
+Security & $\F_2$: $n$ & $\F_3$: $n$ & $\F_5$: $n$ & $\F_7$: $n$ \\
+\hline
+80-bit  & 41  & 26 & 18 & 15 \\
+128-bit & 65  & 41 & 28 & 24 \\
+192-bit & 97  & 62 & 42 & 35 \\
+256-bit & 129 & 82 & 56 & 46 \\
+\hline
+\end{tabular}
+\end{table}
+
+Larger $q$ reduces the required $n$ but increases the cost of each sample (field arithmetic in $\F_q$ versus $\F_2$). The optimal choice depends on the target platform.
+
+\subsection{Open Questions}
+\label{subsec:fq-open}
+
+\begin{enumerate}
+\item Extend to $q$-ary labels $y \in \F_q$ with noise over $\F_q$; this requires $q$-ary SQ lower bounds.
+\item The proof holds for $q = p^k$ with $k > 1$ because symplectic theory is field-agnostic.
+\item In characteristic $2$, alternating is equivalent to symmetric; in odd characteristic they differ. The intersection distribution formula remains valid in all characteristics.
+\end{enumerate}
+
+% Bibliography
+\bibliographystyle{alpha}
+\section*{Acknowledgements}
+During the preparation of this work, the author used large language models (Claude, Kimi, and Codex) to assist with literature review, mathematical exploration, code prototyping, and manuscript drafting. After using these tools, the author reviewed and edited the content as needed and takes full responsibility for the accuracy, integrity, and final content of the work.
+
+\paragraph{\textbf{Data and code availability.}} All Python prototypes, test vectors, and the \LaTeX{} source are available at \url{https://github.com/Gattochoo/lsn-pq}.
+
+\paragraph{\textbf{Conflict of interest.}} The author declares no competing interests.
+
+\begin{thebibliography}{99}
+
+\bibitem[AAC+22]{AAC+22}
+C.~Adjiman, N.~Aragon, S.~Bettaieb, L.~Bidoux, O.~Blazy, J.-C.~Deneuville, P.~Gaborit, S.~Ghosh, A.~Hauteville, and G.~Zemor.
+HQC.
+NIST PQC Round 4 Submission, 2022.
+
+\bibitem[ABD+21]{ABD+21}
+M.~Albrecht, D.~Bernstein, T.~Chou, C.~Cid, J.~Gilcher, T.~Lange, V.~Maram, I.~von Maurich, R.~Misoczki, R.~Niederhagen, K.~Paterson, E.~Persichetti, C.~Peters, P.~Schwabe, N.~Sendrier, J.~Szefer, C.~Tjhai, M.~Tomlinson, and W.~Wang.
+Classic McEliece.
+NIST PQC Round 4 Submission, 2021.
+
+\bibitem[ABW10]{ABW10}
+A.~Akavia, S.~Goldwasser, and V.~Vaikuntanathan.
+Simultaneous hardcore bits and cryptography against memory attacks.
+In \emph{TCC}, pages 474--495. Springer, 2010.
+
+\bibitem[Ale11]{Ale11}
+A.~Aleknovich.
+More on average case vs approximation complexity.
+\emph{Computational Complexity}, 20(4):755--786, 2011.
+
+\bibitem[BFJ+94]{BFJ+94}
+A.~Blum, M.~Furst, J.~Jackson, M.~Kearns, Y.~Mansour, and S.~Rudich.
+Weakly learning DNF and characterizing statistical query learning using Fourier analysis.
+In \emph{STOC}, pages 253--262. ACM, 1994.
+
+\bibitem[BFKL94]{BFKL94}
+A.~Blum, A.~Furst, M.~Kearns, and R.~Lipton.
+Cryptographic primitives based on hard learning problems.
+In \emph{CRYPTO}, pages 278--291. Springer, 1994.
+
+\bibitem[BKW03]{BKW03}
+A.~Blum, A.~Kalai, and H.~Wasserman.
+Noise-tolerant learning, the parity problem, and the statistical query model.
+\emph{J.\ ACM}, 50(4):506--519, 2003.
+
+\bibitem[BPR12]{BPR12}
+A.~Banerjee, C.~Peikert, and A.~Rosen.
+Pseudorandom functions and lattices.
+In \emph{EUROCRYPT}, pages 719--737. Springer, 2012.
+
+\bibitem[BCGI18]{BCGI18}
+E.~Boyle, G.~Conteau, N.~Gilboa, and Y.~Ishai.
+Compressing vector OLE.
+In \emph{ACM CCS}, pages 896--912, 2018.
+
+\bibitem[CRSS98]{CRSS98}
+A.~R.~Calderbank, E.~M.~Rains, P.~W.~Shor, and N.~J.~A.~Sloane.
+Quantum error correction via codes over GF(4).
+\emph{IEEE Trans.\ Inform.\ Theory}, 44(4):1369--1387, 1998.
+
+\bibitem[DKS17]{DKS17}
+I.~Diakonikolas, D.~M.~Kane, and A.~Stewart.
+Statistical query lower bounds for robust estimation of high-dimensional Gaussians and Gaussian mixtures.
+In \emph{FOCS}, pages 73--84. IEEE, 2017.
+
+\bibitem[DGM14]{DGM14}
+N.~D\"ottling, J.~M\"uller-Quade, and A.~Nascimento.
+IND-CCA secure cryptography based on a variant of the LPN problem.
+In \emph{ASIACRYPT}, pages 485--508. Springer, 2014.
+
+\bibitem[DP12]{DP12}
+Y.~Dodis, K.~Pietrzak, and D.~Wichs.
+Key derivation without entropy waste.
+In \emph{EUROCRYPT}, pages 93--110. Springer, 2012.
+
+\bibitem[EKM17]{EKM17}
+A.~Esser, R.~K\"ubler, and A.~May.
+LPN decoded.
+In \emph{CRYPTO}, pages 486--514. Springer, 2017.
+
+\bibitem[FGR+17]{FGR+17}
+V.~Feldman, E.~Grigorescu, L.~Reyzin, and S.~Vempala.
+Statistical query lower bounds for robust estimation of high-dimensional Gaussians and Gaussian mixtures.
+In \emph{FOCS}, pages 211--220. IEEE, 2017.
+
+\bibitem[GJL14]{GJL14}
+Q.~Guo, T.~Johansson, and C.~L\"ondahl.
+Solving LPN using covering codes.
+In \emph{ASIACRYPT}, pages 1--20. Springer, 2014.
+
+\bibitem[GL22]{GL22}
+S.~Gollakota and D.~Liang.
+PAC-learning noisy stabilizer states in the statistical query model.
+\emph{arXiv preprint}, 2022.
+
+\bibitem[Got97]{Got97}
+D.~Gottesman.
+Stabilizer codes and quantum error correction.
+PhD thesis, Caltech, 1997.
+
+\bibitem[Gro96]{Gro96}
+L.~K.~Grover.
+A fast quantum mechanical algorithm for database search.
+In \emph{STOC}, pages 212--219. ACM, 1996.
+
+\bibitem[HKL+12]{HKL+12}
+S.~Heyse, E.~Kiltz, V.~Lyubashevsky, C.~Paar, and K.~Pietrzak.
+Lapin: An efficient authentication protocol based on ring-LPN.
+In \emph{FSE}, pages 346--365. Springer, 2012.
+
+\bibitem[Kea98]{Kea98}
+M.~Kearns.
+Efficient noise-tolerant learning from statistical queries.
+\emph{J.\ ACM}, 45(6):983--1006, 1998.
+
+\bibitem[Kir11]{Kir11}
+P.~Kirchner.
+Improved generalized birthday attack.
+\emph{Cryptology ePrint Archive}, Report 2011/377, 2011.
+
+\bibitem[KLP+25]{KLP+25}
+A.~Khesin, J.~Lu, A.~Poremba, S.~Ramkumar, and V.~Vaikuntanathan.
+Hardness of decoding random quantum stabilizer codes.
+\emph{arXiv:2509.20697}, 2025.
+
+\bibitem[LF06]{LF06}
+E.~Levieil and P.-A.~Fouque.
+An improved LPN algorithm.
+In \emph{SCN}, pages 348--359. Springer, 2006.
+
+\bibitem[LPQR26]{LPQR26}
+J.~Lu, A.~Poremba, Y.~Quek, and S.~Ramkumar.
+Post-quantum cryptography from quantum stabilizer decoding.
+\emph{arXiv:2603.19110}, 2026.
+
+\bibitem[Lyu05]{Lyu05}
+V.~Lyubashevsky.
+The parity problem in the presence of noise, decoding random linear codes, and the subset sum problem.
+In \emph{APPROX-RANDOM}, pages 378--389. Springer, 2005.
+
+\bibitem[Mac71]{Mac71}
+I.~G.~Macdonald.
+Symmetric Functions and Hall Polynomials.
+Oxford University Press, 1971.
+
+\bibitem[McE78]{McE78}
+R.~J.~McEliece.
+A public-key cryptosystem based on algebraic coding theory.
+\emph{DSN Progress Report}, 44:114--116, 1978.
+
+\bibitem[NC00]{NC00}
+M.~A.~Nielsen and I.~L.~Chuang.
+Quantum Computation and Quantum Information.
+Cambridge University Press, 2000.
+
+\bibitem[PQS26]{PQS26}
+A.~Poremba, Y.~Quek, and P.~Shor.
+Learning stabilizers with noise.
+\emph{arXiv:2410.18953}, 2025.
+
+\bibitem[Pra62]{Pra62}
+E.~Prange.
+The use of information sets in decoding cyclic codes.
+\emph{IRE Trans.\ Inform.\ Theory}, 8(5):5--9, 1962.
+
+\bibitem[Reg05]{Reg05}
+O.~Regev.
+On lattices, learning with errors, random linear codes, and cryptography.
+\emph{J.\ ACM}, 56(6):34, 2005.
+
+\bibitem[Sho94]{Sho94}
+P.~W.~Shor.
+Algorithms for quantum computation: Discrete logarithms and factoring.
+In \emph{FOCS}, pages 124--134. IEEE, 1994.
+
+\bibitem[WS21]{WS21}
+A.~Wang and F.~Zhang.
+Revisiting the BKW algorithm for LPN.
+\emph{Cryptology ePrint Archive}, Report 2021/213, 2021.
+
+\bibitem[ZJW16]{ZJW16}
+B.-Y.~Zhang, L.~Jia, and M.-W.~Wang.
+Security analysis of LPN under perfect code cover.
+\emph{IEEE Access}, 4:3979--3986, 2016.
+
+\end{thebibliography}
+
+\end{document}
