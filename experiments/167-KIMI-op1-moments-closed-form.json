@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "experiment": "op1-moments-closed-form",
+    "description": "Exact moments m_1, m_2, m_3 for n=2,3 via enumeration",
+    "date": "2026-06-11T19:54:32",
+    "notes": [
+      "m_j = E_A[C(t,j) / C(2n,j)] where t = number of rows in (x,x')-quadrant",
+      "m_1 closed form: 2^{2n-2} / (2^{2n}-1)",
+      "Goal: guess closed form for m_2, m_3 from n=2,3 data"
+    ]
+  },
+  "results": [
+    {
+      "n": 2,
+      "num_matrices": 90,
+      "m1": {
+        "fraction": "4/15",
+        "float": 0.26666666666666666
+      },
+      "m2": {
+        "fraction": "7/135",
+        "float": 0.05185185185185185
+      },
+      "m3": {
+        "fraction": "0",
+        "float": 0.0
+      },
+      "closed_form_m1": "4/15",
+      "m1_match": true
+    },
+    {
+      "n": 3,
+      "num_matrices": 22680,
+      "m1": {
+        "fraction": "16/63",
+        "float": 0.25396825396825395
+      },
+      "m2": {
+        "fraction": "284/4725",
+        "float": 0.06010582010582011
+      },
+      "m3": {
+        "fraction": "4/315",
+        "float": 0.012698412698412698
+      },
+      "closed_form_m1": "16/63",
+      "m1_match": true
+    }
+  ]
+}
