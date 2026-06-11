@@ -1,7 +1,8 @@
 use polar_validation::{
     baseline_reproduction_configs, build_frozen_natural, decode_scl, decode_scl_fast,
-    decode_successive_cancellation, encode, results_to_json, results_to_json_with_decoder,
-    simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast, target_n2048_configs, PolarCode,
+    decode_successive_cancellation, encode, high_noise_control_configs, results_to_json,
+    results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    target_n2048_configs, PolarCode,
 };
 
 #[test]
@@ -103,6 +104,30 @@ fn target_n2048_configs_cover_paper_design_points() {
         .collect::<Vec<_>>();
     assert_eq!(triples, vec![(2048, 256, 0.0706), (2048, 256, 0.0343)]);
     assert!(configs.iter().all(|cfg| cfg.trials == 200));
+}
+
+#[test]
+fn high_noise_control_configs_cover_failure_points() {
+    let configs = high_noise_control_configs(200, 0xC0DEC0DE);
+    let triples = configs
+        .iter()
+        .map(|cfg| (cfg.n, cfg.k, cfg.p))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        triples,
+        vec![(2048, 256, 0.3), (2048, 256, 0.4), (2048, 256, 0.5),]
+    );
+    assert!(configs.iter().all(|cfg| cfg.trials == 200));
+}
+
+#[test]
+fn high_noise_fast_scl_smoke_fails_when_channel_is_random() {
+    let result = simulate_bsc_scl_fast(128, 16, 0.5, 25, 0xBAD5EED, 8);
+    assert_eq!(result.trials, 25);
+    assert!(
+        result.errors >= 20,
+        "expected high-noise BLER near 1, got {result:?}"
+    );
 }
 
 #[test]

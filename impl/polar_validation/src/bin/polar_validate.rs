@@ -1,8 +1,9 @@
 use std::{env, fs, path::PathBuf};
 
 use polar_validation::{
-    baseline_reproduction_configs, results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, target_n2048_configs, SimulationConfig, SimulationResult,
+    baseline_reproduction_configs, high_noise_control_configs, results_to_json_with_decoder,
+    simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast, target_n2048_configs,
+    SimulationConfig, SimulationResult,
 };
 
 fn main() {
@@ -57,7 +58,8 @@ fn main() {
     let configs = match suite.as_str() {
         "baseline" => baseline_reproduction_configs(trials, seed),
         "n2048" => target_n2048_configs(trials, seed),
-        other => panic!("unknown suite {other}; expected baseline or n2048"),
+        "high-noise" => high_noise_control_configs(trials, seed),
+        other => panic!("unknown suite {other}; expected baseline, n2048, or high-noise"),
     };
     let (results, decoder_label, experiment) = match decoder.as_str() {
         "sc" => (
@@ -116,8 +118,8 @@ where
 fn print_help() {
     println!(
         "polar-validate [--trials N] [--seed U64] [--output PATH]\n\
-         [--suite baseline|n2048]\n\
+         [--suite baseline|n2048|high-noise]\n\
          [--decoder sc|scl|scl-fast] [--list-size L]\n\
-         Runs the Codex P1 short-length Rust polar baseline."
+         Runs a Codex P1 Rust polar validation suite."
     );
 }

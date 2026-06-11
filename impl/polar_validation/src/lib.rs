@@ -74,6 +74,20 @@ pub fn target_n2048_configs(trials: usize, seed: u64) -> Vec<SimulationConfig> {
         .collect()
 }
 
+pub fn high_noise_control_configs(trials: usize, seed: u64) -> Vec<SimulationConfig> {
+    [(2048, 256, 0.3), (2048, 256, 0.4), (2048, 256, 0.5)]
+        .into_iter()
+        .enumerate()
+        .map(|(i, (n, k, p))| SimulationConfig {
+            n,
+            k,
+            p,
+            trials,
+            seed: seed.wrapping_add((i as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15)),
+        })
+        .collect()
+}
+
 pub fn run_configs(configs: &[SimulationConfig]) -> Vec<SimulationResult> {
     configs
         .iter()
@@ -137,7 +151,7 @@ impl PolarCode {
     pub fn new(n: usize, k: usize, p: f64) -> Self {
         assert!(n.is_power_of_two(), "N must be a power of two");
         assert!(k <= n, "K must be <= N");
-        assert!((0.0..0.5).contains(&p), "p must be in [0, 0.5)");
+        assert!((0.0..=0.5).contains(&p), "p must be in [0, 0.5]");
 
         let frozen = build_frozen_natural(n, k, p);
         let frozen_set = frozen.iter().copied().collect::<HashSet<_>>();
@@ -163,7 +177,7 @@ impl PolarCode {
 pub fn build_frozen_natural(n: usize, k: usize, p: f64) -> Vec<usize> {
     assert!(n.is_power_of_two(), "N must be a power of two");
     assert!(k <= n, "K must be <= N");
-    assert!((0.0..0.5).contains(&p), "p must be in [0, 0.5)");
+    assert!((0.0..=0.5).contains(&p), "p must be in [0, 0.5]");
 
     let z0 = 2.0 * (p * (1.0 - p)).sqrt();
     let mut z = vec![z0];
