@@ -24,6 +24,17 @@ pub struct SpanAttackResult {
     pub recovered_index: Option<usize>,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct IsdAttackResult {
+    pub n: usize,
+    pub total_dim: usize,
+    pub positive_count: usize,
+    pub attempts_used: usize,
+    pub valid_candidates: usize,
+    pub best_score: usize,
+    pub recovered_index: Option<usize>,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompactLagrangians {
     pub n: usize,
@@ -95,6 +106,32 @@ pub struct SpanTrialResult {
 }
 
 impl SpanTrialResult {
+    pub fn success_rate(&self) -> f64 {
+        if self.trials == 0 {
+            0.0
+        } else {
+            self.successes as f64 / self.trials as f64
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct IsdTrialResult {
+    pub n: usize,
+    pub lagrangians: usize,
+    pub sample_count: usize,
+    pub noise_rate: f64,
+    pub trials: usize,
+    pub max_attempts: usize,
+    pub successes: usize,
+    pub avg_positive_count: f64,
+    pub avg_attempts_used: f64,
+    pub avg_valid_candidates: f64,
+    pub avg_best_score: f64,
+    pub seed: u64,
+}
+
+impl IsdTrialResult {
     pub fn success_rate(&self) -> f64 {
         if self.trials == 0 {
             0.0
@@ -383,6 +420,118 @@ pub fn run_span_trials(
     }
 }
 
+pub fn positive_basis_isd_decode(
+    n: usize,
+    samples: &[LsnSample],
+    lagrangians: &[Lagrangian],
+    max_attempts: usize,
+    rng: &mut XorShift64,
+) -> IsdAttackResult {
+    let total_dim = 2 * n;
+    let positives = samples
+        .iter()
+        .filter(|sample| sample.label)
+        .map(|sample| sample.point)
+        .collect::<Vec<_>>();
+
+    let mut attempts_used = 0;
+    let mut valid_candidates = 0;
+    let mut best_score = 0;
+    let mut recovered_index = None;
+
+    let all_positive_basis = gf2_basis(&positives, total_dim);
+    if all_positive_basis.len() == n && is_isotropic_basis(&all_positive_basis, n) {
+        attempts_used += 1;
+        if let Some(index) = candidate_index_from_basis(&all_positive_basis, lagrangians) {
+            valid_candidates += 1;
+            best_score = score_lagrangian(&lagrangians[index], samples);
+            recovered_index = Some(index);
+        }
+    }
+
+    if positives.len() >= n {
+        for _ in 0..max_attempts {
+            attempts_used += 1;
+            let subset = sample_positive_subset(&positives, n, rng);
+            let basis = gf2_basis(&subset, total_dim);
+            if basis.len() != n || !is_isotropic_basis(&basis, n) {
+                continue;
+            }
+            if let Some(index) = candidate_index_from_basis(&basis, lagrangians) {
+                valid_candidates += 1;
+                let score = score_lagrangian(&lagrangians[index], samples);
+                if score > best_score {
+                    best_score = score;
+                    recovered_index = Some(index);
+                }
+            }
+        }
+    }
+
+    IsdAttackResult {
+        n,
+        total_dim,
+        positive_count: positives.len(),
+        attempts_used,
+        valid_candidates,
+        best_score,
+        recovered_index,
+    }
+}
+
+pub fn run_isd_trials(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    trials: usize,
+    max_attempts: usize,
+    seed: u64,
+) -> IsdTrialResult {
+    let lagrangians = enumerate_lagrangians(n);
+    let total_dim = 2 * n;
+    let mut rng = XorShift64::new(seed);
+    let mut successes = 0;
+    let mut positive_count_sum = 0usize;
+    let mut attempts_used_sum = 0usize;
+    let mut valid_candidates_sum = 0usize;
+    let mut best_score_sum = 0usize;
+
+    for _ in 0..trials {
+        let secret_index = rng.next_index(lagrangians.len());
+        let samples = sample_lsn(
+            &lagrangians[secret_index],
+            sample_count,
+            noise_rate,
+            total_dim,
+            &mut rng,
+        );
+        let result = positive_basis_isd_decode(n, &samples, &lagrangians, max_attempts, &mut rng);
+        if result.recovered_index == Some(secret_index) {
+            successes += 1;
+        }
+        positive_count_sum += result.positive_count;
+        attempts_used_sum += result.attempts_used;
+        valid_candidates_sum += result.valid_candidates;
+        best_score_sum += result.best_score;
+    }
+
+    let denom = trials.max(1) as f64;
+    IsdTrialResult {
+        n,
+        lagrangians: lagrangians.len(),
+        sample_count,
+        noise_rate,
+        trials,
+        max_attempts,
+        successes,
+        avg_positive_count: positive_count_sum as f64 / denom,
+        avg_attempts_used: attempts_used_sum as f64 / denom,
+        avg_valid_candidates: valid_candidates_sum as f64 / denom,
+        avg_best_score: best_score_sum as f64 / denom,
+        seed,
+    }
+}
+
 pub fn run_ml_trials(
     n: usize,
     sample_count: usize,
@@ -528,6 +677,69 @@ pub fn span_results_to_json(experiment: &str, results: &[SpanTrialResult]) -> St
     out
 }
 
+pub fn isd_results_to_json(experiment: &str, results: &[IsdTrialResult]) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str("  \"attack\": \"positive_basis_isd\",\n");
+    out.push_str(
+        "  \"threat_model\": \"attacker observes public points and noisy membership labels\",\n",
+    );
+    out.push_str("  \"adjudication\": \"P2 negative control; low-noise sanity plus constant-rate capped-attempt screen; evidence, not proof; OPEN = LSN\",\n");
+    out.push_str("  \"results\": [\n");
+    for (i, result) in results.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"n\": {},\n", result.n));
+        out.push_str(&format!("      \"lagrangians\": {},\n", result.lagrangians));
+        out.push_str(&format!(
+            "      \"sample_count\": {},\n",
+            result.sample_count
+        ));
+        out.push_str(&format!(
+            "      \"noise_rate\": {:.10},\n",
+            result.noise_rate
+        ));
+        out.push_str(&format!("      \"trials\": {},\n", result.trials));
+        out.push_str(&format!(
+            "      \"max_attempts\": {},\n",
+            result.max_attempts
+        ));
+        out.push_str(&format!("      \"successes\": {},\n", result.successes));
+        out.push_str(&format!(
+            "      \"success_rate\": {:.10},\n",
+            result.success_rate()
+        ));
+        out.push_str(&format!(
+            "      \"avg_positive_count\": {:.6},\n",
+            result.avg_positive_count
+        ));
+        out.push_str(&format!(
+            "      \"avg_attempts_used\": {:.6},\n",
+            result.avg_attempts_used
+        ));
+        out.push_str(&format!(
+            "      \"avg_valid_candidates\": {:.6},\n",
+            result.avg_valid_candidates
+        ));
+        out.push_str(&format!(
+            "      \"avg_best_score\": {:.6},\n",
+            result.avg_best_score
+        ));
+        out.push_str(&format!("      \"seed\": {}\n", result.seed));
+        out.push_str("    }");
+        if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
 pub fn lagrangian_count(n: usize) -> usize {
     (1..=n).map(|i| (1usize << i) + 1).product()
 }
@@ -591,6 +803,41 @@ fn apply_transvection(lagrangian: &Lagrangian, v: u32, n: usize) -> Lagrangian {
         .iter()
         .map(|&point| transvection(v, point, n))
         .collect()
+}
+
+fn is_isotropic_basis(basis: &[u32], n: usize) -> bool {
+    basis
+        .iter()
+        .enumerate()
+        .all(|(i, &a)| basis[i..].iter().all(|&b| !symplectic_form(a, b, n)))
+}
+
+fn candidate_index_from_basis(basis: &[u32], lagrangians: &[Lagrangian]) -> Option<usize> {
+    let span = span_from_basis(basis);
+    lagrangians
+        .iter()
+        .position(|lagrangian| *lagrangian == span)
+}
+
+fn score_lagrangian(lagrangian: &Lagrangian, samples: &[LsnSample]) -> usize {
+    samples
+        .iter()
+        .filter(|sample| lagrangian.contains(&sample.point) == sample.label)
+        .count()
+}
+
+fn sample_positive_subset(positives: &[u32], subset_len: usize, rng: &mut XorShift64) -> Vec<u32> {
+    let mut chosen = Vec::with_capacity(subset_len);
+    let mut used = HashSet::new();
+
+    while chosen.len() < subset_len {
+        let index = rng.next_index(positives.len());
+        if used.insert(index) {
+            chosen.push(positives[index]);
+        }
+    }
+
+    chosen
 }
 
 fn gf2_basis(rows: &[u32], total_dim: usize) -> Vec<u32> {

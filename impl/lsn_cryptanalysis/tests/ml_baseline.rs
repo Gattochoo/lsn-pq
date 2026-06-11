@@ -1,7 +1,7 @@
 use lsn_cryptanalysis::{
     CompactLagrangians, LsnSample, XorShift64, brute_force_ml_decode, compact_ml_decode,
-    enumerate_lagrangians, results_to_json, run_ml_trials, run_span_trials, sample_lsn,
-    span_of_positives_decode, span_results_to_json,
+    enumerate_lagrangians, positive_basis_isd_decode, results_to_json, run_isd_trials,
+    run_ml_trials, run_span_trials, sample_lsn, span_of_positives_decode, span_results_to_json,
 };
 
 #[test]
@@ -149,4 +149,32 @@ fn span_result_json_records_overfull_failure_stats() {
     assert!(json.contains("\"attack\": \"span_of_positives\""));
     assert!(json.contains("\"avg_positive_count\""));
     assert!(json.contains("\"overfull_rank_count\""));
+}
+
+#[test]
+fn positive_basis_isd_recovers_noiseless_secret() {
+    let lagrangians = enumerate_lagrangians(3);
+    let secret_idx = 19;
+    let secret = &lagrangians[secret_idx];
+    let samples = (0..64)
+        .map(|point| LsnSample {
+            point,
+            label: secret.contains(&point),
+        })
+        .collect::<Vec<_>>();
+    let mut rng = XorShift64::new(0x15D);
+
+    let result = positive_basis_isd_decode(3, &samples, &lagrangians, 200, &mut rng);
+
+    assert_eq!(result.recovered_index, Some(secret_idx));
+    assert!(result.valid_candidates >= 1);
+}
+
+#[test]
+fn positive_basis_isd_trial_runner_has_noiseless_sanity() {
+    let result = run_isd_trials(3, 256, 0.0, 5, 500, 0x15D15D);
+
+    assert_eq!(result.trials, 5);
+    assert_eq!(result.successes, 5);
+    assert!(result.avg_valid_candidates >= 1.0);
 }
