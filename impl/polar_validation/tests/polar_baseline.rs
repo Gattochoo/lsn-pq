@@ -2,7 +2,7 @@ use polar_validation::{
     baseline_reproduction_configs, build_frozen_natural, decode_scl, decode_scl_fast,
     decode_successive_cancellation, encode, high_noise_control_configs, results_to_json,
     results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    target_n2048_configs, PolarCode,
+    target_n2048_configs, zero_error_upper_bound, PolarCode,
 };
 
 #[test]
@@ -144,4 +144,10 @@ fn result_json_can_label_scl_decoder() {
     let result = simulate_bsc_scl(128, 16, 0.0706, 5, 67890, 8);
     let json = results_to_json_with_decoder("codex-p1-scl-smoke", "scl_l8_exact_llr", &[result]);
     assert!(json.contains("\"decoder\": \"scl_l8_exact_llr\""));
+}
+
+#[test]
+fn zero_error_upper_bound_matches_one_sided_binomial_formula() {
+    let upper = zero_error_upper_bound(2000, 0.05);
+    assert!((upper - 0.001496).abs() < 0.000001);
 }

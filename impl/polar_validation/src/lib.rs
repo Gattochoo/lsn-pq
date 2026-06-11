@@ -37,6 +37,20 @@ impl SimulationResult {
             self.errors as f64 / self.trials as f64
         }
     }
+
+    pub fn zero_error_upper_95(&self) -> Option<f64> {
+        if self.errors == 0 && self.trials > 0 {
+            Some(zero_error_upper_bound(self.trials, 0.05))
+        } else {
+            None
+        }
+    }
+}
+
+pub fn zero_error_upper_bound(trials: usize, alpha: f64) -> f64 {
+    assert!(trials > 0, "trials must be positive");
+    assert!((0.0..1.0).contains(&alpha), "alpha must be in (0, 1)");
+    1.0 - alpha.powf(1.0 / trials as f64)
 }
 
 pub fn baseline_reproduction_configs(trials: usize, seed: u64) -> Vec<SimulationConfig> {
@@ -121,6 +135,9 @@ pub fn results_to_json_with_decoder(
         out.push_str(&format!("      \"trials\": {},\n", result.trials));
         out.push_str(&format!("      \"errors\": {},\n", result.errors));
         out.push_str(&format!("      \"bler\": {:.10},\n", result.bler()));
+        if let Some(upper) = result.zero_error_upper_95() {
+            out.push_str(&format!("      \"zero_error_upper_95\": {:.10},\n", upper));
+        }
         out.push_str(&format!("      \"seed\": {}\n", result.seed));
         out.push_str("    }");
         if i + 1 != results.len() {
