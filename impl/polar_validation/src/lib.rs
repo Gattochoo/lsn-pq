@@ -1,0 +1,447 @@
+use std::collections::HashSet;
+
+#[derive(Clone, Debug)]
+pub struct PolarCode {
+    pub n: usize,
+    pub k: usize,
+    pub p: f64,
+    pub frozen: Vec<usize>,
+    pub info_set: Vec<usize>,
+    frozen_mask: Vec<bool>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct SimulationResult {
+    pub n: usize,
+    pub k: usize,
+    pub p: f64,
+    pub trials: usize,
+    pub errors: usize,
+    pub seed: u64,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct SimulationConfig {
+    pub n: usize,
+    pub k: usize,
+    pub p: f64,
+    pub trials: usize,
+    pub seed: u64,
+}
+
+impl SimulationResult {
+    pub fn bler(&self) -> f64 {
+        if self.trials == 0 {
+            0.0
+        } else {
+            self.errors as f64 / self.trials as f64
+        }
+    }
+}
+
+pub fn baseline_reproduction_configs(trials: usize, seed: u64) -> Vec<SimulationConfig> {
+    [
+        (128, 16, 0.0706),
+        (128, 16, 0.0343),
+        (256, 32, 0.0706),
+        (256, 32, 0.0343),
+        (512, 64, 0.0706),
+        (512, 64, 0.0343),
+    ]
+    .into_iter()
+    .enumerate()
+    .map(|(i, (n, k, p))| SimulationConfig {
+        n,
+        k,
+        p,
+        trials,
+        seed: seed.wrapping_add((i as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15)),
+    })
+    .collect()
+}
+
+pub fn run_configs(configs: &[SimulationConfig]) -> Vec<SimulationResult> {
+    configs
+        .iter()
+        .map(|cfg| simulate_bsc_sc(cfg.n, cfg.k, cfg.p, cfg.trials, cfg.seed))
+        .collect()
+}
+
+pub fn results_to_json(experiment: &str, results: &[SimulationResult]) -> String {
+    results_to_json_with_decoder(experiment, "successive_cancellation_exact_llr", results)
+}
+
+pub fn results_to_json_with_decoder(
+    experiment: &str,
+    decoder: &str,
+    results: &[SimulationResult],
+) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str(&format!("  \"decoder\": \"{}\",\n", escape_json(decoder)));
+    out.push_str("  \"frozen_set\": \"natural_order_bhattacharyya_z2i_bad_z2i1_good\",\n");
+    out.push_str("  \"results\": [\n");
+    for (i, result) in results.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"N\": {},\n", result.n));
+        out.push_str(&format!("      \"K\": {},\n", result.k));
+        out.push_str(&format!("      \"p\": {:.10},\n", result.p));
+        out.push_str(&format!("      \"trials\": {},\n", result.trials));
+        out.push_str(&format!("      \"errors\": {},\n", result.errors));
+        out.push_str(&format!("      \"bler\": {:.10},\n", result.bler()));
+        out.push_str(&format!("      \"seed\": {}\n", result.seed));
+        out.push_str("    }");
+        if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
+fn escape_json(value: &str) -> String {
+    value
+        .chars()
+        .flat_map(|c| match c {
+            '"' => "\\\"".chars().collect::<Vec<_>>(),
+            '\\' => "\\\\".chars().collect::<Vec<_>>(),
+            '\n' => "\\n".chars().collect::<Vec<_>>(),
+            '\r' => "\\r".chars().collect::<Vec<_>>(),
+            '\t' => "\\t".chars().collect::<Vec<_>>(),
+            _ => vec![c],
+        })
+        .collect()
+}
+
+impl PolarCode {
+    pub fn new(n: usize, k: usize, p: f64) -> Self {
+        assert!(n.is_power_of_two(), "N must be a power of two");
+        assert!(k <= n, "K must be <= N");
+        assert!((0.0..0.5).contains(&p), "p must be in [0, 0.5)");
+
+        let frozen = build_frozen_natural(n, k, p);
+        let frozen_set = frozen.iter().copied().collect::<HashSet<_>>();
+        let info_set = (0..n)
+            .filter(|idx| !frozen_set.contains(idx))
+            .collect::<Vec<_>>();
+        let mut frozen_mask = vec![false; n];
+        for &idx in &frozen {
+            frozen_mask[idx] = true;
+        }
+
+        Self {
+            n,
+            k,
+            p,
+            frozen,
+            info_set,
+            frozen_mask,
+        }
+    }
+}
+
+pub fn build_frozen_natural(n: usize, k: usize, p: f64) -> Vec<usize> {
+    assert!(n.is_power_of_two(), "N must be a power of two");
+    assert!(k <= n, "K must be <= N");
+    assert!((0.0..0.5).contains(&p), "p must be in [0, 0.5)");
+
+    let z0 = 2.0 * (p * (1.0 - p)).sqrt();
+    let mut z = vec![z0];
+    while z.len() < n {
+        let mut next = vec![0.0; z.len() * 2];
+        for (i, value) in z.iter().copied().enumerate() {
+            next[2 * i] = 2.0 * value - value * value;
+            next[2 * i + 1] = value * value;
+        }
+        z = next;
+    }
+
+    let mut order = (0..n).collect::<Vec<_>>();
+    order.sort_by(|&a, &b| z[a].total_cmp(&z[b]).then_with(|| a.cmp(&b)));
+    order[k..].to_vec()
+}
+
+pub fn encode(code: &PolarCode, message: &[u8]) -> Vec<u8> {
+    assert_eq!(message.len(), code.k, "message length must equal K");
+    let mut u = vec![0u8; code.n];
+    for (&idx, &bit) in code.info_set.iter().zip(message.iter()) {
+        u[idx] = bit & 1;
+    }
+    polar_transform(&mut u);
+    u
+}
+
+pub fn decode_successive_cancellation(code: &PolarCode, llr: &[f64]) -> Vec<u8> {
+    assert_eq!(llr.len(), code.n, "LLR length must equal N");
+    let u_hat = sc_decode_node(llr, 0, &code.frozen_mask);
+    code.info_set.iter().map(|&idx| u_hat[idx]).collect()
+}
+
+pub fn decode_scl(code: &PolarCode, llr: &[f64], list_size: usize) -> Vec<u8> {
+    assert_eq!(llr.len(), code.n, "LLR length must equal N");
+    assert!(list_size > 0, "list size must be positive");
+    let paths = scl_decode_node(llr, 0, &code.frozen_mask, list_size);
+    let best = paths
+        .first()
+        .expect("SCL decoder must produce at least one path");
+    code.info_set.iter().map(|&idx| best.bits[idx]).collect()
+}
+
+pub fn simulate_bsc_sc(n: usize, k: usize, p: f64, trials: usize, seed: u64) -> SimulationResult {
+    let code = PolarCode::new(n, k, p);
+    let mut rng = Lcg64::new(seed);
+    let llr0 = ((1.0 - p) / p).ln();
+    let llr1 = -llr0;
+    let mut errors = 0usize;
+
+    for _ in 0..trials {
+        let message = (0..k)
+            .map(|_| if rng.next_bool() { 1 } else { 0 })
+            .collect::<Vec<_>>();
+        let x = encode(&code, &message);
+        let llr = x
+            .iter()
+            .map(|&bit| {
+                let flipped = rng.next_f64() < p;
+                let y = bit ^ u8::from(flipped);
+                if y == 0 {
+                    llr0
+                } else {
+                    llr1
+                }
+            })
+            .collect::<Vec<_>>();
+        let decoded = decode_successive_cancellation(&code, &llr);
+        if decoded != message {
+            errors += 1;
+        }
+    }
+
+    SimulationResult {
+        n,
+        k,
+        p,
+        trials,
+        errors,
+        seed,
+    }
+}
+
+pub fn simulate_bsc_scl(
+    n: usize,
+    k: usize,
+    p: f64,
+    trials: usize,
+    seed: u64,
+    list_size: usize,
+) -> SimulationResult {
+    let code = PolarCode::new(n, k, p);
+    let mut rng = Lcg64::new(seed);
+    let llr0 = ((1.0 - p) / p).ln();
+    let llr1 = -llr0;
+    let mut errors = 0usize;
+
+    for _ in 0..trials {
+        let message = (0..k)
+            .map(|_| if rng.next_bool() { 1 } else { 0 })
+            .collect::<Vec<_>>();
+        let x = encode(&code, &message);
+        let llr = x
+            .iter()
+            .map(|&bit| {
+                let flipped = rng.next_f64() < p;
+                let y = bit ^ u8::from(flipped);
+                if y == 0 {
+                    llr0
+                } else {
+                    llr1
+                }
+            })
+            .collect::<Vec<_>>();
+        let decoded = decode_scl(&code, &llr, list_size);
+        if decoded != message {
+            errors += 1;
+        }
+    }
+
+    SimulationResult {
+        n,
+        k,
+        p,
+        trials,
+        errors,
+        seed,
+    }
+}
+
+fn polar_transform(bits: &mut [u8]) {
+    let n = bits.len();
+    let mut half = 1usize;
+    while half < n {
+        let step = half * 2;
+        for block in (0..n).step_by(step) {
+            for i in 0..half {
+                bits[block + i] ^= bits[block + half + i];
+            }
+        }
+        half = step;
+    }
+}
+
+fn sc_decode_node(llr: &[f64], offset: usize, frozen_mask: &[bool]) -> Vec<u8> {
+    if llr.len() == 1 {
+        let bit = if frozen_mask[offset] || llr[0] >= 0.0 {
+            0
+        } else {
+            1
+        };
+        return vec![bit];
+    }
+
+    let half = llr.len() / 2;
+    let mut left_llr = vec![0.0; half];
+    for i in 0..half {
+        left_llr[i] = f_llr(llr[i], llr[half + i]);
+    }
+    let left = sc_decode_node(&left_llr, offset, frozen_mask);
+    let mut left_partial = left.clone();
+    polar_transform(&mut left_partial);
+
+    let mut right_llr = vec![0.0; half];
+    for i in 0..half {
+        right_llr[i] = g_llr(llr[i], llr[half + i], left_partial[i]);
+    }
+    let right = sc_decode_node(&right_llr, offset + half, frozen_mask);
+
+    [left, right].concat()
+}
+
+#[derive(Clone, Debug)]
+struct SclPath {
+    bits: Vec<u8>,
+    metric: f64,
+}
+
+fn scl_decode_node(
+    llr: &[f64],
+    offset: usize,
+    frozen_mask: &[bool],
+    list_size: usize,
+) -> Vec<SclPath> {
+    if llr.len() == 1 {
+        if frozen_mask[offset] {
+            return vec![SclPath {
+                bits: vec![0],
+                metric: bit_metric(llr[0], 0),
+            }];
+        }
+
+        let mut paths = vec![
+            SclPath {
+                bits: vec![0],
+                metric: bit_metric(llr[0], 0),
+            },
+            SclPath {
+                bits: vec![1],
+                metric: bit_metric(llr[0], 1),
+            },
+        ];
+        prune_paths(&mut paths, list_size);
+        return paths;
+    }
+
+    let half = llr.len() / 2;
+    let mut left_llr = vec![0.0; half];
+    for i in 0..half {
+        left_llr[i] = f_llr(llr[i], llr[half + i]);
+    }
+
+    let left_paths = scl_decode_node(&left_llr, offset, frozen_mask, list_size);
+    let mut combined = Vec::new();
+    for left in left_paths {
+        let mut left_partial = left.bits.clone();
+        polar_transform(&mut left_partial);
+
+        let mut right_llr = vec![0.0; half];
+        for i in 0..half {
+            right_llr[i] = g_llr(llr[i], llr[half + i], left_partial[i]);
+        }
+
+        let right_paths = scl_decode_node(&right_llr, offset + half, frozen_mask, list_size);
+        for right in right_paths {
+            let mut bits = Vec::with_capacity(llr.len());
+            bits.extend_from_slice(&left.bits);
+            bits.extend_from_slice(&right.bits);
+            combined.push(SclPath {
+                bits,
+                metric: left.metric + right.metric,
+            });
+        }
+    }
+
+    prune_paths(&mut combined, list_size);
+    combined
+}
+
+fn prune_paths(paths: &mut Vec<SclPath>, list_size: usize) {
+    paths.sort_by(|a, b| a.metric.total_cmp(&b.metric));
+    paths.truncate(list_size);
+}
+
+fn bit_metric(llr: f64, bit: u8) -> f64 {
+    let signed = if bit == 0 { llr } else { -llr };
+    if signed >= 0.0 {
+        (1.0 + (-signed).exp()).ln()
+    } else {
+        -signed + (1.0 + signed.exp()).ln()
+    }
+}
+
+fn f_llr(a: f64, b: f64) -> f64 {
+    let sign = if (a < 0.0) ^ (b < 0.0) { -1.0 } else { 1.0 };
+    let min_abs = a.abs().min(b.abs());
+    let correction = (1.0 + (-(a + b).abs()).exp()).ln() - (1.0 + (-(a - b).abs()).exp()).ln();
+    sign * min_abs + correction
+}
+
+fn g_llr(a: f64, b: f64, u: u8) -> f64 {
+    if u == 0 {
+        b + a
+    } else {
+        b - a
+    }
+}
+
+#[derive(Clone, Debug)]
+struct Lcg64 {
+    state: u64,
+}
+
+impl Lcg64 {
+    fn new(seed: u64) -> Self {
+        Self { state: seed }
+    }
+
+    fn next_u64(&mut self) -> u64 {
+        self.state = self
+            .state
+            .wrapping_mul(6364136223846793005)
+            .wrapping_add(1442695040888963407);
+        self.state
+    }
+
+    fn next_bool(&mut self) -> bool {
+        (self.next_u64() >> 63) != 0
+    }
+
+    fn next_f64(&mut self) -> f64 {
+        const SCALE: f64 = 1.0 / ((1u64 << 53) as f64);
+        ((self.next_u64() >> 11) as f64) * SCALE
+    }
+}

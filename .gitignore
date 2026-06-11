@@ -9,6 +9,9 @@ __pycache__/
 .venv/
 venv/
 
+# Rust
+target/
+
 # LaTeX build artifacts
 *.aux
 *.log

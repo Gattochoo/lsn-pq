@@ -1,0 +1,61 @@
+{
+  "experiment": "codex-p1-rust-sc-nle512-baseline",
+  "decoder": "successive_cancellation_exact_llr",
+  "frozen_set": "natural_order_bhattacharyya_z2i_bad_z2i1_good",
+  "results": [
+    {
+      "N": 128,
+      "K": 16,
+      "p": 0.0706000000,
+      "trials": 200,
+      "errors": 0,
+      "bler": 0.0000000000,
+      "seed": 3235823838
+    },
+    {
+      "N": 128,
+      "K": 16,
+      "p": 0.0343000000,
+      "trials": 200,
+      "errors": 0,
+      "bler": 0.0000000000,
+      "seed": 11400714822559022323
+    },
+    {
+      "N": 256,
+      "K": 32,
+      "p": 0.0706000000,
+      "trials": 200,
+      "errors": 0,
+      "bler": 0.0000000000,
+      "seed": 4354685568172669192
+    },
+    {
+      "N": 256,
+      "K": 32,
+      "p": 0.0343000000,
+      "trials": 200,
+      "errors": 0,
+      "bler": 0.0000000000,
+      "seed": 15755400387495867677
+    },
+    {
+      "N": 512,
+      "K": 64,
+      "p": 0.0706000000,
+      "trials": 200,
+      "errors": 0,
+      "bler": 0.0000000000,
+      "seed": 8709371133109514546
+    },
+    {
+      "N": 512,
+      "K": 64,
+      "p": 0.0343000000,
+      "trials": 200,
+      "errors": 0,
+      "bler": 0.0000000000,
+      "seed": 1663341878723161415
+    }
+  ]
+}
