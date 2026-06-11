@@ -1,8 +1,9 @@
 use lsn_cryptanalysis::{
-    CompactLagrangians, LsnSample, XorShift64, brute_force_ml_decode, compact_ml_decode,
-    enumerate_lagrangians, positive_basis_isd_decode, random_lagrangian, results_to_json,
-    run_bkw_bucket_trials, run_isd_budget_trials, run_isd_trials, run_ml_trials, run_span_trials,
-    sample_lsn, span_of_positives_decode, span_results_to_json, symplectic_form,
+    CompactLagrangians, LsnSample, XorShift64, bkw_noise_after_rounds, bkw_xor_noise_rate,
+    brute_force_ml_decode, compact_ml_decode, enumerate_lagrangians, positive_basis_isd_decode,
+    random_lagrangian, results_to_json, run_bkw_bucket_trials, run_isd_budget_trials,
+    run_isd_trials, run_ml_trials, run_span_trials, sample_lsn, span_of_positives_decode,
+    span_results_to_json, symplectic_form,
 };
 
 #[test]
@@ -213,4 +214,14 @@ fn bkw_bucket_runner_has_noiseless_positive_control() {
     assert_eq!(results.trials, 2);
     assert!(results.avg_pairs > 0.0);
     assert!(results.avg_delta_in_secret_when_label_equal > results.delta_in_secret_floor);
+}
+
+#[test]
+fn bkw_xor_noise_recurrence_squares_bias() {
+    assert_eq!(bkw_xor_noise_rate(0.0), 0.0);
+    assert_eq!(bkw_xor_noise_rate(0.5), 0.5);
+
+    assert!((bkw_xor_noise_rate(0.25) - 0.375).abs() < 1e-12);
+    assert!((bkw_noise_after_rounds(0.25, 2) - 0.46875).abs() < 1e-12);
+    assert!((bkw_noise_after_rounds(0.25, 3) - 0.498046875).abs() < 1e-12);
 }

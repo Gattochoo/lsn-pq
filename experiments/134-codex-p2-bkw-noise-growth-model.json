@@ -1,0 +1,232 @@
+{
+  "experiment": "codex-p2-bkw-noise-growth-model",
+  "model": "bkw_label_xor_noise_growth",
+  "recurrence": "p_{r+1}=2*p_r*(1-p_r); bias_{r+1}=bias_r^2",
+  "adjudication": "P2 BKW cost/noise model; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "initial_noise_rate": 0.1000000000,
+      "rounds": 0,
+      "xor_width": 1,
+      "effective_noise_rate": 0.1000000000,
+      "bias": 0.8000000000,
+      "signal_retention": 0.8000000000
+    },
+    {
+      "initial_noise_rate": 0.1000000000,
+      "rounds": 1,
+      "xor_width": 2,
+      "effective_noise_rate": 0.1800000000,
+      "bias": 0.6400000000,
+      "signal_retention": 0.6400000000
+    },
+    {
+      "initial_noise_rate": 0.1000000000,
+      "rounds": 2,
+      "xor_width": 4,
+      "effective_noise_rate": 0.2952000000,
+      "bias": 0.4096000000,
+      "signal_retention": 0.4096000000
+    },
+    {
+      "initial_noise_rate": 0.1000000000,
+      "rounds": 3,
+      "xor_width": 8,
+      "effective_noise_rate": 0.4161139200,
+      "bias": 0.1677721600,
+      "signal_retention": 0.1677721600
+    },
+    {
+      "initial_noise_rate": 0.1000000000,
+      "rounds": 4,
+      "xor_width": 16,
+      "effective_noise_rate": 0.4859262512,
+      "bias": 0.0281474977,
+      "signal_retention": 0.0281474977
+    },
+    {
+      "initial_noise_rate": 0.1000000000,
+      "rounds": 5,
+      "xor_width": 32,
+      "effective_noise_rate": 0.4996038592,
+      "bias": 0.0007922816,
+      "signal_retention": 0.0007922816
+    },
+    {
+      "initial_noise_rate": 0.1000000000,
+      "rounds": 6,
+      "xor_width": 64,
+      "effective_noise_rate": 0.4999996861,
+      "bias": 0.0000006277,
+      "signal_retention": 0.0000006277
+    },
+    {
+      "initial_noise_rate": 0.2500000000,
+      "rounds": 0,
+      "xor_width": 1,
+      "effective_noise_rate": 0.2500000000,
+      "bias": 0.5000000000,
+      "signal_retention": 0.5000000000
+    },
+    {
+      "initial_noise_rate": 0.2500000000,
+      "rounds": 1,
+      "xor_width": 2,
+      "effective_noise_rate": 0.3750000000,
+      "bias": 0.2500000000,
+      "signal_retention": 0.2500000000
+    },
+    {
+      "initial_noise_rate": 0.2500000000,
+      "rounds": 2,
+      "xor_width": 4,
+      "effective_noise_rate": 0.4687500000,
+      "bias": 0.0625000000,
+      "signal_retention": 0.0625000000
+    },
+    {
+      "initial_noise_rate": 0.2500000000,
+      "rounds": 3,
+      "xor_width": 8,
+      "effective_noise_rate": 0.4980468750,
+      "bias": 0.0039062500,
+      "signal_retention": 0.0039062500
+    },
+    {
+      "initial_noise_rate": 0.2500000000,
+      "rounds": 4,
+      "xor_width": 16,
+      "effective_noise_rate": 0.4999923706,
+      "bias": 0.0000152588,
+      "signal_retention": 0.0000152588
+    },
+    {
+      "initial_noise_rate": 0.2500000000,
+      "rounds": 5,
+      "xor_width": 32,
+      "effective_noise_rate": 0.4999999999,
+      "bias": 0.0000000002,
+      "signal_retention": 0.0000000002
+    },
+    {
+      "initial_noise_rate": 0.2500000000,
+      "rounds": 6,
+      "xor_width": 64,
+      "effective_noise_rate": 0.5000000000,
+      "bias": 0.0000000000,
+      "signal_retention": 0.0000000000
+    },
+    {
+      "initial_noise_rate": 0.3000000000,
+      "rounds": 0,
+      "xor_width": 1,
+      "effective_noise_rate": 0.3000000000,
+      "bias": 0.4000000000,
+      "signal_retention": 0.4000000000
+    },
+    {
+      "initial_noise_rate": 0.3000000000,
+      "rounds": 1,
+      "xor_width": 2,
+      "effective_noise_rate": 0.4200000000,
+      "bias": 0.1600000000,
+      "signal_retention": 0.1600000000
+    },
+    {
+      "initial_noise_rate": 0.3000000000,
+      "rounds": 2,
+      "xor_width": 4,
+      "effective_noise_rate": 0.4872000000,
+      "bias": 0.0256000000,
+      "signal_retention": 0.0256000000
+    },
+    {
+      "initial_noise_rate": 0.3000000000,
+      "rounds": 3,
+      "xor_width": 8,
+      "effective_noise_rate": 0.4996723200,
+      "bias": 0.0006553600,
+      "signal_retention": 0.0006553600
+    },
+    {
+      "initial_noise_rate": 0.3000000000,
+      "rounds": 4,
+      "xor_width": 16,
+      "effective_noise_rate": 0.4999997853,
+      "bias": 0.0000004295,
+      "signal_retention": 0.0000004295
+    },
+    {
+      "initial_noise_rate": 0.3000000000,
+      "rounds": 5,
+      "xor_width": 32,
+      "effective_noise_rate": 0.5000000000,
+      "bias": 0.0000000000,
+      "signal_retention": 0.0000000000
+    },
+    {
+      "initial_noise_rate": 0.3000000000,
+      "rounds": 6,
+      "xor_width": 64,
+      "effective_noise_rate": 0.5000000000,
+      "bias": 0.0000000000,
+      "signal_retention": 0.0000000000
+    },
+    {
+      "initial_noise_rate": 0.3750000000,
+      "rounds": 0,
+      "xor_width": 1,
+      "effective_noise_rate": 0.3750000000,
+      "bias": 0.2500000000,
+      "signal_retention": 0.2500000000
+    },
+    {
+      "initial_noise_rate": 0.3750000000,
+      "rounds": 1,
+      "xor_width": 2,
+      "effective_noise_rate": 0.4687500000,
+      "bias": 0.0625000000,
+      "signal_retention": 0.0625000000
+    },
+    {
+      "initial_noise_rate": 0.3750000000,
+      "rounds": 2,
+      "xor_width": 4,
+      "effective_noise_rate": 0.4980468750,
+      "bias": 0.0039062500,
+      "signal_retention": 0.0039062500
+    },
+    {
+      "initial_noise_rate": 0.3750000000,
+      "rounds": 3,
+      "xor_width": 8,
+      "effective_noise_rate": 0.4999923706,
+      "bias": 0.0000152588,
+      "signal_retention": 0.0000152588
+    },
+    {
+      "initial_noise_rate": 0.3750000000,
+      "rounds": 4,
+      "xor_width": 16,
+      "effective_noise_rate": 0.4999999999,
+      "bias": 0.0000000002,
+      "signal_retention": 0.0000000002
+    },
+    {
+      "initial_noise_rate": 0.3750000000,
+      "rounds": 5,
+      "xor_width": 32,
+      "effective_noise_rate": 0.5000000000,
+      "bias": 0.0000000000,
+      "signal_retention": 0.0000000000
+    },
+    {
+      "initial_noise_rate": 0.3750000000,
+      "rounds": 6,
+      "xor_width": 64,
+      "effective_noise_rate": 0.5000000000,
+      "bias": 0.0000000000,
+      "signal_retention": 0.0000000000
+    }
+  ]
+}

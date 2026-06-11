@@ -161,6 +161,16 @@ pub struct BkwBucketTrialResult {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub struct BkwNoiseModelRow {
+    pub initial_noise_rate: f64,
+    pub rounds: usize,
+    pub xor_width: usize,
+    pub effective_noise_rate: f64,
+    pub bias: f64,
+    pub signal_retention: f64,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct XorShift64 {
     state: u64,
 }
@@ -380,6 +390,45 @@ pub fn bkw_bucket_observable(
         avg_delta_in_secret_when_label_unequal: rate(delta_in_secret_unequal, unequal_count),
         seed: 0,
     }
+}
+
+pub fn bkw_xor_noise_rate(noise_rate: f64) -> f64 {
+    assert!(
+        (0.0..=0.5).contains(&noise_rate),
+        "noise rate must be in [0, 0.5]"
+    );
+    2.0 * noise_rate * (1.0 - noise_rate)
+}
+
+pub fn bkw_noise_after_rounds(initial_noise_rate: f64, rounds: usize) -> f64 {
+    let mut noise_rate = initial_noise_rate;
+    for _ in 0..rounds {
+        noise_rate = bkw_xor_noise_rate(noise_rate);
+    }
+    noise_rate
+}
+
+pub fn bkw_noise_model(initial_noise_rates: &[f64], max_rounds: usize) -> Vec<BkwNoiseModelRow> {
+    let mut rows = Vec::new();
+    for &initial_noise_rate in initial_noise_rates {
+        assert!(
+            (0.0..=0.5).contains(&initial_noise_rate),
+            "noise rate must be in [0, 0.5]"
+        );
+        for rounds in 0..=max_rounds {
+            let effective_noise_rate = bkw_noise_after_rounds(initial_noise_rate, rounds);
+            let bias = 1.0 - 2.0 * effective_noise_rate;
+            rows.push(BkwNoiseModelRow {
+                initial_noise_rate,
+                rounds,
+                xor_width: 1usize << rounds,
+                effective_noise_rate,
+                bias,
+                signal_retention: bias.abs(),
+            });
+        }
+    }
+    rows
 }
 
 pub fn run_bkw_bucket_trials(
@@ -1050,6 +1099,47 @@ pub fn bkw_results_to_json(experiment: &str, results: &[BkwBucketTrialResult]) -
         out.push_str(&format!("      \"seed\": {}\n", result.seed));
         out.push_str("    }");
         if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
+pub fn bkw_noise_model_to_json(experiment: &str, rows: &[BkwNoiseModelRow]) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str("  \"model\": \"bkw_label_xor_noise_growth\",\n");
+    out.push_str("  \"recurrence\": \"p_{r+1}=2*p_r*(1-p_r); bias_{r+1}=bias_r^2\",\n");
+    out.push_str(
+        "  \"adjudication\": \"P2 BKW cost/noise model; evidence, not proof; OPEN = LSN\",\n",
+    );
+    out.push_str("  \"results\": [\n");
+    for (i, row) in rows.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!(
+            "      \"initial_noise_rate\": {:.10},\n",
+            row.initial_noise_rate
+        ));
+        out.push_str(&format!("      \"rounds\": {},\n", row.rounds));
+        out.push_str(&format!("      \"xor_width\": {},\n", row.xor_width));
+        out.push_str(&format!(
+            "      \"effective_noise_rate\": {:.10},\n",
+            row.effective_noise_rate
+        ));
+        out.push_str(&format!("      \"bias\": {:.10},\n", row.bias));
+        out.push_str(&format!(
+            "      \"signal_retention\": {:.10}\n",
+            row.signal_retention
+        ));
+        out.push_str("    }");
+        if i + 1 != rows.len() {
             out.push(',');
         }
         out.push('\n');
