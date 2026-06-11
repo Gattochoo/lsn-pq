@@ -1,0 +1,40 @@
+{
+  "description": "Exact moments m_1, m_2, m_3 for n=2,3,4 via 2D isotropic subspace enumeration",
+  "method": "Enumerate all 2D isotropic subspaces of F_2^{2n} and all ordered bases. For each (b_1,b_2), compute t = |supp(b_1) ∩ supp(b_2)|, then m_j = E[C(t,j)] / C(2n,j).",
+  "theoretical_basis": "(c_1,c_2) — first two columns of A — is uniformly distributed over all ordered bases of all 2D isotropic subspaces. Proof: symmetry + each 2D isotropic W is contained in the same number of Lagrangians.",
+  "results": {
+    "n=2": {
+      "m_1": "4/15",
+      "m_1_float": 0.2666666667,
+      "m_2": "7/135",
+      "m_2_float": 0.0518518519,
+      "m_3": "0",
+      "m_3_float": 0.0
+    },
+    "n=3": {
+      "m_1": "16/63",
+      "m_1_float": 0.2539682540,
+      "m_2": "284/4725",
+      "m_2_float": 0.0601058201,
+      "m_3": "4/315",
+      "m_3_float": 0.0126984127
+    },
+    "n=4": {
+      "m_1": "64/255",
+      "m_1_float": 0.2509803922,
+      "m_2": "464/7497",
+      "m_2_float": 0.0618914232,
+      "m_3": "16/1071",
+      "m_3_float": 0.0149393091
+    }
+  },
+  "convergence_observation": {
+    "pattern": "m_j → (1/4)^j with O(4^{-n}) error",
+    "m_2_diffs": ["23/2160", "181/75600", "73/119952"],
+    "m_2_diffs_float": [0.010648, 0.002394, 0.000609],
+    "m_3_diffs": ["1/64", "59/20160", "47/68544"],
+    "m_3_diffs_float": [0.015625, 0.002927, 0.000686],
+    "per_increment_ratio_approx": "~1/4"
+  },
+  "status": "Exact values confirmed. Closed form for general n remains open."
+}
