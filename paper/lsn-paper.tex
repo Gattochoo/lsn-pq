@@ -342,17 +342,17 @@ A $\delta$-enrichment would scale the per-query advantage by $(1+\delta)$; for s
 \hline
 Security & $n$ & $\log_2(q_{\min})^{\text{(a)}}$ & $|\Lagr|$ & PK (KEM) \\
 \hline
-80-bit  & 41  & 80.6  & $\sim 2^{861}$  & 1.78 KB \\
-128-bit & 65  & 128.6 & $\sim 2^{2145}$ & 2.78 KB \\
-192-bit & 97  & 192.6 & $\sim 2^{4753}$ & --- \\
-256-bit & 129 & 256.6 & $\sim 2^{8385}$ & --- \\
+80-bit  & 41  & 80.4  & $\sim 2^{861}$  & 1.78 KB \\
+128-bit & 65  & 128.4 & $\sim 2^{2145}$ & 2.78 KB \\
+192-bit & 97  & 192.4 & $\sim 2^{4753}$ & --- \\
+256-bit & 129 & 256.4 & $\sim 2^{8385}$ & --- \\
 \hline
 \end{tabular}
 \vspace{4pt}
 \noindent {\footnotesize $^{\text{(a)}}$ The $q_{\min}$ figures use the conditional bound of \Cref{thm:main-sq-cond}; the unconditional spread bound (\Cref{thm:main-sq-uncond}) gives $\Omega(2^n)$.}
 \end{table}
 
-The $q_{\min}$ figures use the exact pairwise-correlation formula of Lemma~\ref{lem:exact-corr}, so the $80$-bit line is met \emph{exactly} at $n=41$ with no asymptotic slack. The constant factor in the exponent is $\approx 0.67$ (below $1$), so parameters with $2n < \lambda$ are not advised without a rigorous upper bound. PK sizes are shown only for the two KEM parameter sets derived in \Cref{sec:kem}; 192/256-bit KEM parameters depend on the inner repetition length $r$ and are left as standard extrapolations.
+The $q_{\min}$ figures follow from the fully explicit bound $q \ge \tfrac13 \cdot 2^{2n}$ of \Cref{thm:main-sq-cond} (no hidden asymptotic constants), built on the exact pairwise-correlation formula of Lemma~\ref{lem:exact-corr}: $\log_2 q_{\min} = 2n - \log_2 3 \approx 2n - 1.585$, so the $80$-bit line is met at $n=41$ with $0.4$ bits of slack. Since the multiplicative constant $\tfrac13$ is below $1$, parameters with $2n < \lambda + 1.6$ are not advised without a rigorous upper bound. PK sizes are shown only for the two KEM parameter sets derived in \Cref{sec:kem}; 192/256-bit KEM parameters depend on the inner repetition length $r$ and are left as standard extrapolations.
 
 \section{Decoder Landscape}
 \label{sec:decoders}
@@ -916,7 +916,7 @@ This is $1 - 2^{-\Omega(n^2)}$ only when $n - 2c = \Omega(n)$, i.e. $\rho \ge (3
 \begin{itemize}
 \item $\rho = 2n$ (full rank): \textbf{BLOCKED} --- output Gram is identically zero (\Cref{thm:transport-fullrank}).
 \item $(3/2+\epsilon)n \le \rho < 2n$ (near-full): \textbf{BLOCKED} --- output Gram rank $\le 2c \le (1-\epsilon)n$ (\Cref{thm:transport-nearfull}), while the uniform Gram has rank $\approx n$ w.h.p.
-\item $\rho \le (3/2-\epsilon)n$ (mid/low rank): \textbf{DEAD} for fixed $B$ at $m \ge cn$ --- the rank test dies, but the output matrix $BA$ is statistically far from uniform. By LPQR26's Theorem~D.1, $H(BA) \le (1-d)mn$ for a constant $d > 0$; the Fannes--Csisz\'{a}r continuity inequality gives $\operatorname{SD}(BA, \operatorname{Uniform}) \ge d - 1/(mn)$. At $n=41$, $m=82$ this distance is at least $0.2497$. Since any LPN solver expects a uniform matrix, the reduction fails regardless of rank. The rank-stratification theorems above retain value as \emph{constructive} distinguishers (explicitly exhibiting the defect), whereas the Fannes argument is non-constructive but covers all ranks uniformly.
+\item $\rho \le (3/2-\epsilon)n$ (mid/low rank): \textbf{DEAD} for fixed $B$ at $m \ge cn$ --- the rank test dies, but the output matrix $BA$ is statistically far from uniform. By LPQR26's Theorem~D.1, $H(BA) \le (1-d)mn$ for a constant $d > 0$; the Fannes--Csisz\'{a}r continuity inequality gives $\operatorname{SD}(BA, \operatorname{Uniform}) \ge d - 1/(mn)$. At $n=41$, $m=82$ ($m=2n$), the frame entropy $H(A) \le (3/2)n^2 + n/2$ gives $d \ge 1/4 - 1/(4n) \approx 0.244$, so this distance is at least $0.24$. Since any LPN solver expects a uniform matrix, the reduction fails regardless of rank. The rank-stratification theorems above retain value as \emph{constructive} distinguishers (explicitly exhibiting the defect), whereas the Fannes argument is non-constructive but covers all ranks uniformly.
 \end{itemize}
 This stratification applies to \emph{fixed/public} $B$ (per-realization). For $m < cn$ the Fannes bound is not triggered; this corner case is cryptographically irrelevant because $m$ must exceed the secret dimension $n$ for any reduction to have polynomially many samples. If the reduction draws $B$ from a high-entropy distribution conditioned on $BA$ being uniform, the matrix is randomized---but then the label noise $Be$ is killed by piling-up at $p=1/4$ (row weight $w$ gives bias $2^{-w}$). The remaining regime is the secret-$B$ model of \Cref{lem:affine-coset-bias}, where the quantitative trade-off is governed by the Gram-rank transition.
 
