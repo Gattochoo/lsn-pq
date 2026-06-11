@@ -703,7 +703,9 @@ We use the random-oracle model (ROM) for the security proof.
 
 The permutation-based index sampling guarantees distinct indices, eliminating birthday collisions. Public-key size is $\lambda + N r$ bits; ciphertext size is $\lambda + N$ bits.
 
-\paragraph{Implementation note.} A small-scale Python prototype of the SCL decoder exhibited a bug (BLER = 1.0 for $N=128,256$), contradicting the conservative Bhattacharyya bound and indicating an implementation issue rather than a parameter problem. Subsequent validation with the verified \texttt{komm} SC decoder \cite{komm} revealed a second bug in the Bhattacharyya parameter indexing: the original code concatenated all bad channels before all good channels, whereas \texttt{komm}'s natural-order polar code requires interleaving ($z_{2i}=2z_i-z_i^2$, $z_{2i+1}=z_i^2$). After correcting the frozen-set construction, all tested configurations yielded BLER $=0$: at $p'=0.0706$ for $N=128,256,512$ with $K=N/8$, and at $p'=0.0343$ for all tested lengths. The previous $N=256$ anomaly (BLER $=0.115$) was entirely due to the indexing mismatch, not incomplete polarization. These short-length, 200-trial simulations are \emph{preliminary}: they certify only $\mathrm{BLER}\lesssim 1/200$, not the design point $2^{-80}$, and they do not test the design length $N=2048$. The conservative Ar\i{}kan--Bhattacharyya bound ($2^{-80}$ at $r=7$, $2^{-148}$ at $r=11$) remains the design basis; full $N=2048$ validation is deferred to the production Rust implementation.
+\paragraph{Implementation note.} A small-scale Python prototype of the SCL decoder exhibited a bug (BLER = 1.0 for $N=128,256$), contradicting the conservative Bhattacharyya bound and indicating an implementation issue rather than a parameter problem. Subsequent validation with the verified \texttt{komm} SC decoder \cite{komm} revealed a second bug in the Bhattacharyya parameter indexing: the original code concatenated all bad channels before all good channels, whereas \texttt{komm}'s natural-order polar code requires interleaving ($z_{2i}=2z_i-z_i^2$, $z_{2i+1}=z_i^2$). After correcting the frozen-set construction, all tested configurations yielded BLER $=0$: at $p'=0.0706$ for $N=128,256,512$ with $K=N/8$, and at $p'=0.0343$ for all tested lengths. The previous $N=256$ anomaly (BLER $=0.115$) was entirely due to the indexing mismatch, not incomplete polarization.
+
+A production-grade Rust validation decoder (SCL with list size $L=8$, min-sum path metric) was subsequently exercised at the design length $N=2048$, $K=256$ for $2000$ independent trials at both noise points ($p'=0.0706$ and $p'=0.0343$). No block errors were observed; under the naive binomial model the one-sided $95\%$ upper confidence bound for the BLER is $1.5\times10^{-3}$. High-noise negative controls ($p'\in\{0.3,0.4,0.5\}$) on the same harness exhibited near-total or total failure (BLER $0.965$--$1.000$), confirming that noise injection and block comparison are active. These results strengthen the empirical support for the $N=2048$ parameters but do not replace the conservative Ar\i{}kan--Bhattacharyya bound ($2^{-80}$ at $r=7$, $2^{-148}$ at $r=11$), which remains the design basis; a direct Monte-Carlo validation of $2^{-80}$ would require infeasibly many trials.
 
 \subsubsection{Correctness}
 \label{subsubsec:kem-correctness}
@@ -936,38 +938,29 @@ where $W_N$ is the weight enumerator of $N = \operatorname{nullspace}(A^{\!\top}
 When the coset offset $b_0=0$ every term in the MacWilliams sum is positive, so the bound is an equality.
 \end{lemma}
 
-The expectation bound can be upgraded to a high-probability statement.
-
-\begin{lemma}[Affine-coset bias, high-probability form]
-\label{lem:affine-coset-bias-whp}
-The weight enumerator $W := W_N(1/2)-1 = \sum_{v\neq 0} \mathbf{1}_{v\in N}\,2^{-|v|}$ has exact first two moments
+The expectation bound can be upgraded to a high-probability statement.  Write $W := W_N(1/2)-1 = \sum_{v\neq 0} \mathbf{1}_{v\in N}\,2^{-|v|}$.  The exact first two moments are
 \[
   \E[W] = \frac{(3/2)^{2n}-1}{2^n+1}, \qquad
   \operatorname{Var}[W] = p(1{-}p)\,D + q\,S_0 - p^2 T,
 \]
-with $p=\tfrac{1}{2^n+1}$, $q=\tfrac{1}{(2^{n-1}+1)(2^n+1)}$, $D=(5/4)^{2n}-1$, $T=((3/2)^{2n}-1)^2-D$, and $S_0=\tfrac12(T+C)$, where the character sum
+with $p=\tfrac{1}{2^n+1}$, $q=\tfrac{1}{(2^{n-1}+1)(2^n+1)}$, $D=(5/4)^{2n}-1$, $T=((3/2)^{2n}-1)^2-D$, and $S_0=\tfrac12(T+C)$.  The character sum
 \[
   C = \!\!\sum_{\substack{v\neq v'\\ v,v'\neq 0}}\!\! (-1)^{\Omega(v,v')}2^{-|v|-|v'|}
     = (7/4)^{2n} - 2(3/2)^{2n} - (5/4)^{2n} + 2
 \]
-is evaluated by factorising $\Omega$ over the $n$ symplectic coordinate blocks, each contributing $\sum_{a,b,x,y\in\{0,1\}}(-1)^{ay+bx}2^{-(a+b+x+y)} = (7/4)^2$. Consequently $\operatorname{Var}[W]/\E[W]^2 = O\!\bigl((50/81)^n\bigr)$, and Chebyshev's inequality gives, for a uniformly random isotropic $A$,
+factorises over the $n$ symplectic coordinate blocks, each contributing $\sum_{a,b,x,y\in\{0,1\}}(-1)^{ay+bx}2^{-(a+b+x+y)} = (7/4)^2$ (see \Cref{app:krawtchouk} for the full derivation).  Consequently $\operatorname{Var}[W]/\E[W]^2 = O\!\bigl((50/81)^n\bigr)$, and Chebyshev's inequality gives the following.
+
+\begin{lemma}[Affine-coset bias, w.h.p.]
+\label{lem:affine-coset-bias-whp}
+For a uniformly random full-rank isotropic $A \in \F_2^{2n \times n}$ and uniformly random noise $e$,
 \[
-  \bigl|\E_{b,e}[(-1)^{b^{\!\top} e}]\bigr| \;\le\; \bigl(2^{-n} + (9/16)^n\bigr)\bigl(1+o(1)\bigr)
+  \bigl|\E_{e}\bigl[(-1)^{b^{\!\top} e}\bigr]\bigr|
+  \;\le\; \bigl(2^{-n} + (9/16)^n\bigr)\bigl(1+o(1)\bigr)
   \qquad\text{with probability } 1 - 2^{-\Omega(n)}.
 \]
 \end{lemma}
 
-\begin{proof}
-Write $b = b_0 + Nz$ with $z \sim \operatorname{Uniform}(\F_2^n)$ and $N$ a basis of $\operatorname{nullspace}(A^{\!\top})$. Then
-\[
-\E_b[(-1)^{b^{\!\top} e}] = (-1)^{b_0^{\!\top} e} \cdot \mathbf{1}_{e \in \operatorname{colspace}(A)},
-\]
-so $|\E_{b,e}[(-1)^{b^{\!\top} e}]| \le \sum_{x \in \operatorname{colspace}(A)} p^{|x|}(1-p)^{D-|x|} = (1-p)^D \cdot W_{\operatorname{colspace}(A)}(p/(1-p))$, with equality when $b_0 = 0$.
-
-The MacWilliams identity with $t = p/(1-p)$ gives $(1-p)^D W_{\operatorname{colspace}(A)}(t) = 2^{-n} W_N(1-2p)$. For the expectation, $N = \Omega \cdot L$ is the image of a uniform Lagrangian $L$, so $\Pr[x \in N] = 1/(2^n+1)$ for every non-zero $x$ by $\mathrm{Sp}(2n)$-transitivity. Hence $\E_A[W_N(1/2)] = 1 + ((3/2)^D-1)/(2^n+1) \le 1+(9/8)^n$, yielding the claimed bound.
-\end{proof}
-
-At cryptographic $n$ the $2^{-n}$ term is negligible and the bias is dominated by $(9/16)^n$, which matches the full-space piling-up baseline $(3/4)^{2n}$. Thus, in expectation over random isotropic $A$, the affine constraint does not materially increase the per-row label bias; the secret-$B$ trade-off is governed by the Gram-rank transition, not by bias amplification.
+Thus, except with exponentially small probability, the per-row label bias of the secret-$B$ regime is bounded by $(9/16)^n(1+o(1))$; the secret-$B$ trade-off is governed by the Gram-rank transition, not by bias amplification.
 
 \paragraph{Low-weight reachability barrier (any-$B$).}
 The preceding affine-coset bound controls the per-row label signal when the reduction is forced into a high-rank affine subspace.  A complementary barrier applies to \emph{any} $B$ model (adaptive or fixed, public or secret) under the \textbf{conditional-uniformity} hypothesis ($\operatorname{SD}(BA\mid A)\le\delta$ for each fixed $A$).  It closes the linear-reduction landscape in this conditional model at constant noise $p=1/4$ for all $m=\operatorname{poly}(n)$.  The counting argument is independent of $A$, but the hypothesis is per-instance: the marginal-adaptive corner, where $B=g(A)$ yields marginally-uniform $BA$ via low-weight rows that vary with $A$, remains open (see \Cref{open:marginal-adaptive}).
@@ -1185,7 +1178,7 @@ We state precisely the problems whose resolution would close the standard-model 
 We flag five practical gaps that a reader should weigh against the theoretical claims above.
 
 \begin{enumerate}
-\item \textbf{Empirical gap at $N=2048$.} The concatenated code is designed via the Bhattacharyya bound, which guarantees $P_e\leq 2^{-80}$ for the target block length $N=2048$. We have validated the SC decoder empirically for $N\in\{128,256,512\}$ (all BLER $=0$ in 200 trials), but a direct Monte-Carlo run at $N=2048$ is computationally expensive and has not been completed. The correctness claim for $N=2048$ therefore rests on the Bhattacharyya bound and the smaller-scale validation, not on a direct measurement.
+\item \textbf{Empirical gap at $N=2048$.} The concatenated code is designed via the Bhattacharyya bound, which guarantees $P_e\leq 2^{-80}$ for the target block length $N=2048$. We have validated a Rust SCL decoder ($L=8$, min-sum) empirically for $N\in\{128,256,512\}$ (all BLER $=0$ in 200 trials) and directly at $N=2048$ ($2000$ trials at $p'=0.0706$ and $p'=0.0343$, $0$ block errors, one-sided $95\%$ BLER upper bound $1.5\times10^{-3}$), with high-noise negative controls confirming the harness. The design-point claim $P_e\leq 2^{-80}$ itself still rests on the Bhattacharyya bound rather than direct measurement, since certifying $2^{-80}$ by Monte Carlo is infeasible.
 
 \item \textbf{No constant-time reference implementation.} While \cref{subsec:impl-sec} argues that LSN-KEM is constant-time ``by construction,'' this property has not been verified on a concrete, audited implementation. A production-grade Rust reference implementation with known-answer test (KAT) vectors is planned but not yet available. Physical fault-injection resistance (e.g., bit-flip attacks on the majority vote) is likewise deferred to the audited implementation.
 
@@ -1240,6 +1233,54 @@ To count pairs of Lagrangians with intersection dimension $k$, fix a $k$-dimensi
 \Pr[j=k] = \frac{{n \brack k}_2 \cdot 2^{(n-k)(n-k+1)/2}}{\prod_{i=1}^n (2^i+1)}.
 \]
 The moment generating function $C_n = \E[2^j]$ converges rapidly to $2$ as $n \to \infty$.
+
+\section{Full Proof of the Affine-Coset Bias Bound}
+\label{app:krawtchouk}
+
+Let $N \subset \F_2^{2n}$ be a uniform random Lagrangian.  For $\lambda \in (0,1)$ define the weight enumerator $W_N(\lambda) := \sum_{v \in N} \lambda^{|v|}$.  In \Cref{lem:affine-coset-bias-whp} we need $\lambda=1/2$.
+
+\paragraph{Exact moments.}  Write $p := \Pr[v \in N \setminus \{0\}] = 1/(2^n+1)$ and $q := \Pr[v,v' \in N \setminus \{0\} \mid v \neq v',\; \Omega(v,v')=0] = 1/((2^{n-1}+1)(2^n+1))$.  Let $X_v := \mathbf{1}_{v \in N}$ and $W := W_N(1/2)-1 = \sum_{v \neq 0} X_v\,2^{-|v|}$.  Then
+\[
+\E[W] = \frac{(3/2)^{2n}-1}{2^n+1}, \qquad
+\Var[W] = p(1-p)\,D + q\,S_0 - p^2 T,
+\]
+where $D = (5/4)^{2n}-1$, $T = ((3/2)^{2n}-1)^2-D$, and $S_0 = \tfrac12(T+C)$ with
+\[
+C = \sum_{\substack{v\neq v'\\ v,v'\neq 0}} (-1)^{\Omega(v,v')}2^{-|v|-|v'|}
+  = (7/4)^{2n} - 2(3/2)^{2n} - (5/4)^{2n} + 2.
+\]
+
+\paragraph{Block factorisation of $C$.}  Decompose $v=(a,b)$, $v'=(x,y)$ with $a,b,x,y \in \F_2^n$.  The symplectic form factorises coordinate-wise: $\Omega(v,v') = \sum_{i=1}^n (a_i y_i + b_i x_i)$.  Hence
+\[
+\sum_{v,v' \in \F_2^{2n}} (-1)^{\Omega(v,v')} 2^{-|v|-|v'|}
+= \prod_{i=1}^n \underbrace{\sum_{a,b,x,y\in\{0,1\}} (-1)^{ay+bx} 2^{-(a+b+x+y)}}_{=\,49/16 = (7/4)^2}
+= (7/4)^{2n}.
+\]
+Removing the terms with $v=0$ or $v'=0$ (each contributes $(3/2)^{2n}$) and adding back the double-counted $(0,0)$ term yields $C$ as above.
+
+\paragraph{Asymptotic decay.}  Keeping only dominant exponentials in each symbol,
+\begin{align*}
+p(1-p)D &= (25/32)^n + O((25/64)^n), \\
+qS_0 &= (81/64)^n + (49/64)^n + O((9/16)^n), \\
+p^2T &= (81/64)^n + O((9/16)^n).
+\end{align*}
+The $(81/64)^n$ terms cancel exactly because $\tfrac{q}{2}-p^2 = -1/(2(2^{n-1}+1)(2^n+1)^2)$.  Therefore
+\[
+\Var[W] = (25/32)^n + (49/64)^n + O((9/16)^n) + O((25/64)^n).
+\]
+Since $\E[W] = (9/8)^n(1+o(1))$, we obtain $\Var[W]/\E[W]^2 = O((50/81)^n)$.
+
+\paragraph{Chebyshev concentration.}  Choose $\varepsilon_n = (50/81)^{n/4}$.  Then
+\[
+\Pr\bigl[|W-\E[W]| \ge \varepsilon_n \E[W]\bigr]
+\le \frac{\Var[W]}{\varepsilon_n^2 \E[W]^2}
+= O((50/81)^{n/2}) = 2^{-\Omega(n)}.
+\]
+On this high-probability event,
+\[
+\frac{W_N(1/2)-1}{2^n} = \frac{(9/8)^n}{2^n}(1+o(1)) = (9/16)^n(1+o(1)),
+\]
+which yields the bound of \Cref{lem:affine-coset-bias-whp}.
 
 \section{Reduction Barrier Summary}
 \label{app:barrier}
