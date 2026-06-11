@@ -1,0 +1,39 @@
+{
+ "experiment": "155-CLAUDE-op8-locus-i-uniformity-check",
+ "claim_under_test": "Kimi OP8-final \u00a73(i): w uniform over F_2^{2n} for fixed y",
+ "results": [
+  {
+   "n": 2,
+   "ambient_2^{2n}": 16,
+   "A_cols": [
+    1,
+    2
+   ],
+   "B_col": 4,
+   "y_fixed": 1,
+   "noiseless_support_size": 4,
+   "noiseless_expected_2^n": 4,
+   "noiseless_is_uniform": false,
+   "noisy_support_size_wt<=2": 16,
+   "noisy_is_uniform": true,
+   "verdict": "NOT uniform \u2014 w confined to n-dim coset (+noise); Kimi \u00a73(i) 'uniform since full-rank & r uniform' is FALSE"
+  },
+  {
+   "n": 3,
+   "ambient_2^{2n}": 64,
+   "A_cols": [
+    1,
+    2,
+    4
+   ],
+   "B_col": 8,
+   "y_fixed": 1,
+   "noiseless_support_size": 8,
+   "noiseless_expected_2^n": 8,
+   "noiseless_is_uniform": false,
+   "noisy_support_size_wt<=2": 56,
+   "noisy_is_uniform": false,
+   "verdict": "NOT uniform \u2014 w confined to n-dim coset (+noise); Kimi \u00a73(i) 'uniform since full-rank & r uniform' is FALSE"
+  }
+ ]
+}
