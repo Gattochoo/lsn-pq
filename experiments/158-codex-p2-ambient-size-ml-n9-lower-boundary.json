@@ -1,0 +1,92 @@
+{
+  "experiment": "codex-p2-sampled-ambient-size-candidate-ml",
+  "attack": "sampled_candidate_ml_planted_secret",
+  "threat_model": "attacker observes public points and noisy membership labels; experiment plants the secret among random Lagrangian decoys to measure ML score separation without full orbit enumeration",
+  "adjudication": "P2 sampled-candidate ML screen; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 6144,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "candidate_count": 262144,
+      "successes": 6,
+      "success_rate": 0.3000000000,
+      "avg_secret_score": 4612.650000,
+      "avg_best_false_score": 4614.700000,
+      "avg_secret_margin": -2.050000,
+      "seed": 4598343448059893991
+    },
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 6144,
+      "noise_rate": 0.5000000000,
+      "trials": 20,
+      "candidate_count": 262144,
+      "successes": 0,
+      "success_rate": 0.0000000000,
+      "avg_secret_score": 3070.200000,
+      "avg_best_false_score": 3087.600000,
+      "avg_secret_margin": -17.400000,
+      "seed": 4602847047687264487
+    },
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 8192,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "candidate_count": 262144,
+      "successes": 8,
+      "success_rate": 0.4000000000,
+      "avg_secret_score": 6144.450000,
+      "avg_best_false_score": 6144.550000,
+      "avg_secret_margin": -0.100000,
+      "seed": 4598343448059896039
+    },
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 8192,
+      "noise_rate": 0.5000000000,
+      "trials": 20,
+      "candidate_count": 262144,
+      "successes": 0,
+      "success_rate": 0.0000000000,
+      "avg_secret_score": 4089.650000,
+      "avg_best_false_score": 4108.450000,
+      "avg_secret_margin": -18.800000,
+      "seed": 4602847047687266535
+    },
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 10240,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "candidate_count": 262144,
+      "successes": 13,
+      "success_rate": 0.6500000000,
+      "avg_secret_score": 7673.450000,
+      "avg_best_false_score": 7671.400000,
+      "avg_secret_margin": 2.050000,
+      "seed": 4598343448059898087
+    },
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 10240,
+      "noise_rate": 0.5000000000,
+      "trials": 20,
+      "candidate_count": 262144,
+      "successes": 0,
+      "success_rate": 0.0000000000,
+      "avg_secret_score": 5114.600000,
+      "avg_best_false_score": 5136.300000,
+      "avg_secret_margin": -21.700000,
+      "seed": 4602847047687268583
+    }
+  ]
+}
