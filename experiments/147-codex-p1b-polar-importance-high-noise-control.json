@@ -1,0 +1,34 @@
+{
+  "experiment": "codex-p1-rust-scl-fast-l8-high-noise",
+  "decoder": "scl_l8_minsum_pathmetric",
+  "frozen_set": "natural_order_bhattacharyya_z2i_bad_z2i1_good",
+  "results": [
+    {
+      "N": 2048,
+      "K": 256,
+      "p": 0.3000000000,
+      "trials": 50,
+      "errors": 48,
+      "bler": 0.9600000000,
+      "seed": 1364271144
+    },
+    {
+      "N": 2048,
+      "K": 256,
+      "p": 0.4000000000,
+      "trials": 50,
+      "errors": 50,
+      "bler": 1.0000000000,
+      "seed": 11400714820687469629
+    },
+    {
+      "N": 2048,
+      "K": 256,
+      "p": 0.5000000000,
+      "trials": 50,
+      "errors": 50,
+      "bler": 1.0000000000,
+      "seed": 4354685566301116498
+    }
+  ]
+}

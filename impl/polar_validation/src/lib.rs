@@ -20,6 +20,20 @@ pub struct SimulationResult {
     pub seed: u64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct ImportanceSamplingResult {
+    pub n: usize,
+    pub k: usize,
+    pub target_p: f64,
+    pub proposal_p: f64,
+    pub trials: usize,
+    pub proposal_errors: usize,
+    pub weighted_bler_estimate: f64,
+    pub mean_likelihood_ratio: f64,
+    pub effective_sample_size: f64,
+    pub seed: u64,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SimulationConfig {
     pub n: usize,
@@ -43,6 +57,16 @@ impl SimulationResult {
             Some(zero_error_upper_bound(self.trials, 0.05))
         } else {
             None
+        }
+    }
+}
+
+impl ImportanceSamplingResult {
+    pub fn proposal_error_rate(&self) -> f64 {
+        if self.trials == 0 {
+            0.0
+        } else {
+            self.proposal_errors as f64 / self.trials as f64
         }
     }
 }
@@ -138,6 +162,66 @@ pub fn results_to_json_with_decoder(
         if let Some(upper) = result.zero_error_upper_95() {
             out.push_str(&format!("      \"zero_error_upper_95\": {:.10},\n", upper));
         }
+        out.push_str(&format!("      \"seed\": {}\n", result.seed));
+        out.push_str("    }");
+        if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
+pub fn importance_results_to_json(
+    experiment: &str,
+    decoder: &str,
+    results: &[ImportanceSamplingResult],
+) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str(&format!("  \"decoder\": \"{}\",\n", escape_json(decoder)));
+    out.push_str("  \"sampling\": \"tilted_bsc_proposal_reweighted_to_target_bsc\",\n");
+    out.push_str("  \"frozen_set\": \"natural_order_bhattacharyya_z2i_bad_z2i1_good\",\n");
+    out.push_str(
+        "  \"adjudication\": \"P1b importance-sampling pilot; evidence, not proof; OPEN = LSN\",\n",
+    );
+    out.push_str("  \"results\": [\n");
+    for (i, result) in results.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"N\": {},\n", result.n));
+        out.push_str(&format!("      \"K\": {},\n", result.k));
+        out.push_str(&format!("      \"target_p\": {:.10},\n", result.target_p));
+        out.push_str(&format!(
+            "      \"proposal_p\": {:.10},\n",
+            result.proposal_p
+        ));
+        out.push_str(&format!("      \"trials\": {},\n", result.trials));
+        out.push_str(&format!(
+            "      \"proposal_errors\": {},\n",
+            result.proposal_errors
+        ));
+        out.push_str(&format!(
+            "      \"proposal_error_rate\": {:.10},\n",
+            result.proposal_error_rate()
+        ));
+        out.push_str(&format!(
+            "      \"weighted_bler_estimate\": {:.12e},\n",
+            result.weighted_bler_estimate
+        ));
+        out.push_str(&format!(
+            "      \"mean_likelihood_ratio\": {:.12e},\n",
+            result.mean_likelihood_ratio
+        ));
+        out.push_str(&format!(
+            "      \"effective_sample_size\": {:.6},\n",
+            result.effective_sample_size
+        ));
         out.push_str(&format!("      \"seed\": {}\n", result.seed));
         out.push_str("    }");
         if i + 1 != results.len() {
@@ -406,6 +490,89 @@ pub fn simulate_bsc_scl_fast(
         p,
         trials,
         errors,
+        seed,
+    }
+}
+
+pub fn simulate_bsc_scl_fast_importance(
+    n: usize,
+    k: usize,
+    target_p: f64,
+    proposal_p: f64,
+    trials: usize,
+    seed: u64,
+    list_size: usize,
+) -> ImportanceSamplingResult {
+    assert!(
+        (0.0..0.5).contains(&target_p),
+        "target_p must be in (0, 0.5)"
+    );
+    assert!(
+        (0.0..0.5).contains(&proposal_p),
+        "proposal_p must be in (0, 0.5)"
+    );
+    assert!(trials > 0, "trials must be positive");
+
+    let code = PolarCode::new(n, k, target_p);
+    let mut rng = Lcg64::new(seed);
+    let llr0 = ((1.0 - target_p) / target_p).ln();
+    let llr1 = -llr0;
+    let log_flip_weight = (target_p / proposal_p).ln();
+    let log_clean_weight = ((1.0 - target_p) / (1.0 - proposal_p)).ln();
+    let mut proposal_errors = 0usize;
+    let mut weighted_error_sum = 0.0;
+    let mut weight_sum = 0.0;
+    let mut weight_square_sum = 0.0;
+
+    for _ in 0..trials {
+        let message = (0..k)
+            .map(|_| if rng.next_bool() { 1 } else { 0 })
+            .collect::<Vec<_>>();
+        let x = encode(&code, &message);
+        let mut flip_count = 0usize;
+        let llr = x
+            .iter()
+            .map(|&bit| {
+                let flipped = rng.next_f64() < proposal_p;
+                flip_count += usize::from(flipped);
+                let y = bit ^ u8::from(flipped);
+                if y == 0 {
+                    llr0
+                } else {
+                    llr1
+                }
+            })
+            .collect::<Vec<_>>();
+
+        let log_weight =
+            flip_count as f64 * log_flip_weight + (n - flip_count) as f64 * log_clean_weight;
+        let weight = log_weight.exp();
+        weight_sum += weight;
+        weight_square_sum += weight * weight;
+
+        let decoded = decode_scl_fast(&code, &llr, list_size);
+        if decoded != message {
+            proposal_errors += 1;
+            weighted_error_sum += weight;
+        }
+    }
+
+    let effective_sample_size = if weight_square_sum == 0.0 {
+        0.0
+    } else {
+        weight_sum * weight_sum / weight_square_sum
+    };
+
+    ImportanceSamplingResult {
+        n,
+        k,
+        target_p,
+        proposal_p,
+        trials,
+        proposal_errors,
+        weighted_bler_estimate: weighted_error_sum / trials as f64,
+        mean_likelihood_ratio: weight_sum / trials as f64,
+        effective_sample_size,
         seed,
     }
 }

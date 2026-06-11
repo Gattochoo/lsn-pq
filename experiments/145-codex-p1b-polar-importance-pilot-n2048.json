@@ -1,0 +1,61 @@
+{
+  "experiment": "codex-p1b-polar-scl-fast-importance-pilot",
+  "decoder": "scl_l8_minsum_pathmetric",
+  "sampling": "tilted_bsc_proposal_reweighted_to_target_bsc",
+  "frozen_set": "natural_order_bhattacharyya_z2i_bad_z2i1_good",
+  "adjudication": "P1b importance-sampling pilot; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "N": 2048,
+      "K": 256,
+      "target_p": 0.0706000000,
+      "proposal_p": 0.0706000000,
+      "trials": 200,
+      "proposal_errors": 0,
+      "proposal_error_rate": 0.0000000000,
+      "weighted_bler_estimate": 0.000000000000e0,
+      "mean_likelihood_ratio": 1.000000000000e0,
+      "effective_sample_size": 200.000000,
+      "seed": 1364271142
+    },
+    {
+      "N": 2048,
+      "K": 256,
+      "target_p": 0.0706000000,
+      "proposal_p": 0.0800000000,
+      "trials": 200,
+      "proposal_errors": 0,
+      "proposal_error_rate": 0.0000000000,
+      "weighted_bler_estimate": 0.000000000000e0,
+      "mean_likelihood_ratio": 8.745027544620e-1,
+      "effective_sample_size": 36.946957,
+      "seed": 11400714820687469627
+    },
+    {
+      "N": 2048,
+      "K": 256,
+      "target_p": 0.0706000000,
+      "proposal_p": 0.1000000000,
+      "trials": 200,
+      "proposal_errors": 0,
+      "proposal_error_rate": 0.0000000000,
+      "weighted_bler_estimate": 0.000000000000e0,
+      "mean_likelihood_ratio": 3.747826223859e-1,
+      "effective_sample_size": 1.193950,
+      "seed": 4354685566301116496
+    },
+    {
+      "N": 2048,
+      "K": 256,
+      "target_p": 0.0706000000,
+      "proposal_p": 0.1200000000,
+      "trials": 200,
+      "proposal_errors": 0,
+      "proposal_error_rate": 0.0000000000,
+      "weighted_bler_estimate": 0.000000000000e0,
+      "mean_likelihood_ratio": 2.459215345370e-8,
+      "effective_sample_size": 2.243875,
+      "seed": 15755400385624314981
+    }
+  ]
+}

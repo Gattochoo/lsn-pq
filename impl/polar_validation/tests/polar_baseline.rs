@@ -1,8 +1,9 @@
 use polar_validation::{
     baseline_reproduction_configs, build_frozen_natural, decode_scl, decode_scl_fast,
-    decode_successive_cancellation, encode, high_noise_control_configs, results_to_json,
-    results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    target_n2048_configs, zero_error_upper_bound, PolarCode,
+    decode_successive_cancellation, encode, high_noise_control_configs, importance_results_to_json,
+    results_to_json, results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl,
+    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
+    zero_error_upper_bound, PolarCode,
 };
 
 #[test]
@@ -150,4 +151,27 @@ fn result_json_can_label_scl_decoder() {
 fn zero_error_upper_bound_matches_one_sided_binomial_formula() {
     let upper = zero_error_upper_bound(2000, 0.05);
     assert!((upper - 0.001496).abs() < 0.000001);
+}
+
+#[test]
+fn importance_sampler_matches_plain_mc_when_proposal_equals_target() {
+    let plain = simulate_bsc_scl_fast(128, 16, 0.4, 20, 0x1A5E_2026, 8);
+    let tilted = simulate_bsc_scl_fast_importance(128, 16, 0.4, 0.4, 20, 0x1A5E_2026, 8);
+
+    assert_eq!(tilted.proposal_errors, plain.errors);
+    assert!((tilted.weighted_bler_estimate - plain.bler()).abs() < 1e-12);
+    assert!((tilted.mean_likelihood_ratio - 1.0).abs() < 1e-12);
+    assert!((tilted.effective_sample_size - 20.0).abs() < 1e-12);
+}
+
+#[test]
+fn importance_json_records_proposal_and_weight_diagnostics() {
+    let result = simulate_bsc_scl_fast_importance(128, 16, 0.4, 0.4, 5, 0x1515, 8);
+    let json = importance_results_to_json("codex-p1b-importance-smoke", "scl_l8", &[result]);
+
+    assert!(json.contains("\"sampling\": \"tilted_bsc_proposal_reweighted_to_target_bsc\""));
+    assert!(json.contains("\"target_p\": 0.4000000000"));
+    assert!(json.contains("\"proposal_p\": 0.4000000000"));
+    assert!(json.contains("\"weighted_bler_estimate\""));
+    assert!(json.contains("\"effective_sample_size\""));
 }
