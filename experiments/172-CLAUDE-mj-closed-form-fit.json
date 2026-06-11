@@ -1,0 +1,176 @@
+{
+ "experiment": "172-CLAUDE-mj-closed-form-fit",
+ "orbit_data": {
+  "2": {
+   "q_sym2": "6",
+   "q_gen2": "4",
+   "q_sym3": "0",
+   "q_gen3": "None",
+   "P": "90"
+  },
+  "3": {
+   "q_sym2": "120",
+   "q_gen2": "112",
+   "q_sym3": "24",
+   "q_gen3": "24",
+   "P": "1890"
+  },
+  "4": {
+   "q_sym2": "2016",
+   "q_gen2": "1984",
+   "q_sym3": "480",
+   "q_gen3": "480",
+   "P": "32130"
+  },
+  "5": {
+   "q_sym2": "32640",
+   "q_gen2": "32512",
+   "q_sym3": "8064",
+   "q_gen3": "8064",
+   "P": "521730"
+  },
+  "6": {
+   "q_sym2": "523776",
+   "q_gen2": "523264",
+   "q_sym3": "130560",
+   "q_gen3": "130560",
+   "P": "8378370"
+  }
+ },
+ "fit": {
+  "2": {
+   "q_sym2": [
+    "6",
+    "6",
+    true
+   ],
+   "q_gen2": [
+    "4",
+    "4",
+    true
+   ],
+   "q_sym3": [
+    "0",
+    "0",
+    true
+   ],
+   "q_gen3": [
+    "0",
+    "None",
+    true
+   ]
+  },
+  "3": {
+   "q_sym2": [
+    "120",
+    "120",
+    true
+   ],
+   "q_gen2": [
+    "112",
+    "112",
+    true
+   ],
+   "q_sym3": [
+    "24",
+    "24",
+    true
+   ],
+   "q_gen3": [
+    "24",
+    "24",
+    true
+   ]
+  },
+  "4": {
+   "q_sym2": [
+    "2016",
+    "2016",
+    true
+   ],
+   "q_gen2": [
+    "1984",
+    "1984",
+    true
+   ],
+   "q_sym3": [
+    "480",
+    "480",
+    true
+   ],
+   "q_gen3": [
+    "480",
+    "480",
+    true
+   ]
+  },
+  "5": {
+   "q_sym2": [
+    "32640",
+    "32640",
+    true
+   ],
+   "q_gen2": [
+    "32512",
+    "32512",
+    true
+   ],
+   "q_sym3": [
+    "8064",
+    "8064",
+    true
+   ],
+   "q_gen3": [
+    "8064",
+    "8064",
+    true
+   ]
+  },
+  "6": {
+   "q_sym2": [
+    "523776",
+    "523776",
+    true
+   ],
+   "q_gen2": [
+    "523264",
+    "523264",
+    true
+   ],
+   "q_sym3": [
+    "130560",
+    "130560",
+    true
+   ],
+   "q_gen3": [
+    "130560",
+    "130560",
+    true
+   ]
+  }
+ },
+ "blind_n7": {
+  "m2_predicted": "18166784/290716335",
+  "m2_enumerated": "18166784/290716335",
+  "m2_match": true,
+  "m3_predicted": "349184/22362795",
+  "m3_enumerated": "349184/22362795",
+  "m3_match": true,
+  "pairs_P": 134176770
+ },
+ "verdict": {
+  "closed_forms": {
+   "q_sym2": "u(u-1)/2",
+   "q_gen2": "u(u-2)/2",
+   "q_sym3=q_gen3": "u(u-4)/8",
+   "m2": "(1/4)[(2n-1)u^2-(4n-3)u]/[(2n-1)(4u^2-5u+1)], u=2^{2n-2}",
+   "m3": "(1/16)u(u-4)/(4u^2-5u+1)  (n-free)"
+  },
+  "asymptotics_sage_verified": {
+   "1/16 - m2": "(3/64)/u + O(1/u^2)  => error*4^n -> 3/16",
+   "1/64 - m3": "(11/256)/u + O(1/u^2) => error*4^n -> 11/64 = 0.171875 (measured 0.1721 at n=6)"
+  },
+  "status": "CANDIDATES fitted on n=2..6, BLIND-VERIFIED at n=7 (exact fractions), Sage-simplified + asymptotics. PROOF of the three counting lemmas (character sums) remains open -> Kimi.",
+  "all_fit_match": true
+ }
+}
