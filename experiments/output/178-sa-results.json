@@ -1,0 +1,36 @@
+{
+  "n": 2,
+  "m": 5,
+  "num_A": 180,
+  "results": [
+    {
+      "lambda": 0.0,
+      "best_I": 0.203980,
+      "best_marg": 1234,
+      "best_E": 0.203980
+    },
+    {
+      "lambda": 0.05,
+      "best_I": 0.988278,
+      "best_marg": 0,
+      "best_E": 0.988278
+    },
+    {
+      "lambda": 0.1,
+      "best_I": 1.028668,
+      "best_marg": 0,
+      "best_E": 1.028668
+    },
+    {
+      "lambda": 0.2,
+      "best_I": 1.005646,
+      "best_marg": 0,
+      "best_E": 1.005646
+    }
+  ],
+  "best_overall": {
+    "lambda": 0.0,
+    "best_I": 0.203980,
+    "best_marg": 1234
+  }
+}
