@@ -185,8 +185,12 @@ fn dry_run_lines(args: &Args) -> Vec<String> {
                 let score_pairs = candidate_count
                     .saturating_mul(sample_count)
                     .saturating_mul(args.trials as u128);
+                let profile_updates = sample_count.saturating_mul(args.trials as u128);
+                let candidate_point_visits = candidate_count
+                    .saturating_mul(lagrangian_points)
+                    .saturating_mul(args.trials as u128);
                 lines.push(format!(
-                    "  cell n={n} ratio={ratio} samples={sample_count} p={noise_rate} trials={} score_pairs={score_pairs}",
+                    "  cell n={n} ratio={ratio} samples={sample_count} p={noise_rate} trials={} score_pairs={score_pairs} profile_updates={profile_updates} candidate_point_visits={candidate_point_visits}",
                     args.trials
                 ));
             }
@@ -483,11 +487,15 @@ mod tests {
         assert!(streaming_lines[0].contains("candidate_count=4194304"));
         assert!(streaming_lines[0].contains("row_storage_points=2048"));
         assert!(streaming_lines[1].contains("score_pairs=4294967296"));
+        assert!(streaming_lines[1].contains("profile_updates=1024"));
+        assert!(streaming_lines[1].contains("candidate_point_visits=8589934592"));
 
         assert!(capped_lines[0].contains("streaming=false"));
         assert!(capped_lines[0].contains("candidate_count=4096"));
         assert!(capped_lines[0].contains("row_storage_points=8388608"));
         assert!(capped_lines[1].contains("score_pairs=4194304"));
+        assert!(capped_lines[1].contains("profile_updates=1024"));
+        assert!(capped_lines[1].contains("candidate_point_visits=8388608"));
     }
 
     #[test]
