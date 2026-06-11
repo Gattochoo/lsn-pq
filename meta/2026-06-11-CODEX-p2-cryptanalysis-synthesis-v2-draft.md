@@ -50,6 +50,75 @@ For a compact paper appendix/table, the strongest rows are:
 | BKW label-xor | `p=0` bucket signal visible | Bias squaring kills constant-rate rounds | Blocks straightforward BKW |
 | Non-xor bucket certificate | `p=0`/`p=1/4` signal measurable | Signal scales as `Theta(4^-n)` | Shows structure exists but at rail scale |
 
+## Cost vs `2^(2n)` Rail Table
+
+The following table is the paper-facing calibration core. It reports costs in units of
+`R_n = 2^(2n)`, the ambient sample rail appearing in the informal security discussion. All rows are
+empirical checks or score-landscape calibrations, not hardness proofs.
+
+### Exhaustive/full-orbit ML calibration
+
+| n | candidate set | samples | samples / `R_n` | trials | successes | result |
+|---:|---:|---:|---:|---:|---:|---|
+| 5 | all Lagrangians | 512 | 0.5000 | 20 | 5 | below-rail transition region |
+| 5 | all Lagrangians | 1024 | 1.0000 | 20 | 18 | near/full rail succeeds |
+| 5 | all Lagrangians | 2048 | 2.0000 | 20 | 20 | above rail succeeds |
+
+Artifacts: `experiments/129-codex-p2-rust-ml-bruteforce-n5.json`,
+`meta/2026-06-11-CODEX-p2-rust-ml-n5.md`.
+
+### Ambient-size sampled ML calibration
+
+These runs avoid enumerating all Lagrangians. They plant the secret into an ambient-sized random
+candidate cloud of size `2^(2n)`, then measure whether ordinary ML scoring separates the planted
+candidate from random false maxima.
+
+| n | candidate count | samples | samples / `R_n` | trials | successes | success rate | avg secret margin |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 6 | 4096 | 384 | 0.09375 | 20 | 4 | 0.20 | -2.00 |
+| 6 | 4096 | 512 | 0.12500 | 20 | 10 | 0.50 | -0.75 |
+| 6 | 4096 | 768 | 0.18750 | 20 | 11 | 0.55 | 0.05 |
+| 6 | 4096 | 1024 | 0.25000 | 20 | 17 | 0.85 | 2.60 |
+| 7 | 16384 | 1536 | 0.09375 | 20 | 10 | 0.50 | 0.15 |
+| 7 | 16384 | 2048 | 0.12500 | 20 | 15 | 0.75 | 2.40 |
+| 7 | 16384 | 3072 | 0.18750 | 20 | 19 | 0.95 | 5.35 |
+| 7 | 16384 | 4096 | 0.25000 | 20 | 18 | 0.90 | 8.55 |
+| 8 | 65536 | 4096 | 0.06250 | 50 | 24 | 0.48 | -0.72 |
+| 8 | 65536 | 6144 | 0.09375 | 50 | 42 | 0.84 | 4.04 |
+| 8 | 65536 | 8192 | 0.12500 | 50 | 46 | 0.92 | 7.42 |
+
+Artifacts: `experiments/142-codex-p2-ambient-size-ml-boundary-n6-n8.json`,
+`experiments/143-codex-p2-ambient-size-ml-n8-50trial-boundary.json`,
+`meta/2026-06-11-CODEX-p2-ambient-size-ml-boundary-n6-n8.md`,
+`meta/2026-06-11-CODEX-p2-ambient-size-ml-n8-50trial-boundary.md`.
+
+### Random-label negative control
+
+The matched `n=8` random-label control uses the same candidate count and sample counts as the
+presentation-quality boundary cells. The planted candidate is not separated when labels carry no
+secret signal.
+
+| n | candidate count | samples | samples / `R_n` | trials | successes | success rate | avg secret margin |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 8 | 65536 | 4096 | 0.06250 | 30 | 0 | 0.00 | -17.93 |
+| 8 | 65536 | 6144 | 0.09375 | 30 | 0 | 0.00 | -21.73 |
+| 8 | 65536 | 8192 | 0.12500 | 30 | 0 | 0.00 | -24.47 |
+
+Artifact: `experiments/144-codex-p2-ambient-size-ml-n8-random-control.json`.
+
+## Threat-Model Separation Table
+
+| Lane | Attacker-visible input | Secret used only for diagnostics? | What the result may say | What it must not say |
+|---|---|---|---|---|
+| Full-orbit ML | public samples plus exhaustive small-`n` orbit | no, except ground-truth success check | calibrates the ML rail where enumeration is possible | public polynomial recovery |
+| Ambient sampled ML | public samples plus planted candidate cloud | yes, to plant one candidate and score success | measures score separation against `2^(2n)` false maxima | an attack without candidate oracle |
+| Span positives | positive labels only | yes, for success/rank diagnostic | raw positive span is killed by constant noise | reduction or hardness proof |
+| Positive-basis ISD | positive tuples and public isotropy/rank tests | yes, for orbit match/scoring | no observed speedup over brute rail | asymptotic ISD impossibility |
+| BKW/bucket | public bucket aggregates | yes, for delta-gap/projection diagnostics | straightforward bucket signals collapse or scale at rail | secret recovery |
+
+This separation is the main Sound-Verifier guardrail for v2: the strongest ML rows are
+score-landscape evidence, while the public structural probes are negative or rail-scale diagnostics.
+
 ## Suggested v2 Wording
 
 The following text is suitable as a draft paragraph for Claude to adapt, not as final paper text:
