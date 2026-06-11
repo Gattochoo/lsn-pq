@@ -2,8 +2,8 @@ use lsn_cryptanalysis::{
     CompactLagrangians, LsnSample, XorShift64, bkw_noise_after_rounds, bkw_xor_noise_rate,
     brute_force_ml_decode, bucket_rate_certificate, compact_ml_decode, enumerate_lagrangians,
     positive_basis_isd_decode, random_lagrangian, results_to_json, run_bkw_bucket_trials,
-    run_isd_budget_trials, run_isd_trials, run_ml_trials, run_span_trials, sample_lsn,
-    span_of_positives_decode, span_results_to_json, symplectic_form,
+    run_isd_budget_trials, run_isd_trials, run_ml_trials, run_sampled_candidate_ml_trials,
+    run_span_trials, sample_lsn, span_of_positives_decode, span_results_to_json, symplectic_form,
 };
 
 #[test]
@@ -237,4 +237,14 @@ fn bucket_rate_certificate_detects_clean_projection_variance() {
     assert_eq!(result.bucket_bits, 6);
     assert!(result.avg_projected_secret_bucket_count <= 16.0);
     assert!(result.avg_excess_bucket_rate_variance > 0.001);
+}
+
+#[test]
+fn sampled_candidate_ml_recovers_noiseless_planted_candidate() {
+    let result = run_sampled_candidate_ml_trials(4, 2048, 0.0, 3, 32, 0x5A6DCAFE);
+
+    assert_eq!(result.trials, 3);
+    assert_eq!(result.candidate_count, 32);
+    assert_eq!(result.successes, 3);
+    assert!(result.avg_secret_margin > 0.0);
 }

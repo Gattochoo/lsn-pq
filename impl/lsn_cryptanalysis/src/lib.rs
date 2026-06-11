@@ -90,6 +90,31 @@ impl MlTrialResult {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub struct SampledCandidateMlTrialResult {
+    pub n: usize,
+    pub total_dim: usize,
+    pub sample_count: usize,
+    pub noise_rate: f64,
+    pub trials: usize,
+    pub candidate_count: usize,
+    pub successes: usize,
+    pub avg_secret_score: f64,
+    pub avg_best_false_score: f64,
+    pub avg_secret_margin: f64,
+    pub seed: u64,
+}
+
+impl SampledCandidateMlTrialResult {
+    pub fn success_rate(&self) -> f64 {
+        if self.trials == 0 {
+            0.0
+        } else {
+            self.successes as f64 / self.trials as f64
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct SpanTrialResult {
     pub n: usize,
     pub lagrangians: usize,
@@ -275,13 +300,15 @@ pub fn random_lagrangian(n: usize, walk_steps: usize, rng: &mut XorShift64) -> L
     assert!(n > 0, "n must be positive");
     assert!(2 * n <= 32, "bitmask model supports dimension at most 32");
 
-    let mut lagrangian = standard_lagrangian(n);
+    let mut basis = (0..n).map(|i| 1u32 << (2 * i)).collect::<Vec<_>>();
     let universe = 1usize << (2 * n);
     for _ in 0..walk_steps {
         let v = rng.next_index(universe) as u32;
-        lagrangian = apply_transvection(&lagrangian, v, n);
+        for basis_vec in &mut basis {
+            *basis_vec = transvection(v, *basis_vec, n);
+        }
     }
-    lagrangian
+    span_from_basis(&basis)
 }
 
 pub fn sample_lsn(
@@ -674,35 +701,11 @@ pub fn brute_force_ml_decode(samples: &[LsnSample], lagrangians: &[Lagrangian]) 
 pub fn compact_ml_decode(samples: &[LsnSample], compact: &CompactLagrangians) -> MlGuess {
     assert!(!compact.is_empty(), "candidate set must be nonempty");
 
-    let mut true_counts = vec![0i32; compact.universe];
-    let mut false_counts = vec![0i32; compact.universe];
-    let mut false_total = 0i32;
-
-    for sample in samples {
-        let point = sample.point as usize;
-        assert!(
-            point < compact.universe,
-            "sample point outside compact universe"
-        );
-        if sample.label {
-            true_counts[point] += 1;
-        } else {
-            false_counts[point] += 1;
-            false_total += 1;
-        }
-    }
-
     let mut best_index = 0;
     let mut best_score = i32::MIN;
     let mut runner_up_score = i32::MIN;
 
-    for (index, row) in compact.rows.iter().enumerate() {
-        let mut score = false_total;
-        for &point in row {
-            let point = point as usize;
-            score += true_counts[point] - false_counts[point];
-        }
-
+    for (index, score) in compact_ml_scores(samples, compact).into_iter().enumerate() {
         if score > best_score {
             runner_up_score = best_score;
             best_score = score;
@@ -716,6 +719,74 @@ pub fn compact_ml_decode(samples: &[LsnSample], compact: &CompactLagrangians) ->
         best_index,
         best_score: best_score as usize,
         runner_up_score: runner_up_score.max(0) as usize,
+    }
+}
+
+pub fn run_sampled_candidate_ml_trials(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    trials: usize,
+    candidate_count: usize,
+    seed: u64,
+) -> SampledCandidateMlTrialResult {
+    assert!(
+        candidate_count >= 2,
+        "candidate_count must include at least secret plus one decoy"
+    );
+    let total_dim = 2 * n;
+    let mut rng = XorShift64::new(seed);
+    let mut successes = 0usize;
+    let mut secret_score_sum = 0i64;
+    let mut best_false_score_sum = 0i64;
+    let mut secret_margin_sum = 0i64;
+
+    for _ in 0..trials {
+        let secret = random_lagrangian(n, 8 * total_dim.max(1), &mut rng);
+        let samples = sample_lsn(&secret, sample_count, noise_rate, total_dim, &mut rng);
+        let mut candidates = Vec::with_capacity(candidate_count);
+        candidates.push(secret);
+        for _ in 1..candidate_count {
+            candidates.push(random_lagrangian(n, 8 * total_dim.max(1), &mut rng));
+        }
+
+        let compact = CompactLagrangians::from_lagrangians(n, &candidates);
+        let scores = compact_ml_scores(&samples, &compact);
+        let secret_score = scores[0];
+        let mut best_index = 0usize;
+        let mut best_score = i32::MIN;
+        let mut best_false_score = i32::MIN;
+        for (index, &score) in scores.iter().enumerate() {
+            if score > best_score {
+                best_score = score;
+                best_index = index;
+            }
+            if index != 0 && score > best_false_score {
+                best_false_score = score;
+            }
+        }
+
+        if best_index == 0 {
+            successes += 1;
+        }
+        secret_score_sum += secret_score as i64;
+        best_false_score_sum += best_false_score as i64;
+        secret_margin_sum += (secret_score - best_false_score) as i64;
+    }
+
+    let denom = trials.max(1) as f64;
+    SampledCandidateMlTrialResult {
+        n,
+        total_dim,
+        sample_count,
+        noise_rate,
+        trials,
+        candidate_count,
+        successes,
+        avg_secret_score: secret_score_sum as f64 / denom,
+        avg_best_false_score: best_false_score_sum as f64 / denom,
+        avg_secret_margin: secret_margin_sum as f64 / denom,
+        seed,
     }
 }
 
@@ -1072,6 +1143,68 @@ pub fn results_to_json(experiment: &str, results: &[MlTrialResult]) -> String {
     out
 }
 
+pub fn sampled_candidate_ml_results_to_json(
+    experiment: &str,
+    results: &[SampledCandidateMlTrialResult],
+) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str("  \"attack\": \"sampled_candidate_ml_planted_secret\",\n");
+    out.push_str(
+        "  \"threat_model\": \"attacker observes public points and noisy membership labels; experiment plants the secret among random Lagrangian decoys to measure ML score separation without full orbit enumeration\",\n",
+    );
+    out.push_str("  \"adjudication\": \"P2 sampled-candidate ML screen; evidence, not proof; OPEN = LSN\",\n");
+    out.push_str("  \"results\": [\n");
+    for (i, result) in results.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"n\": {},\n", result.n));
+        out.push_str(&format!("      \"total_dim\": {},\n", result.total_dim));
+        out.push_str(&format!(
+            "      \"sample_count\": {},\n",
+            result.sample_count
+        ));
+        out.push_str(&format!(
+            "      \"noise_rate\": {:.10},\n",
+            result.noise_rate
+        ));
+        out.push_str(&format!("      \"trials\": {},\n", result.trials));
+        out.push_str(&format!(
+            "      \"candidate_count\": {},\n",
+            result.candidate_count
+        ));
+        out.push_str(&format!("      \"successes\": {},\n", result.successes));
+        out.push_str(&format!(
+            "      \"success_rate\": {:.10},\n",
+            result.success_rate()
+        ));
+        out.push_str(&format!(
+            "      \"avg_secret_score\": {:.6},\n",
+            result.avg_secret_score
+        ));
+        out.push_str(&format!(
+            "      \"avg_best_false_score\": {:.6},\n",
+            result.avg_best_false_score
+        ));
+        out.push_str(&format!(
+            "      \"avg_secret_margin\": {:.6},\n",
+            result.avg_secret_margin
+        ));
+        out.push_str(&format!("      \"seed\": {}\n", result.seed));
+        out.push_str("    }");
+        if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
 pub fn span_results_to_json(experiment: &str, results: &[SpanTrialResult]) -> String {
     let mut out = String::new();
     out.push_str("{\n");
@@ -1399,6 +1532,39 @@ fn rate(numerator: usize, denominator: usize) -> f64 {
     } else {
         numerator as f64 / denominator as f64
     }
+}
+
+fn compact_ml_scores(samples: &[LsnSample], compact: &CompactLagrangians) -> Vec<i32> {
+    let mut true_counts = vec![0i32; compact.universe];
+    let mut false_counts = vec![0i32; compact.universe];
+    let mut false_total = 0i32;
+
+    for sample in samples {
+        let point = sample.point as usize;
+        assert!(
+            point < compact.universe,
+            "sample point outside compact universe"
+        );
+        if sample.label {
+            true_counts[point] += 1;
+        } else {
+            false_counts[point] += 1;
+            false_total += 1;
+        }
+    }
+
+    compact
+        .rows
+        .iter()
+        .map(|row| {
+            let mut score = false_total;
+            for &point in row {
+                let point = point as usize;
+                score += true_counts[point] - false_counts[point];
+            }
+            score
+        })
+        .collect()
 }
 
 fn escape_json(input: &str) -> String {
