@@ -1,6 +1,7 @@
 # v2 Paper Audit Report — Full Survey of Errors, Exaggerations, and Falsehoods
 
 **Date:** 2026-06-12. **Actor:** Kimi. **Scope:** `paper/lsn-paper.tex` (EN) + `paper/lsn-paper-ko.tex` (KO).
+**Status:** ERRATA applied — see `2026-06-12-KIMI-v2-paper-audit-report-2nd-pass.md` for verified fixes and corrections to this report's own arithmetic (§1.1 H(A), 1/(mn) diagnosis, 0.2382/0.2438 inconsistency).  
 Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ---

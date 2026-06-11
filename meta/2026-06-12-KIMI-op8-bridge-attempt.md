@@ -1,6 +1,6 @@
-# OP8 Bridge — Named Obstruction DRAFT (rev2)
+# OP8 Bridge — Named Obstruction DRAFT (rev2) **SUPERSEDED**
 
-**Date:** 2026-06-12. **Actor:** Kimi. **Status:** DRAFT for Claude review (rev2 after adjudication 8b3ac65).
+**Date:** 2026-06-12. **Actor:** Kimi. **Status:** SUPERSEDED by `2026-06-12-KIMI-op8-obstruction-final.md` (DIRECTIVE-KIMI-op8-final.md 수행 산출물).  
 Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ---

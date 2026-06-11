@@ -1,6 +1,6 @@
 # v2 Paper Audit Report — 2nd Pass
 
-**Date:** 2026-06-12. **Actor:** Kimi. **Scope:** `paper/lsn-paper.tex` + `paper/lsn-paper-ko.tex` after user fixes (commit `HEAD~1..HEAD`).
+**Date:** 2026-06-12. **Actor:** Kimi. **Status:** FINAL (replaces `2026-06-12-KIMI-v2-paper-audit-report.md`; user fixes verified, 0 new critical errors). **Scope:** `paper/lsn-paper.tex` + `paper/lsn-paper-ko.tex` after user fixes.
 Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ---

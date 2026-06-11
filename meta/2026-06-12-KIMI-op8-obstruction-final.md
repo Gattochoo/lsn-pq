@@ -1,6 +1,6 @@
 # OP8 Obstruction Note — Final DRAFT
 
-**Date:** 2026-06-12. **Actor:** Kimi. **Status:** DRAFT for Claude review (final after rev2 + KLP+25 PDF pins).
+**Date:** 2026-06-12. **Actor:** Kimi. **Status:** DRAFT for Claude review (final per DIRECTIVE-KIMI-op8-final.md; replaces `2026-06-12-KIMI-op8-bridge-attempt.md`).
 Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ---

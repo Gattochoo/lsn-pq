@@ -1,6 +1,6 @@
 # Kimi 검수 보고 — Krawtchouk Appendix Full Proof
 
-**Date:** 2026-06-12. **Actor:** Kimi. **Scope:** `app:krawtchouk` 내용 검수(본문 미수정).  
+**Date:** 2026-06-12. **Actor:** Kimi. **Status:** DONE (Claude adjudication 8b3ac65: no action needed). **Scope:** `app:krawtchouk` 내용 검수(본문 미수정).  
 Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ---

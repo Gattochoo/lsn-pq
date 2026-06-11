@@ -1,6 +1,6 @@
-# v1 → v2 Changelog DRAFT (ePrint revision note)
+# v1 → v2 Changelog DRAFT (ePrint revision note) (rev2)
 
-**Date:** 2026-06-12. **Actor:** Kimi. **Status:** DRAFT for Claude review.  
+**Date:** 2026-06-12. **Actor:** Kimi. **Status:** DRAFT for Claude review (rev2 after adjudication 8b3ac65 — app:superseded/Lemma-D removed, I(x;y|C) tightened).  
 Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ---

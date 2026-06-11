@@ -1,6 +1,6 @@
-# Pencil-Extremality Conjecture — Analysis DRAFT
+# Pencil-Extremality Conjecture — Analysis DRAFT (rev2)
 
-**Date:** 2026-06-12. **Actor:** Kimi. **Status:** DRAFT for Claude review.  
+**Date:** 2026-06-12. **Actor:** Kimi. **Status:** DRAFT for Claude review (rev2 after adjudication 8b3ac65 — k=1/k=3 columns fixed).  
 Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ---
