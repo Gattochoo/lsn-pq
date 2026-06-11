@@ -14,16 +14,17 @@
 // limitations under the License.
 
 use lsn_cryptanalysis::{
-    CompactLagrangians, LsnSample, XorShift64, bkw_noise_after_rounds, bkw_xor_noise_rate,
-    brute_force_ml_decode, bucket_rate_certificate, compact_ml_decode, enumerate_lagrangians,
-    positive_basis_isd_decode, random_lagrangian, results_to_json, run_bkw_bucket_trials,
-    run_isd_budget_trials, run_isd_trials, run_ml_trials, run_sampled_candidate_ambient_ml_trials,
-    run_sampled_candidate_ambient_ml_trials_streaming,
+    CompactLagrangians, LsnSample, SampledCandidateMlTrialResult, XorShift64,
+    bkw_noise_after_rounds, bkw_xor_noise_rate, brute_force_ml_decode, bucket_rate_certificate,
+    compact_ml_decode, enumerate_lagrangians, positive_basis_isd_decode, random_lagrangian,
+    results_to_json, run_bkw_bucket_trials, run_isd_budget_trials, run_isd_trials, run_ml_trials,
+    run_sampled_candidate_ambient_ml_trials, run_sampled_candidate_ambient_ml_trials_streaming,
     run_sampled_candidate_ambient_ml_trials_with_cap,
     run_sampled_candidate_false_max_budget_trials, run_sampled_candidate_ml_budget_trials,
     run_sampled_candidate_ml_budget_trials_streaming, run_sampled_candidate_ml_trials,
-    run_span_trials, sample_lsn, sampled_candidate_ml_model_row, span_of_positives_decode,
-    span_results_to_json, symplectic_form, wilson_score_interval,
+    run_span_trials, sample_lsn, sampled_candidate_ml_model_row,
+    sampled_candidate_ml_results_to_json, span_of_positives_decode, span_results_to_json,
+    symplectic_form, wilson_score_interval,
 };
 
 #[test]
@@ -105,6 +106,28 @@ fn result_json_records_threat_model_and_success_rate() {
         "\"threat_model\": \"attacker observes public points and noisy membership labels\""
     ));
     assert!(json.contains("\"success_rate\": 1.0000000000"));
+}
+
+#[test]
+fn sampled_candidate_ml_json_records_elapsed_ms_when_available() {
+    let result = SampledCandidateMlTrialResult {
+        n: 4,
+        total_dim: 8,
+        sample_count: 128,
+        noise_rate: 0.25,
+        trials: 1,
+        candidate_count: 256,
+        successes: 0,
+        avg_secret_score: 96.0,
+        avg_best_false_score: 101.0,
+        avg_secret_margin: -5.0,
+        seed: 0xE1A95ED,
+        elapsed_ms: Some(1234),
+    };
+
+    let json = sampled_candidate_ml_results_to_json("codex-p2-elapsed-smoke", &[result]);
+
+    assert!(json.contains("\"elapsed_ms\": 1234"));
 }
 
 #[test]

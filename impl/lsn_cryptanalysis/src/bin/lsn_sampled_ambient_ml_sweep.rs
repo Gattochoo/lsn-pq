@@ -71,7 +71,7 @@ fn main() {
                         args.trials
                     );
                     let start = Instant::now();
-                    let cell = run_cell(
+                    let mut cell = run_cell(
                         n,
                         &[ratio],
                         &[noise_rate],
@@ -81,13 +81,14 @@ fn main() {
                         n_seed,
                     );
                     let elapsed = start.elapsed();
+                    let elapsed_ms = elapsed.as_millis();
+                    for result in &mut cell {
+                        result.elapsed_ms = Some(elapsed_ms);
+                    }
                     if let Some(result) = cell.first() {
                         eprintln!(
                             "  cell done n={n} ratio={ratio} p={noise_rate} successes={}/{} margin={:.3} elapsed_ms={}",
-                            result.successes,
-                            result.trials,
-                            result.avg_secret_margin,
-                            elapsed.as_millis()
+                            result.successes, result.trials, result.avg_secret_margin, elapsed_ms
                         );
                     }
                     results.extend(cell);

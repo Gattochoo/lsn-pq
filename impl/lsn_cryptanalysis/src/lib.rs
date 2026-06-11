@@ -117,6 +117,7 @@ pub struct SampledCandidateMlTrialResult {
     pub avg_best_false_score: f64,
     pub avg_secret_margin: f64,
     pub seed: u64,
+    pub elapsed_ms: Option<u128>,
 }
 
 impl SampledCandidateMlTrialResult {
@@ -841,6 +842,7 @@ pub fn run_sampled_candidate_ml_trials(
         avg_best_false_score: best_false_score_sum as f64 / denom,
         avg_secret_margin: secret_margin_sum as f64 / denom,
         seed,
+        elapsed_ms: None,
     }
 }
 
@@ -931,6 +933,7 @@ pub fn run_sampled_candidate_ml_budget_trials(
             avg_best_false_score: best_false_score_sums[index] as f64 / denom,
             avg_secret_margin: secret_margin_sums[index] as f64 / denom,
             seed: seed ^ candidate_count as u64,
+            elapsed_ms: None,
         })
         .collect()
 }
@@ -1008,6 +1011,7 @@ pub fn run_sampled_candidate_ml_budget_trials_streaming(
             avg_best_false_score: best_false_score_sums[index] as f64 / denom,
             avg_secret_margin: secret_margin_sums[index] as f64 / denom,
             seed: seed ^ candidate_count as u64,
+            elapsed_ms: None,
         })
         .collect()
 }
@@ -1728,7 +1732,11 @@ pub fn sampled_candidate_ml_results_to_json(
             "      \"avg_secret_margin\": {:.6},\n",
             result.avg_secret_margin
         ));
-        out.push_str(&format!("      \"seed\": {}\n", result.seed));
+        out.push_str(&format!("      \"seed\": {},\n", result.seed));
+        match result.elapsed_ms {
+            Some(elapsed_ms) => out.push_str(&format!("      \"elapsed_ms\": {elapsed_ms}\n")),
+            None => out.push_str("      \"elapsed_ms\": null\n"),
+        }
         out.push_str("    }");
         if i + 1 != results.len() {
             out.push(',');
