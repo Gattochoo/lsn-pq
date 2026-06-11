@@ -1,5 +1,8 @@
 # DRAFT: "TV(C,uniform) ≤ δ ⇒ Fisher-info o(n) ⇒ x unrecoverable"
 
+> **SUPERSEDED:** wrong threat model — the LPN solver sees the public C, so the corner needs
+> `I(x;y|C)`, not `I(x;y)`/`TV(P_C,U)`. See `2026-06-12-CLAUDE-adjudication-round5.md` §2.
+
 **Status:** DRAFT — argument sketched, blocked point identified precisely.  
 **Gate check:** No asymptotic claim without proof. Blocked point recorded.
 

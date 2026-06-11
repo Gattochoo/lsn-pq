@@ -1,5 +1,9 @@
 # TV Precise Estimate: χ² Divergence Analysis (w = n)
 
+> **SUPERSEDED:** wrong threat model — the LPN solver sees the public C, so the corner needs
+> `I(x;y|C)`, not `I(x;y)`/`TV(P_C,U)`. See `2026-06-12-CLAUDE-adjudication-round5.md` §2.
+> TV 과대주장("≥1/2−o(1)")은 rigorous "TV=Ω(1/n), 상계 OPEN"으로 정정.
+
 **Status:** DRAFT — closed-form computation, n=2..30 exact.  
 **Key finding:** TV(P_C, U) is bounded away from 0; in fact TV ≥ 0.5 asymptotically.
 

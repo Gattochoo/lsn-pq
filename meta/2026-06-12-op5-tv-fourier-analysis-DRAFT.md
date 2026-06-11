@@ -1,5 +1,9 @@
 # DRAFT: Per-Row Krawtchouk Fourier Analysis of TV(P_C, U)
 
+> **SUPERSEDED:** wrong threat model — the LPN solver sees the public C, so the corner needs
+> `I(x;y|C)`, not `I(x;y)`/`TV(P_C,U)`. See `2026-06-12-CLAUDE-adjudication-round5.md` §2.
+> TV 과대주장("does not vanish at all")은 rigorous "TV=Ω(1/n), 상계 OPEN"으로 정정.
+
 **Status:** DRAFT — closed-form derived, numerically verified, conclusion recorded.  
 **Gate check:** G-MEASURE (no asymptotic claim without closed form) ✓, G-FLAG (N/A) ✓.
 
