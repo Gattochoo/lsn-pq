@@ -73,6 +73,43 @@ fn cli_generates_noisy_n2_fixture_with_negative_control() {
 }
 
 #[test]
+fn cli_describes_paper_r7_profile_without_generating_fixture() {
+    let output = Command::new(kat_bin())
+        .args(["--profile", "n2-paper-r7", "--describe"])
+        .output()
+        .expect("failed to run lsn_toy_kat describe");
+    assert!(
+        output.status.success(),
+        "describe failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let json = String::from_utf8_lossy(&output.stdout);
+    assert!(json.contains("\"profile\": \"n2-paper-r7\""));
+    assert!(json.contains("\"n\": 2"));
+    assert!(json.contains("\"repetition\": 7"));
+    assert!(json.contains("\"polar_N\": 2048"));
+    assert!(json.contains("\"polar_K\": 256"));
+    assert!(json.contains("\"public_noise_rate\": 0.2500000000"));
+    assert!(json.contains("\"decoder_design_p\": 0.0706000000"));
+}
+
+#[test]
+fn cli_rejects_paper_r7_generation_without_fixture_claim() {
+    let output = Command::new(kat_bin())
+        .args(["--profile", "n2-paper-r7"])
+        .output()
+        .expect("failed to run lsn_toy_kat paper-r7 generator");
+
+    assert!(!output.status.success());
+    assert!(
+        String::from_utf8_lossy(&output.stderr).contains("preflight-only"),
+        "stderr did not mark profile as preflight-only: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[test]
 fn cli_check_rejects_mismatched_fixture_negative_control() {
     let path = temp_fixture_path("mismatched_n3");
     fs::write(&path, "{ \"experiment\": \"wrong fixture\" }\n")
