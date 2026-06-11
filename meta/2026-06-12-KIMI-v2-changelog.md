@@ -7,7 +7,7 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ## Summary
 
-Version 2 strengthens the security evidence and sharpens the open-problem landscape in four areas: (1)~Krawtchouk lemma upgraded from expectation to w.h.p.; (2)~empirical validation at the design length $N=2048$; (3)~new cryptanalysis evidence (ISD, BKW, span-of-positives, Rust ML cross-check); (4)~OP9 honest sharpened with conditional mutual information $I(x;y|C)$ and superseded approaches appendix. No security claim is upgraded; all additions are evidence-based or structural.
+Version 2 strengthens the security evidence and sharpens the open-problem landscape in four areas: (1)~Krawtchouk lemma upgraded from expectation to w.h.p.; (2)~empirical validation at the design length $N=2048$; (3)~new cryptanalysis evidence (ISD, BKW, span-of-positives, Rust ML cross-check); (4)~OP9 honest sharpened to the conditional mutual information $I(x;y|C)$, with an explicit note that prior Fisher-information and total-variation approaches targeted $I(x;y)$ and therefore could not upper-bound the working quantity. No security claim is upgraded; all additions are evidence-based or structural.
 
 ---
 
@@ -19,11 +19,7 @@ Version 2 strengthens the security evidence and sharpens the open-problem landsc
   $$\mathbb{E}_A\bigl|\mathbb{E}_{b,e}[(-1)^{b^\top e}]\bigr| \le 2^{-n} + (9/16)^n.$$
 - **v2:** Promoted to **high-probability** (`lem:affine-coset-bias-whp`):
   $$\bigl|\mathbb{E}_{b,e}[(-1)^{b^\top e}]\bigr| \le \bigl(2^{-n} + (9/16)^n\bigr)(1+o(1)) \quad \text{w.p. } 1-2^{-\Omega(n)}.$$
-- **New Appendix `app:krawtchouk`:** Full closed-form proof of the variance bound.
-  - Exact first two moments of $W_N(1/2)$ (Lemma D.1–D.2).
-  - Block factorisation of the character sum: $\sigma = 49/16 = (7/4)^2$ per symplectic coordinate block (Lemma D.3).
-  - Explicit cancellation of $(81/64)^n$ terms via $q/2-p^2$ (Lemma D.4).
-  - Chebyshev concentration with $\varepsilon_n = (50/81)^{n/4}$ giving $2^{-\Omega(n)}$ tail (Lemma D.6).
+- **New Appendix `app:krawtchouk`:** Full closed-form proof of the variance bound in four paragraphs: (i)~exact first two moments of $W_N(1/2)$; (ii)~block factorisation of the character sum with $\sigma = 49/16 = (7/4)^2$ per symplectic coordinate block; (iii)~explicit cancellation of $(81/64)^n$ terms via $q/2-p^2$; (iv)~Chebyshev concentration with $\varepsilon_n = (50/81)^{n/4}$ giving $2^{-\Omega(n)}$ tail.
 - **Impact:** The secret-$B$ regime is now controlled w.h.p., not just in expectation. This removes a conditional expectation step in the linear-reduction barrier chain.
 
 ### 2. L1 $N=2048$ empirical validation (§KEM-Correctness)
@@ -45,13 +41,11 @@ Version 2 strengthens the security evidence and sharpens the open-problem landsc
   - **Rust ML cross-check:** $n=5$ compact count-aggregated scorer confirms Python brute-force trend ($0.25$ at $m=512$, $0.90$ at $m=1024$, $1.00$ at $m=2048$).
 - **Impact:** Strengthens the empirical claim that no known attack family beats the $2^{2n}$ sample/query scale. No attack success = no CLOSURE-GRADE claim.
 
-### 4. OP9 sharpened (§Open Problems, new `app:superseded`)
+### 4. OP9 sharpened (§Open Problems)
 
 - **v1:** Open Problem 9 (marginal-adaptive linear reductions) posed the correlated-noise obstacle without pinning the exact information-theoretic quantity.
 - **v2:** Sharpened to:
-  - Correct quantity identified: **conditional mutual information** $I(x;y|C)$ (not $I(x;y)$ which assumes hidden $C$).
-  - Previous Fisher-information and total-variation approaches marked **superseded** (they targeted $I(x;y)$ under the incorrect hidden-$C$ assumption).
-  - New `app:superseded` appendix records the failed approaches to prevent redundant exploration.
+  - Correct quantity identified: **conditional mutual information** $I(x;y|C)$. Because $x \perp C$, we have $I(x;y) \le I(x;y|C)$; therefore earlier approaches that bounded $I(x;y)$ (Fisher information, total variation) did not upper-bound the working quantity.
   - Honest phrasing: "Strong empirical evidence shows single-sample recovery vanishes; rigorous proof that $I(x;y|C)=o(n)$ remains open."
 - **Impact:** Prevents future readers from retracing the same dead end; pins the exact open question.
 
@@ -64,7 +58,7 @@ Version 2 strengthens the security evidence and sharpens the open-problem landsc
 
 ## ePrint Revision Note (suggested text)
 
-> **Revision v2 (2026-06-12):** Strengthened security evidence in four areas: (i) the affine-coset bias bound is upgraded from expectation to w.h.p. with a full closed-form proof in a new appendix; (ii) the $N=2048$ polar decoder is empirically validated (2000 trials, zero errors); (iii) systematic cryptanalysis screens (ISD, BKW, structural) confirm no attack beats the $2^{2n}$ scale; (iv) Open Problem 9 is sharpened to the conditional mutual information $I(x;y|C)$ with a superseded-approaches appendix. No security claim is changed; all additions are evidence-based.
+> **Revision v2 (2026-06-12):** Strengthened security evidence in four areas: (i) the affine-coset bias bound is upgraded from expectation to w.h.p. with a full closed-form proof in a new appendix; (ii) the $N=2048$ polar decoder is empirically validated (2000 trials, zero errors); (iii) systematic cryptanalysis screens (ISD, BKW, structural) confirm no attack beats the $2^{2n}$ scale; (iv) Open Problem 9 is sharpened to the conditional mutual information $I(x;y|C)$, with an explicit note that earlier Fisher/TV approaches bounded $I(x;y)$ and therefore could not upper-bound the working quantity. No security claim is changed; all additions are evidence-based.
 
 ---
 
