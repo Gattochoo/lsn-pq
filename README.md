@@ -1,12 +1,23 @@
 # lsn-pq
 
-**The Lagrangian Subspace Noise Problem: A New Framework for Post-Quantum Cryptography**
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20646796.svg)](https://doi.org/10.5281/zenodo.20646796)
+
+**The Lagrangian Subspace Noise (LSN) Problem**
 
 Author: Kwanghoo Choo (ORCID [0009-0005-5682-8098](https://orcid.org/0009-0005-5682-8098))
 
 LSN is a *candidate* new post-quantum hardness assumption: an LPN variant whose secret is a
-Lagrangian subspace of a symplectic vector space over F₂. This repository contains the paper,
+Lagrangian subspace of a symplectic vector space over F₂. This repository contains the papers,
 all verification experiments, and the complete research/adjudication record.
+
+**Papers** (in `paper/`):
+- `lsn-core.pdf` — *The Lagrangian Subspace Noise Problem: Statistical-Query Lower Bounds and
+  Barriers for Linear Reductions* (the core mathematical paper, 31 pp).
+- `lsn-paper.pdf` — companion technical report including cryptographic constructions
+  (KEM, succinct arguments); Korean reading edition: `lsn-paper-ko.pdf`.
+
+**Cite this archive** (all versions): DOI [10.5281/zenodo.20646796](https://doi.org/10.5281/zenodo.20646796).
+The v2.0 snapshot is DOI [10.5281/zenodo.20646797](https://doi.org/10.5281/zenodo.20646797).
 
 ## Claims posture (read this first)
 
