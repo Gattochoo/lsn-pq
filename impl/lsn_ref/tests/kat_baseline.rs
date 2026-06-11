@@ -14,8 +14,8 @@
 // limitations under the License.
 
 use lsn_ref::{
-    ToyKemParams, toy_find_wrong_secret_control, toy_kat_vector, toy_wrong_secret_control,
-    toy_wrong_secret_control_to_json,
+    ToyKemParams, toy_divergent_wrong_secret_control, toy_find_wrong_secret_control,
+    toy_kat_vector, toy_wrong_secret_control, toy_wrong_secret_control_to_json,
 };
 
 #[test]
@@ -101,6 +101,49 @@ fn toy_find_wrong_secret_control_finds_n3_fixture() {
     assert_eq!(
         control.honest.encapsulated_key_hex,
         control.honest.decapsulated_key_hex
+    );
+    assert!(!control.wrong_secret_roundtrip_ok);
+}
+
+#[test]
+fn divergent_wrong_secret_control_forces_clean_majority_separation() {
+    let params = ToyKemParams {
+        n: 2,
+        sample_count: 48,
+        repetition: 3,
+        polar_n: 16,
+        polar_k: 8,
+        public_noise_rate: 0.0,
+        decoder_design_p: 0.0343,
+    };
+
+    let control = toy_divergent_wrong_secret_control(params, 0xA11CE, 0xA11CF, 0xC0DE, 0xBEEF)
+        .expect("expected an honest-only divergent toy fixture");
+
+    assert_eq!(
+        control.honest.selected_indices.len(),
+        params.polar_n * params.repetition
+    );
+    assert!(
+        control
+            .honest
+            .clean_majority_bits
+            .iter()
+            .all(|&bit| bit == 1)
+    );
+    assert!(
+        control
+            .wrong_secret_clean_majority_bits
+            .iter()
+            .all(|&bit| bit == 0)
+    );
+    assert_eq!(
+        control.honest.encapsulated_key_hex,
+        control.honest.decapsulated_key_hex
+    );
+    assert_ne!(
+        control.honest.encapsulated_key_hex,
+        control.wrong_secret_decapsulated_key_hex
     );
     assert!(!control.wrong_secret_roundtrip_ok);
 }

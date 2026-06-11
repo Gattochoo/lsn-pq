@@ -110,6 +110,26 @@ fn cli_rejects_paper_r7_generation_without_fixture_claim() {
 }
 
 #[test]
+fn cli_describes_divergent_paper_r7_diagnostic_profile() {
+    let output = Command::new(kat_bin())
+        .args(["--profile", "n2-paper-r7-divergent", "--describe"])
+        .output()
+        .expect("failed to run lsn_toy_kat describe");
+    assert!(
+        output.status.success(),
+        "describe failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let json = String::from_utf8_lossy(&output.stdout);
+    assert!(json.contains("\"profile\": \"n2-paper-r7-divergent\""));
+    assert!(json.contains("\"selection_mode\": \"divergent-wrong-secret-diagnostic\""));
+    assert!(json.contains("\"preflight_only\": false"));
+    assert!(json.contains("\"polar_N\": 2048"));
+    assert!(json.contains("\"polar_K\": 256"));
+}
+
+#[test]
 fn cli_check_rejects_mismatched_fixture_negative_control() {
     let path = temp_fixture_path("mismatched_n3");
     fs::write(&path, "{ \"experiment\": \"wrong fixture\" }\n")

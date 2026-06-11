@@ -183,6 +183,94 @@ pub fn toy_wrong_secret_control(
     }
 }
 
+pub fn toy_divergent_wrong_secret_control(
+    params: ToyKemParams,
+    honest_secret_seed: u64,
+    wrong_secret_seed: u64,
+    noise_seed: u64,
+    encaps_seed: u64,
+) -> Option<ToyWrongSecretControl> {
+    validate_params(params);
+
+    let mut honest_secret_rng = XorShift64::new(honest_secret_seed);
+    let honest_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut honest_secret_rng);
+    let mut wrong_secret_rng = XorShift64::new(wrong_secret_seed);
+    let wrong_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut wrong_secret_rng);
+    let honest_only_points = honest_secret
+        .iter()
+        .filter(|point| !wrong_secret.contains(point))
+        .copied()
+        .collect::<Vec<_>>();
+    if honest_only_points.is_empty() {
+        return None;
+    }
+
+    let selected_count = params.polar_n * params.repetition;
+    let mut noise_rng = XorShift64::new(noise_seed);
+    let mut public_points = Vec::with_capacity(selected_count);
+    let mut public_labels = Vec::with_capacity(selected_count);
+    for i in 0..selected_count {
+        let point = honest_only_points[i % honest_only_points.len()];
+        let noisy = noise_rng.next_f64() < params.public_noise_rate;
+        public_points.push(point);
+        public_labels.push(u8::from(!noisy));
+    }
+    let selected_indices = (0..selected_count).collect::<Vec<_>>();
+
+    let honest = toy_kat_from_parts(
+        params,
+        honest_secret_seed,
+        0,
+        noise_seed,
+        encaps_seed,
+        honest_secret.iter().copied().collect(),
+        public_points,
+        public_labels,
+        selected_indices,
+        &honest_secret,
+    );
+
+    let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
+    let wrong_secret_labels = honest
+        .public_points
+        .iter()
+        .map(|point| u8::from(wrong_secret.contains(point)))
+        .collect::<Vec<_>>();
+    let wrong_secret_clean_majority_bits = block_majorities(
+        &honest.selected_indices,
+        &wrong_secret_labels,
+        params.repetition,
+    );
+    let wrong_secret_received_codeword = xor_bits(
+        &honest.ciphertext_syndrome_bits,
+        &wrong_secret_clean_majority_bits,
+    );
+    let code = PolarCode::new(params.polar_n, params.polar_k, params.decoder_design_p);
+    let wrong_secret_decoded_message_bits =
+        decode_codeword_bits(&code, &wrong_secret_received_codeword);
+    let wrong_secret_decapsulated_key_hex = toy_key_hex(
+        encaps_seed,
+        &wrong_secret_decoded_message_bits,
+        &honest.ciphertext_syndrome_bits,
+    );
+    let wrong_secret_roundtrip_ok =
+        honest.encapsulated_key_hex == wrong_secret_decapsulated_key_hex;
+    let honest_roundtrip_ok = honest.encapsulated_key_hex == honest.decapsulated_key_hex;
+    if !honest_roundtrip_ok || wrong_secret_roundtrip_ok {
+        return None;
+    }
+
+    Some(ToyWrongSecretControl {
+        honest,
+        wrong_secret_seed,
+        wrong_secret_lagrangian_points,
+        wrong_secret_clean_majority_bits,
+        wrong_secret_decoded_message_bits,
+        wrong_secret_decapsulated_key_hex,
+        wrong_secret_roundtrip_ok,
+    })
+}
+
 pub fn toy_find_wrong_secret_control(
     params: ToyKemParams,
     honest_secret_seed: u64,
@@ -209,6 +297,63 @@ pub fn toy_find_wrong_secret_control(
         }
     }
     None
+}
+
+fn toy_kat_from_parts(
+    params: ToyKemParams,
+    secret_seed: u64,
+    sample_seed: u64,
+    noise_seed: u64,
+    encaps_seed: u64,
+    secret_lagrangian_points: Vec<u32>,
+    public_points: Vec<u32>,
+    public_labels: Vec<u8>,
+    selected_indices: Vec<usize>,
+    secret: &Lagrangian,
+) -> ToyKatVector {
+    let message_bits = bits_from_seed(params.polar_k, encaps_seed ^ 0xA5A5_5A5A_D3C1_B2E0);
+    let code = PolarCode::new(params.polar_n, params.polar_k, params.decoder_design_p);
+    let codeword = encode(&code, &message_bits);
+    let public_majority_bits =
+        block_majorities(&selected_indices, &public_labels, params.repetition);
+    let clean_membership_labels = public_points
+        .iter()
+        .map(|point| u8::from(secret.contains(point)))
+        .collect::<Vec<_>>();
+    let clean_majority_bits = block_majorities(
+        &selected_indices,
+        &clean_membership_labels,
+        params.repetition,
+    );
+
+    let ciphertext_syndrome_bits = xor_bits(&public_majority_bits, &codeword);
+    let received_codeword = xor_bits(&ciphertext_syndrome_bits, &clean_majority_bits);
+    let decoded_message_bits = decode_codeword_bits(&code, &received_codeword);
+    let encapsulated_key_hex = toy_key_hex(encaps_seed, &message_bits, &ciphertext_syndrome_bits);
+    let decapsulated_key_hex = toy_key_hex(
+        encaps_seed,
+        &decoded_message_bits,
+        &ciphertext_syndrome_bits,
+    );
+
+    ToyKatVector {
+        params,
+        secret_seed,
+        sample_seed,
+        noise_seed,
+        encaps_seed,
+        secret_lagrangian_points,
+        public_points,
+        public_labels,
+        selected_indices,
+        message_bits,
+        public_majority_bits,
+        clean_majority_bits,
+        ciphertext_syndrome_bits,
+        decoded_message_bits,
+        encapsulated_key_hex,
+        decapsulated_key_hex,
+    }
 }
 
 pub fn toy_kat_to_json(experiment: &str, kat: &ToyKatVector) -> String {
