@@ -1,0 +1,22 @@
+{
+  "experiment": "codex-p1b-polar-scl-fast-importance-pilot",
+  "decoder": "scl_l8_minsum_pathmetric",
+  "sampling": "tilted_bsc_proposal_reweighted_to_target_bsc",
+  "frozen_set": "natural_order_bhattacharyya_z2i_bad_z2i1_good",
+  "adjudication": "P1b importance-sampling pilot; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "N": 2048,
+      "K": 305,
+      "target_p": 0.0343000000,
+      "proposal_p": 0.0343000000,
+      "trials": 500,
+      "proposal_errors": 0,
+      "proposal_error_rate": 0.0000000000,
+      "weighted_bler_estimate": 0.000000000000e0,
+      "mean_likelihood_ratio": 1.000000000000e0,
+      "effective_sample_size": 500.000000,
+      "seed": 1364271148
+    }
+  ]
+}
