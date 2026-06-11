@@ -1,5 +1,6 @@
 use lsn_ref::{
-    ToyKemParams, toy_kat_vector, toy_wrong_secret_control, toy_wrong_secret_control_to_json,
+    ToyKemParams, toy_find_wrong_secret_control, toy_kat_vector, toy_wrong_secret_control,
+    toy_wrong_secret_control_to_json,
 };
 
 #[test]
@@ -63,4 +64,28 @@ fn toy_wrong_secret_control_json_records_both_outcomes() {
     assert!(json.contains("\"roundtrip_ok\": true"));
     assert!(json.contains("\"wrong_secret_roundtrip_ok\": false"));
     assert!(json.contains("\"status\": \"toy reference KAT scaffold"));
+}
+
+#[test]
+fn toy_find_wrong_secret_control_finds_n3_fixture() {
+    let params = ToyKemParams {
+        n: 3,
+        sample_count: 256,
+        repetition: 3,
+        polar_n: 32,
+        polar_k: 16,
+        public_noise_rate: 0.0,
+        decoder_design_p: 0.0343,
+    };
+
+    let control =
+        toy_find_wrong_secret_control(params, 0xA11CE, 0xA2000, 1024, 0x5EED, 0xC0DE, 0xBEEF)
+            .expect("expected an n=3 wrong-secret fixture in the bounded seed window");
+
+    assert_eq!(control.honest.params.n, 3);
+    assert_eq!(
+        control.honest.encapsulated_key_hex,
+        control.honest.decapsulated_key_hex
+    );
+    assert!(!control.wrong_secret_roundtrip_ok);
 }

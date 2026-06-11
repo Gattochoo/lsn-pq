@@ -168,6 +168,34 @@ pub fn toy_wrong_secret_control(
     }
 }
 
+pub fn toy_find_wrong_secret_control(
+    params: ToyKemParams,
+    honest_secret_seed: u64,
+    wrong_secret_seed_start: u64,
+    wrong_secret_seed_trials: usize,
+    sample_seed: u64,
+    noise_seed: u64,
+    encaps_seed: u64,
+) -> Option<ToyWrongSecretControl> {
+    for offset in 0..wrong_secret_seed_trials {
+        let wrong_secret_seed = wrong_secret_seed_start.wrapping_add(offset as u64);
+        let control = toy_wrong_secret_control(
+            params,
+            honest_secret_seed,
+            wrong_secret_seed,
+            sample_seed,
+            noise_seed,
+            encaps_seed,
+        );
+        let honest_roundtrip_ok =
+            control.honest.encapsulated_key_hex == control.honest.decapsulated_key_hex;
+        if honest_roundtrip_ok && !control.wrong_secret_roundtrip_ok {
+            return Some(control);
+        }
+    }
+    None
+}
+
 pub fn toy_kat_to_json(experiment: &str, kat: &ToyKatVector) -> String {
     let mut out = String::new();
     out.push_str("{\n");
