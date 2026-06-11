@@ -159,6 +159,13 @@ fn run_cell(
 }
 
 fn print_dry_run(args: &Args) {
+    for line in dry_run_lines(args) {
+        eprintln!("{line}");
+    }
+}
+
+fn dry_run_lines(args: &Args) -> Vec<String> {
+    let mut lines = Vec::new();
     for n in args.n_start..=args.n_end {
         let ambient_candidate_count = pow2(2 * n);
         let candidate_count = candidate_count_for_n_u128(n, args.candidate_cap);
@@ -168,23 +175,24 @@ fn print_dry_run(args: &Args) {
         } else {
             candidate_count.saturating_mul(lagrangian_points)
         };
-        eprintln!(
+        lines.push(format!(
             "dry-run ambient-ml n={n} streaming={} ambient_candidate_count={ambient_candidate_count} candidate_count={candidate_count} lagrangian_points={lagrangian_points} row_storage_points={row_storage_points}",
             args.streaming
-        );
+        ));
         for &ratio in &args.ratios {
             let sample_count = ((ambient_candidate_count as f64) * ratio).round() as u128;
             for &noise_rate in &args.noise_rates {
                 let score_pairs = candidate_count
                     .saturating_mul(sample_count)
                     .saturating_mul(args.trials as u128);
-                eprintln!(
+                lines.push(format!(
                     "  cell n={n} ratio={ratio} samples={sample_count} p={noise_rate} trials={} score_pairs={score_pairs}",
                     args.trials
-                );
+                ));
             }
         }
     }
+    lines
 }
 
 fn pow2(exp: usize) -> u128 {
@@ -428,6 +436,58 @@ mod tests {
         .unwrap();
 
         assert!(args.streaming);
+    }
+
+    #[test]
+    fn dry_run_lines_distinguish_streaming_row_storage_from_capped_storage() {
+        let streaming = parse_args(owned(&[
+            "--n-start",
+            "11",
+            "--n-end",
+            "11",
+            "--ratios",
+            "0.000244140625",
+            "--p-values",
+            "0.25",
+            "--trials",
+            "1",
+            "--seed",
+            "3235823863",
+            "--streaming",
+            "--dry-run",
+        ]))
+        .unwrap();
+        let capped = parse_args(owned(&[
+            "--n-start",
+            "11",
+            "--n-end",
+            "11",
+            "--ratios",
+            "0.000244140625",
+            "--p-values",
+            "0.25",
+            "--trials",
+            "1",
+            "--seed",
+            "3235823863",
+            "--candidate-cap",
+            "4096",
+            "--dry-run",
+        ]))
+        .unwrap();
+
+        let streaming_lines = dry_run_lines(&streaming);
+        let capped_lines = dry_run_lines(&capped);
+
+        assert!(streaming_lines[0].contains("streaming=true"));
+        assert!(streaming_lines[0].contains("candidate_count=4194304"));
+        assert!(streaming_lines[0].contains("row_storage_points=2048"));
+        assert!(streaming_lines[1].contains("score_pairs=4294967296"));
+
+        assert!(capped_lines[0].contains("streaming=false"));
+        assert!(capped_lines[0].contains("candidate_count=4096"));
+        assert!(capped_lines[0].contains("row_storage_points=8388608"));
+        assert!(capped_lines[1].contains("score_pairs=4194304"));
     }
 
     #[test]
