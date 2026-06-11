@@ -13,8 +13,8 @@
       "id": "ct-001",
       "surface": "Lagrangian membership representation",
       "classification": "partial_fixed_layout_scaffold_not_production_ct",
-      "issue": "FixedLagrangian bitset scaffold now covers toy membership label generation, but secret construction, diagnostic selectors, and leakage audit remain non-production",
-      "required_action": "replace remaining set-style construction and diagnostic membership, freeze production-sized layout, and run an independent timing/leakage audit before any production claim"
+      "issue": "FixedLagrangian bitset scaffold now uses scanned mask lookup for toy membership label generation, but secret construction, diagnostic selectors, and leakage audit remain non-production",
+      "required_action": "replace remaining set-style construction and diagnostic membership, freeze production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim"
     },
     {
       "id": "ct-002",

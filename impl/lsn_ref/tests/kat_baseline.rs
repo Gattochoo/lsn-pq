@@ -42,6 +42,26 @@ fn fixed_lagrangian_membership_matches_point_set_for_public_points() {
 }
 
 #[test]
+fn fixed_lagrangian_scanned_membership_matches_direct_membership() {
+    let points = [0, 1, 63, 64, 127, 128, 191, 255];
+    let fixed = FixedLagrangian::from_points(4, &points);
+
+    assert_eq!(fixed.universe(), 256);
+    assert_eq!(fixed.word_count(), 4);
+
+    for point in 0..256 {
+        assert_eq!(
+            fixed.contains_mask_scanned(point),
+            fixed.contains_mask(point)
+        );
+        assert_eq!(fixed.contains_u8_scanned(point), fixed.contains_u8(point));
+    }
+
+    assert_eq!(fixed.contains_mask_scanned(256), 0);
+    assert_eq!(fixed.contains_u8_scanned(256), 0);
+}
+
+#[test]
 fn toy_kat_vector_roundtrips_with_zero_noise() {
     let params = ToyKemParams {
         n: 2,

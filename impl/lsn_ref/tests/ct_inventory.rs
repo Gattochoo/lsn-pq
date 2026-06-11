@@ -29,6 +29,7 @@ fn ct_inventory_marks_current_reference_as_non_production() {
         json.contains("\"classification\": \"partial_fixed_layout_scaffold_not_production_ct\"")
     );
     assert!(json.contains("FixedLagrangian bitset scaffold"));
+    assert!(json.contains("scanned mask lookup"));
     assert!(json.contains("polar SCL path pruning"));
     assert!(json.contains("diagnostic selector depends on the wrong secret"));
 }

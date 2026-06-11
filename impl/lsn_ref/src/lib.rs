@@ -138,8 +138,28 @@ impl FixedLagrangian {
         0u64.wrapping_sub(bit)
     }
 
+    pub fn contains_mask_scanned(&self, point: u32) -> u64 {
+        let index = point as usize;
+        let target_word_index = index >> 6;
+        let bit_index = index & 63;
+        let in_range_mask = 0u64.wrapping_sub((index < self.universe) as u64);
+        let mut selected_word = 0u64;
+
+        for (word_index, &word) in self.words.iter().enumerate() {
+            let word_mask = 0u64.wrapping_sub((word_index == target_word_index) as u64);
+            selected_word |= word & word_mask;
+        }
+
+        let bit = (selected_word >> bit_index) & 1;
+        0u64.wrapping_sub(bit) & in_range_mask
+    }
+
     pub fn contains_u8(&self, point: u32) -> u8 {
         (self.contains_mask(point) & 1) as u8
+    }
+
+    pub fn contains_u8_scanned(&self, point: u32) -> u8 {
+        (self.contains_mask_scanned(point) & 1) as u8
     }
 }
 
@@ -172,7 +192,7 @@ pub fn toy_kat_vector(
         block_majorities(&selected_indices, &public_labels, params.repetition);
     let clean_membership_labels = public_points
         .iter()
-        .map(|&point| fixed_secret.contains_u8(point))
+        .map(|&point| fixed_secret.contains_u8_scanned(point))
         .collect::<Vec<_>>();
     let clean_majority_bits = block_majorities(
         &selected_indices,
@@ -233,7 +253,7 @@ pub fn toy_wrong_secret_control(
     let wrong_secret_labels = honest
         .public_points
         .iter()
-        .map(|&point| fixed_wrong_secret.contains_u8(point))
+        .map(|&point| fixed_wrong_secret.contains_u8_scanned(point))
         .collect::<Vec<_>>();
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
@@ -318,7 +338,7 @@ pub fn toy_divergent_wrong_secret_control(
     let wrong_secret_labels = honest
         .public_points
         .iter()
-        .map(|&point| fixed_wrong_secret.contains_u8(point))
+        .map(|&point| fixed_wrong_secret.contains_u8_scanned(point))
         .collect::<Vec<_>>();
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
@@ -455,7 +475,7 @@ fn toy_kat_from_parts(
     let fixed_secret = FixedLagrangian::from_lagrangian(params.n, secret);
     let clean_membership_labels = public_points
         .iter()
-        .map(|&point| fixed_secret.contains_u8(point))
+        .map(|&point| fixed_secret.contains_u8_scanned(point))
         .collect::<Vec<_>>();
     let clean_majority_bits = block_majorities(
         &selected_indices,
@@ -629,8 +649,8 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now covers toy membership label generation, but secret construction, diagnostic selectors, and leakage audit remain non-production\",\n",
-        "      \"required_action\": \"replace remaining set-style construction and diagnostic membership, freeze production-sized layout, and run an independent timing/leakage audit before any production claim\"\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now uses scanned mask lookup for toy membership label generation, but secret construction, diagnostic selectors, and leakage audit remain non-production\",\n",
+        "      \"required_action\": \"replace remaining set-style construction and diagnostic membership, freeze production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
         "      \"id\": \"ct-002\",\n",
@@ -970,7 +990,7 @@ fn public_samples(
         let point = sample_rng.next_index(universe) as u32;
         let noisy = noise_rng.next_f64() < params.public_noise_rate;
         points.push(point);
-        labels.push(fixed_secret.contains_u8(point) ^ u8::from(noisy));
+        labels.push(fixed_secret.contains_u8_scanned(point) ^ u8::from(noisy));
     }
 
     (points, labels)
