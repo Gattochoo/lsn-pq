@@ -36,6 +36,7 @@ This is evidence for the v2 security-evidence section, not a proof of hardness.
 | Candidate-count scaling and EV model | `137`, `138`; `CODEX-p2-sampled-candidate-count-scaling.md`, `CODEX-p2-sampled-candidate-ev-model.md` | Planted secret plus random decoys; false-max pressure modeled | `n=8..10` | up to 32768 candidates; model includes 131072 | Candidate pressure visible; Gaussian extreme-value proxy is conservative; `p=1/2` negative | Explains finite-cloud margins as ordinary ML separation | Interpretation model; not recovery |
 | 131k planted and all-random false-max controls | `139`, `140`; `CODEX-p2-sampled-candidate-131k-stress.md`, `CODEX-p2-sampled-candidate-false-max-control.md` | Planted candidate stress plus unplanted false-max reference | `n=10` | 131072 candidates; ratios `{0.0625,0.125}` | Planted and unplanted false-max margins track closely; `p=1/2` fails | Confirms false-max explanation, not public search | Calibration only |
 | Ambient-size sampled-candidate ML | `141`..`144`; `CODEX-p2-ambient-size-ml-*.md` | Non-enumerative random-secret plus random-decoy cloud with planted secret | `n=6..8` | `candidate_count=2^(2n)`; boundary trials 20, n=8 addendum 50 | Transition stays at `m=c*2^(2n)` for small constant `c`; n=8 50-trial addendum has 24/50 at ratio 0.0625 and 46/50 at ratio 0.125; p=1/2 control 0/30 | Direct high-`n` calibration on the rail | v2-ready evidence; not REDUCES |
+| Full-streaming ambient-size sampled ML | `170`..`177`; `CODEX-p2-streaming-ambient-ml-n11-boundary-*.md` | Same planted-secret/random-decoy score landscape, but streams the full `2^(2n)` decoy cloud without storing it | `n=11` | `candidate_count=2^22`; strict/tie rows at samples `{32768,65536,131072}` | Strict/tie aggregate: 32768 gives 0/2 strict, 65536 gives 3/3 strict and 0 ties in strict rows, 131072 gives 2/2 strict | Extends the planted-candidate ML rail check to `n=11`; still not public recovery | v2-ready score-landscape evidence; not REDUCES |
 
 ## Most Useful v2 Table
 
@@ -45,6 +46,7 @@ For a compact paper appendix/table, the strongest rows are:
 |---|---|---|---|
 | Exhaustive ML | Full scoring recovers at small `n` once `m` reaches the rail | `n=3..5` transition near `2^(2n)` | Establishes empirical baseline |
 | Ambient-size sampled ML | Planted random-decoy cloud succeeds only at constant fractions of `2^(2n)` | `n=6..8`, 20-trial boundary table | Extends ML rail beyond full enumeration |
+| Full-streaming ambient ML | Streaming `2^(2n)` random-decoy cloud separates only around the same rail-scale neighborhood | `n=11`, strict/tie boundary aggregate | Extends score-landscape calibration without storing all decoys |
 | Span positives | `p=0` recovers exactly | `p=1/4` spans ambient space and fails | Explains why raw positives do not recover `L` |
 | ISD positive basis | `p=0` recovers | `n=5,p=1/4` needs 50k attempts for only 3/10 | No ISD speedup evidence |
 | BKW label-xor | `p=0` bucket signal visible | Bias squaring kills constant-rate rounds | Blocks straightforward BKW |
@@ -106,12 +108,37 @@ secret signal.
 
 Artifact: `experiments/144-codex-p2-ambient-size-ml-n8-random-control.json`.
 
+### Full-streaming ambient-size sampled ML at n=11
+
+The `n=11` streaming runs avoid materializing the full random-decoy cloud while still scoring
+`candidate_count = 2^(2n) = 4,194,304` planted/random candidates. These are still
+planted-candidate score-landscape calibrations, not public selectors. The strict/tie counters
+separate genuine score wins from score ties.
+
+| n | candidate count | samples | samples / `R_n` | source rows | strict successes | ties | weighted avg margin | result |
+|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| 11 | 4,194,304 | 32,768 | 0.0078125 | 2 | 0 | 0 | -7.000000 | below transition |
+| 11 | 4,194,304 | 65,536 | 0.0156250 | 2 | 3 | 0 | +5.333333 | transition-scale strict success in available rows |
+| 11 | 4,194,304 | 131,072 | 0.0312500 | 2 | 2 | 0 | +31.000000 | above transition |
+
+Legacy non-strict middle rows at `65,536` samples add `4/5` legacy successes with weighted average
+margin `+3.600000`, but they predate strict/tie counters and should not be merged with strict rows.
+
+Artifacts: `experiments/170-codex-p2-streaming-ambient-ml-n11-boundary-smoke.json`,
+`experiments/171-codex-p2-streaming-ambient-ml-n11-boundary-repeat2.json`,
+`experiments/172-codex-p2-streaming-ambient-ml-n11-boundary-repeat3.json`,
+`experiments/174-codex-p2-streaming-ambient-ml-n11-boundary-repeat4-strict-tie.json`,
+`experiments/175-codex-p2-streaming-ambient-ml-n11-boundary-ladder-strict-tie.json`,
+`experiments/176-codex-p2-streaming-ambient-ml-n11-boundary-ladder2-strict-tie.json`,
+and aggregate `experiments/177-codex-p2-streaming-ambient-ml-n11-boundary-aggregate.json`.
+
 ## Threat-Model Separation Table
 
 | Lane | Attacker-visible input | Secret used only for diagnostics? | What the result may say | What it must not say |
 |---|---|---|---|---|
 | Full-orbit ML | public samples plus exhaustive small-`n` orbit | no, except ground-truth success check | calibrates the ML rail where enumeration is possible | public polynomial recovery |
 | Ambient sampled ML | public samples plus planted candidate cloud | yes, to plant one candidate and score success | measures score separation against `2^(2n)` false maxima | an attack without candidate oracle |
+| Full-streaming ambient sampled ML | public samples plus streamed planted/random candidate cloud | yes, to plant one candidate and score success | extends the same score-separation measurement to `n=11` without storing all candidates | public polynomial recovery or reduction |
 | Span positives | positive labels only | yes, for success/rank diagnostic | raw positive span is killed by constant noise | reduction or hardness proof |
 | Positive-basis ISD | positive tuples and public isotropy/rank tests | yes, for orbit match/scoring | no observed speedup over brute rail | asymptotic ISD impossibility |
 | BKW/bucket | public bucket aggregates | yes, for delta-gap/projection diagnostics | straightforward bucket signals collapse or scale at rail | secret recovery |
@@ -128,9 +155,10 @@ The following text is suitable as a draft paragraph for Claude to adapt, not as 
 > and non-xor bucket certificates. Each attack was paired with a sanity case where the method should
 > work and a constant-rate noise control. No tested method produced a public recovery map or a
 > reduction below the `2^(2n)` sample rail. Exhaustive ML at `n <= 5` and ambient-size sampled ML at
-> `n=6..8` both show transitions at constant fractions of `2^(2n)`. Span-positive, ISD, BKW, and
-> bucket-certificate probes either fail at constant noise or retain only signals whose size matches
-> the same `2^(2n)` scale. These experiments are evidence, not a proof of hardness.
+> `n=6..8`, with full-streaming planted-candidate checks at `n=11`, both show transitions at
+> constant fractions of `2^(2n)`. Span-positive, ISD, BKW, and bucket-certificate probes either fail
+> at constant noise or retain only signals whose size matches the same `2^(2n)` scale. These
+> experiments are evidence, not a proof of hardness.
 
 ## Limits and Sound-Verifier Notes
 
@@ -163,6 +191,13 @@ The following text is suitable as a draft paragraph for Claude to adapt, not as 
 | 142 | `experiments/142-codex-p2-ambient-size-ml-boundary-n6-n8.json` |
 | 143 | `experiments/143-codex-p2-ambient-size-ml-n8-50trial-boundary.json` |
 | 144 | `experiments/144-codex-p2-ambient-size-ml-n8-random-control.json` |
+| 170 | `experiments/170-codex-p2-streaming-ambient-ml-n11-boundary-smoke.json` |
+| 171 | `experiments/171-codex-p2-streaming-ambient-ml-n11-boundary-repeat2.json` |
+| 172 | `experiments/172-codex-p2-streaming-ambient-ml-n11-boundary-repeat3.json` |
+| 174 | `experiments/174-codex-p2-streaming-ambient-ml-n11-boundary-repeat4-strict-tie.json` |
+| 175 | `experiments/175-codex-p2-streaming-ambient-ml-n11-boundary-ladder-strict-tie.json` |
+| 176 | `experiments/176-codex-p2-streaming-ambient-ml-n11-boundary-ladder2-strict-tie.json` |
+| 177 | `experiments/177-codex-p2-streaming-ambient-ml-n11-boundary-aggregate.json` |
 
 ## Next Step
 
@@ -174,9 +209,14 @@ The n=8 presentation-quality replication is now recorded in
 `meta/2026-06-11-CODEX-p2-ambient-size-ml-n8-50trial-boundary.md`, with structured 50-trial boundary
 cells and a matched `p=1/2` random-label control.
 
+The n=11 full-streaming extension is now recorded in
+`meta/2026-06-11-CODEX-p2-streaming-ambient-ml-n11-boundary-aggregate.md`, with a strict/tie
+boundary aggregate over `{32768,65536,131072}` samples. It should be cited only as
+planted-candidate score-landscape evidence.
+
 If Codex continues before Claude adjudicates, the next useful work is not another broad attack
-family but either a similarly bounded P1b importance-sampling attempt or a Claude-requested
-presentation pass:
+family. Prefer either a bounded P1b importance-sampling attempt, an explicit high-noise negative
+control for the next polar-rate sweep, or a Claude-requested presentation pass:
 
 ```text
 do not start a new attack family unless it has a clear threat model and controls.
