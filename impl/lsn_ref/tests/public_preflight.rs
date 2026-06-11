@@ -86,3 +86,30 @@ fn public_preflight_cli_writes_and_checks_paper_r7_report() {
         .expect("failed to run lsn_public_preflight checker");
     assert!(check.success());
 }
+
+#[test]
+fn public_preflight_cli_describes_wrong16_profile_without_running_scan() {
+    let bin = env::var("CARGO_BIN_EXE_lsn_public_preflight")
+        .expect("Cargo should expose the lsn_public_preflight test binary path");
+
+    let output = Command::new(&bin)
+        .args([
+            "--profile",
+            "n2-paper-r7-public-preflight-wrong16",
+            "--describe",
+        ])
+        .output()
+        .expect("failed to run lsn_public_preflight describe");
+    assert!(
+        output.status.success(),
+        "describe failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    let json = String::from_utf8_lossy(&output.stdout);
+    assert!(json.contains("\"profile\": \"n2-paper-r7-public-preflight-wrong16\""));
+    assert!(json.contains("\"selection_mode\": \"random-public-samples\""));
+    assert!(json.contains("\"diagnostic_only\": false"));
+    assert!(json.contains("\"wrong_secret_seed_trials\": 16"));
+    assert!(json.contains("\"sample_seed_trials\": 1"));
+}

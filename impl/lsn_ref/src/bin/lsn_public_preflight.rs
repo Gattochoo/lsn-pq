@@ -35,6 +35,7 @@ fn main() {
     let mut profile = String::from("n2-paper-r7-public-preflight");
     let mut output = None;
     let mut check = None;
+    let mut describe = false;
 
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
@@ -52,6 +53,9 @@ fn main() {
             "--check" => {
                 check = Some(PathBuf::from(args.next().expect("--check requires a path")));
             }
+            "--describe" => {
+                describe = true;
+            }
             "--help" | "-h" => {
                 print_help();
                 return;
@@ -60,33 +64,12 @@ fn main() {
         }
     }
 
-    let spec = match profile.as_str() {
-        "n2-paper-r7-public-preflight" => ProfileSpec {
-            default_output: PathBuf::from(
-                "experiments/183-codex-lsn-ref-n2-paper-r7-public-preflight.json",
-            ),
-            experiment: "codex-lsn-ref-n2-paper-r7-public-preflight",
-            config: ToyPublicPreflightScanConfig {
-                params: ToyKemParams {
-                    n: 2,
-                    sample_count: 2048 * 7,
-                    repetition: 7,
-                    polar_n: 2048,
-                    polar_k: 256,
-                    public_noise_rate: 0.25,
-                    decoder_design_p: 0.0706,
-                },
-                honest_secret_seed: HONEST_SECRET_SEED,
-                sample_seed_start: SAMPLE_SEED,
-                sample_seed_trials: 1,
-                wrong_secret_seed_start: 0xA11CF,
-                wrong_secret_seed_trials: 1,
-                noise_seed: NOISE_SEED,
-                encaps_seed: ENCAPS_SEED,
-            },
-        },
-        other => panic!("unknown --profile: {other}"),
-    };
+    let spec = profile_spec(&profile);
+
+    if describe {
+        print!("{}", profile_description_json(&profile, &spec));
+        return;
+    }
 
     let report = toy_public_wrong_secret_preflight_scan(spec.config);
     let json = toy_public_wrong_secret_preflight_scan_to_json(spec.experiment, &profile, &report);
@@ -115,8 +98,72 @@ fn main() {
 
 fn print_help() {
     eprintln!(
-        "lsn_public_preflight [--profile n2-paper-r7-public-preflight] [--output PATH]\n\
-         lsn_public_preflight [--profile n2-paper-r7-public-preflight] --check PATH\n\
+        "lsn_public_preflight [--profile n2-paper-r7-public-preflight|n2-paper-r7-public-preflight-wrong16] [--output PATH]\n\
+         lsn_public_preflight [--profile n2-paper-r7-public-preflight|n2-paper-r7-public-preflight-wrong16] --check PATH\n\
+         lsn_public_preflight [--profile n2-paper-r7-public-preflight|n2-paper-r7-public-preflight-wrong16] --describe\n\
          Writes or verifies a bounded public-selection KAT preflight report."
     );
+}
+
+fn profile_spec(profile: &str) -> ProfileSpec {
+    let mut spec = ProfileSpec {
+        default_output: PathBuf::from(
+            "experiments/183-codex-lsn-ref-n2-paper-r7-public-preflight.json",
+        ),
+        experiment: "codex-lsn-ref-n2-paper-r7-public-preflight",
+        config: ToyPublicPreflightScanConfig {
+            params: ToyKemParams {
+                n: 2,
+                sample_count: 2048 * 7,
+                repetition: 7,
+                polar_n: 2048,
+                polar_k: 256,
+                public_noise_rate: 0.25,
+                decoder_design_p: 0.0706,
+            },
+            honest_secret_seed: HONEST_SECRET_SEED,
+            sample_seed_start: SAMPLE_SEED,
+            sample_seed_trials: 1,
+            wrong_secret_seed_start: 0xA11CF,
+            wrong_secret_seed_trials: 1,
+            noise_seed: NOISE_SEED,
+            encaps_seed: ENCAPS_SEED,
+        },
+    };
+
+    match profile {
+        "n2-paper-r7-public-preflight" => spec,
+        "n2-paper-r7-public-preflight-wrong16" => {
+            spec.default_output = PathBuf::from(
+                "experiments/184-codex-lsn-ref-n2-paper-r7-public-preflight-wrong16.json",
+            );
+            spec.experiment = "codex-lsn-ref-n2-paper-r7-public-preflight-wrong16";
+            spec.config.wrong_secret_seed_trials = 16;
+            spec
+        }
+        other => panic!("unknown --profile: {other}"),
+    }
+}
+
+fn profile_description_json(profile: &str, spec: &ProfileSpec) -> String {
+    format!(
+        "{{\n  \"profile\": \"{}\",\n  \"experiment\": \"{}\",\n  \"default_output\": \"{}\",\n  \"status\": \"profile description only; does not run the preflight scan\",\n  \"selection_mode\": \"random-public-samples\",\n  \"diagnostic_only\": false,\n  \"params\": {{\n    \"n\": {},\n    \"sample_count\": {},\n    \"repetition\": {},\n    \"polar_N\": {},\n    \"polar_K\": {},\n    \"public_noise_rate\": {:.10},\n    \"decoder_design_p\": {:.10}\n  }},\n  \"seeds\": {{\n    \"honest_secret_seed\": {},\n    \"sample_seed_start\": {},\n    \"sample_seed_trials\": {},\n    \"wrong_secret_seed_start\": {},\n    \"wrong_secret_seed_trials\": {},\n    \"noise_seed\": {},\n    \"encaps_seed\": {}\n  }}\n}}\n",
+        profile,
+        spec.experiment,
+        spec.default_output.display(),
+        spec.config.params.n,
+        spec.config.params.sample_count,
+        spec.config.params.repetition,
+        spec.config.params.polar_n,
+        spec.config.params.polar_k,
+        spec.config.params.public_noise_rate,
+        spec.config.params.decoder_design_p,
+        spec.config.honest_secret_seed,
+        spec.config.sample_seed_start,
+        spec.config.sample_seed_trials,
+        spec.config.wrong_secret_seed_start,
+        spec.config.wrong_secret_seed_trials,
+        spec.config.noise_seed,
+        spec.config.encaps_seed,
+    )
 }

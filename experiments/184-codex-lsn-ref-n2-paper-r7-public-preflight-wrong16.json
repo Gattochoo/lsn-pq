@@ -1,0 +1,30 @@
+{
+  "experiment": "codex-lsn-ref-n2-paper-r7-public-preflight-wrong16",
+  "profile": "n2-paper-r7-public-preflight-wrong16",
+  "status": "bounded public-selection preflight scan; not production constant-time; no security claim",
+  "verdict": "found_public_random_sample_negative_control",
+  "selection_mode": "random-public-samples",
+  "diagnostic_only": false,
+  "found_fixture": true,
+  "attempts": 2,
+  "params": {
+    "n": 2,
+    "sample_count": 14336,
+    "repetition": 7,
+    "polar_N": 2048,
+    "polar_K": 256,
+    "public_noise_rate": 0.2500000000,
+    "decoder_design_p": 0.0706000000
+  },
+  "seeds": {
+    "honest_secret_seed": 659918,
+    "sample_seed_start": 24301,
+    "sample_seed_trials": 1,
+    "wrong_secret_seed_start": 659919,
+    "wrong_secret_seed_trials": 16,
+    "noise_seed": 49374,
+    "encaps_seed": 48879
+  },
+  "found_sample_seed": 24301,
+  "found_wrong_secret_seed": 659920
+}
