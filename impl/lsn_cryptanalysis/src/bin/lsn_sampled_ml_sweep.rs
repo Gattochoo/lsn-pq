@@ -1,7 +1,9 @@
 use std::env;
 use std::fs;
 
-use lsn_cryptanalysis::{run_sampled_candidate_ml_trials, sampled_candidate_ml_results_to_json};
+use lsn_cryptanalysis::{
+    run_sampled_candidate_ml_budget_trials, sampled_candidate_ml_results_to_json,
+};
 
 #[derive(Debug)]
 struct Args {
@@ -10,7 +12,7 @@ struct Args {
     ratios: Vec<f64>,
     noise_rates: Vec<f64>,
     trials: usize,
-    candidate_count: usize,
+    candidate_counts: Vec<usize>,
     seed: u64,
     output: String,
 }
@@ -19,7 +21,7 @@ fn main() {
     let args = parse_args(env::args().skip(1).collect()).unwrap_or_else(|err| {
         eprintln!("{err}");
         eprintln!(
-            "usage: lsn_sampled_ml_sweep --n-start 6 --n-end 10 --ratios 0.25,1.0,4.0 --p-values 0.0,0.25,0.5 --trials 5 --candidate-count 512 --seed 3235823838 --output experiments/out.json"
+            "usage: lsn_sampled_ml_sweep --n-start 6 --n-end 10 --ratios 0.25,1.0,4.0 --p-values 0.0,0.25,0.5 --trials 5 --candidate-values 512,2048 --seed 3235823838 --output experiments/out.json"
         );
         std::process::exit(2);
     });
@@ -31,20 +33,16 @@ fn main() {
             let sample_count = ((base as f64) * ratio).round() as usize;
             for &noise_rate in &args.noise_rates {
                 eprintln!(
-                    "running sampled-ml n={n}, m={sample_count}, ratio={ratio:.3}, p={noise_rate:.4}, trials={}, candidate_count={}",
-                    args.trials, args.candidate_count
+                    "running sampled-ml n={n}, m={sample_count}, ratio={ratio:.3}, p={noise_rate:.4}, trials={}, candidate_counts={:?}",
+                    args.trials, args.candidate_counts
                 );
-                results.push(run_sampled_candidate_ml_trials(
+                results.extend(run_sampled_candidate_ml_budget_trials(
                     n,
                     sample_count,
                     noise_rate,
                     args.trials,
-                    args.candidate_count,
-                    args.seed
-                        ^ ((n as u64) << 40)
-                        ^ sample_count as u64
-                        ^ ((args.candidate_count as u64) << 16)
-                        ^ noise_rate.to_bits(),
+                    &args.candidate_counts,
+                    args.seed ^ ((n as u64) << 40) ^ sample_count as u64 ^ noise_rate.to_bits(),
                 ));
             }
         }
@@ -64,7 +62,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     let mut ratios = vec![0.25, 1.0, 4.0];
     let mut noise_rates = vec![0.0, 0.25, 0.5];
     let mut trials = 5;
-    let mut candidate_count = 512;
+    let mut candidate_counts = vec![512];
     let mut seed = 3_235_823_838u64;
     let mut output = None;
 
@@ -80,7 +78,10 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
             "--ratios" => ratios = parse_list(value, "--ratios")?,
             "--p-values" => noise_rates = parse_list(value, "--p-values")?,
             "--trials" => trials = parse_value(key, value)?,
-            "--candidate-count" => candidate_count = parse_value(key, value)?,
+            "--candidate-count" => candidate_counts = vec![parse_value(key, value)?],
+            "--candidate-values" => {
+                candidate_counts = parse_usize_list(value, "--candidate-values")?
+            }
             "--seed" => seed = parse_value(key, value)?,
             "--output" => output = Some(value.clone()),
             other => return Err(format!("unknown argument {other}")),
@@ -97,8 +98,8 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     if noise_rates.is_empty() || noise_rates.iter().any(|p| !(0.0..=0.5).contains(p)) {
         return Err("require p-values in [0, 0.5]".to_string());
     }
-    if candidate_count < 2 {
-        return Err("require candidate-count >= 2".to_string());
+    if candidate_counts.is_empty() || candidate_counts.iter().any(|&count| count < 2) {
+        return Err("require candidate counts >= 2".to_string());
     }
 
     Ok(Args {
@@ -107,7 +108,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
         ratios,
         noise_rates,
         trials,
-        candidate_count,
+        candidate_counts,
         seed,
         output: output.ok_or_else(|| "missing --output".to_string())?,
     })
@@ -123,6 +124,16 @@ where
 }
 
 fn parse_list(value: &str, key: &str) -> Result<Vec<f64>, String> {
+    value
+        .split(',')
+        .map(|part| {
+            part.parse()
+                .map_err(|_| format!("invalid value in {key}: {part}"))
+        })
+        .collect()
+}
+
+fn parse_usize_list(value: &str, key: &str) -> Result<Vec<usize>, String> {
     value
         .split(',')
         .map(|part| {

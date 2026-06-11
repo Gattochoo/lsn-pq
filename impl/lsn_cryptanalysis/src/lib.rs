@@ -300,14 +300,7 @@ pub fn random_lagrangian(n: usize, walk_steps: usize, rng: &mut XorShift64) -> L
     assert!(n > 0, "n must be positive");
     assert!(2 * n <= 32, "bitmask model supports dimension at most 32");
 
-    let mut basis = (0..n).map(|i| 1u32 << (2 * i)).collect::<Vec<_>>();
-    let universe = 1usize << (2 * n);
-    for _ in 0..walk_steps {
-        let v = rng.next_index(universe) as u32;
-        for basis_vec in &mut basis {
-            *basis_vec = transvection(v, *basis_vec, n);
-        }
-    }
+    let basis = random_lagrangian_basis(n, walk_steps, rng);
     span_from_basis(&basis)
 }
 
@@ -788,6 +781,97 @@ pub fn run_sampled_candidate_ml_trials(
         avg_secret_margin: secret_margin_sum as f64 / denom,
         seed,
     }
+}
+
+pub fn run_sampled_candidate_ml_budget_trials(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    trials: usize,
+    candidate_counts: &[usize],
+    seed: u64,
+) -> Vec<SampledCandidateMlTrialResult> {
+    assert!(
+        !candidate_counts.is_empty(),
+        "candidate count list must be nonempty"
+    );
+    assert!(
+        candidate_counts.iter().all(|&count| count >= 2),
+        "candidate counts must include at least secret plus one decoy"
+    );
+
+    let total_dim = 2 * n;
+    let universe = 1usize << total_dim;
+    let max_candidate_count = *candidate_counts.iter().max().unwrap();
+    let mut rng = XorShift64::new(seed);
+    let mut successes = vec![0usize; candidate_counts.len()];
+    let mut secret_score_sums = vec![0i64; candidate_counts.len()];
+    let mut best_false_score_sums = vec![0i64; candidate_counts.len()];
+    let mut secret_margin_sums = vec![0i64; candidate_counts.len()];
+
+    for _ in 0..trials {
+        let secret_basis = random_lagrangian_basis(n, 8 * total_dim.max(1), &mut rng);
+        let secret_points = points_from_basis(&secret_basis);
+        let secret = secret_points.iter().copied().collect::<Lagrangian>();
+        let samples = sample_lsn(&secret, sample_count, noise_rate, total_dim, &mut rng);
+
+        let mut rows = Vec::with_capacity(max_candidate_count);
+        rows.push(secret_points);
+        for _ in 1..max_candidate_count {
+            let basis = random_lagrangian_basis(n, 8 * total_dim.max(1), &mut rng);
+            rows.push(points_from_basis(&basis));
+        }
+        let compact = CompactLagrangians {
+            n,
+            total_dim,
+            universe,
+            rows,
+        };
+        let scores = compact_ml_scores(&samples, &compact);
+        let secret_score = scores[0];
+
+        for (index, &candidate_count) in candidate_counts.iter().enumerate() {
+            let mut best_index = 0usize;
+            let mut best_score = i32::MIN;
+            let mut best_false_score = i32::MIN;
+
+            for (candidate_index, &score) in scores[..candidate_count].iter().enumerate() {
+                if score > best_score {
+                    best_score = score;
+                    best_index = candidate_index;
+                }
+                if candidate_index != 0 && score > best_false_score {
+                    best_false_score = score;
+                }
+            }
+
+            if best_index == 0 {
+                successes[index] += 1;
+            }
+            secret_score_sums[index] += secret_score as i64;
+            best_false_score_sums[index] += best_false_score as i64;
+            secret_margin_sums[index] += (secret_score - best_false_score) as i64;
+        }
+    }
+
+    let denom = trials.max(1) as f64;
+    candidate_counts
+        .iter()
+        .enumerate()
+        .map(|(index, &candidate_count)| SampledCandidateMlTrialResult {
+            n,
+            total_dim,
+            sample_count,
+            noise_rate,
+            trials,
+            candidate_count,
+            successes: successes[index],
+            avg_secret_score: secret_score_sums[index] as f64 / denom,
+            avg_best_false_score: best_false_score_sums[index] as f64 / denom,
+            avg_secret_margin: secret_margin_sums[index] as f64 / denom,
+            seed: seed ^ candidate_count as u64,
+        })
+        .collect()
 }
 
 pub fn span_of_positives_decode(
@@ -1595,6 +1679,18 @@ fn standard_lagrangian(n: usize) -> Lagrangian {
     out
 }
 
+fn random_lagrangian_basis(n: usize, walk_steps: usize, rng: &mut XorShift64) -> Vec<u32> {
+    let mut basis = (0..n).map(|i| 1u32 << (2 * i)).collect::<Vec<_>>();
+    let universe = 1usize << (2 * n);
+    for _ in 0..walk_steps {
+        let v = rng.next_index(universe) as u32;
+        for basis_vec in &mut basis {
+            *basis_vec = transvection(v, *basis_vec, n);
+        }
+    }
+    basis
+}
+
 fn transvection_generators(n: usize) -> Vec<u32> {
     let mut generators = Vec::new();
 
@@ -1697,6 +1793,20 @@ fn span_from_basis(basis: &[u32]) -> Lagrangian {
             }
         }
         out.insert(point);
+    }
+    out
+}
+
+fn points_from_basis(basis: &[u32]) -> Vec<u32> {
+    let mut out = Vec::with_capacity(1usize << basis.len());
+    for coeffs in 0..(1usize << basis.len()) {
+        let mut point = 0u32;
+        for (i, &basis_vec) in basis.iter().enumerate() {
+            if ((coeffs >> i) & 1) == 1 {
+                point ^= basis_vec;
+            }
+        }
+        out.push(point);
     }
     out
 }
