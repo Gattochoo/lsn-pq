@@ -62,6 +62,27 @@ pub struct ToyWrongSecretControl {
     pub wrong_secret_roundtrip_ok: bool,
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ToyPublicPreflightScanConfig {
+    pub params: ToyKemParams,
+    pub honest_secret_seed: u64,
+    pub sample_seed_start: u64,
+    pub sample_seed_trials: usize,
+    pub wrong_secret_seed_start: u64,
+    pub wrong_secret_seed_trials: usize,
+    pub noise_seed: u64,
+    pub encaps_seed: u64,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ToyPublicPreflightScanReport {
+    pub config: ToyPublicPreflightScanConfig,
+    pub attempts: usize,
+    pub found_fixture: bool,
+    pub found_sample_seed: Option<u64>,
+    pub found_wrong_secret_seed: Option<u64>,
+}
+
 pub fn toy_kat_vector(
     params: ToyKemParams,
     secret_seed: u64,
@@ -299,6 +320,58 @@ pub fn toy_find_wrong_secret_control(
     None
 }
 
+pub fn toy_public_wrong_secret_preflight_scan(
+    config: ToyPublicPreflightScanConfig,
+) -> ToyPublicPreflightScanReport {
+    validate_params(config.params);
+    assert!(
+        config.sample_seed_trials > 0,
+        "sample_seed_trials must be positive"
+    );
+    assert!(
+        config.wrong_secret_seed_trials > 0,
+        "wrong_secret_seed_trials must be positive"
+    );
+
+    let mut attempts = 0usize;
+    for sample_offset in 0..config.sample_seed_trials {
+        let sample_seed = config.sample_seed_start.wrapping_add(sample_offset as u64);
+        for wrong_offset in 0..config.wrong_secret_seed_trials {
+            let wrong_secret_seed = config
+                .wrong_secret_seed_start
+                .wrapping_add(wrong_offset as u64);
+            attempts += 1;
+            let control = toy_wrong_secret_control(
+                config.params,
+                config.honest_secret_seed,
+                wrong_secret_seed,
+                sample_seed,
+                config.noise_seed,
+                config.encaps_seed,
+            );
+            let honest_roundtrip_ok =
+                control.honest.encapsulated_key_hex == control.honest.decapsulated_key_hex;
+            if honest_roundtrip_ok && !control.wrong_secret_roundtrip_ok {
+                return ToyPublicPreflightScanReport {
+                    config,
+                    attempts,
+                    found_fixture: true,
+                    found_sample_seed: Some(sample_seed),
+                    found_wrong_secret_seed: Some(wrong_secret_seed),
+                };
+            }
+        }
+    }
+
+    ToyPublicPreflightScanReport {
+        config,
+        attempts,
+        found_fixture: false,
+        found_sample_seed: None,
+        found_wrong_secret_seed: None,
+    }
+}
+
 fn toy_kat_from_parts(
     params: ToyKemParams,
     secret_seed: u64,
@@ -518,6 +591,98 @@ pub fn constant_time_inventory_json() -> &'static str {
         "  ]\n",
         "}\n",
     )
+}
+
+pub fn toy_public_wrong_secret_preflight_scan_to_json(
+    experiment: &str,
+    profile: &str,
+    report: &ToyPublicPreflightScanReport,
+) -> String {
+    let verdict = if report.found_fixture {
+        "found_public_random_sample_negative_control"
+    } else {
+        "no_public_random_sample_negative_control_in_bounded_scan"
+    };
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str(&format!("  \"profile\": \"{}\",\n", escape_json(profile)));
+    out.push_str("  \"status\": \"bounded public-selection preflight scan; not production constant-time; no security claim\",\n");
+    out.push_str(&format!("  \"verdict\": \"{}\",\n", verdict));
+    out.push_str("  \"selection_mode\": \"random-public-samples\",\n");
+    out.push_str("  \"diagnostic_only\": false,\n");
+    out.push_str(&format!("  \"found_fixture\": {},\n", report.found_fixture));
+    out.push_str(&format!("  \"attempts\": {},\n", report.attempts));
+    out.push_str("  \"params\": {\n");
+    out.push_str(&format!("    \"n\": {},\n", report.config.params.n));
+    out.push_str(&format!(
+        "    \"sample_count\": {},\n",
+        report.config.params.sample_count
+    ));
+    out.push_str(&format!(
+        "    \"repetition\": {},\n",
+        report.config.params.repetition
+    ));
+    out.push_str(&format!(
+        "    \"polar_N\": {},\n",
+        report.config.params.polar_n
+    ));
+    out.push_str(&format!(
+        "    \"polar_K\": {},\n",
+        report.config.params.polar_k
+    ));
+    out.push_str(&format!(
+        "    \"public_noise_rate\": {:.10},\n",
+        report.config.params.public_noise_rate
+    ));
+    out.push_str(&format!(
+        "    \"decoder_design_p\": {:.10}\n",
+        report.config.params.decoder_design_p
+    ));
+    out.push_str("  },\n");
+    out.push_str("  \"seeds\": {\n");
+    out.push_str(&format!(
+        "    \"honest_secret_seed\": {},\n",
+        report.config.honest_secret_seed
+    ));
+    out.push_str(&format!(
+        "    \"sample_seed_start\": {},\n",
+        report.config.sample_seed_start
+    ));
+    out.push_str(&format!(
+        "    \"sample_seed_trials\": {},\n",
+        report.config.sample_seed_trials
+    ));
+    out.push_str(&format!(
+        "    \"wrong_secret_seed_start\": {},\n",
+        report.config.wrong_secret_seed_start
+    ));
+    out.push_str(&format!(
+        "    \"wrong_secret_seed_trials\": {},\n",
+        report.config.wrong_secret_seed_trials
+    ));
+    out.push_str(&format!(
+        "    \"noise_seed\": {},\n",
+        report.config.noise_seed
+    ));
+    out.push_str(&format!(
+        "    \"encaps_seed\": {}\n",
+        report.config.encaps_seed
+    ));
+    out.push_str("  },\n");
+    out.push_str(&format!(
+        "  \"found_sample_seed\": {},\n",
+        u64_option_json(report.found_sample_seed)
+    ));
+    out.push_str(&format!(
+        "  \"found_wrong_secret_seed\": {}\n",
+        u64_option_json(report.found_wrong_secret_seed)
+    ));
+    out.push_str("}\n");
+    out
 }
 
 fn toy_wrong_secret_control_to_json_inner(
@@ -835,4 +1000,8 @@ fn usize_array_json(values: &[usize]) -> String {
         .collect::<Vec<_>>()
         .join(", ");
     format!("[{}]", body)
+}
+
+fn u64_option_json(value: Option<u64>) -> String {
+    value.map_or_else(|| String::from("null"), |value| value.to_string())
 }
