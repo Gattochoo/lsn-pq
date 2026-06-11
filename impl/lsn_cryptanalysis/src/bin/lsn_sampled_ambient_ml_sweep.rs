@@ -29,18 +29,24 @@ struct Args {
     noise_rates: Vec<f64>,
     trials: usize,
     seed: u64,
-    output: String,
+    output: Option<String>,
     progress: bool,
+    dry_run: bool,
 }
 
 fn main() {
     let args = parse_args(env::args().skip(1).collect()).unwrap_or_else(|err| {
         eprintln!("{err}");
         eprintln!(
-            "usage: lsn_sampled_ambient_ml_sweep --n-start 6 --n-end 8 --ratios 0.03125,0.0625,0.125 --p-values 0.25,0.5 --trials 8 --seed 3235823841 [--progress] --output experiments/out.json"
+            "usage: lsn_sampled_ambient_ml_sweep --n-start 6 --n-end 8 --ratios 0.03125,0.0625,0.125 --p-values 0.25,0.5 --trials 8 --seed 3235823841 [--progress] [--dry-run] --output experiments/out.json"
         );
         std::process::exit(2);
     });
+
+    if args.dry_run {
+        print_dry_run(&args);
+        return;
+    }
 
     let mut results = Vec::new();
     for n in args.n_start..=args.n_end {
@@ -96,10 +102,43 @@ fn main() {
         "codex-p2-sampled-ambient-size-candidate-ml",
         &results,
     );
-    fs::write(&args.output, json).unwrap_or_else(|err| {
-        eprintln!("failed to write {}: {err}", args.output);
+    let output = args
+        .output
+        .as_ref()
+        .expect("non-dry-run parse must require output");
+    fs::write(output, json).unwrap_or_else(|err| {
+        eprintln!("failed to write {output}: {err}");
         std::process::exit(1);
     });
+}
+
+fn print_dry_run(args: &Args) {
+    for n in args.n_start..=args.n_end {
+        let candidate_count = pow2(2 * n);
+        let lagrangian_points = pow2(n);
+        let stored_points = candidate_count.saturating_mul(lagrangian_points);
+        eprintln!(
+            "dry-run ambient-ml n={n} candidate_count={candidate_count} lagrangian_points={lagrangian_points} stored_points={stored_points}"
+        );
+        for &ratio in &args.ratios {
+            let sample_count = ((candidate_count as f64) * ratio).round() as u128;
+            for &noise_rate in &args.noise_rates {
+                let score_pairs = candidate_count
+                    .saturating_mul(sample_count)
+                    .saturating_mul(args.trials as u128);
+                eprintln!(
+                    "  cell n={n} ratio={ratio} samples={sample_count} p={noise_rate} trials={} score_pairs={score_pairs}",
+                    args.trials
+                );
+            }
+        }
+    }
+}
+
+fn pow2(exp: usize) -> u128 {
+    1u128
+        .checked_shl(exp as u32)
+        .unwrap_or_else(|| panic!("2^{exp} does not fit in u128"))
 }
 
 fn parse_args(raw: Vec<String>) -> Result<Args, String> {
@@ -111,12 +150,18 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     let mut seed = 3_235_823_841u64;
     let mut output = None;
     let mut progress = false;
+    let mut dry_run = false;
 
     let mut i = 0;
     while i < raw.len() {
         let key = &raw[i];
         if key == "--progress" {
             progress = true;
+            i += 1;
+            continue;
+        }
+        if key == "--dry-run" {
+            dry_run = true;
             i += 1;
             continue;
         }
@@ -145,6 +190,9 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     if noise_rates.is_empty() || noise_rates.iter().any(|p| !(0.0..=0.5).contains(p)) {
         return Err("require p-values in [0, 0.5]".to_string());
     }
+    if output.is_none() && !dry_run {
+        return Err("missing --output".to_string());
+    }
 
     Ok(Args {
         n_start,
@@ -153,8 +201,9 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
         noise_rates,
         trials,
         seed,
-        output: output.ok_or_else(|| "missing --output".to_string())?,
+        output,
         progress,
+        dry_run,
     })
 }
 
@@ -206,6 +255,7 @@ mod tests {
         .unwrap();
 
         assert!(!args.progress);
+        assert!(!args.dry_run);
     }
 
     #[test]
@@ -230,5 +280,50 @@ mod tests {
         .unwrap();
 
         assert!(args.progress);
+        assert!(!args.dry_run);
+    }
+
+    #[test]
+    fn parse_args_accepts_dry_run_without_output() {
+        let args = parse_args(owned(&[
+            "--n-start",
+            "11",
+            "--n-end",
+            "11",
+            "--ratios",
+            "0.015625",
+            "--p-values",
+            "0.25,0.5",
+            "--trials",
+            "1",
+            "--seed",
+            "3235823859",
+            "--dry-run",
+        ]))
+        .unwrap();
+
+        assert!(args.dry_run);
+        assert!(args.output.is_none());
+    }
+
+    #[test]
+    fn parse_args_requires_output_without_dry_run() {
+        let err = parse_args(owned(&[
+            "--n-start",
+            "11",
+            "--n-end",
+            "11",
+            "--ratios",
+            "0.015625",
+            "--p-values",
+            "0.25,0.5",
+            "--trials",
+            "1",
+            "--seed",
+            "3235823859",
+        ]))
+        .unwrap_err();
+
+        assert_eq!(err, "missing --output");
     }
 }
