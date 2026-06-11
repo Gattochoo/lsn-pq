@@ -12,6 +12,7 @@ struct Args {
     seed: u64,
     list_size: usize,
     output: PathBuf,
+    check: Option<PathBuf>,
 }
 
 fn main() {
@@ -55,6 +56,19 @@ fn main() {
         &format!("scl_l{}_minsum_pathmetric", args.list_size),
         &results,
     );
+    if let Some(check_path) = args.check {
+        let expected = fs::read_to_string(&check_path).expect("failed to read importance fixture");
+        if expected != json {
+            eprintln!(
+                "importance check failed: generated JSON differs from {}",
+                check_path.display()
+            );
+            std::process::exit(1);
+        }
+        eprintln!("verified {}", check_path.display());
+        return;
+    }
+
     if let Some(parent) = args.output.parent() {
         fs::create_dir_all(parent).expect("failed to create output directory");
     }
@@ -71,6 +85,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     let mut seed = 0x5151_2026u64;
     let mut list_size = 8usize;
     let mut output = PathBuf::from("experiments/polar-importance.json");
+    let mut check = None;
 
     let mut i = 0;
     while i < raw.len() {
@@ -91,6 +106,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
             "--seed" => seed = parse_value(key, value)?,
             "--list-size" => list_size = parse_value(key, value)?,
             "--output" => output = PathBuf::from(value),
+            "--check" => check = Some(PathBuf::from(value)),
             other => return Err(format!("unknown argument {other}")),
         }
         i += 2;
@@ -109,6 +125,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
         seed,
         list_size,
         output,
+        check,
     })
 }
 
@@ -135,6 +152,7 @@ fn print_help() {
     eprintln!(
         "polar-importance [--n N] [--k K] [--target-p P] [--proposal-values Q1,Q2]\n\
          [--trials T] [--seed U64] [--list-size L] [--output PATH]\n\
-         Runs a tilted-BSC importance-sampling pilot for the fast SCL decoder."
+         [--check PATH]\n\
+         Runs or verifies a tilted-BSC importance-sampling pilot for the fast SCL decoder."
     );
 }
