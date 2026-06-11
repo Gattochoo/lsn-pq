@@ -1,6 +1,6 @@
 use lsn_cryptanalysis::{
-    LsnSample, XorShift64, brute_force_ml_decode, enumerate_lagrangians, results_to_json,
-    run_ml_trials, sample_lsn,
+    CompactLagrangians, LsnSample, XorShift64, brute_force_ml_decode, compact_ml_decode,
+    enumerate_lagrangians, results_to_json, run_ml_trials, sample_lsn,
 };
 
 #[test]
@@ -82,4 +82,17 @@ fn result_json_records_threat_model_and_success_rate() {
         "\"threat_model\": \"attacker observes public points and noisy membership labels\""
     ));
     assert!(json.contains("\"success_rate\": 1.0000000000"));
+}
+
+#[test]
+fn compact_ml_decoder_matches_reference_scorer() {
+    let lagrangians = enumerate_lagrangians(4);
+    let compact = CompactLagrangians::from_lagrangians(4, &lagrangians);
+    let mut rng = XorShift64::new(0xDEC0DED);
+    let samples = sample_lsn(&lagrangians[91], 96, 0.25, 8, &mut rng);
+
+    let reference = brute_force_ml_decode(&samples, &lagrangians);
+    let packed = compact_ml_decode(&samples, &compact);
+
+    assert_eq!(packed, reference);
 }
