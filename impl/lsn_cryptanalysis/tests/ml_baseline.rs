@@ -5,7 +5,7 @@ use lsn_cryptanalysis::{
     run_isd_budget_trials, run_isd_trials, run_ml_trials, run_sampled_candidate_ambient_ml_trials,
     run_sampled_candidate_false_max_budget_trials, run_sampled_candidate_ml_budget_trials,
     run_sampled_candidate_ml_trials, run_span_trials, sample_lsn, sampled_candidate_ml_model_row,
-    span_of_positives_decode, span_results_to_json, symplectic_form,
+    span_of_positives_decode, span_results_to_json, symplectic_form, wilson_score_interval,
 };
 
 #[test]
@@ -297,4 +297,17 @@ fn sampled_candidate_ambient_runner_uses_universe_sized_cloud() {
     assert_eq!(results[0].candidate_count, 256);
     assert_eq!(results[0].successes, 2);
     assert!(results[0].avg_secret_margin > 0.0);
+}
+
+#[test]
+fn wilson_score_interval_keeps_boundary_rates_honest() {
+    let (half_low, half_high) = wilson_score_interval(10, 20, 1.96);
+    let (perfect_low, perfect_high) = wilson_score_interval(20, 20, 1.96);
+    let (empty_low, empty_high) = wilson_score_interval(0, 0, 1.96);
+
+    assert!((half_low - 0.299).abs() < 0.001);
+    assert!((half_high - 0.701).abs() < 0.001);
+    assert!((perfect_low - 0.839).abs() < 0.001);
+    assert!((perfect_high - 1.0).abs() < 1e-12);
+    assert_eq!((empty_low, empty_high), (0.0, 0.0));
 }

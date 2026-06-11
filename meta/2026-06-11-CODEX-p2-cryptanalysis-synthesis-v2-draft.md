@@ -95,12 +95,15 @@ The following text is suitable as a draft paragraph for Claude to adapt, not as 
 
 ## Next Step
 
-Hand this synthesis to Claude for v2 insertion. If Codex continues before Claude adjudicates, the
-next useful work is not another broad attack family but a small consistency check for the synthesis:
+Hand this synthesis to Claude for v2 insertion. The first small consistency check is now recorded in
+`meta/2026-06-11-CODEX-p2-ambient-boundary-ci.md`, which adds Wilson intervals to experiment 142 and
+keeps the 20-trial boundary table from being overread.
+
+If Codex continues before Claude adjudicates, the next useful work is not another broad attack
+family but a presentation-quality replication:
 
 ```text
-re-run the ambient-size ML boundary at n=8 only with more trials, or compute confidence intervals
-for the 142 success rates.
+re-run the ambient-size ML boundary at n=8 only with more trials if v2 needs tighter intervals.
 ```
 
 That would improve presentation quality without changing the adjudication.

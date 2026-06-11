@@ -114,6 +114,24 @@ impl SampledCandidateMlTrialResult {
     }
 }
 
+pub fn wilson_score_interval(successes: usize, trials: usize, z: f64) -> (f64, f64) {
+    if trials == 0 {
+        return (0.0, 0.0);
+    }
+
+    let n = trials as f64;
+    let p_hat = successes as f64 / n;
+    let z2 = z * z;
+    let denominator = 1.0 + z2 / n;
+    let center = (p_hat + z2 / (2.0 * n)) / denominator;
+    let half_width = z * ((p_hat * (1.0 - p_hat) + z2 / (4.0 * n)) / n).sqrt() / denominator;
+
+    (
+        (center - half_width).max(0.0),
+        (center + half_width).min(1.0),
+    )
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct SampledCandidateFalseMaxTrialResult {
     pub n: usize,
