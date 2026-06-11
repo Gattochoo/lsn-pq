@@ -35,7 +35,7 @@ This is evidence for the v2 security-evidence section, not a proof of hardness.
 | Sampled-candidate ML, fixed cloud | `136`; `CODEX-p2-sampled-candidate-ml.md` | Secret planted as candidate 0 among random decoys | `n=6..10` | 512 decoys; ratios `{0.25,1,4}` | Clean separation at moderate `n`; `p=1/2` control fails | Candidate cloud too small to test full rail | Sanity harness only |
 | Candidate-count scaling and EV model | `137`, `138`; `CODEX-p2-sampled-candidate-count-scaling.md`, `CODEX-p2-sampled-candidate-ev-model.md` | Planted secret plus random decoys; false-max pressure modeled | `n=8..10` | up to 32768 candidates; model includes 131072 | Candidate pressure visible; Gaussian extreme-value proxy is conservative; `p=1/2` negative | Explains finite-cloud margins as ordinary ML separation | Interpretation model; not recovery |
 | 131k planted and all-random false-max controls | `139`, `140`; `CODEX-p2-sampled-candidate-131k-stress.md`, `CODEX-p2-sampled-candidate-false-max-control.md` | Planted candidate stress plus unplanted false-max reference | `n=10` | 131072 candidates; ratios `{0.0625,0.125}` | Planted and unplanted false-max margins track closely; `p=1/2` fails | Confirms false-max explanation, not public search | Calibration only |
-| Ambient-size sampled-candidate ML | `141`, `142`; `CODEX-p2-ambient-size-ml-*.md` | Non-enumerative random-secret plus random-decoy cloud with planted secret | `n=6..8` | `candidate_count=2^(2n)`; boundary trials 20 | Transition stays at `m=c*2^(2n)` for small constant `c`; no point gives polynomial-sample recovery | Direct high-`n` calibration on the rail | v2-ready evidence; not REDUCES |
+| Ambient-size sampled-candidate ML | `141`..`144`; `CODEX-p2-ambient-size-ml-*.md` | Non-enumerative random-secret plus random-decoy cloud with planted secret | `n=6..8` | `candidate_count=2^(2n)`; boundary trials 20, n=8 addendum 50 | Transition stays at `m=c*2^(2n)` for small constant `c`; n=8 50-trial addendum has 24/50 at ratio 0.0625 and 46/50 at ratio 0.125; p=1/2 control 0/30 | Direct high-`n` calibration on the rail | v2-ready evidence; not REDUCES |
 
 ## Most Useful v2 Table
 
@@ -92,6 +92,8 @@ The following text is suitable as a draft paragraph for Claude to adapt, not as 
 | 140 | `experiments/140-codex-p2-sampled-candidate-false-max-control.json` |
 | 141 | `experiments/141-codex-p2-ambient-size-ml-n6-n8.json` |
 | 142 | `experiments/142-codex-p2-ambient-size-ml-boundary-n6-n8.json` |
+| 143 | `experiments/143-codex-p2-ambient-size-ml-n8-50trial-boundary.json` |
+| 144 | `experiments/144-codex-p2-ambient-size-ml-n8-random-control.json` |
 
 ## Next Step
 
@@ -99,11 +101,16 @@ Hand this synthesis to Claude for v2 insertion. The first small consistency chec
 `meta/2026-06-11-CODEX-p2-ambient-boundary-ci.md`, which adds Wilson intervals to experiment 142 and
 keeps the 20-trial boundary table from being overread.
 
+The n=8 presentation-quality replication is now recorded in
+`meta/2026-06-11-CODEX-p2-ambient-size-ml-n8-50trial-boundary.md`, with structured 50-trial boundary
+cells and a matched `p=1/2` random-label control.
+
 If Codex continues before Claude adjudicates, the next useful work is not another broad attack
-family but a presentation-quality replication:
+family but either a similarly bounded P1b importance-sampling attempt or a Claude-requested
+presentation pass:
 
 ```text
-re-run the ambient-size ML boundary at n=8 only with more trials if v2 needs tighter intervals.
+do not start a new attack family unless it has a clear threat model and controls.
 ```
 
 That would improve presentation quality without changing the adjudication.
