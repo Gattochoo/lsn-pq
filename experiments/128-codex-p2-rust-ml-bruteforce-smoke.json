@@ -1,0 +1,68 @@
+{
+  "experiment": "codex-p2-rust-ml-bruteforce-smoke",
+  "attack": "brute_force_ml_over_lagrangians",
+  "threat_model": "attacker observes public points and noisy membership labels",
+  "adjudication": "P2 empirical cryptanalysis harness; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "n": 3,
+      "lagrangians": 135,
+      "sample_count": 32,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "successes": 2,
+      "success_rate": 0.1000000000,
+      "seed": 16120725758
+    },
+    {
+      "n": 3,
+      "lagrangians": 135,
+      "sample_count": 64,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "successes": 11,
+      "success_rate": 0.5500000000,
+      "seed": 16120725662
+    },
+    {
+      "n": 3,
+      "lagrangians": 135,
+      "sample_count": 128,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "successes": 16,
+      "success_rate": 0.8000000000,
+      "seed": 16120725598
+    },
+    {
+      "n": 4,
+      "lagrangians": 2295,
+      "sample_count": 128,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "successes": 5,
+      "success_rate": 0.2500000000,
+      "seed": 20415692894
+    },
+    {
+      "n": 4,
+      "lagrangians": 2295,
+      "sample_count": 256,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "successes": 12,
+      "success_rate": 0.6000000000,
+      "seed": 20415693278
+    },
+    {
+      "n": 4,
+      "lagrangians": 2295,
+      "sample_count": 512,
+      "noise_rate": 0.2500000000,
+      "trials": 20,
+      "successes": 19,
+      "success_rate": 0.9500000000,
+      "seed": 20415693534
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+use lsn_cryptanalysis::{
+    LsnSample, XorShift64, brute_force_ml_decode, enumerate_lagrangians, results_to_json,
+    run_ml_trials, sample_lsn,
+};
+
+#[test]
+fn transvection_orbit_matches_small_lagrangian_counts() {
+    let n2 = enumerate_lagrangians(2);
+    let n3 = enumerate_lagrangians(3);
+
+    assert_eq!(n2.len(), 15);
+    assert_eq!(n3.len(), 135);
+    assert!(n2.iter().all(|lagr| lagr.len() == 4));
+    assert!(n3.iter().all(|lagr| lagr.len() == 8));
+}
+
+#[test]
+fn ml_decoder_recovers_noiseless_secret_at_small_n() {
+    let lagrangians = enumerate_lagrangians(3);
+    let secret_idx = 17;
+    let secret = &lagrangians[secret_idx];
+    let mut samples = Vec::new();
+
+    for a in 0..64 {
+        samples.push(LsnSample {
+            point: a,
+            label: secret.contains(&a),
+        });
+    }
+
+    let guess = brute_force_ml_decode(&samples, &lagrangians);
+    assert_eq!(guess.best_index, secret_idx);
+    assert_eq!(guess.best_score, 64);
+}
+
+#[test]
+fn random_labels_do_not_look_like_clean_lsn() {
+    let lagrangians = enumerate_lagrangians(3);
+    let mut rng = XorShift64::new(0xC0DEC0DE);
+    let mut samples = Vec::new();
+
+    for point in 0..64 {
+        samples.push(LsnSample {
+            point,
+            label: rng.next_bool(),
+        });
+    }
+
+    let guess = brute_force_ml_decode(&samples, &lagrangians);
+    assert!(guess.best_score < 56);
+}
+
+#[test]
+fn noisy_sampler_is_seed_reproducible() {
+    let lagrangians = enumerate_lagrangians(3);
+    let secret = &lagrangians[23];
+    let mut rng_a = XorShift64::new(12345);
+    let mut rng_b = XorShift64::new(12345);
+
+    let a = sample_lsn(secret, 32, 0.25, 6, &mut rng_a);
+    let b = sample_lsn(secret, 32, 0.25, 6, &mut rng_b);
+
+    assert_eq!(a, b);
+}
+
+#[test]
+fn ml_trial_runner_recovers_noiseless_lsn() {
+    let result = run_ml_trials(3, 64, 0.0, 4, 0xA11CE);
+
+    assert_eq!(result.successes, 4);
+    assert_eq!(result.trials, 4);
+    assert_eq!(result.sample_count, 64);
+}
+
+#[test]
+fn result_json_records_threat_model_and_success_rate() {
+    let result = run_ml_trials(3, 64, 0.0, 2, 0xB0B);
+    let json = results_to_json("codex-p2-ml-smoke", &[result]);
+
+    assert!(json.contains("\"experiment\": \"codex-p2-ml-smoke\""));
+    assert!(json.contains(
+        "\"threat_model\": \"attacker observes public points and noisy membership labels\""
+    ));
+    assert!(json.contains("\"success_rate\": 1.0000000000"));
+}
