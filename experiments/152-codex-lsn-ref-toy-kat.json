@@ -1,0 +1,35 @@
+{
+  "experiment": "codex-lsn-ref-toy-kat",
+  "status": "toy reference KAT scaffold; not production constant-time; no security claim",
+  "negative_control": "same public key and ciphertext, decapsulated with a wrong Lagrangian secret",
+  "roundtrip_ok": true,
+  "wrong_secret_roundtrip_ok": false,
+  "params": {
+    "n": 2,
+    "sample_count": 64,
+    "repetition": 3,
+    "polar_N": 16,
+    "polar_K": 8,
+    "public_noise_rate": 0.0000000000,
+    "decoder_design_p": 0.0343000000
+  },
+  "seeds": {
+    "honest_secret_seed": 659918,
+    "wrong_secret_seed": 659919,
+    "sample_seed": 24301,
+    "noise_seed": 49374,
+    "encaps_seed": 48879
+  },
+  "honest_secret_lagrangian_points": [0, 6, 9, 15],
+  "wrong_secret_lagrangian_points": [0, 2, 4, 6],
+  "public_points": [0, 10, 1, 12, 13, 7, 15, 8, 12, 9, 12, 14, 14, 10, 6, 13, 6, 10, 5, 4, 12, 4, 13, 4, 11, 0, 1, 2, 14, 11, 7, 10, 2, 7, 1, 15, 10, 1, 13, 0, 10, 12, 4, 12, 6, 0, 0, 12, 1, 11, 13, 4, 3, 8, 15, 1, 8, 0, 7, 1, 14, 11, 15, 3],
+  "public_labels": [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+  "selected_indices": [2, 39, 42, 15, 32, 61, 54, 28, 45, 33, 25, 20, 47, 10, 31, 11, 63, 44, 6, 58, 23, 56, 50, 14, 4, 51, 18, 17, 29, 38, 22, 36, 48, 59, 62, 8, 30, 53, 21, 43, 7, 3, 57, 19, 35, 41, 52, 26],
+  "message_bits": [1, 0, 1, 1, 1, 0, 1, 1],
+  "ciphertext_syndrome_bits": [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1],
+  "decoded_message_bits": [1, 0, 1, 1, 1, 0, 1, 1],
+  "wrong_secret_decoded_message_bits": [1, 0, 0, 1, 1, 0, 1, 1],
+  "encapsulated_key_hex": "4292a13cfbbbffce0aa2e08bd03bd8b7accc004ab02b19e8ca018215c63335e0",
+  "decapsulated_key_hex": "4292a13cfbbbffce0aa2e08bd03bd8b7accc004ab02b19e8ca018215c63335e0",
+  "wrong_secret_decapsulated_key_hex": "3c1e9bcebbf8a947c8b655ea4ce7a5b06817429b83e2743a7f74c83a02eb4793"
+}

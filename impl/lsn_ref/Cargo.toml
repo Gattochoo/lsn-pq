@@ -1,0 +1,13 @@
+[package]
+name = "lsn_ref"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+
+[dependencies]
+lsn_cryptanalysis = { path = "../lsn_cryptanalysis" }
+polar_validation = { path = "../polar_validation" }
+
+[lib]
+name = "lsn_ref"
+path = "src/lib.rs"

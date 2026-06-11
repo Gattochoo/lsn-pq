@@ -11,6 +11,7 @@ venv/
 
 # Rust
 target/
+impl/*/target/
 
 # LaTeX build artifacts
 *.aux
