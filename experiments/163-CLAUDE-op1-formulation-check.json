@@ -1,0 +1,51 @@
+{
+ "experiment": "163-CLAUDE-op1-formulation-check",
+ "checks": {
+  "sigma2_p=0.25": 1.3333333333333333,
+  "sigma2_p=0.1": 7.111111111111112,
+  "sigma2_p=0.25_equals_4/3": true,
+  "count_n2_fullrank": 90,
+  "count_n3_fullrank": 22680,
+  "DRAFT_says_90_and_22680": true,
+  "n=2_num_isotropic_fullrank": 90,
+  "n=2_unconstrained_baseline_(1+s2/4)^2n": 3.160493827160493,
+  "n=2_isotropic_offdiag_C_by_hamming": {
+   "2": {
+    "min": 2.9753086419753085,
+    "max": 2.9753086419753085,
+    "avg": 2.9753086419753085
+   },
+   "1": {
+    "min": 2.97530864197531,
+    "max": 2.975308641975311,
+    "avg": 2.9753086419753103
+   }
+  },
+  "n=3_num_isotropic_fullrank": 22680,
+  "n=3_unconstrained_baseline_(1+s2/4)^2n": 5.618655692729765,
+  "n=3_isotropic_offdiag_C_by_hamming": {
+   "2": {
+    "min": 5.3469331765614125,
+    "max": 5.346933176561418,
+    "avg": 5.346933176561416
+   },
+   "1": {
+    "min": 5.3469331765614125,
+    "max": 5.346933176561418,
+    "avg": 5.346933176561415
+   },
+   "3": {
+    "min": 5.346933176561415,
+    "max": 5.346933176561418,
+    "avg": 5.346933176561417
+   }
+  }
+ },
+ "verdict": {
+  "math_A_B_D": "likelihood/sigma2/baseline/counts all VERIFIED",
+  "n3_worst_isotropic_offdiag_C": 5.346933176561418,
+  "n3_unconstrained_baseline": 5.618655692729765,
+  "suppressed_to_near_1": false,
+  "conclusion": "BATCH model: isotropic off-diagonal correlation is LARGE (not suppressed to 1+2^-Omega(n)) => DRAFT \u00a74 optimistic conjecture is FALSE for the batch formulation; OP1 needs a single-sample model."
+ }
+}
