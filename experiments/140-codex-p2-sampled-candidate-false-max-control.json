@@ -1,0 +1,104 @@
+{
+  "experiment": "codex-p2-sampled-candidate-false-max-control",
+  "control": "sampled_candidate_false_max_unplanted",
+  "threat_model": "attacker candidate set is all random decoy Lagrangians; the secret is scored only as an external reference and is not a candidate",
+  "adjudication": "P2 false-max calibration; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 65536,
+      "noise_rate": 0.2500000000,
+      "trials": 3,
+      "candidate_count": 32768,
+      "avg_secret_score": 49105.000000,
+      "avg_best_false_score": 49070.333333,
+      "avg_secret_margin_to_false_max": 34.666667,
+      "seed": 4598186217897410784
+    },
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 65536,
+      "noise_rate": 0.2500000000,
+      "trials": 3,
+      "candidate_count": 131072,
+      "avg_secret_score": 49105.000000,
+      "avg_best_false_score": 49072.333333,
+      "avg_secret_margin_to_false_max": 32.666667,
+      "seed": 4598186217897312480
+    },
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 65536,
+      "noise_rate": 0.5000000000,
+      "trials": 3,
+      "candidate_count": 32768,
+      "avg_secret_score": 32691.666667,
+      "avg_best_false_score": 32723.333333,
+      "avg_secret_margin_to_false_max": -31.666667,
+      "seed": 4602689817524781280
+    },
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 65536,
+      "noise_rate": 0.5000000000,
+      "trials": 3,
+      "candidate_count": 131072,
+      "avg_secret_score": 32691.666667,
+      "avg_best_false_score": 32723.333333,
+      "avg_secret_margin_to_false_max": -31.666667,
+      "seed": 4602689817524682976
+    },
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 131072,
+      "noise_rate": 0.2500000000,
+      "trials": 3,
+      "candidate_count": 32768,
+      "avg_secret_score": 98383.333333,
+      "avg_best_false_score": 98300.666667,
+      "avg_secret_margin_to_false_max": 82.666667,
+      "seed": 4598186217897214176
+    },
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 131072,
+      "noise_rate": 0.2500000000,
+      "trials": 3,
+      "candidate_count": 131072,
+      "avg_secret_score": 98383.333333,
+      "avg_best_false_score": 98305.000000,
+      "avg_secret_margin_to_false_max": 78.333333,
+      "seed": 4598186217897378016
+    },
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 131072,
+      "noise_rate": 0.5000000000,
+      "trials": 3,
+      "candidate_count": 32768,
+      "avg_secret_score": 65632.000000,
+      "avg_best_false_score": 65678.666667,
+      "avg_secret_margin_to_false_max": -46.666667,
+      "seed": 4602689817524584672
+    },
+    {
+      "n": 10,
+      "total_dim": 20,
+      "sample_count": 131072,
+      "noise_rate": 0.5000000000,
+      "trials": 3,
+      "candidate_count": 131072,
+      "avg_secret_score": 65632.000000,
+      "avg_best_false_score": 65680.666667,
+      "avg_secret_margin_to_false_max": -48.666667,
+      "seed": 4602689817524748512
+    }
+  ]
+}

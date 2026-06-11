@@ -2,7 +2,8 @@ use lsn_cryptanalysis::{
     CompactLagrangians, LsnSample, XorShift64, bkw_noise_after_rounds, bkw_xor_noise_rate,
     brute_force_ml_decode, bucket_rate_certificate, compact_ml_decode, enumerate_lagrangians,
     positive_basis_isd_decode, random_lagrangian, results_to_json, run_bkw_bucket_trials,
-    run_isd_budget_trials, run_isd_trials, run_ml_trials, run_sampled_candidate_ml_budget_trials,
+    run_isd_budget_trials, run_isd_trials, run_ml_trials,
+    run_sampled_candidate_false_max_budget_trials, run_sampled_candidate_ml_budget_trials,
     run_sampled_candidate_ml_trials, run_span_trials, sample_lsn, sampled_candidate_ml_model_row,
     span_of_positives_decode, span_results_to_json, symplectic_form,
 };
@@ -271,4 +272,17 @@ fn sampled_candidate_extreme_value_model_has_noise_control() {
     assert!(structured.predicted_secret_margin > 0.0);
     assert!(random.predicted_secret_margin < 0.0);
     assert!(larger_cloud.predicted_secret_margin < structured.predicted_secret_margin);
+}
+
+#[test]
+fn sampled_candidate_false_max_runner_excludes_secret_candidate() {
+    let results =
+        run_sampled_candidate_false_max_budget_trials(4, 2048, 0.0, 2, &[16, 64], 0xFACE_FEED);
+
+    assert_eq!(results.len(), 2);
+    assert_eq!(results[0].candidate_count, 16);
+    assert_eq!(results[1].candidate_count, 64);
+    assert!(results[0].avg_secret_margin_to_false_max > 0.0);
+    assert!(results[1].avg_secret_margin_to_false_max > 0.0);
+    assert!(results[1].avg_best_false_score >= results[0].avg_best_false_score);
 }

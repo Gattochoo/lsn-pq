@@ -115,6 +115,20 @@ impl SampledCandidateMlTrialResult {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub struct SampledCandidateFalseMaxTrialResult {
+    pub n: usize,
+    pub total_dim: usize,
+    pub sample_count: usize,
+    pub noise_rate: f64,
+    pub trials: usize,
+    pub candidate_count: usize,
+    pub avg_secret_score: f64,
+    pub avg_best_false_score: f64,
+    pub avg_secret_margin_to_false_max: f64,
+    pub seed: u64,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct SampledCandidateMlModelRow {
     pub n: usize,
     pub total_dim: usize,
@@ -888,6 +902,87 @@ pub fn run_sampled_candidate_ml_budget_trials(
         .collect()
 }
 
+pub fn run_sampled_candidate_false_max_budget_trials(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    trials: usize,
+    candidate_counts: &[usize],
+    seed: u64,
+) -> Vec<SampledCandidateFalseMaxTrialResult> {
+    assert!(
+        !candidate_counts.is_empty(),
+        "candidate count list must be nonempty"
+    );
+    assert!(
+        candidate_counts.iter().all(|&count| count >= 1),
+        "candidate counts must include at least one decoy"
+    );
+
+    let total_dim = 2 * n;
+    let universe = 1usize << total_dim;
+    let max_candidate_count = *candidate_counts.iter().max().unwrap();
+    let mut rng = XorShift64::new(seed);
+    let mut secret_score_sums = vec![0i64; candidate_counts.len()];
+    let mut best_false_score_sums = vec![0i64; candidate_counts.len()];
+    let mut secret_margin_sums = vec![0i64; candidate_counts.len()];
+
+    for _ in 0..trials {
+        let secret_basis = random_lagrangian_basis(n, 8 * total_dim.max(1), &mut rng);
+        let secret_points = points_from_basis(&secret_basis);
+        let secret = secret_points.iter().copied().collect::<Lagrangian>();
+        let samples = sample_lsn(&secret, sample_count, noise_rate, total_dim, &mut rng);
+
+        let mut rows = Vec::with_capacity(max_candidate_count + 1);
+        rows.push(secret_points);
+        for _ in 0..max_candidate_count {
+            let basis = random_lagrangian_basis(n, 8 * total_dim.max(1), &mut rng);
+            rows.push(points_from_basis(&basis));
+        }
+
+        let compact = CompactLagrangians {
+            n,
+            total_dim,
+            universe,
+            rows,
+        };
+        let scores = compact_ml_scores(&samples, &compact);
+        let secret_score = scores[0];
+
+        for (index, &candidate_count) in candidate_counts.iter().enumerate() {
+            let best_false_score = scores[1..=candidate_count]
+                .iter()
+                .copied()
+                .max()
+                .expect("candidate_count >= 1");
+
+            secret_score_sums[index] += secret_score as i64;
+            best_false_score_sums[index] += best_false_score as i64;
+            secret_margin_sums[index] += (secret_score - best_false_score) as i64;
+        }
+    }
+
+    let denom = trials.max(1) as f64;
+    candidate_counts
+        .iter()
+        .enumerate()
+        .map(
+            |(index, &candidate_count)| SampledCandidateFalseMaxTrialResult {
+                n,
+                total_dim,
+                sample_count,
+                noise_rate,
+                trials,
+                candidate_count,
+                avg_secret_score: secret_score_sums[index] as f64 / denom,
+                avg_best_false_score: best_false_score_sums[index] as f64 / denom,
+                avg_secret_margin_to_false_max: secret_margin_sums[index] as f64 / denom,
+                seed: seed ^ candidate_count as u64,
+            },
+        )
+        .collect()
+}
+
 pub fn span_of_positives_decode(
     n: usize,
     samples: &[LsnSample],
@@ -1370,6 +1465,63 @@ pub fn sampled_candidate_ml_results_to_json(
         out.push_str(&format!(
             "      \"avg_secret_margin\": {:.6},\n",
             result.avg_secret_margin
+        ));
+        out.push_str(&format!("      \"seed\": {}\n", result.seed));
+        out.push_str("    }");
+        if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
+pub fn sampled_candidate_false_max_results_to_json(
+    experiment: &str,
+    results: &[SampledCandidateFalseMaxTrialResult],
+) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str("  \"control\": \"sampled_candidate_false_max_unplanted\",\n");
+    out.push_str("  \"threat_model\": \"attacker candidate set is all random decoy Lagrangians; the secret is scored only as an external reference and is not a candidate\",\n");
+    out.push_str(
+        "  \"adjudication\": \"P2 false-max calibration; evidence, not proof; OPEN = LSN\",\n",
+    );
+    out.push_str("  \"results\": [\n");
+    for (i, result) in results.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"n\": {},\n", result.n));
+        out.push_str(&format!("      \"total_dim\": {},\n", result.total_dim));
+        out.push_str(&format!(
+            "      \"sample_count\": {},\n",
+            result.sample_count
+        ));
+        out.push_str(&format!(
+            "      \"noise_rate\": {:.10},\n",
+            result.noise_rate
+        ));
+        out.push_str(&format!("      \"trials\": {},\n", result.trials));
+        out.push_str(&format!(
+            "      \"candidate_count\": {},\n",
+            result.candidate_count
+        ));
+        out.push_str(&format!(
+            "      \"avg_secret_score\": {:.6},\n",
+            result.avg_secret_score
+        ));
+        out.push_str(&format!(
+            "      \"avg_best_false_score\": {:.6},\n",
+            result.avg_best_false_score
+        ));
+        out.push_str(&format!(
+            "      \"avg_secret_margin_to_false_max\": {:.6},\n",
+            result.avg_secret_margin_to_false_max
         ));
         out.push_str(&format!("      \"seed\": {}\n", result.seed));
         out.push_str("    }");
