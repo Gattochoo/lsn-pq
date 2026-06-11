@@ -49,17 +49,20 @@ re-derivation before entering the paper (`meta/2026-06-10-CLAUDE-*` adjudication
 
 ## Status
 
-- Paper: **preprint-ready** (v1); IACR ePrint submitted. arXiv submission pending.
+- Paper: **preprint-ready** (v2); IACR ePrint v2 updated. arXiv submission pending.
 - Open research: the marginal-adaptive corner of the linear-reduction landscape
-  (Open Problem 9) and the membership↔stabilizer-decoding bridge (Open Problem 8).
-- Implementation: Python prototypes validate parameters and algorithms; a production
-  constant-time Rust implementation with full N=2048 validation and KAT generation is planned.
+  (Open Problem 9). Open Problem 8 (membership↔stabilizer-decoding bridge) is now closed:
+  an independent-Clifford obstruction has been proven.
+- Implementation: Python prototypes validate parameters and algorithms; Rust reference
+  implementations (`impl/lsn_ref/`, `impl/lsn_cryptanalysis/`, `impl/polar_validation/`)
+  are active. A production constant-time Rust implementation with full N=2048 validation
+  and KAT generation is planned.
 
 ## License
 
 Dual-licensed:
 
-- **Code** (`experiments/`, `kat/`, `test_vectors/`, future implementations): [Apache License 2.0](LICENSE) — permissive, with an explicit patent grant and retaliation clause.
+- **Code** (`experiments/`, `impl/`, `kat/`, `test_vectors/`, future implementations): [Apache License 2.0](LICENSE) — permissive, with an explicit patent grant and retaliation clause.
 - **Documents** (`paper/`, `meta/`, this README): [CC BY 4.0](LICENSE-docs) — free to share and adapt with attribution.
 
 See `NOTICE` for the attribution line. No patents are or will be sought on the LSN constructions by the author; the scheme is offered royalty-free to maximize community analysis and adoption.
