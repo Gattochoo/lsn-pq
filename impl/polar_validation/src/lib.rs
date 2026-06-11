@@ -34,6 +34,20 @@ pub struct ImportanceSamplingResult {
     pub seed: u64,
 }
 
+#[derive(Clone, Debug, PartialEq)]
+pub struct PolarRateRow {
+    pub n: usize,
+    pub k: usize,
+    pub p: f64,
+    pub rate: f64,
+    pub bhattacharyya_sum_bound: f64,
+    pub half_sum_bound: f64,
+    pub log2_bhattacharyya_sum_bound: f64,
+    pub log2_half_sum_bound: f64,
+    pub target_log2_half_sum_bound: f64,
+    pub passes_half_sum_target: bool,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SimulationConfig {
     pub n: usize,
@@ -234,6 +248,65 @@ pub fn importance_results_to_json(
     out
 }
 
+pub fn polar_rate_rows_to_json(
+    experiment: &str,
+    target_log2_half_sum_bound: f64,
+    rows: &[PolarRateRow],
+) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str("  \"bound_convention\": \"SC block-error bound uses 0.5 * sum selected Bhattacharyya Z_i; raw sum is also recorded\",\n");
+    out.push_str(&format!(
+        "  \"target_log2_half_sum_bound\": {:.6},\n",
+        target_log2_half_sum_bound
+    ));
+    out.push_str("  \"adjudication\": \"engineering polar-rate sweep only; no closure, no break, OPEN = LSN\",\n");
+    out.push_str("  \"rows\": [\n");
+    for (i, row) in rows.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"N\": {},\n", row.n));
+        out.push_str(&format!("      \"K\": {},\n", row.k));
+        out.push_str(&format!("      \"p\": {:.10},\n", row.p));
+        out.push_str(&format!("      \"rate\": {:.12},\n", row.rate));
+        out.push_str(&format!(
+            "      \"bhattacharyya_sum_bound\": {:.12e},\n",
+            row.bhattacharyya_sum_bound
+        ));
+        out.push_str(&format!(
+            "      \"half_sum_bound\": {:.12e},\n",
+            row.half_sum_bound
+        ));
+        out.push_str(&format!(
+            "      \"log2_bhattacharyya_sum_bound\": {:.6},\n",
+            row.log2_bhattacharyya_sum_bound
+        ));
+        out.push_str(&format!(
+            "      \"log2_half_sum_bound\": {:.6},\n",
+            row.log2_half_sum_bound
+        ));
+        out.push_str(&format!(
+            "      \"target_log2_half_sum_bound\": {:.6},\n",
+            row.target_log2_half_sum_bound
+        ));
+        out.push_str(&format!(
+            "      \"passes_half_sum_target\": {}\n",
+            row.passes_half_sum_target
+        ));
+        out.push_str("    }");
+        if i + 1 != rows.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
 fn escape_json(value: &str) -> String {
     value
         .chars()
@@ -280,6 +353,16 @@ pub fn build_frozen_natural(n: usize, k: usize, p: f64) -> Vec<usize> {
     assert!(k <= n, "K must be <= N");
     assert!((0.0..=0.5).contains(&p), "p must be in [0, 0.5]");
 
+    let z = bhattacharyya_reliabilities(n, p);
+    let mut order = (0..n).collect::<Vec<_>>();
+    order.sort_by(|&a, &b| z[a].total_cmp(&z[b]).then_with(|| a.cmp(&b)));
+    order[k..].to_vec()
+}
+
+pub fn bhattacharyya_reliabilities(n: usize, p: f64) -> Vec<f64> {
+    assert!(n.is_power_of_two(), "N must be a power of two");
+    assert!((0.0..=0.5).contains(&p), "p must be in [0, 0.5]");
+
     let z0 = 2.0 * (p * (1.0 - p)).sqrt();
     let mut z = vec![z0];
     while z.len() < n {
@@ -291,9 +374,82 @@ pub fn build_frozen_natural(n: usize, k: usize, p: f64) -> Vec<usize> {
         z = next;
     }
 
+    z
+}
+
+pub fn polar_rate_row(n: usize, k: usize, p: f64, target_log2_half_sum_bound: f64) -> PolarRateRow {
+    assert!(k <= n, "K must be <= N");
+    let z = bhattacharyya_reliabilities(n, p);
     let mut order = (0..n).collect::<Vec<_>>();
     order.sort_by(|&a, &b| z[a].total_cmp(&z[b]).then_with(|| a.cmp(&b)));
-    order[k..].to_vec()
+    let bhattacharyya_sum_bound = order[..k].iter().map(|&idx| z[idx]).sum::<f64>();
+    polar_rate_row_from_sum(n, k, p, target_log2_half_sum_bound, bhattacharyya_sum_bound)
+}
+
+pub fn sweep_polar_rate(
+    n: usize,
+    p_values: &[f64],
+    k_start: usize,
+    k_end: usize,
+    k_step: usize,
+    target_log2_half_sum_bound: f64,
+) -> Vec<PolarRateRow> {
+    assert!(k_step > 0, "K step must be positive");
+    assert!(k_start <= k_end, "K start must be <= K end");
+    assert!(k_end <= n, "K end must be <= N");
+
+    let mut rows = Vec::new();
+    for &p in p_values {
+        let z = bhattacharyya_reliabilities(n, p);
+        let mut order = (0..n).collect::<Vec<_>>();
+        order.sort_by(|&a, &b| z[a].total_cmp(&z[b]).then_with(|| a.cmp(&b)));
+
+        let mut prefix = vec![0.0; n + 1];
+        for (i, &idx) in order.iter().enumerate() {
+            prefix[i + 1] = prefix[i] + z[idx];
+        }
+
+        let mut k = k_start;
+        while k <= k_end {
+            rows.push(polar_rate_row_from_sum(
+                n,
+                k,
+                p,
+                target_log2_half_sum_bound,
+                prefix[k],
+            ));
+            match k.checked_add(k_step) {
+                Some(next) => k = next,
+                None => break,
+            }
+        }
+    }
+    rows
+}
+
+fn polar_rate_row_from_sum(
+    n: usize,
+    k: usize,
+    p: f64,
+    target_log2_half_sum_bound: f64,
+    bhattacharyya_sum_bound: f64,
+) -> PolarRateRow {
+    let half_sum_bound = 0.5 * bhattacharyya_sum_bound;
+    let log2_bhattacharyya_sum_bound = bhattacharyya_sum_bound.log2();
+    let log2_half_sum_bound = half_sum_bound.log2();
+
+    PolarRateRow {
+        n,
+        k,
+        p,
+        rate: k as f64 / n as f64,
+        bhattacharyya_sum_bound,
+        half_sum_bound,
+        log2_bhattacharyya_sum_bound,
+        log2_half_sum_bound,
+        target_log2_half_sum_bound,
+        passes_half_sum_target: log2_half_sum_bound <= target_log2_half_sum_bound,
+    }
 }
 
 pub fn encode(code: &PolarCode, message: &[u8]) -> Vec<u8> {

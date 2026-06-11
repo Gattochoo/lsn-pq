@@ -1,15 +1,45 @@
 use polar_validation::{
-    baseline_reproduction_configs, build_frozen_natural, decode_scl, decode_scl_fast,
-    decode_successive_cancellation, encode, high_noise_control_configs, importance_results_to_json,
-    results_to_json, results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    zero_error_upper_bound, PolarCode,
+    baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
+    decode_scl_fast, decode_successive_cancellation, encode, high_noise_control_configs,
+    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
+    results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound, PolarCode,
 };
 
 #[test]
 fn natural_order_frozen_set_matches_small_reference() {
     let frozen = build_frozen_natural(8, 4, 0.0706);
     assert_eq!(frozen, vec![4, 2, 1, 0]);
+}
+
+#[test]
+fn bhattacharyya_reliabilities_preserve_natural_frozen_order() {
+    let z = bhattacharyya_reliabilities(8, 0.0706);
+    let mut order = (0..8).collect::<Vec<_>>();
+    order.sort_by(|&a, &b| z[a].total_cmp(&z[b]).then_with(|| a.cmp(&b)));
+
+    assert_eq!(&order[4..], build_frozen_natural(8, 4, 0.0706).as_slice());
+}
+
+#[test]
+fn polar_rate_row_marks_target_bound_status() {
+    let weak_channel = polar_rate_row(2048, 256, 0.0706, -128.0);
+    let strong_channel = polar_rate_row(2048, 256, 0.0343, -128.0);
+
+    assert!(!weak_channel.passes_half_sum_target);
+    assert!(strong_channel.passes_half_sum_target);
+    assert!(strong_channel.half_sum_bound < weak_channel.half_sum_bound);
+}
+
+#[test]
+fn polar_rate_json_records_target_and_log_bounds() {
+    let row = polar_rate_row(128, 16, 0.0343, -40.0);
+    let json = polar_rate_rows_to_json("codex-polar-rate-smoke", -40.0, &[row]);
+
+    assert!(json.contains("\"experiment\": \"codex-polar-rate-smoke\""));
+    assert!(json.contains("\"target_log2_half_sum_bound\": -40.000000"));
+    assert!(json.contains("\"log2_half_sum_bound\""));
+    assert!(json.contains("\"passes_half_sum_target\""));
 }
 
 #[test]
