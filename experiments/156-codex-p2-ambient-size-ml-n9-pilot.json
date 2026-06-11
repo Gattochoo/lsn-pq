@@ -1,0 +1,64 @@
+{
+  "experiment": "codex-p2-sampled-ambient-size-candidate-ml",
+  "attack": "sampled_candidate_ml_planted_secret",
+  "threat_model": "attacker observes public points and noisy membership labels; experiment plants the secret among random Lagrangian decoys to measure ML score separation without full orbit enumeration",
+  "adjudication": "P2 sampled-candidate ML screen; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 8192,
+      "noise_rate": 0.2500000000,
+      "trials": 3,
+      "candidate_count": 262144,
+      "successes": 2,
+      "success_rate": 0.6666666667,
+      "avg_secret_score": 6140.333333,
+      "avg_best_false_score": 6138.666667,
+      "avg_secret_margin": 1.666667,
+      "seed": 4598343448059896037
+    },
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 8192,
+      "noise_rate": 0.5000000000,
+      "trials": 3,
+      "candidate_count": 262144,
+      "successes": 0,
+      "success_rate": 0.0000000000,
+      "avg_secret_score": 4126.333333,
+      "avg_best_false_score": 4145.000000,
+      "avg_secret_margin": -18.666667,
+      "seed": 4602847047687266533
+    },
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 16384,
+      "noise_rate": 0.2500000000,
+      "trials": 3,
+      "candidate_count": 262144,
+      "successes": 3,
+      "success_rate": 1.0000000000,
+      "avg_secret_score": 12308.333333,
+      "avg_best_false_score": 12294.333333,
+      "avg_secret_margin": 14.000000,
+      "seed": 4598343448059871461
+    },
+    {
+      "n": 9,
+      "total_dim": 18,
+      "sample_count": 16384,
+      "noise_rate": 0.5000000000,
+      "trials": 3,
+      "candidate_count": 262144,
+      "successes": 0,
+      "success_rate": 0.0000000000,
+      "avg_secret_score": 8177.000000,
+      "avg_best_false_score": 8198.666667,
+      "avg_secret_margin": -21.666667,
+      "seed": 4602847047687241957
+    }
+  ]
+}
