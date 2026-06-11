@@ -18,8 +18,9 @@ use std::fs;
 use std::time::Instant;
 
 use lsn_cryptanalysis::{
-    run_sampled_candidate_ambient_ml_trials, run_sampled_candidate_ambient_ml_trials_with_cap,
-    sampled_candidate_ml_results_to_json,
+    run_sampled_candidate_ambient_ml_trials, run_sampled_candidate_ambient_ml_trials_streaming,
+    run_sampled_candidate_ambient_ml_trials_streaming_with_cap,
+    run_sampled_candidate_ambient_ml_trials_with_cap, sampled_candidate_ml_results_to_json,
 };
 
 #[derive(Debug)]
@@ -34,6 +35,7 @@ struct Args {
     progress: bool,
     dry_run: bool,
     candidate_cap: Option<usize>,
+    streaming: bool,
 }
 
 fn main() {
@@ -69,24 +71,15 @@ fn main() {
                         args.trials
                     );
                     let start = Instant::now();
-                    let cell = if let Some(cap) = args.candidate_cap {
-                        run_sampled_candidate_ambient_ml_trials_with_cap(
-                            n,
-                            &[ratio],
-                            &[noise_rate],
-                            args.trials,
-                            cap,
-                            n_seed,
-                        )
-                    } else {
-                        run_sampled_candidate_ambient_ml_trials(
-                            n,
-                            &[ratio],
-                            &[noise_rate],
-                            args.trials,
-                            n_seed,
-                        )
-                    };
+                    let cell = run_cell(
+                        n,
+                        &[ratio],
+                        &[noise_rate],
+                        args.trials,
+                        args.candidate_cap,
+                        args.streaming,
+                        n_seed,
+                    );
                     let elapsed = start.elapsed();
                     if let Some(result) = cell.first() {
                         eprintln!(
@@ -101,31 +94,23 @@ fn main() {
                 }
             }
         } else {
-            if let Some(cap) = args.candidate_cap {
-                results.extend(run_sampled_candidate_ambient_ml_trials_with_cap(
-                    n,
-                    &args.ratios,
-                    &args.noise_rates,
-                    args.trials,
-                    cap,
-                    n_seed,
-                ));
-            } else {
-                results.extend(run_sampled_candidate_ambient_ml_trials(
-                    n,
-                    &args.ratios,
-                    &args.noise_rates,
-                    args.trials,
-                    n_seed,
-                ));
-            }
+            results.extend(run_cell(
+                n,
+                &args.ratios,
+                &args.noise_rates,
+                args.trials,
+                args.candidate_cap,
+                args.streaming,
+                n_seed,
+            ));
         }
     }
 
-    let experiment = if args.candidate_cap.is_some() {
-        "codex-p2-capped-ambient-size-candidate-ml"
-    } else {
-        "codex-p2-sampled-ambient-size-candidate-ml"
+    let experiment = match (args.candidate_cap.is_some(), args.streaming) {
+        (false, false) => "codex-p2-sampled-ambient-size-candidate-ml",
+        (true, false) => "codex-p2-capped-ambient-size-candidate-ml",
+        (false, true) => "codex-p2-streaming-ambient-size-candidate-ml",
+        (true, true) => "codex-p2-capped-streaming-ambient-size-candidate-ml",
     };
     let json = sampled_candidate_ml_results_to_json(experiment, &results);
     let output = args
@@ -138,14 +123,54 @@ fn main() {
     });
 }
 
+fn run_cell(
+    n: usize,
+    ratios: &[f64],
+    noise_rates: &[f64],
+    trials: usize,
+    candidate_cap: Option<usize>,
+    streaming: bool,
+    seed: u64,
+) -> Vec<lsn_cryptanalysis::SampledCandidateMlTrialResult> {
+    match (candidate_cap, streaming) {
+        (Some(cap), false) => run_sampled_candidate_ambient_ml_trials_with_cap(
+            n,
+            ratios,
+            noise_rates,
+            trials,
+            cap,
+            seed,
+        ),
+        (None, false) => {
+            run_sampled_candidate_ambient_ml_trials(n, ratios, noise_rates, trials, seed)
+        }
+        (Some(cap), true) => run_sampled_candidate_ambient_ml_trials_streaming_with_cap(
+            n,
+            ratios,
+            noise_rates,
+            trials,
+            cap,
+            seed,
+        ),
+        (None, true) => {
+            run_sampled_candidate_ambient_ml_trials_streaming(n, ratios, noise_rates, trials, seed)
+        }
+    }
+}
+
 fn print_dry_run(args: &Args) {
     for n in args.n_start..=args.n_end {
         let ambient_candidate_count = pow2(2 * n);
         let candidate_count = candidate_count_for_n_u128(n, args.candidate_cap);
         let lagrangian_points = pow2(n);
-        let stored_points = candidate_count.saturating_mul(lagrangian_points);
+        let row_storage_points = if args.streaming {
+            lagrangian_points
+        } else {
+            candidate_count.saturating_mul(lagrangian_points)
+        };
         eprintln!(
-            "dry-run ambient-ml n={n} ambient_candidate_count={ambient_candidate_count} candidate_count={candidate_count} lagrangian_points={lagrangian_points} stored_points={stored_points}"
+            "dry-run ambient-ml n={n} streaming={} ambient_candidate_count={ambient_candidate_count} candidate_count={candidate_count} lagrangian_points={lagrangian_points} row_storage_points={row_storage_points}",
+            args.streaming
         );
         for &ratio in &args.ratios {
             let sample_count = ((ambient_candidate_count as f64) * ratio).round() as u128;
@@ -189,6 +214,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     let mut progress = false;
     let mut dry_run = false;
     let mut candidate_cap = None;
+    let mut streaming = false;
 
     let mut i = 0;
     while i < raw.len() {
@@ -200,6 +226,11 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
         }
         if key == "--dry-run" {
             dry_run = true;
+            i += 1;
+            continue;
+        }
+        if key == "--streaming" {
+            streaming = true;
             i += 1;
             continue;
         }
@@ -247,6 +278,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
         progress,
         dry_run,
         candidate_cap,
+        streaming,
     })
 }
 
@@ -372,6 +404,30 @@ mod tests {
         .unwrap();
 
         assert_eq!(args.candidate_cap, Some(4096));
+    }
+
+    #[test]
+    fn parse_args_accepts_streaming_mode() {
+        let args = parse_args(owned(&[
+            "--n-start",
+            "11",
+            "--n-end",
+            "11",
+            "--ratios",
+            "0.015625",
+            "--p-values",
+            "0.25,0.5",
+            "--trials",
+            "1",
+            "--seed",
+            "3235823859",
+            "--streaming",
+            "--output",
+            "/tmp/out.json",
+        ]))
+        .unwrap();
+
+        assert!(args.streaming);
     }
 
     #[test]

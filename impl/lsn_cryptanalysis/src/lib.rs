@@ -104,7 +104,7 @@ impl MlTrialResult {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SampledCandidateMlTrialResult {
     pub n: usize,
     pub total_dim: usize,
@@ -935,6 +935,83 @@ pub fn run_sampled_candidate_ml_budget_trials(
         .collect()
 }
 
+pub fn run_sampled_candidate_ml_budget_trials_streaming(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    trials: usize,
+    candidate_counts: &[usize],
+    seed: u64,
+) -> Vec<SampledCandidateMlTrialResult> {
+    assert!(
+        !candidate_counts.is_empty(),
+        "candidate count list must be nonempty"
+    );
+    assert!(
+        candidate_counts.iter().all(|&count| count >= 2),
+        "candidate counts must include at least secret plus one decoy"
+    );
+
+    let total_dim = 2 * n;
+    let universe = 1usize << total_dim;
+    let max_candidate_count = *candidate_counts.iter().max().unwrap();
+    let mut rng = XorShift64::new(seed);
+    let mut successes = vec![0usize; candidate_counts.len()];
+    let mut secret_score_sums = vec![0i64; candidate_counts.len()];
+    let mut best_false_score_sums = vec![0i64; candidate_counts.len()];
+    let mut secret_margin_sums = vec![0i64; candidate_counts.len()];
+
+    for _ in 0..trials {
+        let secret_basis = random_lagrangian_basis(n, 8 * total_dim.max(1), &mut rng);
+        let secret_points = points_from_basis(&secret_basis);
+        let secret = secret_points.iter().copied().collect::<Lagrangian>();
+        let samples = sample_lsn(&secret, sample_count, noise_rate, total_dim, &mut rng);
+        let profile = ml_score_profile(&samples, universe);
+        let secret_score = score_lagrangian_points(&secret_points, &profile);
+        let mut best_false_scores = vec![i32::MIN; candidate_counts.len()];
+
+        for candidate_index in 1..max_candidate_count {
+            let basis = random_lagrangian_basis(n, 8 * total_dim.max(1), &mut rng);
+            let points = points_from_basis(&basis);
+            let score = score_lagrangian_points(&points, &profile);
+
+            for (budget_index, &candidate_count) in candidate_counts.iter().enumerate() {
+                if candidate_index < candidate_count && score > best_false_scores[budget_index] {
+                    best_false_scores[budget_index] = score;
+                }
+            }
+        }
+
+        for (index, &best_false_score) in best_false_scores.iter().enumerate() {
+            if secret_score >= best_false_score {
+                successes[index] += 1;
+            }
+            secret_score_sums[index] += secret_score as i64;
+            best_false_score_sums[index] += best_false_score as i64;
+            secret_margin_sums[index] += (secret_score - best_false_score) as i64;
+        }
+    }
+
+    let denom = trials.max(1) as f64;
+    candidate_counts
+        .iter()
+        .enumerate()
+        .map(|(index, &candidate_count)| SampledCandidateMlTrialResult {
+            n,
+            total_dim,
+            sample_count,
+            noise_rate,
+            trials,
+            candidate_count,
+            successes: successes[index],
+            avg_secret_score: secret_score_sums[index] as f64 / denom,
+            avg_best_false_score: best_false_score_sums[index] as f64 / denom,
+            avg_secret_margin: secret_margin_sums[index] as f64 / denom,
+            seed: seed ^ candidate_count as u64,
+        })
+        .collect()
+}
+
 pub fn run_sampled_candidate_ambient_ml_trials(
     n: usize,
     sample_ratios: &[f64],
@@ -961,6 +1038,41 @@ pub fn run_sampled_candidate_ambient_ml_trials_with_cap(
     seed: u64,
 ) -> Vec<SampledCandidateMlTrialResult> {
     run_sampled_candidate_ambient_ml_trials_with_optional_cap(
+        n,
+        sample_ratios,
+        noise_rates,
+        trials,
+        Some(candidate_cap),
+        seed,
+    )
+}
+
+pub fn run_sampled_candidate_ambient_ml_trials_streaming(
+    n: usize,
+    sample_ratios: &[f64],
+    noise_rates: &[f64],
+    trials: usize,
+    seed: u64,
+) -> Vec<SampledCandidateMlTrialResult> {
+    run_sampled_candidate_ambient_ml_trials_streaming_with_optional_cap(
+        n,
+        sample_ratios,
+        noise_rates,
+        trials,
+        None,
+        seed,
+    )
+}
+
+pub fn run_sampled_candidate_ambient_ml_trials_streaming_with_cap(
+    n: usize,
+    sample_ratios: &[f64],
+    noise_rates: &[f64],
+    trials: usize,
+    candidate_cap: usize,
+    seed: u64,
+) -> Vec<SampledCandidateMlTrialResult> {
+    run_sampled_candidate_ambient_ml_trials_streaming_with_optional_cap(
         n,
         sample_ratios,
         noise_rates,
@@ -999,6 +1111,47 @@ fn run_sampled_candidate_ambient_ml_trials_with_optional_cap(
         let sample_count = ((base as f64) * ratio).round() as usize;
         for &noise_rate in noise_rates {
             results.extend(run_sampled_candidate_ml_budget_trials(
+                n,
+                sample_count,
+                noise_rate,
+                trials,
+                &[candidate_count],
+                seed ^ ((n as u64) << 44) ^ sample_count as u64 ^ noise_rate.to_bits(),
+            ));
+        }
+    }
+    results
+}
+
+fn run_sampled_candidate_ambient_ml_trials_streaming_with_optional_cap(
+    n: usize,
+    sample_ratios: &[f64],
+    noise_rates: &[f64],
+    trials: usize,
+    candidate_cap: Option<usize>,
+    seed: u64,
+) -> Vec<SampledCandidateMlTrialResult> {
+    assert!(n > 0, "n must be positive");
+    assert!(
+        sample_ratios.iter().all(|ratio| *ratio > 0.0),
+        "sample ratios must be positive"
+    );
+    assert!(
+        noise_rates.iter().all(|p| (0.0..=0.5).contains(p)),
+        "noise rates must be in [0, 0.5]"
+    );
+
+    let base = 1usize << (2 * n);
+    let candidate_count = candidate_cap.unwrap_or(base).min(base);
+    assert!(
+        candidate_count >= 2,
+        "candidate cap must leave at least secret plus one decoy"
+    );
+    let mut results = Vec::new();
+    for &ratio in sample_ratios {
+        let sample_count = ((base as f64) * ratio).round() as usize;
+        for &noise_rate in noise_rates {
+            results.extend(run_sampled_candidate_ml_budget_trials_streaming(
                 n,
                 sample_count,
                 noise_rate,
@@ -2030,17 +2183,20 @@ fn rate(numerator: usize, denominator: usize) -> f64 {
     }
 }
 
-fn compact_ml_scores(samples: &[LsnSample], compact: &CompactLagrangians) -> Vec<i32> {
-    let mut true_counts = vec![0i32; compact.universe];
-    let mut false_counts = vec![0i32; compact.universe];
+struct MlScoreProfile {
+    true_counts: Vec<i32>,
+    false_counts: Vec<i32>,
+    false_total: i32,
+}
+
+fn ml_score_profile(samples: &[LsnSample], universe: usize) -> MlScoreProfile {
+    let mut true_counts = vec![0i32; universe];
+    let mut false_counts = vec![0i32; universe];
     let mut false_total = 0i32;
 
     for sample in samples {
         let point = sample.point as usize;
-        assert!(
-            point < compact.universe,
-            "sample point outside compact universe"
-        );
+        assert!(point < universe, "sample point outside compact universe");
         if sample.label {
             true_counts[point] += 1;
         } else {
@@ -2049,17 +2205,29 @@ fn compact_ml_scores(samples: &[LsnSample], compact: &CompactLagrangians) -> Vec
         }
     }
 
+    MlScoreProfile {
+        true_counts,
+        false_counts,
+        false_total,
+    }
+}
+
+fn score_lagrangian_points(points: &[u32], profile: &MlScoreProfile) -> i32 {
+    let mut score = profile.false_total;
+    for &point in points {
+        let point = point as usize;
+        score += profile.true_counts[point] - profile.false_counts[point];
+    }
+    score
+}
+
+fn compact_ml_scores(samples: &[LsnSample], compact: &CompactLagrangians) -> Vec<i32> {
+    let profile = ml_score_profile(samples, compact.universe);
+
     compact
         .rows
         .iter()
-        .map(|row| {
-            let mut score = false_total;
-            for &point in row {
-                let point = point as usize;
-                score += true_counts[point] - false_counts[point];
-            }
-            score
-        })
+        .map(|row| score_lagrangian_points(row, &profile))
         .collect()
 }
 
