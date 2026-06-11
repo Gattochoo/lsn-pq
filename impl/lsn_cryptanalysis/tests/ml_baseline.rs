@@ -1,7 +1,8 @@
 use lsn_cryptanalysis::{
     CompactLagrangians, LsnSample, XorShift64, brute_force_ml_decode, compact_ml_decode,
-    enumerate_lagrangians, positive_basis_isd_decode, results_to_json, run_isd_trials,
-    run_ml_trials, run_span_trials, sample_lsn, span_of_positives_decode, span_results_to_json,
+    enumerate_lagrangians, positive_basis_isd_decode, results_to_json, run_isd_budget_trials,
+    run_isd_trials, run_ml_trials, run_span_trials, sample_lsn, span_of_positives_decode,
+    span_results_to_json,
 };
 
 #[test]
@@ -177,4 +178,16 @@ fn positive_basis_isd_trial_runner_has_noiseless_sanity() {
     assert_eq!(result.trials, 5);
     assert_eq!(result.successes, 5);
     assert!(result.avg_valid_candidates >= 1.0);
+}
+
+#[test]
+fn isd_budget_runner_preserves_attempt_budgets() {
+    let results = run_isd_budget_trials(3, 256, 0.0, 2, &[10, 20], 0xBADC0DE);
+
+    assert_eq!(results.len(), 2);
+    assert_eq!(results[0].max_attempts, 10);
+    assert_eq!(results[1].max_attempts, 20);
+    assert_eq!(results[0].successes, 2);
+    assert_eq!(results[1].successes, 2);
+    assert_eq!(results[0].avg_positive_count, results[1].avg_positive_count);
 }

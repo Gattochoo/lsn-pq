@@ -1,0 +1,53 @@
+{
+  "experiment": "codex-p2-positive-basis-isd-screen",
+  "attack": "positive_basis_isd",
+  "threat_model": "attacker observes public points and noisy membership labels",
+  "adjudication": "P2 negative control; low-noise sanity plus constant-rate capped-attempt screen; evidence, not proof; OPEN = LSN",
+  "results": [
+    {
+      "n": 5,
+      "lagrangians": 75735,
+      "sample_count": 4096,
+      "noise_rate": 0.2500000000,
+      "trials": 10,
+      "max_attempts": 2000,
+      "successes": 0,
+      "success_rate": 0.0000000000,
+      "avg_positive_count": 1086.900000,
+      "avg_attempts_used": 2000.000000,
+      "avg_valid_candidates": 1.200000,
+      "avg_best_score": 2078.900000,
+      "seed": 4598180720339244814
+    },
+    {
+      "n": 5,
+      "lagrangians": 75735,
+      "sample_count": 4096,
+      "noise_rate": 0.2500000000,
+      "trials": 10,
+      "max_attempts": 10000,
+      "successes": 1,
+      "success_rate": 0.1000000000,
+      "avg_positive_count": 1086.900000,
+      "avg_attempts_used": 10000.000000,
+      "avg_valid_candidates": 7.000000,
+      "avg_best_score": 2988.300000,
+      "seed": 4598180720339253198
+    },
+    {
+      "n": 5,
+      "lagrangians": 75735,
+      "sample_count": 4096,
+      "noise_rate": 0.2500000000,
+      "trials": 10,
+      "max_attempts": 50000,
+      "successes": 3,
+      "success_rate": 0.3000000000,
+      "avg_positive_count": 1086.900000,
+      "avg_attempts_used": 50000.000000,
+      "avg_valid_candidates": 36.100000,
+      "avg_best_score": 3026.300000,
+      "seed": 4598180720339194766
+    }
+  ]
+}

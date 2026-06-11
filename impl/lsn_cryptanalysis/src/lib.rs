@@ -532,6 +532,73 @@ pub fn run_isd_trials(
     }
 }
 
+pub fn run_isd_budget_trials(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    trials: usize,
+    attempt_budgets: &[usize],
+    seed: u64,
+) -> Vec<IsdTrialResult> {
+    assert!(
+        !attempt_budgets.is_empty(),
+        "attempt budget list must be nonempty"
+    );
+    let lagrangians = enumerate_lagrangians(n);
+    let total_dim = 2 * n;
+    let mut instance_rng = XorShift64::new(seed);
+    let mut successes = vec![0usize; attempt_budgets.len()];
+    let mut positive_count_sums = vec![0usize; attempt_budgets.len()];
+    let mut attempts_used_sums = vec![0usize; attempt_budgets.len()];
+    let mut valid_candidate_sums = vec![0usize; attempt_budgets.len()];
+    let mut best_score_sums = vec![0usize; attempt_budgets.len()];
+
+    for trial_index in 0..trials {
+        let secret_index = instance_rng.next_index(lagrangians.len());
+        let samples = sample_lsn(
+            &lagrangians[secret_index],
+            sample_count,
+            noise_rate,
+            total_dim,
+            &mut instance_rng,
+        );
+
+        for (budget_index, &max_attempts) in attempt_budgets.iter().enumerate() {
+            let mut attack_rng =
+                XorShift64::new(seed ^ ((trial_index as u64) << 32) ^ ((max_attempts as u64) << 1));
+            let result =
+                positive_basis_isd_decode(n, &samples, &lagrangians, max_attempts, &mut attack_rng);
+            if result.recovered_index == Some(secret_index) {
+                successes[budget_index] += 1;
+            }
+            positive_count_sums[budget_index] += result.positive_count;
+            attempts_used_sums[budget_index] += result.attempts_used;
+            valid_candidate_sums[budget_index] += result.valid_candidates;
+            best_score_sums[budget_index] += result.best_score;
+        }
+    }
+
+    let denom = trials.max(1) as f64;
+    attempt_budgets
+        .iter()
+        .enumerate()
+        .map(|(budget_index, &max_attempts)| IsdTrialResult {
+            n,
+            lagrangians: lagrangians.len(),
+            sample_count,
+            noise_rate,
+            trials,
+            max_attempts,
+            successes: successes[budget_index],
+            avg_positive_count: positive_count_sums[budget_index] as f64 / denom,
+            avg_attempts_used: attempts_used_sums[budget_index] as f64 / denom,
+            avg_valid_candidates: valid_candidate_sums[budget_index] as f64 / denom,
+            avg_best_score: best_score_sums[budget_index] as f64 / denom,
+            seed: seed ^ max_attempts as u64,
+        })
+        .collect()
+}
+
 pub fn run_ml_trials(
     n: usize,
     sample_count: usize,
