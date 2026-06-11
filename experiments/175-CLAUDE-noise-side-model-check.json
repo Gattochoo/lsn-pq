@@ -1,0 +1,8 @@
+{
+ "experiment": "175-CLAUDE-noise-side-model-check",
+ "reproduce_exact_factorization_n2": true,
+ "P(C|B)_distinct_distributions_over_all_90_B": 1,
+ "mechanism_transitivity_forces_independence": true,
+ "regime_note": "lem:m2 confinement needs m > 2n; exp/174 uses m=n (full support, no confinement) and B independent of A (closed conditional cell, not the open marginal-adaptive corner).",
+ "verdict": "174's measurement is correct but its independence finding is FORCED by the ensemble (P(C|B) identical for all B); noise side of lem:m2 remains OPEN and untouched."
+}
