@@ -1,0 +1,73 @@
+{
+ "experiment": "171-CLAUDE-lem-m2-stepA-check",
+ "A_correlation": {
+  "2": {
+   "ordered_isotropic_pairs": 90,
+   "m2": "7/135",
+   "m3": "0",
+   "m2_matches_kimi": true,
+   "m3_matches_kimi": true,
+   "m2_float": 0.05185185185185185,
+   "m2_err_from_1/16": 0.010648148148148148
+  },
+  "3": {
+   "ordered_isotropic_pairs": 1890,
+   "m2": "284/4725",
+   "m3": "4/315",
+   "m2_matches_kimi": true,
+   "m3_matches_kimi": true,
+   "m2_float": 0.06010582010582011,
+   "m2_err_from_1/16": 0.0023941798941798944
+  },
+  "4": {
+   "ordered_isotropic_pairs": 32130,
+   "m2": "464/7497",
+   "m3": "16/1071",
+   "m2_matches_kimi": true,
+   "m3_matches_kimi": true,
+   "m2_float": 0.06189142323596105,
+   "m2_err_from_1/16": 0.000608576764038949
+  },
+  "5": {
+   "ordered_isotropic_pairs": 521730,
+   "m2": "146368/2347785",
+   "m3": "448/28985",
+   "m2_matches_kimi": true,
+   "m3_matches_kimi": true,
+   "m2_float": 0.06234301692872218,
+   "m2_err_from_1/16": 0.00015698307127782143
+  }
+ },
+ "B_noise": {
+  "2": {
+   "SD(mu_row,Uniform)": "1/20",
+   "closed_form_1/(2^n(2^n+1))": "1/20",
+   "closed_form_matches": true,
+   "but_this_is": "the QUERY/row distribution of A, not the noise e'=Be",
+   "actual_noise_B=I_per_coord_SD_to_uniform": "1/4",
+   "actual_noise_is_constant_not_O(4^-n)": true
+  },
+  "3": {
+   "SD(mu_row,Uniform)": "1/72",
+   "closed_form_1/(2^n(2^n+1))": "1/72",
+   "closed_form_matches": true,
+   "but_this_is": "the QUERY/row distribution of A, not the noise e'=Be",
+   "actual_noise_B=I_per_coord_SD_to_uniform": "1/4",
+   "actual_noise_is_constant_not_O(4^-n)": true
+  },
+  "4": {
+   "SD(mu_row,Uniform)": "1/272",
+   "closed_form_1/(2^n(2^n+1))": "1/272",
+   "closed_form_matches": true,
+   "but_this_is": "the QUERY/row distribution of A, not the noise e'=Be",
+   "actual_noise_B=I_per_coord_SD_to_uniform": "1/4",
+   "actual_noise_is_constant_not_O(4^-n)": true
+  }
+ },
+ "verdict": {
+  "A_correlation_side": "VERIFIED \u2014 m_j exact n=2..5 match; (c1,c2)-uniformity reduction (169) confirmed; m_j -> (1/4)^j",
+  "B_noise_side": "CATEGORY ERROR \u2014 SD(mu_row,Uniform)=1/(2^n(2^n+1)) is correct arithmetic but mu_row is the QUERY/row distribution (B=I gives noise=e=Bernoulli(1/4), constant SD to uniform), NOT e'=Be. The actual noise side is UNTOUCHED.",
+  "lem_m2_TRUE_claim": "NOT SUPPORTED \u2014 built on the category error. The matrix-uniformity facts re-derived ARE the open-corner hypothesis (B=g(A) makes BA uniform), not a closure. lem:m2 status unchanged: OPEN.",
+  "correct_noise_side": "does e'=Be (<=2n-dim image of fixed 2n-bit e) stay DETECTABLY non-i.i.d. given only C=BA (secret-B)? = I(e';C)/OP9 structure, not SD(mu_row,Uniform)."
+ }
+}
