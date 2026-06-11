@@ -83,6 +83,66 @@ pub struct ToyPublicPreflightScanReport {
     pub found_wrong_secret_seed: Option<u64>,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FixedLagrangian {
+    n: usize,
+    universe: usize,
+    words: Vec<u64>,
+}
+
+impl FixedLagrangian {
+    pub fn from_lagrangian(n: usize, lagrangian: &Lagrangian) -> Self {
+        let points = lagrangian.iter().copied().collect::<Vec<_>>();
+        Self::from_points(n, &points)
+    }
+
+    pub fn from_points(n: usize, points: &[u32]) -> Self {
+        let total_dim = 2 * n;
+        assert!(
+            total_dim < usize::BITS as usize,
+            "fixed Lagrangian universe is too large for this reference platform"
+        );
+        let universe = 1usize << total_dim;
+        let mut words = vec![0u64; universe.div_ceil(64)];
+        for &point in points {
+            let index = point as usize;
+            assert!(
+                index < universe,
+                "Lagrangian point {point} is outside the n={n} universe"
+            );
+            words[index >> 6] |= 1u64 << (index & 63);
+        }
+
+        Self { n, universe, words }
+    }
+
+    pub fn n(&self) -> usize {
+        self.n
+    }
+
+    pub fn universe(&self) -> usize {
+        self.universe
+    }
+
+    pub fn word_count(&self) -> usize {
+        self.words.len()
+    }
+
+    pub fn contains_mask(&self, point: u32) -> u64 {
+        let index = point as usize;
+        if index >= self.universe {
+            return 0;
+        }
+
+        let bit = (self.words[index >> 6] >> (index & 63)) & 1;
+        0u64.wrapping_sub(bit)
+    }
+
+    pub fn contains_u8(&self, point: u32) -> u8 {
+        (self.contains_mask(point) & 1) as u8
+    }
+}
+
 pub fn toy_kat_vector(
     params: ToyKemParams,
     secret_seed: u64,
@@ -94,6 +154,7 @@ pub fn toy_kat_vector(
 
     let mut secret_rng = XorShift64::new(secret_seed);
     let secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut secret_rng);
+    let fixed_secret = FixedLagrangian::from_lagrangian(params.n, &secret);
     let secret_lagrangian_points = secret.iter().copied().collect::<Vec<_>>();
 
     let (public_points, public_labels) = public_samples(params, &secret, sample_seed, noise_seed);
@@ -111,7 +172,7 @@ pub fn toy_kat_vector(
         block_majorities(&selected_indices, &public_labels, params.repetition);
     let clean_membership_labels = public_points
         .iter()
-        .map(|point| u8::from(secret.contains(point)))
+        .map(|&point| fixed_secret.contains_u8(point))
         .collect::<Vec<_>>();
     let clean_majority_bits = block_majorities(
         &selected_indices,
@@ -167,11 +228,12 @@ pub fn toy_wrong_secret_control(
     );
     let mut wrong_secret_rng = XorShift64::new(wrong_secret_seed);
     let wrong_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut wrong_secret_rng);
+    let fixed_wrong_secret = FixedLagrangian::from_lagrangian(params.n, &wrong_secret);
     let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
     let wrong_secret_labels = honest
         .public_points
         .iter()
-        .map(|point| u8::from(wrong_secret.contains(point)))
+        .map(|&point| fixed_wrong_secret.contains_u8(point))
         .collect::<Vec<_>>();
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
@@ -252,10 +314,11 @@ pub fn toy_divergent_wrong_secret_control(
     );
 
     let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
+    let fixed_wrong_secret = FixedLagrangian::from_lagrangian(params.n, &wrong_secret);
     let wrong_secret_labels = honest
         .public_points
         .iter()
-        .map(|point| u8::from(wrong_secret.contains(point)))
+        .map(|&point| fixed_wrong_secret.contains_u8(point))
         .collect::<Vec<_>>();
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
@@ -389,9 +452,10 @@ fn toy_kat_from_parts(
     let codeword = encode(&code, &message_bits);
     let public_majority_bits =
         block_majorities(&selected_indices, &public_labels, params.repetition);
+    let fixed_secret = FixedLagrangian::from_lagrangian(params.n, secret);
     let clean_membership_labels = public_points
         .iter()
-        .map(|point| u8::from(secret.contains(point)))
+        .map(|&point| fixed_secret.contains_u8(point))
         .collect::<Vec<_>>();
     let clean_majority_bits = block_majorities(
         &selected_indices,
@@ -564,9 +628,9 @@ pub fn constant_time_inventory_json() -> &'static str {
         "    {\n",
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
-        "      \"classification\": \"not_constant_time\",\n",
-        "      \"issue\": \"secret-dependent membership lookup through the experimental Lagrangian container\",\n",
-        "      \"required_action\": \"replace set-style membership with a fixed-layout bit-sliced symplectic representation and mask-based lookup\"\n",
+        "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now covers toy membership label generation, but secret construction, diagnostic selectors, and leakage audit remain non-production\",\n",
+        "      \"required_action\": \"replace remaining set-style construction and diagnostic membership, freeze production-sized layout, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
         "      \"id\": \"ct-002\",\n",
@@ -898,6 +962,7 @@ fn public_samples(
     let universe = 1usize << total_dim;
     let mut sample_rng = XorShift64::new(sample_seed);
     let mut noise_rng = XorShift64::new(noise_seed);
+    let fixed_secret = FixedLagrangian::from_lagrangian(params.n, secret);
     let mut points = Vec::with_capacity(params.sample_count);
     let mut labels = Vec::with_capacity(params.sample_count);
 
@@ -905,7 +970,7 @@ fn public_samples(
         let point = sample_rng.next_index(universe) as u32;
         let noisy = noise_rng.next_f64() < params.public_noise_rate;
         points.push(point);
-        labels.push(u8::from(secret.contains(&point) ^ noisy));
+        labels.push(fixed_secret.contains_u8(point) ^ u8::from(noisy));
     }
 
     (points, labels)

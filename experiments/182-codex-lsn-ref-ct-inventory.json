@@ -12,9 +12,9 @@
     {
       "id": "ct-001",
       "surface": "Lagrangian membership representation",
-      "classification": "not_constant_time",
-      "issue": "secret-dependent membership lookup through the experimental Lagrangian container",
-      "required_action": "replace set-style membership with a fixed-layout bit-sliced symplectic representation and mask-based lookup"
+      "classification": "partial_fixed_layout_scaffold_not_production_ct",
+      "issue": "FixedLagrangian bitset scaffold now covers toy membership label generation, but secret construction, diagnostic selectors, and leakage audit remain non-production",
+      "required_action": "replace remaining set-style construction and diagnostic membership, freeze production-sized layout, and run an independent timing/leakage audit before any production claim"
     },
     {
       "id": "ct-002",

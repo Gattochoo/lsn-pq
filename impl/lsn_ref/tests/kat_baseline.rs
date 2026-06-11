@@ -14,10 +14,32 @@
 // limitations under the License.
 
 use lsn_ref::{
-    ToyKemParams, toy_divergent_wrong_secret_control, toy_find_wrong_secret_control,
-    toy_kat_vector, toy_wrong_secret_control, toy_wrong_secret_control_to_json,
-    toy_wrong_secret_control_to_json_with_diagnostics,
+    FixedLagrangian, ToyKemParams, toy_divergent_wrong_secret_control,
+    toy_find_wrong_secret_control, toy_kat_vector, toy_wrong_secret_control,
+    toy_wrong_secret_control_to_json, toy_wrong_secret_control_to_json_with_diagnostics,
 };
+
+#[test]
+fn fixed_lagrangian_membership_matches_point_set_for_public_points() {
+    let points = [0, 6, 9, 15];
+    let fixed = FixedLagrangian::from_points(2, &points);
+
+    assert_eq!(fixed.n(), 2);
+    assert_eq!(fixed.universe(), 16);
+    assert_eq!(fixed.word_count(), 1);
+
+    for point in 0..16 {
+        let expected = points.contains(&point);
+        assert_eq!(fixed.contains_u8(point), u8::from(expected));
+        assert_eq!(
+            fixed.contains_mask(point),
+            if expected { u64::MAX } else { 0 }
+        );
+    }
+
+    assert_eq!(fixed.contains_mask(16), 0);
+    assert_eq!(fixed.contains_u8(16), 0);
+}
 
 #[test]
 fn toy_kat_vector_roundtrips_with_zero_noise() {

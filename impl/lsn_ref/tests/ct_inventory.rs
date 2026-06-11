@@ -25,7 +25,10 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     assert!(json.contains("\"verdict\": \"not_constant_time_reference\""));
     assert!(json.contains("\"production_constant_time_claim\": false"));
     assert!(json.contains("\"threat_model\""));
-    assert!(json.contains("secret-dependent membership lookup"));
+    assert!(
+        json.contains("\"classification\": \"partial_fixed_layout_scaffold_not_production_ct\"")
+    );
+    assert!(json.contains("FixedLagrangian bitset scaffold"));
     assert!(json.contains("polar SCL path pruning"));
     assert!(json.contains("diagnostic selector depends on the wrong secret"));
 }
