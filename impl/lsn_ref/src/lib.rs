@@ -163,6 +163,17 @@ impl FixedLagrangian {
     }
 }
 
+pub fn diagnostic_honest_only_points(
+    honest_points: &[u32],
+    wrong_secret: &FixedLagrangian,
+) -> Vec<u32> {
+    honest_points
+        .iter()
+        .copied()
+        .filter(|&point| wrong_secret.contains_u8_scanned(point) == 0)
+        .collect()
+}
+
 pub fn toy_kat_vector(
     params: ToyKemParams,
     secret_seed: u64,
@@ -299,11 +310,10 @@ pub fn toy_divergent_wrong_secret_control(
     let honest_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut honest_secret_rng);
     let mut wrong_secret_rng = XorShift64::new(wrong_secret_seed);
     let wrong_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut wrong_secret_rng);
-    let honest_only_points = honest_secret
-        .iter()
-        .filter(|point| !wrong_secret.contains(point))
-        .copied()
-        .collect::<Vec<_>>();
+    let fixed_wrong_secret = FixedLagrangian::from_lagrangian(params.n, &wrong_secret);
+    let honest_secret_points = honest_secret.iter().copied().collect::<Vec<_>>();
+    let honest_only_points =
+        diagnostic_honest_only_points(&honest_secret_points, &fixed_wrong_secret);
     if honest_only_points.is_empty() {
         return None;
     }
@@ -326,7 +336,7 @@ pub fn toy_divergent_wrong_secret_control(
         0,
         noise_seed,
         encaps_seed,
-        honest_secret.iter().copied().collect(),
+        honest_secret_points,
         public_points,
         public_labels,
         selected_indices,
@@ -334,7 +344,6 @@ pub fn toy_divergent_wrong_secret_control(
     );
 
     let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
-    let fixed_wrong_secret = FixedLagrangian::from_lagrangian(params.n, &wrong_secret);
     let wrong_secret_labels = honest
         .public_points
         .iter()
@@ -656,8 +665,8 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-002\",\n",
         "      \"surface\": \"public-sample selection and toy divergent diagnostic selector\",\n",
         "      \"classification\": \"diagnostic_only_not_public_distribution\",\n",
-        "      \"issue\": \"diagnostic selector depends on the wrong secret and is intentionally outside the public LSN distribution\",\n",
-        "      \"required_action\": \"replace with a non-degenerate public-selection rule before claiming any production KAT distribution\"\n",
+        "      \"issue\": \"diagnostic selector depends on the wrong secret, is intentionally outside the public LSN distribution, and is isolated behind an explicit diagnostic_honest_only_points boundary\",\n",
+        "      \"required_action\": \"keep divergent diagnostics out of production APIs and use random-public-samples profiles for public-distribution KAT plumbing\"\n",
         "    },\n",
         "    {\n",
         "      \"id\": \"ct-003\",\n",

@@ -20,8 +20,8 @@
       "id": "ct-002",
       "surface": "public-sample selection and toy divergent diagnostic selector",
       "classification": "diagnostic_only_not_public_distribution",
-      "issue": "diagnostic selector depends on the wrong secret and is intentionally outside the public LSN distribution",
-      "required_action": "replace with a non-degenerate public-selection rule before claiming any production KAT distribution"
+      "issue": "diagnostic selector depends on the wrong secret, is intentionally outside the public LSN distribution, and is isolated behind an explicit diagnostic_honest_only_points boundary",
+      "required_action": "keep divergent diagnostics out of production APIs and use random-public-samples profiles for public-distribution KAT plumbing"
     },
     {
       "id": "ct-003",
