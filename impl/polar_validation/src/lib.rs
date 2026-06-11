@@ -60,6 +60,20 @@ pub fn baseline_reproduction_configs(trials: usize, seed: u64) -> Vec<Simulation
     .collect()
 }
 
+pub fn target_n2048_configs(trials: usize, seed: u64) -> Vec<SimulationConfig> {
+    [(2048, 256, 0.0706), (2048, 256, 0.0343)]
+        .into_iter()
+        .enumerate()
+        .map(|(i, (n, k, p))| SimulationConfig {
+            n,
+            k,
+            p,
+            trials,
+            seed: seed.wrapping_add((i as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15)),
+        })
+        .collect()
+}
+
 pub fn run_configs(configs: &[SimulationConfig]) -> Vec<SimulationResult> {
     configs
         .iter()
@@ -193,6 +207,44 @@ pub fn decode_scl(code: &PolarCode, llr: &[f64], list_size: usize) -> Vec<u8> {
     code.info_set.iter().map(|&idx| best.bits[idx]).collect()
 }
 
+pub fn decode_scl_fast(code: &PolarCode, llr: &[f64], list_size: usize) -> Vec<u8> {
+    assert_eq!(llr.len(), code.n, "LLR length must equal N");
+    assert!(list_size > 0, "list size must be positive");
+    let mut paths = vec![SclPath {
+        bits: vec![0; code.n],
+        metric: 0.0,
+    }];
+
+    for phi in 0..code.n {
+        let mut next_paths = Vec::with_capacity(paths.len() * 2);
+        for path in &paths {
+            let bit_llr = sc_bit_llr_minsum(llr, 0, phi, &path.bits);
+            if code.frozen_mask[phi] {
+                let mut bits = path.bits.clone();
+                bits[phi] = 0;
+                next_paths.push(SclPath {
+                    bits,
+                    metric: path.metric + bit_metric_minsum(bit_llr, 0),
+                });
+            } else {
+                for bit in [0u8, 1u8] {
+                    let mut bits = path.bits.clone();
+                    bits[phi] = bit;
+                    next_paths.push(SclPath {
+                        bits,
+                        metric: path.metric + bit_metric_minsum(bit_llr, bit),
+                    });
+                }
+            }
+        }
+        prune_paths(&mut next_paths, list_size);
+        paths = next_paths;
+    }
+
+    let best = paths.first().expect("fast SCL must keep at least one path");
+    code.info_set.iter().map(|&idx| best.bits[idx]).collect()
+}
+
 pub fn simulate_bsc_sc(n: usize, k: usize, p: f64, trials: usize, seed: u64) -> SimulationResult {
     let code = PolarCode::new(n, k, p);
     let mut rng = Lcg64::new(seed);
@@ -265,6 +317,53 @@ pub fn simulate_bsc_scl(
             })
             .collect::<Vec<_>>();
         let decoded = decode_scl(&code, &llr, list_size);
+        if decoded != message {
+            errors += 1;
+        }
+    }
+
+    SimulationResult {
+        n,
+        k,
+        p,
+        trials,
+        errors,
+        seed,
+    }
+}
+
+pub fn simulate_bsc_scl_fast(
+    n: usize,
+    k: usize,
+    p: f64,
+    trials: usize,
+    seed: u64,
+    list_size: usize,
+) -> SimulationResult {
+    let code = PolarCode::new(n, k, p);
+    let mut rng = Lcg64::new(seed);
+    let llr0 = ((1.0 - p) / p).ln();
+    let llr1 = -llr0;
+    let mut errors = 0usize;
+
+    for _ in 0..trials {
+        let message = (0..k)
+            .map(|_| if rng.next_bool() { 1 } else { 0 })
+            .collect::<Vec<_>>();
+        let x = encode(&code, &message);
+        let llr = x
+            .iter()
+            .map(|&bit| {
+                let flipped = rng.next_f64() < p;
+                let y = bit ^ u8::from(flipped);
+                if y == 0 {
+                    llr0
+                } else {
+                    llr1
+                }
+            })
+            .collect::<Vec<_>>();
+        let decoded = decode_scl_fast(&code, &llr, list_size);
         if decoded != message {
             errors += 1;
         }
@@ -403,11 +502,49 @@ fn bit_metric(llr: f64, bit: u8) -> f64 {
     }
 }
 
+fn bit_metric_minsum(llr: f64, bit: u8) -> f64 {
+    let agrees_with_hard_decision = (llr >= 0.0 && bit == 0) || (llr < 0.0 && bit == 1);
+    if agrees_with_hard_decision {
+        0.0
+    } else {
+        llr.abs()
+    }
+}
+
+fn sc_bit_llr_minsum(llr: &[f64], offset: usize, phi: usize, decisions: &[u8]) -> f64 {
+    if llr.len() == 1 {
+        return llr[0];
+    }
+
+    let half = llr.len() / 2;
+    if phi < offset + half {
+        let mut left_llr = vec![0.0; half];
+        for i in 0..half {
+            left_llr[i] = f_llr_minsum(llr[i], llr[half + i]);
+        }
+        sc_bit_llr_minsum(&left_llr, offset, phi, decisions)
+    } else {
+        let mut left_partial = decisions[offset..offset + half].to_vec();
+        polar_transform(&mut left_partial);
+
+        let mut right_llr = vec![0.0; half];
+        for i in 0..half {
+            right_llr[i] = g_llr(llr[i], llr[half + i], left_partial[i]);
+        }
+        sc_bit_llr_minsum(&right_llr, offset + half, phi, decisions)
+    }
+}
+
 fn f_llr(a: f64, b: f64) -> f64 {
     let sign = if (a < 0.0) ^ (b < 0.0) { -1.0 } else { 1.0 };
     let min_abs = a.abs().min(b.abs());
     let correction = (1.0 + (-(a + b).abs()).exp()).ln() - (1.0 + (-(a - b).abs()).exp()).ln();
     sign * min_abs + correction
+}
+
+fn f_llr_minsum(a: f64, b: f64) -> f64 {
+    let sign = if (a < 0.0) ^ (b < 0.0) { -1.0 } else { 1.0 };
+    sign * a.abs().min(b.abs())
 }
 
 fn g_llr(a: f64, b: f64, u: u8) -> f64 {
