@@ -47,6 +47,32 @@ fn cli_check_accepts_matching_n3_fixture() {
 }
 
 #[test]
+fn cli_generates_noisy_n2_fixture_with_negative_control() {
+    let path = temp_fixture_path("noisy_n2");
+
+    let generate_status = Command::new(kat_bin())
+        .args(["--profile", "n2-noisy", "--output"])
+        .arg(&path)
+        .status()
+        .expect("failed to run lsn_toy_kat generator");
+    assert!(generate_status.success());
+
+    let json = fs::read_to_string(&path).expect("failed to read generated noisy fixture");
+    assert!(json.contains("\"public_noise_rate\": 0.2500000000"));
+    assert!(json.contains("\"roundtrip_ok\": true"));
+    assert!(json.contains("\"wrong_secret_roundtrip_ok\": false"));
+
+    let check_status = Command::new(kat_bin())
+        .args(["--profile", "n2-noisy", "--check"])
+        .arg(&path)
+        .status()
+        .expect("failed to run lsn_toy_kat checker");
+    assert!(check_status.success());
+
+    let _ = fs::remove_file(path);
+}
+
+#[test]
 fn cli_check_rejects_mismatched_fixture_negative_control() {
     let path = temp_fixture_path("mismatched_n3");
     fs::write(&path, "{ \"experiment\": \"wrong fixture\" }\n")

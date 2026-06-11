@@ -29,7 +29,9 @@ fn main() {
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--profile" => {
-                profile = args.next().expect("--profile requires n2 or n3-search");
+                profile = args
+                    .next()
+                    .expect("--profile requires n2, n2-noisy, or n3-search");
             }
             "--output" => {
                 output = Some(PathBuf::from(
@@ -62,6 +64,26 @@ fn main() {
                 PathBuf::from("experiments/152-codex-lsn-ref-toy-kat.json"),
                 "codex-lsn-ref-toy-kat",
                 toy_wrong_secret_control(params, 0xA11CE, 0xA11CF, 0x5EED, 0xC0DE, 0xBEEF),
+            )
+        }
+        "n2-noisy" => {
+            let params = ToyKemParams {
+                n: 2,
+                sample_count: 512,
+                repetition: 9,
+                polar_n: 32,
+                polar_k: 8,
+                public_noise_rate: 0.25,
+                decoder_design_p: 0.0343,
+            };
+            let control = toy_find_wrong_secret_control(
+                params, 0xA11CE, 0xA2000, 4096, 0x5EED, 0xC0DE, 0xBEEF,
+            )
+            .expect("failed to find n=2 noisy wrong-secret fixture in seed window");
+            (
+                PathBuf::from("experiments/180-codex-lsn-ref-n2-noisy-kat.json"),
+                "codex-lsn-ref-n2-noisy-kat",
+                control,
             )
         }
         "n3-search" => {
@@ -112,8 +134,8 @@ fn main() {
 
 fn print_help() {
     eprintln!(
-        "lsn_toy_kat [--profile n2|n3-search] [--output PATH]\n\
-         lsn_toy_kat [--profile n2|n3-search] --check PATH\n\
+        "lsn_toy_kat [--profile n2|n2-noisy|n3-search] [--output PATH]\n\
+         lsn_toy_kat [--profile n2|n2-noisy|n3-search] --check PATH\n\
          Writes or verifies a deterministic toy LSN-KEM KAT vector with a wrong-secret negative control."
     );
 }
