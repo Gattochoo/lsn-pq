@@ -101,7 +101,7 @@ Our contributions are organized around proof, barriers, and constructions.
 
     \item \textbf{Reduction barriers (\Cref{sec:barriers}).} We prove that linear feature maps give zero advantage against LSN; polynomial feature maps of degree $< n$ have error at least $2^{-n}$; and adaptive linear SQ algorithms have advantage at most $(1-2p)2^{-n}$ at any noise rate $p$.
     
-    \textbf{Linear-reduction landscape.} Transport theorems (\Cref{thm:transport-fullrank,thm:transport-nearfull}) close all public-$B$ reductions; Theorem~D.1 of \cite{LPQR26} with the Fannes--Csisz\'ar inequality closes all fixed $B$; the entropy-support bound (\Cref{lem:m1}) and the reachability theorem (\Cref{thm:any-b-uniformity}) close conditionally-uniform adaptive $B$. The marginal-adaptive cell is posed as a precise open problem (\Cref{open:marginal-adaptive}).
+    \textbf{Linear-reduction landscape.} Transport theorems (\Cref{thm:transport-fullrank} and \Cref{thm:transport-nearfull}) close all public-$B$ reductions; Theorem~D.1 of \cite{LPQR26} with the Fannes--Csisz\'ar inequality closes all fixed $B$; the entropy-support bound (\Cref{lem:m1}) and the reachability theorem (\Cref{thm:any-b-uniformity}) close conditionally-uniform adaptive $B$. The marginal-adaptive cell is posed as a precise open problem (\Cref{open:marginal-adaptive}).
     
     \textbf{Two formulations.} We separate the membership and batch/sympLPN formulations and prove information-theoretic floors for the former (\Cref{sec:info-floors}).
 
@@ -912,7 +912,7 @@ For the probability bound, a uniformly random $n \times n$ symmetric matrix over
 This is $1 - 2^{-\Omega(n^2)}$ only when $n - 2c = \Omega(n)$, i.e. $\rho \ge (3/2+\epsilon)n$ for any constant $\epsilon>0$.
 \end{proof}
 
-\paragraph{Rank stratification.} Together, \Cref{thm:transport-fullrank,thm:transport-nearfull} give a complete stratification of the fixed-$B$ linear-reduction landscape at any $m$ and any noise rate:
+\paragraph{Rank stratification.} Together, \Cref{thm:transport-fullrank} and \Cref{thm:transport-nearfull} give a complete stratification of the fixed-$B$ linear-reduction landscape at any $m$ and any noise rate:
 \begin{itemize}
 \item $\rho = 2n$ (full rank): \textbf{BLOCKED} --- output Gram is identically zero (\Cref{thm:transport-fullrank}).
 \item $(3/2+\epsilon)n \le \rho < 2n$ (near-full): \textbf{BLOCKED} --- output Gram rank $\le 2c \le (1-\epsilon)n$ (\Cref{thm:transport-nearfull}), while the uniform Gram has rank $\approx n$ w.h.p.
@@ -1042,7 +1042,7 @@ In particular, any linear reduction from symplectic LPN to standard LPN that pro
 Each sample carries at most $1-h_2(p')$ bits of information about $x$, where $h_2$ is the binary entropy function.  For $p'=\tfrac12-\epsilon$ with $\epsilon=2^{-0.19n-1}$, we have $1-h_2(p')=\Theta(\epsilon^2)=\Theta(2^{-0.38n})$.  To resolve $n$ bits of entropy requires $m\ge n/\Theta(2^{-0.38n})=\Omega(n\cdot 2^{0.38n})$.
 \end{proof}
 
-Together, \Cref{lem:reachability,thm:any-b-uniformity,cor:noise-amp,cor:recovery-barrier} close the linear-reduction landscape \emph{in the conditional-uniformity model}: any linear reduction that makes $BA$ uniform \emph{conditioned on each $A$} is forced into high-weight rows, which amplifies the noise to $p'\ge \tfrac12-2^{-\Theta(n)}$, and recovery then requires $m=2^{\Theta(n)}$.  At $m=\operatorname{poly}(n)$ the reduction fails in this model, for every $B$ model, every isotropic $A$, and every noise rate $p=\Theta(1)$.  The marginal-adaptive corner, where $B$ may depend on $A$ in a way that yields uniform $BA$ marginally but not conditionally, is not covered by this argument.
+Together, \Cref{lem:reachability}, \Cref{thm:any-b-uniformity}, \Cref{cor:noise-amp}, and \Cref{cor:recovery-barrier} close the linear-reduction landscape \emph{in the conditional-uniformity model}: any linear reduction that makes $BA$ uniform \emph{conditioned on each $A$} is forced into high-weight rows, which amplifies the noise to $p'\ge \tfrac12-2^{-\Theta(n)}$, and recovery then requires $m=2^{\Theta(n)}$.  At $m=\operatorname{poly}(n)$ the reduction fails in this model, for every $B$ model, every isotropic $A$, and every noise rate $p=\Theta(1)$.  The marginal-adaptive corner, where $B$ may depend on $A$ in a way that yields uniform $BA$ marginally but not conditionally, is not covered by this argument.
 
 A sharper, unconditional barrier comes from an information-theoretic floor:
 
@@ -1126,7 +1126,7 @@ nm-\delta nm-1
 which rearranges to $\E[k\mid A]\cdot0.094n\le(3/2)n^{2}+n/2+m+\delta nm+O(1)$.  Since $(3/2)n^{2}+n/2$ divided by $0.094n$ is $16n+O(1)$, taking expectations over $A$ and $R$ gives the claimed bound.
 \end{proof}
 
-\Cref{lem:m1} bounds the \emph{expected} number of low-weight rows in the marginal-adaptive model using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification and recovery arguments of \Cref{cor:noise-amp,cor:recovery-barrier} then apply to those rows.
+\Cref{lem:m1} bounds the \emph{expected} number of low-weight rows in the marginal-adaptive model using only marginal uniformity and the entropy of $A$.  When $m\ge Cn$ with $C>16$, the lemma forces at least $m-16n-O(1)$ rows to have weight $>0.19n$, regardless of how $B$ depends on $A$.  The noise-amplification argument of \Cref{cor:noise-amp} and the recovery argument of \Cref{cor:recovery-barrier} then apply to those rows.
 
 \begin{lemma}[Distribution-mismatch death --- \textbf{conditional}]
 \label{lem:m2}
@@ -1369,6 +1369,11 @@ Larger $q$ reduces the required $n$ but increases the cost of each sample (field
 \item The proof holds for $q = p^k$ with $k > 1$ because symplectic theory is field-agnostic.
 \item In characteristic $2$, alternating is equivalent to symmetric; in odd characteristic they differ. The intersection distribution formula remains valid in all characteristics.
 \end{enumerate}
+
+\section{Superseded Approaches to the Marginal-Adaptive Corner}
+\label{app:superseded}
+
+Earlier drafts attempted to close the marginal-adaptive corner via Fisher-information and total-variation bounds.  Those arguments targeted $I(x;y)$, the mutual information between the secret $x$ and the noisy output $y$, under the implicit assumption that the reduction matrix $C=BA$ is hidden from the solver.  In the honest threat model, however, $C$ is public; the correct quantity is the \emph{conditional} mutual information $I(x;y|C)$.  Because $I(x;y) \le I(x;y|C) + I(x;C)$ and $I(x;C)$ can be large when $C$ is public, bounds on $I(x;y)$ do not translate into hardness proofs for the public-$C$ setting.  The approaches recorded in this appendix are therefore \textbf{superseded}; they are retained only to prevent redundant exploration.
 
 % Bibliography
 \bibliographystyle{alpha}
