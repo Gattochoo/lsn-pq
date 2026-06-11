@@ -942,6 +942,42 @@ pub fn run_sampled_candidate_ambient_ml_trials(
     trials: usize,
     seed: u64,
 ) -> Vec<SampledCandidateMlTrialResult> {
+    run_sampled_candidate_ambient_ml_trials_with_optional_cap(
+        n,
+        sample_ratios,
+        noise_rates,
+        trials,
+        None,
+        seed,
+    )
+}
+
+pub fn run_sampled_candidate_ambient_ml_trials_with_cap(
+    n: usize,
+    sample_ratios: &[f64],
+    noise_rates: &[f64],
+    trials: usize,
+    candidate_cap: usize,
+    seed: u64,
+) -> Vec<SampledCandidateMlTrialResult> {
+    run_sampled_candidate_ambient_ml_trials_with_optional_cap(
+        n,
+        sample_ratios,
+        noise_rates,
+        trials,
+        Some(candidate_cap),
+        seed,
+    )
+}
+
+fn run_sampled_candidate_ambient_ml_trials_with_optional_cap(
+    n: usize,
+    sample_ratios: &[f64],
+    noise_rates: &[f64],
+    trials: usize,
+    candidate_cap: Option<usize>,
+    seed: u64,
+) -> Vec<SampledCandidateMlTrialResult> {
     assert!(n > 0, "n must be positive");
     assert!(
         sample_ratios.iter().all(|ratio| *ratio > 0.0),
@@ -953,7 +989,11 @@ pub fn run_sampled_candidate_ambient_ml_trials(
     );
 
     let base = 1usize << (2 * n);
-    let candidate_count = base;
+    let candidate_count = candidate_cap.unwrap_or(base).min(base);
+    assert!(
+        candidate_count >= 2,
+        "candidate cap must leave at least secret plus one decoy"
+    );
     let mut results = Vec::new();
     for &ratio in sample_ratios {
         let sample_count = ((base as f64) * ratio).round() as usize;

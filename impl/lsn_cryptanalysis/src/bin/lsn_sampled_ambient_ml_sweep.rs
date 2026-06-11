@@ -18,7 +18,8 @@ use std::fs;
 use std::time::Instant;
 
 use lsn_cryptanalysis::{
-    run_sampled_candidate_ambient_ml_trials, sampled_candidate_ml_results_to_json,
+    run_sampled_candidate_ambient_ml_trials, run_sampled_candidate_ambient_ml_trials_with_cap,
+    sampled_candidate_ml_results_to_json,
 };
 
 #[derive(Debug)]
@@ -32,6 +33,7 @@ struct Args {
     output: Option<String>,
     progress: bool,
     dry_run: bool,
+    candidate_cap: Option<usize>,
 }
 
 fn main() {
@@ -52,7 +54,7 @@ fn main() {
     for n in args.n_start..=args.n_end {
         eprintln!(
             "running ambient-ml n={n}, candidate_count={}, ratios={:?}, p_values={:?}, trials={}",
-            1usize << (2 * n),
+            candidate_count_for_n(n, args.candidate_cap),
             args.ratios,
             args.noise_rates,
             args.trials
@@ -67,13 +69,24 @@ fn main() {
                         args.trials
                     );
                     let start = Instant::now();
-                    let cell = run_sampled_candidate_ambient_ml_trials(
-                        n,
-                        &[ratio],
-                        &[noise_rate],
-                        args.trials,
-                        n_seed,
-                    );
+                    let cell = if let Some(cap) = args.candidate_cap {
+                        run_sampled_candidate_ambient_ml_trials_with_cap(
+                            n,
+                            &[ratio],
+                            &[noise_rate],
+                            args.trials,
+                            cap,
+                            n_seed,
+                        )
+                    } else {
+                        run_sampled_candidate_ambient_ml_trials(
+                            n,
+                            &[ratio],
+                            &[noise_rate],
+                            args.trials,
+                            n_seed,
+                        )
+                    };
                     let elapsed = start.elapsed();
                     if let Some(result) = cell.first() {
                         eprintln!(
@@ -88,20 +101,33 @@ fn main() {
                 }
             }
         } else {
-            results.extend(run_sampled_candidate_ambient_ml_trials(
-                n,
-                &args.ratios,
-                &args.noise_rates,
-                args.trials,
-                n_seed,
-            ));
+            if let Some(cap) = args.candidate_cap {
+                results.extend(run_sampled_candidate_ambient_ml_trials_with_cap(
+                    n,
+                    &args.ratios,
+                    &args.noise_rates,
+                    args.trials,
+                    cap,
+                    n_seed,
+                ));
+            } else {
+                results.extend(run_sampled_candidate_ambient_ml_trials(
+                    n,
+                    &args.ratios,
+                    &args.noise_rates,
+                    args.trials,
+                    n_seed,
+                ));
+            }
         }
     }
 
-    let json = sampled_candidate_ml_results_to_json(
-        "codex-p2-sampled-ambient-size-candidate-ml",
-        &results,
-    );
+    let experiment = if args.candidate_cap.is_some() {
+        "codex-p2-capped-ambient-size-candidate-ml"
+    } else {
+        "codex-p2-sampled-ambient-size-candidate-ml"
+    };
+    let json = sampled_candidate_ml_results_to_json(experiment, &results);
     let output = args
         .output
         .as_ref()
@@ -114,14 +140,15 @@ fn main() {
 
 fn print_dry_run(args: &Args) {
     for n in args.n_start..=args.n_end {
-        let candidate_count = pow2(2 * n);
+        let ambient_candidate_count = pow2(2 * n);
+        let candidate_count = candidate_count_for_n_u128(n, args.candidate_cap);
         let lagrangian_points = pow2(n);
         let stored_points = candidate_count.saturating_mul(lagrangian_points);
         eprintln!(
-            "dry-run ambient-ml n={n} candidate_count={candidate_count} lagrangian_points={lagrangian_points} stored_points={stored_points}"
+            "dry-run ambient-ml n={n} ambient_candidate_count={ambient_candidate_count} candidate_count={candidate_count} lagrangian_points={lagrangian_points} stored_points={stored_points}"
         );
         for &ratio in &args.ratios {
-            let sample_count = ((candidate_count as f64) * ratio).round() as u128;
+            let sample_count = ((ambient_candidate_count as f64) * ratio).round() as u128;
             for &noise_rate in &args.noise_rates {
                 let score_pairs = candidate_count
                     .saturating_mul(sample_count)
@@ -141,6 +168,16 @@ fn pow2(exp: usize) -> u128 {
         .unwrap_or_else(|| panic!("2^{exp} does not fit in u128"))
 }
 
+fn candidate_count_for_n(n: usize, cap: Option<usize>) -> usize {
+    let ambient = 1usize << (2 * n);
+    cap.unwrap_or(ambient).min(ambient)
+}
+
+fn candidate_count_for_n_u128(n: usize, cap: Option<usize>) -> u128 {
+    let ambient = pow2(2 * n);
+    cap.map(|cap| (cap as u128).min(ambient)).unwrap_or(ambient)
+}
+
 fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     let mut n_start = 6;
     let mut n_end = 8;
@@ -151,6 +188,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     let mut output = None;
     let mut progress = false;
     let mut dry_run = false;
+    let mut candidate_cap = None;
 
     let mut i = 0;
     while i < raw.len() {
@@ -175,6 +213,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
             "--p-values" => noise_rates = parse_list(value, "--p-values")?,
             "--trials" => trials = parse_value(key, value)?,
             "--seed" => seed = parse_value(key, value)?,
+            "--candidate-cap" => candidate_cap = Some(parse_value(key, value)?),
             "--output" => output = Some(value.clone()),
             other => return Err(format!("unknown argument {other}")),
         }
@@ -193,6 +232,9 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
     if output.is_none() && !dry_run {
         return Err("missing --output".to_string());
     }
+    if matches!(candidate_cap, Some(cap) if cap < 2) {
+        return Err("require candidate-cap >= 2".to_string());
+    }
 
     Ok(Args {
         n_start,
@@ -204,6 +246,7 @@ fn parse_args(raw: Vec<String>) -> Result<Args, String> {
         output,
         progress,
         dry_run,
+        candidate_cap,
     })
 }
 
@@ -304,6 +347,31 @@ mod tests {
 
         assert!(args.dry_run);
         assert!(args.output.is_none());
+    }
+
+    #[test]
+    fn parse_args_accepts_candidate_cap() {
+        let args = parse_args(owned(&[
+            "--n-start",
+            "11",
+            "--n-end",
+            "11",
+            "--ratios",
+            "0.015625",
+            "--p-values",
+            "0.25,0.5",
+            "--trials",
+            "1",
+            "--seed",
+            "3235823859",
+            "--candidate-cap",
+            "4096",
+            "--output",
+            "/tmp/out.json",
+        ]))
+        .unwrap();
+
+        assert_eq!(args.candidate_cap, Some(4096));
     }
 
     #[test]
