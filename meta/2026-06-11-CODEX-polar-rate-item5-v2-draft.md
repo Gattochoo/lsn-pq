@@ -28,12 +28,14 @@ design BLER and do not certify a `2^-128` decryption-failure probability.
 - `experiments/149-codex-polar-rate-k304-scl-smoke.json`
 - `experiments/150-codex-polar-rate-k304-high-noise-control.json`
 - `experiments/178-codex-polar-rate-k304-scl-2k-smoke.json`
+- `experiments/179-codex-polar-rate-k305-analytic-fail-side-smoke.json`
 
 Supporting notes:
 
 - `meta/2026-06-11-CODEX-polar-rate-sweep-n2048.md`
 - `meta/2026-06-11-CODEX-polar-rate-k304-smoke.md`
 - `meta/2026-06-11-CODEX-polar-rate-k304-2k-smoke.md`
+- `meta/2026-06-11-CODEX-polar-rate-k305-analytic-fail-side-smoke.md`
 
 ## Analytic Half-Sum Boundary
 
@@ -60,13 +62,16 @@ Interpretation:
 
 ## Empirical Smoke Rows
 
-The K=304 smoke rows use `proposal_p = target_p`, so the importance harness is
-ordinary Monte Carlo with healthy likelihood diagnostics.
+The K=304/K=305 smoke rows use `proposal_p = target_p`, so the importance
+harness is ordinary Monte Carlo with healthy likelihood diagnostics. The K=305
+row is included only as the immediate analytic-fail-side neighbor; it is not
+expected to fail in a small Monte-Carlo budget.
 
 | N | K | target p | trials | errors | observed BLER | mean LR | ESS | artifact |
 |---:|---:|---:|---:|---:|---:|---:|---:|---|
 | 2048 | 304 | 0.0343 | 500 | 0 | 0.000 | 1.000 | 500.00 | `149` |
 | 2048 | 304 | 0.0343 | 2000 | 0 | 0.000 | 1.000 | 2000.00 | `178` |
+| 2048 | 305 | 0.0343 | 500 | 0 | 0.000 | 1.000 | 500.00 | `179` |
 | 2048 | 304 | 0.3000 | 50 | 50 | 1.000 | 1.000 | 50.00 | `150` |
 
 For the `0/2000` row, the one-sided 95% binomial upper bound is:
@@ -79,6 +84,17 @@ This empirical upper bound is much weaker than `2^-128`. Its role is only to
 check that the candidate K=304 row runs through the same fast-SCL validation
 path without observed failures in a small smoke budget.
 
+For the `K=305`, `0/500` row, the corresponding one-sided 95% binomial upper
+bound is:
+
+```text
+1 - 0.05^(1/500) = 0.005973551516 ~= 2^-7.387195.
+```
+
+That row remains an analytic half-sum failure row despite this zero-error smoke.
+The two statements are not in tension: the analytic gate is conservative and the
+Monte-Carlo smoke is intentionally shallow.
+
 ## Recommended v2 Wording
 
 Suggested text for Claude to adapt:
@@ -88,20 +104,27 @@ Suggested text for Claude to adapt:
 > information bits while keeping `log2(0.5 * sum_i Z_i) <= -128`; the immediate
 > next row `K=305` fails the same bound. We also ran the existing fast-SCL Rust
 > validation path at `K=304, p=0.0343` for 2000 ordinary Monte-Carlo trials and
-> observed no block errors, with a matched high-noise control at `p=0.3`
-> failing in all 50 trials. These Monte-Carlo checks are implementation smoke
-> tests only and are not proof-level failure certificates.
+> observed no block errors. The immediate analytic-fail-side row `K=305` also
+> showed no block errors in a 500-trial smoke, which should be read only as a
+> shallow implementation check, not as a pass of the analytic design gate. A
+> matched high-noise control at `K=304, p=0.3` failed in all 50 trials. These
+> Monte-Carlo checks are implementation smoke tests only and are not proof-level
+> failure certificates.
 
 ## Sound-Verifier Notes
 
-- **BLER-fail:** no BLER failure was observed at the candidate K=304 row.
+- **BLER-fail:** no BLER failure was observed at the candidate K=304 row or the
+  analytic-fail-side K=305 smoke row.
 - **CLOSURE-GRADE:** no.
 - **Paper edit:** none.
 - **Security claim:** none.
 - **Parameter recommendation:** conditional on Claude accepting the half-sum
   bound convention; this note only supplies data.
 - **Empirical limit:** `0/2000` means a 95% upper bound of about `1.5e-3`, not
-  `2^-128`.
+  `2^-128`; `K=305`'s `0/500` smoke is weaker still.
+- **Analytic-fail-side row:** `K=305` fails the half-sum target and remains
+  outside the candidate set under this convention, even though the small smoke
+  observed no block errors.
 - **Negative control:** the same K=304 fast-SCL path fails at `p=0.3` (`50/50`
   errors), so the decoder/noise/error-count path is active.
 
@@ -116,8 +139,14 @@ jq -e '[.rows[] | select((.p == 0.0343000000 or .p == 0.0706000000) and (.K == 1
 jq -e '.results | length == 1 and .[0].K == 304 and .[0].target_p == 0.0343000000 and .[0].trials == 2000 and .[0].proposal_errors == 0 and .[0].effective_sample_size == 2000.000000' \
   experiments/178-codex-polar-rate-k304-scl-2k-smoke.json
 
+jq -e '.results | length == 1 and .[0].K == 305 and .[0].target_p == 0.0343000000 and .[0].trials == 500 and .[0].proposal_errors == 0 and .[0].effective_sample_size == 500.000000' \
+  experiments/179-codex-polar-rate-k305-analytic-fail-side-smoke.json
+
 jq -e '.results | length == 1 and .[0].K == 304 and .[0].target_p == 0.3000000000 and .[0].proposal_errors == 50 and .[0].weighted_bler_estimate == 1.000000000000' \
   experiments/150-codex-polar-rate-k304-high-noise-control.json
+
+jq -e '[.rows[] | select(.p == 0.0343000000 and (.K == 304 or .K == 305))] | .[0].passes_half_sum_target == true and .[1].passes_half_sum_target == false' \
+  experiments/148-codex-polar-rate-sweep-n2048.json
 
 git diff --check
 
@@ -132,6 +161,7 @@ All verification commands passed.
 ## Next Step
 
 If Claude accepts the bound convention, this note is ready to feed the v2 item-5
-rate paragraph. If more Codex work is needed first, the next useful bounded step
-is a focused `K=305, p=0.0343` smoke explicitly labeled as an analytic
-failure-side row, not as a real-world BLER failure expectation.
+rate paragraph. If more Codex work is needed first, prefer a bounded
+presentation/consistency pass over this item5 package or move back to P2/P1b per
+the active directive; do not keep adding shallow Monte-Carlo rows unless Claude
+asks for a specific comparison.
