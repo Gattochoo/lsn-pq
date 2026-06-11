@@ -3,8 +3,8 @@ use lsn_cryptanalysis::{
     brute_force_ml_decode, bucket_rate_certificate, compact_ml_decode, enumerate_lagrangians,
     positive_basis_isd_decode, random_lagrangian, results_to_json, run_bkw_bucket_trials,
     run_isd_budget_trials, run_isd_trials, run_ml_trials, run_sampled_candidate_ml_budget_trials,
-    run_sampled_candidate_ml_trials, run_span_trials, sample_lsn, span_of_positives_decode,
-    span_results_to_json, symplectic_form,
+    run_sampled_candidate_ml_trials, run_span_trials, sample_lsn, sampled_candidate_ml_model_row,
+    span_of_positives_decode, span_results_to_json, symplectic_form,
 };
 
 #[test]
@@ -260,4 +260,15 @@ fn sampled_candidate_budget_runner_preserves_candidate_counts() {
     assert_eq!(results[0].successes, 2);
     assert_eq!(results[1].successes, 2);
     assert!(results[0].avg_secret_score >= results[1].avg_secret_score - 1e-9);
+}
+
+#[test]
+fn sampled_candidate_extreme_value_model_has_noise_control() {
+    let structured = sampled_candidate_ml_model_row(10, 65_536, 0.25, 32_768);
+    let random = sampled_candidate_ml_model_row(10, 65_536, 0.5, 32_768);
+    let larger_cloud = sampled_candidate_ml_model_row(10, 65_536, 0.25, 131_072);
+
+    assert!(structured.predicted_secret_margin > 0.0);
+    assert!(random.predicted_secret_margin < 0.0);
+    assert!(larger_cloud.predicted_secret_margin < structured.predicted_secret_margin);
 }

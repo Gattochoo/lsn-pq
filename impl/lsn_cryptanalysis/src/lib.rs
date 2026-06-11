@@ -115,6 +115,20 @@ impl SampledCandidateMlTrialResult {
 }
 
 #[derive(Clone, Copy, Debug)]
+pub struct SampledCandidateMlModelRow {
+    pub n: usize,
+    pub total_dim: usize,
+    pub sample_count: usize,
+    pub noise_rate: f64,
+    pub candidate_count: usize,
+    pub disagreement_rate: f64,
+    pub mean_pair_margin: f64,
+    pub sigma_pair_margin: f64,
+    pub extreme_value_penalty: f64,
+    pub predicted_secret_margin: f64,
+}
+
+#[derive(Clone, Copy, Debug)]
 pub struct SpanTrialResult {
     pub n: usize,
     pub lagrangians: usize,
@@ -1145,6 +1159,86 @@ pub fn run_isd_budget_trials(
         .collect()
 }
 
+pub fn sampled_candidate_ml_model_row(
+    n: usize,
+    sample_count: usize,
+    noise_rate: f64,
+    candidate_count: usize,
+) -> SampledCandidateMlModelRow {
+    assert!(n > 0, "n must be positive");
+    assert!(
+        (0.0..=0.5).contains(&noise_rate),
+        "noise rate must be in [0, 0.5]"
+    );
+    assert!(
+        candidate_count >= 2,
+        "candidate_count must include at least one decoy"
+    );
+
+    let total_dim = 2 * n;
+    let q = 2f64.powi(-(n as i32));
+    let disagreement_rate = 2.0 * q * (1.0 - q);
+    let bias = 1.0 - 2.0 * noise_rate;
+    let mean_per_sample = bias * disagreement_rate;
+    let variance_per_sample = (disagreement_rate - mean_per_sample * mean_per_sample).max(0.0);
+    let mean_pair_margin = sample_count as f64 * mean_per_sample;
+    let sigma_pair_margin = (sample_count as f64 * variance_per_sample).sqrt();
+    let decoy_count = (candidate_count - 1) as f64;
+    let extreme_value_penalty = if decoy_count <= 1.0 {
+        0.0
+    } else {
+        sigma_pair_margin * (2.0 * decoy_count.ln()).sqrt()
+    };
+
+    SampledCandidateMlModelRow {
+        n,
+        total_dim,
+        sample_count,
+        noise_rate,
+        candidate_count,
+        disagreement_rate,
+        mean_pair_margin,
+        sigma_pair_margin,
+        extreme_value_penalty,
+        predicted_secret_margin: mean_pair_margin - extreme_value_penalty,
+    }
+}
+
+pub fn sampled_candidate_ml_model(
+    n_start: usize,
+    n_end: usize,
+    ratios: &[f64],
+    noise_rates: &[f64],
+    candidate_counts: &[usize],
+) -> Vec<SampledCandidateMlModelRow> {
+    assert!(
+        n_start > 0 && n_end >= n_start,
+        "require 1 <= n_start <= n_end"
+    );
+    assert!(
+        ratios.iter().all(|ratio| *ratio > 0.0),
+        "ratios must be positive"
+    );
+    let mut rows = Vec::new();
+    for n in n_start..=n_end {
+        let base = 1usize << (2 * n);
+        for &ratio in ratios {
+            let sample_count = ((base as f64) * ratio).round() as usize;
+            for &noise_rate in noise_rates {
+                for &candidate_count in candidate_counts {
+                    rows.push(sampled_candidate_ml_model_row(
+                        n,
+                        sample_count,
+                        noise_rate,
+                        candidate_count,
+                    ));
+                }
+            }
+        }
+    }
+    rows
+}
+
 pub fn run_ml_trials(
     n: usize,
     sample_count: usize,
@@ -1280,6 +1374,63 @@ pub fn sampled_candidate_ml_results_to_json(
         out.push_str(&format!("      \"seed\": {}\n", result.seed));
         out.push_str("    }");
         if i + 1 != results.len() {
+            out.push(',');
+        }
+        out.push('\n');
+    }
+    out.push_str("  ]\n");
+    out.push_str("}\n");
+    out
+}
+
+pub fn sampled_candidate_ml_model_to_json(
+    experiment: &str,
+    rows: &[SampledCandidateMlModelRow],
+) -> String {
+    let mut out = String::new();
+    out.push_str("{\n");
+    out.push_str(&format!(
+        "  \"experiment\": \"{}\",\n",
+        escape_json(experiment)
+    ));
+    out.push_str("  \"model\": \"sampled_candidate_ml_extreme_value_proxy\",\n");
+    out.push_str(
+        "  \"assumption\": \"independent random decoy Lagrangian disagreement proxy; false-max penalty sigma*sqrt(2 ln(candidate_count-1))\",\n",
+    );
+    out.push_str("  \"adjudication\": \"P2 planted-candidate ML interpretation model; evidence, not proof; OPEN = LSN\",\n");
+    out.push_str("  \"results\": [\n");
+    for (i, row) in rows.iter().enumerate() {
+        out.push_str("    {\n");
+        out.push_str(&format!("      \"n\": {},\n", row.n));
+        out.push_str(&format!("      \"total_dim\": {},\n", row.total_dim));
+        out.push_str(&format!("      \"sample_count\": {},\n", row.sample_count));
+        out.push_str(&format!("      \"noise_rate\": {:.10},\n", row.noise_rate));
+        out.push_str(&format!(
+            "      \"candidate_count\": {},\n",
+            row.candidate_count
+        ));
+        out.push_str(&format!(
+            "      \"disagreement_rate\": {:.12},\n",
+            row.disagreement_rate
+        ));
+        out.push_str(&format!(
+            "      \"mean_pair_margin\": {:.6},\n",
+            row.mean_pair_margin
+        ));
+        out.push_str(&format!(
+            "      \"sigma_pair_margin\": {:.6},\n",
+            row.sigma_pair_margin
+        ));
+        out.push_str(&format!(
+            "      \"extreme_value_penalty\": {:.6},\n",
+            row.extreme_value_penalty
+        ));
+        out.push_str(&format!(
+            "      \"predicted_secret_margin\": {:.6}\n",
+            row.predicted_secret_margin
+        ));
+        out.push_str("    }");
+        if i + 1 != rows.len() {
             out.push(',');
         }
         out.push('\n');
