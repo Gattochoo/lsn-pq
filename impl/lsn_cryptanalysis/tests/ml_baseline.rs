@@ -1,6 +1,7 @@
 use lsn_cryptanalysis::{
     CompactLagrangians, LsnSample, XorShift64, brute_force_ml_decode, compact_ml_decode,
-    enumerate_lagrangians, results_to_json, run_ml_trials, sample_lsn,
+    enumerate_lagrangians, results_to_json, run_ml_trials, run_span_trials, sample_lsn,
+    span_of_positives_decode, span_results_to_json,
 };
 
 #[test]
@@ -95,4 +96,57 @@ fn compact_ml_decoder_matches_reference_scorer() {
     let packed = compact_ml_decode(&samples, &compact);
 
     assert_eq!(packed, reference);
+}
+
+#[test]
+fn span_of_positives_recovers_noiseless_full_observation() {
+    let lagrangians = enumerate_lagrangians(3);
+    let secret_idx = 41;
+    let secret = &lagrangians[secret_idx];
+    let samples = (0..64)
+        .map(|point| LsnSample {
+            point,
+            label: secret.contains(&point),
+        })
+        .collect::<Vec<_>>();
+
+    let result = span_of_positives_decode(3, &samples, &lagrangians);
+
+    assert_eq!(result.positive_count, 8);
+    assert_eq!(result.span_rank, 3);
+    assert_eq!(result.recovered_index, Some(secret_idx));
+}
+
+#[test]
+fn span_of_positives_rejects_full_space_positive_set() {
+    let lagrangians = enumerate_lagrangians(3);
+    let samples = (0..64)
+        .map(|point| LsnSample { point, label: true })
+        .collect::<Vec<_>>();
+
+    let result = span_of_positives_decode(3, &samples, &lagrangians);
+
+    assert_eq!(result.positive_count, 64);
+    assert_eq!(result.span_rank, 6);
+    assert_eq!(result.recovered_index, None);
+}
+
+#[test]
+fn span_trial_runner_recovers_noiseless_instances() {
+    let result = run_span_trials(3, 512, 0.0, 3, 0x5A5A);
+
+    assert_eq!(result.trials, 3);
+    assert_eq!(result.successes, 3);
+    assert_eq!(result.rank_n_count, 3);
+    assert_eq!(result.overfull_rank_count, 0);
+}
+
+#[test]
+fn span_result_json_records_overfull_failure_stats() {
+    let result = run_span_trials(3, 512, 0.25, 2, 0xBAD5EED);
+    let json = span_results_to_json("codex-p2-span-smoke", &[result]);
+
+    assert!(json.contains("\"attack\": \"span_of_positives\""));
+    assert!(json.contains("\"avg_positive_count\""));
+    assert!(json.contains("\"overfull_rank_count\""));
 }
