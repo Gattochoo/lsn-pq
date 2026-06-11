@@ -13,18 +13,22 @@ Following the adjudication in `2f81cb1`, the noise-side analysis is evaluated in
 - The marginal distribution of $C$ is uniform over $\mathbb{F}_2^{m \times 2n}$ (or as close as the finite ensemble of all isotropic $A$ allows).
 - The measured quantity is $I(e'; C)$, where $e'$ is the syndrome of the true noise $e$ under $B$.
 
-The smallest concrete case is $n=2$, $m=5$.  There are 180 isotropic $2 \times 4$ matrices $A$.
+The smallest concrete case is $n=2$, $m=5$ (180 isotropic $2 \times 4$ matrices $A$).  We also scaled to $n=3$, $m=7$ (22,680 isotropic $3 \times 6$ matrices $A$).
 
 ## 2. Methods
 
-- **Exact enumeration** of all 180 matrices $A$.
-- A deterministic function $g$ is encoded by giving each $A$ an $m$-row binary matrix $B$ (15 bits per $A$, total $180 \times 15 = 2700$ bits).
+- **Exact enumeration** of all $A$ matrices.
+- A deterministic function $g$ assigns to each $A$ an $m$-row binary matrix $B$.
+  - $n=2$: 15 bits per $A$, total $180 \times 15 = 2700$ bits.
+  - $n=3$: 42 bits per $A$, total $22680 \times 42 = 952,560$ bits.
 - **Marginal cost:** $\sum_{i=1}^{m}\sum_{j=1}^{2n} \bigl(\#\{A : (C=BA)_{ij}=1\} - |A|/2\bigr)^2$.
   - Cost 0 means $C$ is exactly marginal-uniform over the finite ensemble.
 - **Simulated annealing** on $g$: at each step flip one bit of one $B(A)$.  Energy $E = I(e';C) + \lambda \cdot \text{marginal\_cost}$.
-- Incremental update of the joint distribution $P(C,e')$ so each step is fast.
+- Incremental update of the joint distribution $P(C,e')$ and of $I(e';C)$, so $n=3$ steps remain fast.
 
 ## 3. Results
+
+### 3.1 $n=2$, $m=5$
 
 | $\lambda$ | constraint | best $I(e';C)$ | marginal cost | comment |
 |-----------|------------|----------------|---------------|---------|
@@ -33,18 +37,28 @@ The smallest concrete case is $n=2$, $m=5$.  There are 180 isotropic $2 \times 4
 | 0.1       | soft       | 1.02867        | **0**         | exact marginal uniformity achieved |
 | 0.2       | soft       | 1.00565        | **0**         | exact marginal uniformity achieved |
 
-- SA with $\lambda=0$ drives $I$ well below the previous greedy best (0.272), confirming that the unconstrained minimum is far from the constrained one.
-- With even a moderate uniformity penalty ($\lambda \ge 0.05$), SA finds states with **exact marginal cost 0**.
-- The lowest $I$ observed under exact marginal uniformity is **$\approx 0.988$ bits**.
-- The value does not appear to keep dropping when the penalty is strengthened; rather, $\lambda=0.05$ gives the best constrained result, and larger $\lambda$ gives slightly higher $I$ because the search is pushed more aggressively toward uniformity.
+### 3.2 $n=3$, $m=7$
+
+| $\lambda$ | best $I(e';C)$ | marginal cost | comment |
+|-----------|----------------|---------------|---------|
+| 0.05      | **1.71559**    | **0**         | exact marginal uniformity; 500K SA iterations |
+| 0.1       | 1.71606        | **0**         | exact marginal uniformity; 500K SA iterations |
+
+- Marginal uniformity was reached in **4,785 greedy bit-flips**, essentially instantaneously.
+- The constrained minimum is much larger than in the $n=2$ case.
 
 ## 4. Interpretation
 
-The gap between the unconstrained minimum ($\lesssim 0.20$ bits) and the marginal-uniform minimum ($\approx 0.99$ bits) is large and robust.  This strongly suggests that
+- SA with $\lambda=0$ drives $I$ well below the previous greedy best (0.272), confirming that the unconstrained minimum is far from the constrained one.
+- With even a moderate uniformity penalty ($\lambda \ge 0.05$), SA finds states with **exact marginal cost 0** at both $n=2$ and $n=3$.
+- The lowest $I$ observed under exact marginal uniformity is **$\approx 0.99$ bits** for $n=2$ and **$\approx 1.72$ bits** for $n=3$.
+- The constrained minimum **grows with $n$**, the opposite of what would be needed for an asymptotic security argument.
+
+These observations strongly suggest that
 
 $$\boxed{\;I(e';C) = 0 \text{ is incompatible with a marginal-uniform } C\;}$$
 
-in the $n=2$, $m=5$ instance.
+in the correct noise-side regime.
 
 The heuristic dimension-counting argument in `2026-06-12-KIMI-noise-side-I-lower-bound-analysis.md` reaches the same conclusion: the number of constraints needed for both $I=0$ and marginal uniformity exceeds the available degrees of freedom in $g$.
 
