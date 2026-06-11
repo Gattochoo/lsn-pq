@@ -1,0 +1,82 @@
+{
+ "experiment": "165-CLAUDE-op1-rowmarginal-check",
+ "results": {
+  "2": {
+   "num_isotropic_fullrank": 90,
+   "mu_row_prob_of_zero": 0.2,
+   "mu_row_nonzero_probs": {
+    "0b1": 0.26666667,
+    "0b10": 0.26666667,
+    "0b11": 0.26666667
+   },
+   "uniform_nonzero_prob": 0.3333333333333333,
+   "mu_is_uniform_over_nonzero": false,
+   "c_mu_by_hamming": {
+    "2": {
+     "min": 0.26666666666666666,
+     "max": 0.26666666666666666,
+     "avg": 0.26666666666666666
+    },
+    "1": {
+     "min": 0.26666666666666666,
+     "max": 0.26666666666666666,
+     "avg": 0.26666666666666666
+    }
+   },
+   "unconstrained_c_mu_baseline": 0.25,
+   "diag_P(<a,x>=1)_range": [
+    0.5333333333333333,
+    0.5333333333333333
+   ]
+  },
+  "3": {
+   "num_isotropic_fullrank": 22680,
+   "mu_row_prob_of_zero": 0.1111111111111111,
+   "mu_row_nonzero_probs": {
+    "0b1": 0.12698413,
+    "0b10": 0.12698413,
+    "0b11": 0.12698413,
+    "0b100": 0.12698413,
+    "0b101": 0.12698413,
+    "0b110": 0.12698413,
+    "0b111": 0.12698413
+   },
+   "uniform_nonzero_prob": 0.14285714285714285,
+   "mu_is_uniform_over_nonzero": false,
+   "c_mu_by_hamming": {
+    "2": {
+     "min": 0.25396825396825395,
+     "max": 0.25396825396825395,
+     "avg": 0.25396825396825395
+    },
+    "1": {
+     "min": 0.25396825396825395,
+     "max": 0.25396825396825395,
+     "avg": 0.25396825396825395
+    },
+    "3": {
+     "min": 0.25396825396825395,
+     "max": 0.25396825396825395,
+     "avg": 0.25396825396825395
+    }
+   },
+   "unconstrained_c_mu_baseline": 0.25,
+   "diag_P(<a,x>=1)_range": [
+    0.5079365079365079,
+    0.5079365079365079
+   ]
+  }
+ },
+ "verdict": {
+  "mu_row_zero_mass_n2": 0.2,
+  "mu_row_zero_mass_n3": 0.1111111111111111,
+  "mu_uniform_over_nonzero_n2": false,
+  "mu_uniform_over_nonzero_n3": false,
+  "all_c_mu_values_observed": [
+   0.25396825,
+   0.26666667
+  ],
+  "kimi_conjecture_mu_uniform_nonzero": false,
+  "note": "If mu uniform over nonzero AND c_mu == 1/4 across all pairs: single-row model = standard LPN exactly -> OP1 answered for single-row (S_A=0 does not reduce SDA via this model), but per Kimi \u00a74 this is 'too weak' and the real bite needs the multi-row bundle (Step 4)."
+ }
+}
