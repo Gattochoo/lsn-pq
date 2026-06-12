@@ -16,11 +16,11 @@
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
-    fixed_schedule_top_l_i64, high_noise_control_configs, importance_results_to_json,
-    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
-    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound,
-    FixedSclPathBuffer, FixedSclRound, FixedTopLEntry, PolarCode,
+    fixed_schedule_top_l_i64, fixed_scl_public_round_work_counts, high_noise_control_configs,
+    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
+    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
+    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
+    zero_error_upper_bound, FixedSclPathBuffer, FixedSclRound, FixedTopLEntry, PolarCode,
 };
 
 #[test]
@@ -201,6 +201,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("FixedSclRound"));
     assert!(json.contains("expand_then_compact_public_rounds"));
     assert!(json.contains("public round schedule"));
+    assert!(json.contains("fixed_scl_public_round_work_counts"));
+    assert!(json.contains("public work-count audit"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
@@ -421,6 +423,19 @@ fn fixed_scl_path_buffer_runs_public_round_schedule() {
             },
         ]
     );
+}
+
+#[test]
+fn fixed_scl_public_round_work_counts_are_public_parameters() {
+    let counts = fixed_scl_public_round_work_counts(2, 4, 2, 3);
+
+    assert_eq!(counts.rounds, 3);
+    assert_eq!(counts.first_child_capacity, 4);
+    assert_eq!(counts.repeated_child_capacity, 4);
+    assert_eq!(counts.list_size, 2);
+    assert_eq!(counts.top_l_compare_exchanges, 18);
+    assert_eq!(counts.child_slots_written, 12);
+    assert_eq!(counts.compacted_slots_written, 6);
 }
 
 #[test]

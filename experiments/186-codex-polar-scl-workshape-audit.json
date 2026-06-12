@@ -31,7 +31,8 @@
     "write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending",
     "expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending",
     "expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending",
-    "FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending"
+    "FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending",
+    "fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending"
   ],
   "required_action": "fixed-schedule integer decoder plan required before replacing ct-003",
   "adjudication": "engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN"

@@ -83,6 +83,18 @@ pub struct FixedSclRound {
     pub bit1_metric_delta: i64,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPublicRoundWorkCounts {
+    pub parent_capacity: usize,
+    pub first_child_capacity: usize,
+    pub repeated_child_capacity: usize,
+    pub list_size: usize,
+    pub rounds: usize,
+    pub top_l_compare_exchanges: usize,
+    pub child_slots_written: usize,
+    pub compacted_slots_written: usize,
+}
+
 impl FixedSclRound {
     pub const fn new(bit_index: usize, bit0_metric_delta: i64, bit1_metric_delta: i64) -> Self {
         Self {
@@ -431,6 +443,29 @@ pub fn fixed_schedule_top_l_compare_count(width: usize) -> usize {
     width.saturating_mul(width.saturating_sub(1)) / 2
 }
 
+pub fn fixed_scl_public_round_work_counts(
+    parent_capacity: usize,
+    child_capacity: usize,
+    list_size: usize,
+    rounds: usize,
+) -> FixedSclPublicRoundWorkCounts {
+    let repeated_rounds = rounds.saturating_sub(1);
+    FixedSclPublicRoundWorkCounts {
+        parent_capacity,
+        first_child_capacity: child_capacity,
+        repeated_child_capacity: child_capacity,
+        list_size,
+        rounds,
+        top_l_compare_exchanges: fixed_schedule_top_l_compare_count(child_capacity).saturating_add(
+            repeated_rounds.saturating_mul(fixed_schedule_top_l_compare_count(child_capacity)),
+        ),
+        child_slots_written: parent_capacity
+            .saturating_mul(2)
+            .saturating_add(repeated_rounds.saturating_mul(list_size.saturating_mul(2))),
+        compacted_slots_written: rounds.saturating_mul(list_size),
+    }
+}
+
 pub fn fixed_schedule_top_l_i64<const WIDTH: usize, const L: usize>(
     metrics: [i64; WIDTH],
 ) -> [FixedTopLEntry; L] {
@@ -524,7 +559,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
-        "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",
         "  \"adjudication\": \"engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN\"\n",
