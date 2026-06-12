@@ -270,6 +270,7 @@ pub struct FixedSclBinaryChildWriteDomainCheck {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclOneBitExpansionRun<const CHILD_CAP: usize, const L: usize, const N: usize> {
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
+    pub work_counts: FixedSclPublicRoundWorkCounts,
     pub children: FixedSclPathBuffer<CHILD_CAP, N>,
     pub top: [FixedTopLEntry; L],
 }
@@ -503,9 +504,12 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
             fixed_scl_path_buffer_schedule_domain_check::<CAP, N, CHILD_CAP, CHILD_CAP, L, 1>([
                 bit_index,
             ]);
+        let zero_work_counts =
+            fixed_scl_public_round_work_counts_with_capacities(CAP, CHILD_CAP, CHILD_CAP, L, 0);
         if !path_domain_check.valid {
             return FixedSclOneBitExpansionRun {
                 path_domain_check,
+                work_counts: zero_work_counts,
                 children: FixedSclPathBuffer::<CHILD_CAP, N>::new(),
                 top: [FixedTopLEntry {
                     metric: i64::MAX,
@@ -528,6 +532,9 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         let top = children.top_l_entries::<L>();
         FixedSclOneBitExpansionRun {
             path_domain_check,
+            work_counts: fixed_scl_public_round_work_counts_with_capacities(
+                CAP, CHILD_CAP, CHILD_CAP, L, 1,
+            ),
             children,
             top,
         }
@@ -1264,7 +1271,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "  ],\n",
         "  \"non_panicking_wrapper_failure_code_map\": [\n",
         "    {\"wrapper\": \"try_write_binary_children_from\", \"failure_family\": \"public_child_write_failure_codes\", \"status_field\": \"FixedSclBinaryChildWriteDomainCheck.failure_code\"},\n",
-        "    {\"wrapper\": \"try_expand_then_compact_one_bit\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclOneBitExpansionRun.path_domain_check.failure_code\"},\n",
+        "    {\"wrapper\": \"try_expand_then_compact_one_bit\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclOneBitExpansionRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclOneBitExpansionRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_two_public_bits\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_public_rounds\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_fixed_scl_integer_round_schedule\", \"failure_family\": \"integer_schedule_domain_failure_codes\", \"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\"},\n",

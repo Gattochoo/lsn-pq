@@ -261,6 +261,7 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("\"non_panicking_wrapper_failure_code_map\""));
     assert!(json.contains("\"wrapper\": \"try_write_binary_children_from\""));
     assert!(json.contains("\"failure_family\": \"public_child_write_failure_codes\""));
+    assert!(json.contains("\"work_count_field\": \"FixedSclOneBitExpansionRun.work_counts\""));
     assert!(json.contains("\"wrapper\": \"try_fixed_scl_integer_round_schedule\""));
     assert!(json.contains(
         "\"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\""
@@ -717,6 +718,16 @@ fn fixed_scl_path_buffer_try_expand_then_compact_one_bit_matches_valid_expansion
                 failure_code: FIXED_SCL_PATH_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 3,
+                rounds: 1,
+                top_l_compare_exchanges: 6,
+                child_slots_written: 4,
+                compacted_slots_written: 3,
+            },
             children,
             top,
         }
@@ -744,6 +755,16 @@ fn fixed_scl_path_buffer_try_expand_then_compact_one_bit_rejects_small_child_buf
                 valid: false,
                 failure_code: FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 3,
+                repeated_child_capacity: 3,
+                list_size: 2,
+                rounds: 0,
+                top_l_compare_exchanges: 0,
+                child_slots_written: 0,
+                compacted_slots_written: 0,
             },
             children: FixedSclPathBuffer::<3, 8>::new(),
             top: [
@@ -781,6 +802,16 @@ fn fixed_scl_path_buffer_try_expand_then_compact_one_bit_rejects_bit_index() {
                 valid: false,
                 failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
                 first_invalid_round: 0,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 0,
+                top_l_compare_exchanges: 0,
+                child_slots_written: 0,
+                compacted_slots_written: 0,
             },
             children: FixedSclPathBuffer::<4, 8>::new(),
             top: [
