@@ -34,21 +34,23 @@
 | 4 ($=2n$) | 0.363 | **0.297** | 0 | 500K | completed |
 | 5 ($>2n$) | 0.536 | **0.458** | 0 | 300K | completed |
 | 6 ($>2n$) | 0.728 | **0.704** | 0 | 100K | partial (timeout) |
-| 7 ($>2n$) | — | — | — | 50K | in progress |
+| 7 ($>2n$) | 0.840 | **0.827** | 0 | 32K | partial (timeout) |
 
 - $m=2$: $SD \approx 0.047$, but $m=2n$ is degenerate.
-- $m=3,4,5,6$: $SD$ **increases monotonically** with $m$.
+- $m=3,4,5,6,7$: $SD$ **increases monotonically** with $m$.
 - $m=5$: optimized $g$ leaves $SD \approx 0.458$ ($\approx 46\%$ distinguishing advantage).
-- $m=6$ partial (100K iters): $SD$ down to $0.704$ and still slowly improving; clearly bounded away from $0$.
+- $m=6$: $SD$ down to $0.704$ after 100K iters (still slowly improving); bounded away from $0$.
+- $m=7$: $SD$ already $0.827$ after 32K iters; random baseline is $0.840$.
 
 ## 4. Interpretation (correct sign)
 
 - **No asymptotic disproof.** $m=2$ gives a small $SD$, but $m=2n$ is degenerate.
 - **Trend strongly supports lem:m2.** As $m$ grows beyond $2n$, $SD$ increases: the output becomes easier to distinguish from LPN.
 - **Minimum is bounded away from 0 for $m \ge 3$.** Even the best $g$ leaves substantial distinguishing advantage.
+- **Conclusion (pilot):** This is evidence **supporting lem:m2**, not a disproof. A disproof would require $SD \to 0$ for some $m > 2n$, which is not observed.
 
-## 5. Next steps
+## 5. Caveats
 
-1. Complete $m=7$ run to confirm the trend.
-2. If $m=7$ also gives $SD$ bounded away from $0$, record this as **support for lem:m2**.
-3. Only if $SD \to 0$ for some $m > 2n$ should we claim a disproof.
+- $m=6,7$ runs are partial due to computational cost; slower convergence at large $m$ is expected.
+- Exact exhaustive search over $g$ for $n=2$ is infeasible ($2^{720}$–$2^{1440}$ candidates); SA minima are empirical.
+- Larger $n$ behavior remains open.

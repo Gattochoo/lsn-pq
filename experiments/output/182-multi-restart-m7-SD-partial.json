@@ -1,0 +1,22 @@
+{
+  "n": 2,
+  "m": 7,
+  "restarts": 1,
+  "iters_per_restart": 50000,
+  "note": "partial: killed before 50K due to 2h timeout",
+  "random_SD": 0.839681,
+  "results": [
+    {
+      "restart": 0,
+      "seed": 1000,
+      "best_SD": 0.826537,
+      "best_marg": 0.0,
+      "last_reported_iter": 32521
+    }
+  ],
+  "best_overall": {
+    "restart": 0,
+    "best_SD": 0.826537,
+    "best_marg": 0.0
+  }
+}
