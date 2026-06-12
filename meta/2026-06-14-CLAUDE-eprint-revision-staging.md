@@ -18,6 +18,7 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 | S2 | **OP7 n=2 freshness 부정**: 심플렉틱-궤도 변환은 fresh 못 만듦, SD=123/128 (모든 720쌍; n>=3 OPEN) | OP7-n2 commit | OP7 항목 sharpen(evidence) | exp/193 from-scratch + 192 버그수정 대조 |
 | S3 | **★일반-j moment 폐형**(thm:mj-general): 모든 $1\le j\le 2n$에 대해 $m_j$ 정확 폐형, $\|m_j-(1/4)^j\|=\Theta(4^{-n})$ | general-j commit | abstract "second/third"→"every subset moment"; thm:mj-general 신설; cor:bundle "$k\le3$"→"every fixed $k$"; Honest-Lim "order $j\le3$"→"every fixed $j$"($j{=}\Theta(n)$만 열림) | exp/**194** from-scratch(정의-열거, 궤도분해 우회) 모든 $j$·$n{=}2,3,4$ 정확 일치; Kimi "Consequences" 부호오류 2개 배제 |
+| S4 | **최대블록 분산승수 폐형**(prop:vmax): $V_{2n}$ 일반-σ² 정확 폐형, p=1/4에서 상대편차 $-2(25/64)^n+O(4^{-n})$(음·지수소) | batch-variance commit | prop:vmax 신설(cor:bundle 직후); "suppression 폐형 없음" 문장 대체; Honest-Lim "fixed order+one growing-block functional"로 한정 강화(j=Θ(n) 분포 전체는 여전히 open) | exp/**196** 3중(정의-열거 n=2,3,4·독자유도 n=2..14·점근 7.422e-9) + 일반-p 4개 잡음률 정확 대조 |
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
@@ -29,8 +30,8 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 **단독 S1만으로는 트리거 안 함**(incremental, 권고대로 대기).
 
 ### 3.1 현재 상태(2026-06-14): 트리거 #3 *기술적으로* 충족, 그러나 대기 권고
-- 새 **정리** 누적: S1(결정론 하한) + S3(일반-j 폐형) = **2건** → #3의 글자상 조건 충족.
-  (S2는 evidence-sharpen이라 정리 카운트 제외.)
+- 새 **정리** 누적: S1(결정론 하한) + S3(일반-j 폐형) + S4(V_{2n} 폐형) = **3건** → #3의 글자상
+  조건 충족. (S2는 evidence-sharpen이라 정리 카운트 제외.)
 - **그럼에도 대기 권고.** 근거: S1·S3 둘 다 **posture-불변 보조정리 강화**(SQ-하한 기계·barrier
   landscape를 sharpen할 뿐, 헤드라인은 여전히 "3.5 of 4 cells"·OPEN·lem:m2 무진전·L2 미닫힘).
   revision의 실효 사건은 **posture를 바꾸는 것**(lem:m2 증명→"all four cells", 또는 L2 닫힘→
@@ -55,7 +56,12 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 > SD = 123/128 at n=2 over all 720 pairs). (3) Closed the subset-moment computation in full:
 > the isotropic-ensemble moment m_j now has an exact closed form for *every* order j (not only
 > j<=3), with |m_j - (1/4)^j| = Theta(4^{-n}); the bundle corollary now holds for every fixed
-> bundle size k, and only the j=Theta(n) regime remains open. [+ 이후 항목 추가]
+> bundle size k, and only the j=Theta(n) regime remains open. (4) Added an exact closed form
+> for the maximal-block variance multiplier V_{2n} (general noise rate; at p=1/4 the relative
+> deviation from the i.i.d. value is -2(25/64)^n + O(4^{-n}), negative and exponentially
+> small), giving the previously observed sub-multiplicative suppression a closed form; the
+> honest-limitations item is correspondingly narrowed to the full distribution (higher
+> cumulants) of growing bundles. [+ 이후 항목 추가]
 
 ## 6. 비고
 - lsn-core 소스 ≠ 제출 PDF는 **의도된 상태**(staging). 혼동 금지 — 제출본은 v2.1 PDF, 소스는 앞섬.
