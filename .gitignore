@@ -33,3 +33,6 @@ impl/*/target/
 paper/lsn-paper-ko.tex
 paper/lsn-paper-ko.pdf
 .worktrees/
+
+# Internal overnight coordination log — process artifact, kept local only, not part of the public archive
+OVERNIGHT-LOG.md
