@@ -1,0 +1,42 @@
+{
+  "experiment": "196-lem-m2-matched-rate-sampling",
+  "description": "Monte-Carlo estimates of SD((C,y), LPN_{p_eff}) for uniform-B-per-A reductions along m=2n",
+  "methodology": "Uniform Lagrangian A, uniform x, Bernoulli(1/4) noise e, uniform B. Output key (C,y) hashed to a coarse dictionary bucket; empirical total variation computed from Counter histograms. Two coarse partitions are reported: (rank(C), 1{y in col(C)}) and a random 14-bit hash of the full key. Bootstrap standard errors from 2000 multinomial resamples.",
+  "seed": 1,
+  "results": [
+    {
+      "n": 4,
+      "m": 8,
+      "samples": 1000000,
+      "p_eff": 0.44994354248046875,
+      "q_graph": 0.1530474494485294,
+      "exact_coarse_tv": 0.1395394559094777,
+      "rank_member": {
+        "estimated_sd": 0.140484,
+        "bootstrap_se": 0.0004906018133857623
+      },
+      "hash_14bit": {
+        "estimated_sd": 0.072051,
+        "bootstrap_se": 0.0005333530836075166
+      },
+      "time_sec": 40.894867181777954
+    },
+    {
+      "n": 5,
+      "m": 10,
+      "samples": 500000,
+      "p_eff": 0.47184324264526367,
+      "q_graph": 0.08491007486979167,
+      "exact_coarse_tv": 0.08160532757429302,
+      "rank_member": {
+        "estimated_sd": 0.08231400000000001,
+        "bootstrap_se": 0.000520889700530794
+      },
+      "hash_14bit": {
+        "estimated_sd": 0.103114,
+        "bootstrap_se": 0.0007520947342327499
+      },
+      "time_sec": 34.67745518684387
+    }
+  ]
+}

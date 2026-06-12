@@ -1,0 +1,19 @@
+{
+  "n": 4,
+  "m": 8,
+  "samples": 1000000,
+  "method": "both",
+  "hash_bits": 14,
+  "p_eff": 0.44994354248046875,
+  "q_graph": 0.1530474494485294,
+  "exact_coarse_tv": 0.1395394559094777,
+  "rank_member": {
+    "estimated_sd": 0.140484,
+    "bootstrap_se": 0.0004906018133857623
+  },
+  "hash": {
+    "estimated_sd": 0.072051,
+    "bootstrap_se": 0.0005333530836075166
+  },
+  "time_sec": 40.894867181777954
+}
