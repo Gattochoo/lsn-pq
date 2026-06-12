@@ -17,14 +17,16 @@ use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
     fixed_schedule_top_l_i64, fixed_scl_integer_metric_deltas, fixed_scl_integer_round_schedule,
-    fixed_scl_integer_schedule_domain_check, fixed_scl_public_round_work_counts,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    fixed_scl_integer_schedule_domain_check, fixed_scl_path_buffer_schedule_domain_check,
+    fixed_scl_public_round_work_counts, high_noise_control_configs, importance_results_to_json,
+    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
     zero_error_upper_bound, FixedSclIntegerRoundScheduleBuild, FixedSclIntegerScheduleDomainCheck,
-    FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun, FixedSclRound,
-    FixedTopLEntry, PolarCode, FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND,
+    FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclRound, FixedTopLEntry, PolarCode,
+    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+    FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_OK,
 };
 
 #[test]
@@ -221,6 +223,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("active integer schedule domain validator"));
     assert!(json.contains("try_fixed_scl_integer_round_schedule"));
     assert!(json.contains("non-panicking integer schedule builder"));
+    assert!(json.contains("fixed_scl_path_buffer_schedule_domain_check"));
+    assert!(json.contains("public path-buffer shape validator"));
     assert!(json.contains("try_expand_then_compact_integer_round_schedule"));
     assert!(json.contains("non-panicking path-buffer schedule wrapper"));
     assert!(json.contains("expand_then_compact_integer_round_schedule"));
@@ -497,6 +501,60 @@ fn fixed_scl_path_buffer_runs_generated_integer_round_schedule() {
 }
 
 #[test]
+fn fixed_scl_path_buffer_schedule_domain_check_accepts_public_shape() {
+    assert_eq!(
+        fixed_scl_path_buffer_schedule_domain_check::<2, 8, 4, 4, 2, 3>([2, 4, 5]),
+        FixedSclPathBufferScheduleDomainCheck {
+            parent_capacity: 2,
+            first_child_capacity: 4,
+            repeated_child_capacity: 4,
+            list_size: 2,
+            rounds: 3,
+            bit_width: 8,
+            valid: true,
+            failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+            first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_schedule_domain_check_rejects_small_first_child_capacity() {
+    assert_eq!(
+        fixed_scl_path_buffer_schedule_domain_check::<2, 8, 3, 4, 2, 3>([2, 4, 5]),
+        FixedSclPathBufferScheduleDomainCheck {
+            parent_capacity: 2,
+            first_child_capacity: 3,
+            repeated_child_capacity: 4,
+            list_size: 2,
+            rounds: 3,
+            bit_width: 8,
+            valid: false,
+            failure_code: FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
+            first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_schedule_domain_check_rejects_bit_index_outside_width() {
+    assert_eq!(
+        fixed_scl_path_buffer_schedule_domain_check::<2, 8, 4, 4, 2, 3>([2, 8, 5]),
+        FixedSclPathBufferScheduleDomainCheck {
+            parent_capacity: 2,
+            first_child_capacity: 4,
+            repeated_child_capacity: 4,
+            list_size: 2,
+            rounds: 3,
+            bit_width: 8,
+            valid: false,
+            failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+            first_invalid_round: 1,
+        }
+    );
+}
+
+#[test]
 fn fixed_scl_path_buffer_try_integer_round_schedule_matches_valid_schedule() {
     let mut parents = FixedSclPathBuffer::<2, 8>::new();
     parents.set_candidate(0, 10, [0; 8]);
@@ -515,6 +573,17 @@ fn fixed_scl_path_buffer_try_integer_round_schedule_matches_valid_schedule() {
             domain_check: FixedSclIntegerScheduleDomainCheck {
                 rounds: 3,
                 valid: true,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                bit_width: 8,
+                valid: true,
+                failure_code: FIXED_SCL_PATH_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
             paths: {
@@ -559,6 +628,64 @@ fn fixed_scl_path_buffer_try_integer_round_schedule_reports_invalid_without_expa
             domain_check: FixedSclIntegerScheduleDomainCheck {
                 rounds: 3,
                 valid: false,
+                first_invalid_round: 1,
+            },
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                bit_width: 8,
+                valid: true,
+                failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            paths: FixedSclPathBuffer::<2, 8>::new(),
+            top: [
+                FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                },
+                FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                },
+            ],
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_try_integer_round_schedule_reports_invalid_bit_index_without_expansion() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let run = parents.try_expand_then_compact_integer_round_schedule::<4, 4, 2, 3>(
+        [2, 8, 5],
+        [false, false, true],
+        [1, 1, 1],
+        [5, 7, 4],
+    );
+
+    assert_eq!(
+        run,
+        FixedSclPathBufferIntegerScheduleRun {
+            domain_check: FixedSclIntegerScheduleDomainCheck {
+                rounds: 3,
+                valid: true,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                bit_width: 8,
+                valid: false,
+                failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
                 first_invalid_round: 1,
             },
             paths: FixedSclPathBuffer::<2, 8>::new(),

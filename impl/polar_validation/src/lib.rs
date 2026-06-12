@@ -85,6 +85,12 @@ pub struct FixedSclRound {
 
 pub const FIXED_SCL_FORBIDDEN_METRIC_DELTA: i64 = i64::MAX;
 pub const FIXED_SCL_NO_INVALID_ROUND: usize = usize::MAX;
+pub const FIXED_SCL_PATH_DOMAIN_OK: u8 = 0;
+pub const FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE: u8 = 1;
+pub const FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY: u8 = 2;
+pub const FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY: u8 = 3;
+pub const FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH: u8 = 4;
+pub const FIXED_SCL_PATH_DOMAIN_BIT_INDEX: u8 = 5;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclMetricDeltas {
@@ -106,8 +112,22 @@ pub struct FixedSclIntegerRoundScheduleBuild<const ROUNDS: usize> {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPathBufferScheduleDomainCheck {
+    pub parent_capacity: usize,
+    pub first_child_capacity: usize,
+    pub repeated_child_capacity: usize,
+    pub list_size: usize,
+    pub rounds: usize,
+    pub bit_width: usize,
+    pub valid: bool,
+    pub failure_code: u8,
+    pub first_invalid_round: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPathBufferIntegerScheduleRun<const L: usize, const N: usize> {
     pub domain_check: FixedSclIntegerScheduleDomainCheck,
+    pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
     pub paths: FixedSclPathBuffer<L, N>,
     pub top: [FixedTopLEntry; L],
 }
@@ -398,11 +418,20 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         hard_bits: [u8; ROUNDS],
         magnitudes: [i64; ROUNDS],
     ) -> FixedSclPathBufferIntegerScheduleRun<L, N> {
+        let path_domain_check = fixed_scl_path_buffer_schedule_domain_check::<
+            CAP,
+            N,
+            FIRST_CHILD_CAP,
+            CHILD_CAP,
+            L,
+            ROUNDS,
+        >(bit_indices);
         let schedule =
             try_fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes);
-        if !schedule.domain_check.valid {
+        if !schedule.domain_check.valid || !path_domain_check.valid {
             return FixedSclPathBufferIntegerScheduleRun {
                 domain_check: schedule.domain_check,
+                path_domain_check,
                 paths: FixedSclPathBuffer::<L, N>::new(),
                 top: [FixedTopLEntry {
                     metric: i64::MAX,
@@ -417,6 +446,7 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
             );
         FixedSclPathBufferIntegerScheduleRun {
             domain_check: schedule.domain_check,
+            path_domain_check,
             paths,
             top,
         }
@@ -546,6 +576,64 @@ pub fn fixed_scl_public_round_work_counts(
             .saturating_add(repeated_rounds.saturating_mul(list_size.saturating_mul(2))),
         compacted_slots_written: rounds.saturating_mul(list_size),
     }
+}
+
+pub fn fixed_scl_path_buffer_schedule_domain_check<
+    const CAP: usize,
+    const N: usize,
+    const FIRST_CHILD_CAP: usize,
+    const CHILD_CAP: usize,
+    const L: usize,
+    const ROUNDS: usize,
+>(
+    bit_indices: [usize; ROUNDS],
+) -> FixedSclPathBufferScheduleDomainCheck {
+    let mut check = FixedSclPathBufferScheduleDomainCheck {
+        parent_capacity: CAP,
+        first_child_capacity: FIRST_CHILD_CAP,
+        repeated_child_capacity: CHILD_CAP,
+        list_size: L,
+        rounds: ROUNDS,
+        bit_width: N,
+        valid: true,
+        failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+        first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+    };
+
+    if ROUNDS == 0 {
+        check.valid = false;
+        check.failure_code = FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE;
+        return check;
+    }
+
+    if CAP.saturating_mul(2) > FIRST_CHILD_CAP {
+        check.valid = false;
+        check.failure_code = FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY;
+        return check;
+    }
+
+    if L > FIRST_CHILD_CAP || (ROUNDS > 1 && L > CHILD_CAP) {
+        check.valid = false;
+        check.failure_code = FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH;
+        return check;
+    }
+
+    if ROUNDS > 1 && L.saturating_mul(2) > CHILD_CAP {
+        check.valid = false;
+        check.failure_code = FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY;
+        return check;
+    }
+
+    for (round, bit_index) in bit_indices.iter().enumerate() {
+        if *bit_index >= N {
+            check.valid = false;
+            check.failure_code = FIXED_SCL_PATH_DOMAIN_BIT_INDEX;
+            check.first_invalid_round = round;
+            return check;
+        }
+    }
+
+    check
 }
 
 pub fn fixed_scl_integer_schedule_domain_check<const ROUNDS: usize>(
@@ -749,6 +837,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_fixed_scl_integer_round_schedule: non-panicking integer schedule builder that returns domain-check status before FixedSclRound arrays; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_path_buffer_schedule_domain_check: public path-buffer shape validator for capacities and bit indices before expansion; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_integer_round_schedule: non-panicking path-buffer schedule wrapper that skips expansion on invalid integer inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_integer_round_schedule: integer schedule source-level loop over fixed path buffers only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
