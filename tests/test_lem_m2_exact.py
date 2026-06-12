@@ -214,3 +214,21 @@ def test_enumerate_lagrangian_bases_n_counts():
     assert len(enumerate_lagrangian_bases_n(1)) == 3
     assert len(enumerate_lagrangian_bases_n(2)) == 15
     assert len(enumerate_lagrangian_bases_n(3)) == 135
+
+
+from experiments.lib.lem_m2_exact import lpn_target_counts_n
+
+
+def test_lpn_target_counts_n_matches_existing():
+    for m in (2, 3):
+        counts_old, denom_old = lpn_target_counts(m, Fraction(1, 4))
+        counts_new, denom_new = lpn_target_counts_n(m, 2, Fraction(1, 4))
+        assert counts_old == counts_new
+        assert denom_old == denom_new
+
+
+def test_lpn_target_counts_n_normalized():
+    for n in (2, 3):
+        for m in (2, 3):
+            counts, denom = lpn_target_counts_n(m, n, Fraction(1, 4))
+            assert sum(counts) == denom

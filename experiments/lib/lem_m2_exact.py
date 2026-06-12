@@ -427,3 +427,35 @@ def enumerate_lagrangian_bases_n(n: int) -> list[tuple[int, ...]]:
 
     extend([], 0)
     return [c for _, c in sorted(subspaces.items())]
+
+
+def lpn_target_counts_n(m: int, n: int, p: Fraction) -> tuple[list[int], int]:
+    """Integer counts and denominator for LPN_p distribution over (C, y) with C in F_2^{m x n}."""
+    mask = (1 << m) - 1
+    num_C = 1 << (n * m)
+    size = 1 << ((n + 1) * m)
+    counts = [0] * size
+    D = p.denominator ** m
+    total_denom = num_C * (1 << n) * D
+
+    # Precompute c_j for each C_key and basis index j.
+    c_lists = [[0] * num_C for _ in range(n)]
+    for C_key in range(num_C):
+        tmp = C_key
+        for j in range(n):
+            c_lists[j][C_key] = tmp & mask
+            tmp >>= m
+
+    for C_key in range(num_C):
+        for x in range(1 << n):
+            cx = 0
+            for j in range(n):
+                if (x >> j) & 1:
+                    cx ^= c_lists[j][C_key]
+            for eprime in range(1 << m):
+                w = eprime.bit_count()
+                num = (p.numerator ** w) * ((p.denominator - p.numerator) ** (m - w))
+                y = cx ^ eprime
+                key = (C_key << m) | y
+                counts[key] += num
+    return counts, total_denom
