@@ -2739,6 +2739,52 @@ pub fn simulate_bsc_scl_fast(
     }
 }
 
+pub fn simulate_bsc_scl_fixed_i64<const N: usize, const L: usize, const CHILD_CAP: usize>(
+    k: usize,
+    p: f64,
+    trials: usize,
+    seed: u64,
+    metric_scale: f64,
+) -> SimulationResult {
+    let code = PolarCode::new(N, k, p);
+    let mut rng = Lcg64::new(seed);
+    let llr0 = ((1.0 - p) / p).ln();
+    let llr1 = -llr0;
+    let mut errors = 0usize;
+
+    for _ in 0..trials {
+        let message = (0..k)
+            .map(|_| if rng.next_bool() { 1 } else { 0 })
+            .collect::<Vec<_>>();
+        let x = encode(&code, &message);
+        let llr = x
+            .iter()
+            .map(|&bit| {
+                let flipped = rng.next_f64() < p;
+                let y = bit ^ u8::from(flipped);
+                if y == 0 {
+                    llr0
+                } else {
+                    llr1
+                }
+            })
+            .collect::<Vec<_>>();
+        let decoded = decode_scl_fixed_i64::<N, L, CHILD_CAP>(&code, &llr, metric_scale);
+        if decoded != message {
+            errors += 1;
+        }
+    }
+
+    SimulationResult {
+        n: N,
+        k,
+        p,
+        trials,
+        errors,
+        seed,
+    }
+}
+
 pub fn simulate_bsc_scl_fast_importance(
     n: usize,
     k: usize,

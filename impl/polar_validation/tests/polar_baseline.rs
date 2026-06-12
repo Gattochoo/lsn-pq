@@ -42,12 +42,13 @@ use polar_validation::{
     high_noise_control_configs, importance_results_to_json, polar_rate_row,
     polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_metric_deltas,
-    try_fixed_scl_integer_round_schedule, two_public_bits_run_shape_certificate,
-    two_public_bits_shape_parity_check, zero_error_upper_bound,
-    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
-    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
-    FixedSclChildWriteParityCheck, FixedSclIntegerMetricDeltaRun, FixedSclIntegerMetricDomainCheck,
+    simulate_bsc_scl_fast_importance, simulate_bsc_scl_fixed_i64, target_n2048_configs,
+    try_fixed_scl_integer_metric_deltas, try_fixed_scl_integer_round_schedule,
+    two_public_bits_run_shape_certificate, two_public_bits_shape_parity_check,
+    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
+    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
+    FixedSclChildWriteDomainFailureLabel, FixedSclChildWriteParityCheck,
+    FixedSclIntegerMetricDeltaRun, FixedSclIntegerMetricDomainCheck,
     FixedSclIntegerMetricDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
     FixedSclIntegerRoundScheduleBuildParityCheck, FixedSclIntegerRoundScheduleBuildPlan,
     FixedSclIntegerRoundSchedulePlan, FixedSclIntegerRoundScheduleShapePlan,
@@ -194,6 +195,19 @@ fn short_bsc_fast_scl_smoke_reproduces_zero_bler_with_fixed_seed() {
     let result = simulate_bsc_scl_fast(128, 16, 0.0706, 25, 0xF451C1, 8);
     assert_eq!(result.errors, 0);
     assert_eq!(result.trials, 25);
+}
+
+#[test]
+fn short_bsc_fixed_i64_scl_smoke_matches_fast_scl() {
+    let fast = simulate_bsc_scl_fast(128, 16, 0.0706, 25, 0xF451C1, 8);
+    let fixed = simulate_bsc_scl_fixed_i64::<128, 8, 16>(16, 0.0706, 25, 0xF451C1, 1024.0);
+
+    assert_eq!(fixed.n, fast.n);
+    assert_eq!(fixed.k, fast.k);
+    assert_eq!(fixed.p, fast.p);
+    assert_eq!(fixed.trials, fast.trials);
+    assert_eq!(fixed.errors, fast.errors);
+    assert_eq!(fixed.errors, 0);
 }
 
 #[test]
