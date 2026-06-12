@@ -84,11 +84,19 @@ pub struct FixedSclRound {
 }
 
 pub const FIXED_SCL_FORBIDDEN_METRIC_DELTA: i64 = i64::MAX;
+pub const FIXED_SCL_NO_INVALID_ROUND: usize = usize::MAX;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclMetricDeltas {
     pub bit0_metric_delta: i64,
     pub bit1_metric_delta: i64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerScheduleDomainCheck {
+    pub rounds: usize,
+    pub valid: bool,
+    pub first_invalid_round: usize,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -491,6 +499,27 @@ pub fn fixed_scl_public_round_work_counts(
     }
 }
 
+pub fn fixed_scl_integer_schedule_domain_check<const ROUNDS: usize>(
+    hard_bits: [u8; ROUNDS],
+    magnitudes: [i64; ROUNDS],
+) -> FixedSclIntegerScheduleDomainCheck {
+    for index in 0..ROUNDS {
+        if hard_bits[index] > 1 || magnitudes[index] < 0 {
+            return FixedSclIntegerScheduleDomainCheck {
+                rounds: ROUNDS,
+                valid: false,
+                first_invalid_round: index,
+            };
+        }
+    }
+
+    FixedSclIntegerScheduleDomainCheck {
+        rounds: ROUNDS,
+        valid: true,
+        first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+    }
+}
+
 pub fn fixed_scl_integer_metric_deltas(
     frozen_bit: bool,
     hard_bit: u8,
@@ -649,6 +678,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_integer_round_schedule: integer schedule source-level loop over fixed path buffers only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"public_work_count_examples\": [\n",

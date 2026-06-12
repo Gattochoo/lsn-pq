@@ -17,12 +17,13 @@ use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
     fixed_schedule_top_l_i64, fixed_scl_integer_metric_deltas, fixed_scl_integer_round_schedule,
-    fixed_scl_public_round_work_counts, high_noise_control_configs, importance_results_to_json,
-    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    fixed_scl_integer_schedule_domain_check, fixed_scl_public_round_work_counts,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound,
-    FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclRound, FixedTopLEntry, PolarCode,
-    FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+    FixedSclIntegerScheduleDomainCheck, FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclRound,
+    FixedTopLEntry, PolarCode, FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND,
 };
 
 #[test]
@@ -215,6 +216,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("integer metric delta audit"));
     assert!(json.contains("fixed_scl_integer_round_schedule"));
     assert!(json.contains("public integer round schedule audit"));
+    assert!(json.contains("fixed_scl_integer_schedule_domain_check"));
+    assert!(json.contains("active integer schedule domain validator"));
     assert!(json.contains("expand_then_compact_integer_round_schedule"));
     assert!(json.contains("integer schedule source-level loop"));
     assert!(json.contains("\"public_work_count_examples\""));
@@ -537,6 +540,42 @@ fn fixed_scl_integer_metric_deltas_saturate_large_penalty() {
         FixedSclMetricDeltas {
             bit0_metric_delta: 0,
             bit1_metric_delta: i64::MAX,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_schedule_domain_check_accepts_active_inputs() {
+    assert_eq!(
+        fixed_scl_integer_schedule_domain_check([0, 1, 1], [0, 5, 7]),
+        FixedSclIntegerScheduleDomainCheck {
+            rounds: 3,
+            valid: true,
+            first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_schedule_domain_check_rejects_negative_magnitude() {
+    assert_eq!(
+        fixed_scl_integer_schedule_domain_check([0, 1, 1], [0, -5, 7]),
+        FixedSclIntegerScheduleDomainCheck {
+            rounds: 3,
+            valid: false,
+            first_invalid_round: 1,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_schedule_domain_check_rejects_non_bit_hard_decision() {
+    assert_eq!(
+        fixed_scl_integer_schedule_domain_check([0, 2, 1], [0, 5, 7]),
+        FixedSclIntegerScheduleDomainCheck {
+            rounds: 3,
+            valid: false,
+            first_invalid_round: 1,
         }
     );
 }
