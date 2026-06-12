@@ -1,0 +1,55 @@
+{
+  "experiment": "codex-lsn-ref-ct-inventory",
+  "status": "constant-time discipline inventory only; current code is toy/reference scaffolding; no security claim",
+  "verdict": "not_constant_time_reference",
+  "production_constant_time_claim": false,
+  "threat_model": "local timing/cache observer of encapsulation or decapsulation; public parameters and public samples are visible; Lagrangian membership, selected secret state, decoder paths, message bits, and noise bits are secret until explicitly serialized for KAT diagnostics",
+  "scope": [
+    "impl/lsn_ref toy LSN-KEM KAT rail",
+    "impl/polar_validation SC/SCL decoder used by the toy KAT rail"
+  ],
+  "inventory": [
+    {
+      "id": "ct-001",
+      "surface": "Lagrangian membership representation",
+      "classification": "partial_fixed_layout_scaffold_not_production_ct",
+      "issue": "FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, exposes a mask-only membership API, removes the contains_u8 and allocating membership_labels helpers in favor of caller-owned label buffers via membership_labels_into, fills public-sample membership labels in-place before noise xor, routes toy clean and wrong-secret label generation through caller-owned buffers, and derives toy membership labels directly from contains_mask, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production",
+      "required_action": "replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim"
+    },
+    {
+      "id": "ct-002",
+      "surface": "public-sample selection and toy divergent diagnostic selector",
+      "classification": "diagnostic_only_not_public_distribution",
+      "issue": "diagnostic selector depends on the wrong secret, is intentionally outside the public LSN distribution, and is isolated behind an explicit diagnostic_honest_only_point_masks fixed-shape mask boundary before deriving the legacy diagnostic_honest_only_points list",
+      "required_action": "keep divergent diagnostics out of production APIs and use random-public-samples profiles for public-distribution KAT plumbing"
+    },
+    {
+      "id": "ct-003",
+      "surface": "polar SCL decoder",
+      "classification": "not_constant_time",
+      "issue": "polar SCL path pruning uses data-dependent metrics, sorting, branching, heap-like vector growth, and floating-point operations; see experiments/186-codex-polar-scl-workshape-audit.json",
+      "required_action": "fixed-schedule integer decoder plan required: replace with fixed-list, fixed-schedule, integer or masked metric updates and data-oblivious selection"
+    },
+    {
+      "id": "ct-004",
+      "surface": "toy RNG and key derivation",
+      "classification": "toy_only_not_cryptographic",
+      "issue": "XorShift/LCG randomness and toy hash lanes are deterministic test scaffolding, not production cryptographic primitives",
+      "required_action": "replace with an approved DRBG/KDF and define serialization, domain separation, and failure handling"
+    },
+    {
+      "id": "ct-005",
+      "surface": "KAT JSON serialization",
+      "classification": "test_artifact_only",
+      "issue": "KATs intentionally serialize secrets, public samples, labels, selected indices, and wrong-secret controls",
+      "required_action": "keep KAT serialization outside production APIs and gate it behind explicit test-only tooling"
+    }
+  ],
+  "next_required_work": [
+    "fixed-layout Lagrangian representation",
+    "constant-time membership and symplectic operations",
+    "data-oblivious polar decoder schedule",
+    "public-distribution KAT selection rule",
+    "independent timing/leakage audit after implementation"
+  ]
+}

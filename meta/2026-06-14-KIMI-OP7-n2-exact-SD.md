@@ -19,29 +19,34 @@ only on $T=S_1^{-1}S_2$.  The transformed distribution has support only on keys
 $(u,b,Tu,b)$ with identical noise bit, while the fresh distribution has two
 independent noise bits.
 
-## Exact results
+:warning: **Correction (Claude audit, `3b1d7d6`):** the original `192-KIMI-OP7-n2-exact-SD.py`
+had a membership bug.  The fresh second sample should be evaluated in the
+rerandomized secret $T\cdot L$ at query $Tu$, i.e. $\mathbf 1_{T\cdot L}(Tu) = \mathbf 1_L(u)$,
+not in the original secret $L$ at $Tu$.  At $T=I$ the bug is invisible, so the
+minimum $123/128$ was correct, but the reported maximum/mean were artifacts.
+After fixing the bug, **every pair $T\in\mathrm{Sp}(4,\F_2)$ gives exactly the
+same SD**.
+
+## Exact results (corrected)
 
 | Statistic | Value | Float |
 |-----------|------:|------:|
 | Number of $T\in\mathrm{Sp}(4,\F_2)$ | 720 | — |
-| Minimum SD | $123/128$ | $0.9609375$ |
-| Maximum SD | $371/384$ | $0.9661458$ |
-| Mean SD | $309/320$ | $0.965625$ |
-| Median SD | $309/320$ | $0.965625$ |
+| SD | $123/128$ for all 720 pairs | $0.9609375$ |
 
 ## Interpretation
 
-Even the best choice of public symplectic pair leaves SD $\ge 123/128\approx0.961$.
-The two output samples are therefore far from independent fresh samples.  This
-is because the original single noise bit $e$ is shared between both outputs:
-$b$ is identical, while fresh samples would have independent noise bits.  The
-public symplectic map preserves this correlation, so it cannot create freshness.
+Every public symplectic pair leaves SD exactly $123/128\approx0.961$.  The two
+output samples are therefore far from independent fresh samples.  This is because
+the original single noise bit $e$ is shared between both outputs: $b$ is
+identical, while fresh samples would have independent noise bits.  The public
+symplectic map preserves this correlation, so it cannot create freshness.
 
-For $n=2$ the answer to OP7 is **negative**: no public symplectic orbit
+For $n=2$ the answer to OP7 is **uniformly negative**: no public symplectic orbit
 transformation yields fresh samples.
 
 ## Relation to Experiment 183
 
 Experiment 183 sampled 200 random symplectic pairs and reported a best SD of
-$0.961$ (float).  The exact enumeration here confirms that the true minimum is
-$123/128=0.9609375$ and that the random sample was essentially optimal.
+$0.961$ (float).  The corrected exact enumeration confirms that the true value is
+$123/128=0.9609375$ for **all** pairs.

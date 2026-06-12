@@ -942,6 +942,26 @@ fn fixed_i64_g_node_uses_bit_mask_selection() {
 }
 
 #[test]
+fn fixed_i64_llr_metric_magnitude_uses_range_mask_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("fn llr_metric_magnitude_i64(")
+        .expect("llr_metric_magnitude_i64 source should be present");
+    let helper_end = source[helper_start..]
+        .find("fn quantize_llrs_i64")
+        .map(|offset| helper_start + offset)
+        .expect("quantize_llrs_i64 source should follow llr_metric_magnitude_i64");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if !scaled.is_finite()"));
+    assert!(helper_source.contains("let cap = i64::MAX / 4;"));
+    assert!(helper_source.contains("let nonfinite = (!scaled.is_finite()) as i64;"));
+    assert!(helper_source.contains("let too_large = (scaled >= cap as f64) as i64;"));
+    assert!(helper_source.contains("let range_mask = 0i64.wrapping_sub(out_of_range);"));
+    assert!(helper_source.contains("select_i64(range_mask, candidate, cap)"));
+}
+
+#[test]
 fn fixed_i64_quantize_llr_uses_sign_mask_selection() {
     let source = include_str!("../src/lib.rs");
     let helper_start = source

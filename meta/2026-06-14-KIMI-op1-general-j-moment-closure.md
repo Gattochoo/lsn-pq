@@ -97,20 +97,17 @@ The number of $j$-subsets $S$ with $b=0$ is $\binom{n}{j/2}$ when $j$ is even
 
 - For fixed $j$ and $n\to\infty$,
   $$
-    m_j^{(n)} = \frac{1}{4^j} + O\!igl(4^{-n}\bigr).
+    m_j^{(n)} = \frac{1}{4^j} + O\!\bigl(4^{-n}\bigr).
   $$
   Thus the $j$-th moment converges to the $j$-th moment of
   $\operatorname{Bernoulli}(1/4)$.
 
-- The correction term is explicitly
+- The sign of the discrepancy is not uniform: $m_1^{(n)} > 1/4$ (positive,
+  since $m_1 = 2^{2n-2}/(2^{2n}-1)$), while $m_j^{(n)} < 4^{-j}$ for all
+  $j\ge 2$.  In every case
   $$
-    m_j^{(n)} - \frac{1}{4^j}
-    =
-    -\frac{2^{1-j}}{(4u-1)(u-1)}
-    \Bigl(u + \mathbf{1}_{j\text{ even}}\frac{\binom{n}{j/2}}{\binom{2n}{j}}\Bigr),
+    \bigl|m_j^{(n)} - 4^{-j}\bigr| = \Theta(4^{-n}).
   $$
-  where $u=2^{2n-2}$.  In particular the discrepancy is negative for all
-  $j\ge 1$ and decays like $4^{-n}$.
 
 - For $j\ge 2n-1$ we have $m_j^{(n)}=0$, because $D_j\le 2$ forces
   $N(S)=0$ for every $S$.

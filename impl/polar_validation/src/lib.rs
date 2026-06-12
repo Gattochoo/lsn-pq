@@ -2729,12 +2729,15 @@ fn i64_negative_flag(value: i64) -> u8 {
 }
 
 fn llr_metric_magnitude_i64(llr: f64, metric_scale: f64) -> i64 {
+    let cap = i64::MAX / 4;
     let scaled = (llr.abs() * metric_scale).round();
-    if !scaled.is_finite() || scaled >= (i64::MAX / 4) as f64 {
-        i64::MAX / 4
-    } else {
-        scaled as i64
-    }
+    let nonfinite = (!scaled.is_finite()) as i64;
+    let too_large = (scaled >= cap as f64) as i64;
+    let out_of_range = nonfinite | too_large;
+    let range_mask = 0i64.wrapping_sub(out_of_range);
+    let candidate = scaled as i64;
+
+    select_i64(range_mask, candidate, cap)
 }
 
 fn quantize_llrs_i64<const N: usize>(llr: &[f64], metric_scale: f64) -> [i64; N] {

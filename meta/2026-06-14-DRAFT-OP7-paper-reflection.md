@@ -9,8 +9,8 @@
 
 For $n=2$, the natural public symplectic-orbit transformation cannot produce
 fresh independent samples for a rerandomized secret.  The exact statistical
-distance between the transformed output and truly fresh samples is at least
-$123/128 \approx 0.961$, with mean $309/320 \approx 0.966$ over all pairs
+distance between the transformed output and truly fresh samples is exactly
+$123/128 \approx 0.961$ for **every** pair
 $S_1,S_2\in\mathrm{Sp}(4,\F_2)$.
 
 ## Suggested edits
@@ -23,7 +23,7 @@ Replace
 
 with
 
-> \item \textbf{Sample freshness for rerandomized LSN.} Exact secret rerandomization is possible: applying a public symplectic matrix $S \in \mathrm{Sp}(2n)$ to the public part of each sample maps the secret $L$ to $S\cdot L$ while preserving labels. Whether LSN admits a public transformation that yields \emph{fresh} (statistically independent) samples for the rerandomized secret remains open for $n\ge 3$. For $n=2$ the natural symplectic-orbit transformation---using two public matrices $S_1,S_2$ to split one sample into two---is far from fresh: the exact statistical distance to independent samples is at least $123/128$ for every pair $S_1,S_2\in\mathrm{Sp}(4,\F_2)$, with average $309/320$ (Experiment~192). A positive answer for larger $n$ would yield a tight multi-user security bound; a fully general negative answer would explain why the hybrid argument loses a factor $N$.
+> \item \textbf{Sample freshness for rerandomized LSN.} Exact secret rerandomization is possible: applying a public symplectic matrix $S \in \mathrm{Sp}(2n)$ to the public part of each sample maps the secret $L$ to $S\cdot L$ while preserving labels. Whether LSN admits a public transformation that yields \emph{fresh} (statistically independent) samples for the rerandomized secret remains open for $n\ge 3$. For $n=2$ the natural symplectic-orbit transformation---using two public matrices $S_1,S_2$ to split one sample into two---is far from fresh: the exact statistical distance to independent samples is exactly $123/128$ for every pair $S_1,S_2\in\mathrm{Sp}(4,\F_2)$ (Experiment~192). A positive answer for larger $n$ would yield a tight multi-user security bound; a fully general negative answer would explain why the hybrid argument loses a factor $N$.
 
 ### 2. Limitations item 4 (\Cref{subsec:limitations})
 
@@ -40,7 +40,7 @@ append
 If a dedicated remark is desired:
 
 > \begin{remark}[Empirical freshness barrier for $n=2$]
-> The public symplectic orbit transformation that maps $(x,b)\mapsto (Sx,b)$ preserves labels but not sample independence.  Exact enumeration for $n=2$ shows that two samples produced from one original sample by $S_1,S_2\in\mathrm{Sp}(4,\F_2)$ have SD at least $123/128$ from two independent fresh samples (Experiment~192).  Thus even the optimal public transformation fails to refresh samples in the smallest case.
+> The public symplectic orbit transformation that maps $(x,b)\mapsto (Sx,b)$ preserves labels but not sample independence.  Exact enumeration for $n=2$ shows that two samples produced from one original sample by $S_1,S_2\in\mathrm{Sp}(4,\F_2)$ have SD exactly $123/128$ from two independent fresh samples (Experiment~192).  Thus even the optimal public transformation fails to refresh samples in the smallest case.
 > \end{remark}
 
 ## Classification
