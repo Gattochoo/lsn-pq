@@ -91,6 +91,10 @@ pub const FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY: u8 = 2;
 pub const FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY: u8 = 3;
 pub const FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH: u8 = 4;
 pub const FIXED_SCL_PATH_DOMAIN_BIT_INDEX: u8 = 5;
+pub const FIXED_SCL_CHILD_WRITE_DOMAIN_OK: u8 = 0;
+pub const FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT: u8 = 1;
+pub const FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY: u8 = 2;
+pub const FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX: u8 = 3;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclMetricDeltas {
@@ -122,6 +126,18 @@ pub struct FixedSclPathBufferScheduleDomainCheck {
     pub valid: bool,
     pub failure_code: u8,
     pub first_invalid_round: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclBinaryChildWriteDomainCheck {
+    pub parent_capacity: usize,
+    pub child_capacity: usize,
+    pub bit_width: usize,
+    pub parent_slot: usize,
+    pub dst_start: usize,
+    pub bit_index: usize,
+    pub valid: bool,
+    pub failure_code: u8,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -280,6 +296,33 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
             fixed_scl_metric_add(parent.metric, bit1_metric_delta),
             bit1,
         );
+    }
+
+    pub fn try_write_binary_children_from<const SRC_CAP: usize>(
+        &mut self,
+        parents: &FixedSclPathBuffer<SRC_CAP, N>,
+        parent_slot: usize,
+        dst_start: usize,
+        bit_index: usize,
+        bit0_metric_delta: i64,
+        bit1_metric_delta: i64,
+    ) -> FixedSclBinaryChildWriteDomainCheck {
+        let domain_check = fixed_scl_binary_child_write_domain_check::<SRC_CAP, CAP, N>(
+            parent_slot,
+            dst_start,
+            bit_index,
+        );
+        if domain_check.valid {
+            self.write_binary_children_from(
+                parents,
+                parent_slot,
+                dst_start,
+                bit_index,
+                bit0_metric_delta,
+                bit1_metric_delta,
+            );
+        }
+        domain_check
     }
 
     pub fn expand_then_compact_one_bit<const CHILD_CAP: usize, const L: usize>(
@@ -578,6 +621,47 @@ pub fn fixed_scl_public_round_work_counts(
     }
 }
 
+pub fn fixed_scl_binary_child_write_domain_check<
+    const SRC_CAP: usize,
+    const CHILD_CAP: usize,
+    const N: usize,
+>(
+    parent_slot: usize,
+    dst_start: usize,
+    bit_index: usize,
+) -> FixedSclBinaryChildWriteDomainCheck {
+    let mut check = FixedSclBinaryChildWriteDomainCheck {
+        parent_capacity: SRC_CAP,
+        child_capacity: CHILD_CAP,
+        bit_width: N,
+        parent_slot,
+        dst_start,
+        bit_index,
+        valid: true,
+        failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+    };
+
+    if parent_slot >= SRC_CAP {
+        check.valid = false;
+        check.failure_code = FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT;
+        return check;
+    }
+
+    if dst_start >= CHILD_CAP || dst_start.saturating_add(1) >= CHILD_CAP {
+        check.valid = false;
+        check.failure_code = FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY;
+        return check;
+    }
+
+    if bit_index >= N {
+        check.valid = false;
+        check.failure_code = FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX;
+        return check;
+    }
+
+    check
+}
+
 pub fn fixed_scl_path_buffer_schedule_domain_check<
     const CAP: usize,
     const N: usize,
@@ -828,6 +912,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "  \"prototype_building_blocks\": [\n",
         "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_binary_child_write_domain_check: public child-write domain validator for parent slot, destination capacity, and bit index before fixed-slot writes; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"try_write_binary_children_from: non-panicking child-write wrapper that skips fixed-slot writes on invalid public inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",

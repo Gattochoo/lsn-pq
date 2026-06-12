@@ -16,16 +16,20 @@
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
-    fixed_schedule_top_l_i64, fixed_scl_integer_metric_deltas, fixed_scl_integer_round_schedule,
+    fixed_schedule_top_l_i64, fixed_scl_binary_child_write_domain_check,
+    fixed_scl_integer_metric_deltas, fixed_scl_integer_round_schedule,
     fixed_scl_integer_schedule_domain_check, fixed_scl_path_buffer_schedule_domain_check,
     fixed_scl_public_round_work_counts, high_noise_control_configs, importance_results_to_json,
     polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    zero_error_upper_bound, FixedSclIntegerRoundScheduleBuild, FixedSclIntegerScheduleDomainCheck,
-    FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
-    FixedSclPathBufferScheduleDomainCheck, FixedSclRound, FixedTopLEntry, PolarCode,
-    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+    zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck, FixedSclIntegerRoundScheduleBuild,
+    FixedSclIntegerScheduleDomainCheck, FixedSclMetricDeltas, FixedSclPathBuffer,
+    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck, FixedSclRound,
+    FixedTopLEntry, PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+    FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
     FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_OK,
 };
 
@@ -204,6 +208,10 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("forbidden sentinel must remain terminal"));
     assert!(json.contains("fixed_schedule_top_l_i64"));
     assert!(json.contains("FixedSclPathBuffer"));
+    assert!(json.contains("fixed_scl_binary_child_write_domain_check"));
+    assert!(json.contains("public child-write domain validator"));
+    assert!(json.contains("try_write_binary_children_from"));
+    assert!(json.contains("non-panicking child-write wrapper"));
     assert!(json.contains("write_binary_children_from"));
     assert!(json.contains("integer child expansion"));
     assert!(json.contains("expand_then_compact_one_bit"));
@@ -348,6 +356,127 @@ fn fixed_scl_path_buffer_writes_binary_children_into_fixed_slots() {
             },
         ]
     );
+}
+
+#[test]
+fn fixed_scl_binary_child_write_domain_check_accepts_public_inputs() {
+    assert_eq!(
+        fixed_scl_binary_child_write_domain_check::<2, 4, 8>(0, 2, 3),
+        FixedSclBinaryChildWriteDomainCheck {
+            parent_capacity: 2,
+            child_capacity: 4,
+            bit_width: 8,
+            parent_slot: 0,
+            dst_start: 2,
+            bit_index: 3,
+            valid: true,
+            failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_binary_child_write_domain_check_rejects_parent_slot() {
+    assert_eq!(
+        fixed_scl_binary_child_write_domain_check::<2, 4, 8>(2, 0, 3),
+        FixedSclBinaryChildWriteDomainCheck {
+            parent_capacity: 2,
+            child_capacity: 4,
+            bit_width: 8,
+            parent_slot: 2,
+            dst_start: 0,
+            bit_index: 3,
+            valid: false,
+            failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_binary_child_write_domain_check_rejects_destination_overflow() {
+    assert_eq!(
+        fixed_scl_binary_child_write_domain_check::<2, 4, 8>(1, 3, 3),
+        FixedSclBinaryChildWriteDomainCheck {
+            parent_capacity: 2,
+            child_capacity: 4,
+            bit_width: 8,
+            parent_slot: 1,
+            dst_start: 3,
+            bit_index: 3,
+            valid: false,
+            failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_binary_child_write_domain_check_rejects_bit_index() {
+    assert_eq!(
+        fixed_scl_binary_child_write_domain_check::<2, 4, 8>(1, 2, 8),
+        FixedSclBinaryChildWriteDomainCheck {
+            parent_capacity: 2,
+            child_capacity: 4,
+            bit_width: 8,
+            parent_slot: 1,
+            dst_start: 2,
+            bit_index: 8,
+            valid: false,
+            failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_try_writes_binary_children_from_valid_parent() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [1, 0, 0, 0, 0, 0, 0, 0]);
+
+    let mut children = FixedSclPathBuffer::<4, 8>::new();
+    let check = children.try_write_binary_children_from(&parents, 0, 2, 3, 5, 9);
+
+    assert_eq!(
+        check,
+        FixedSclBinaryChildWriteDomainCheck {
+            parent_capacity: 2,
+            child_capacity: 4,
+            bit_width: 8,
+            parent_slot: 0,
+            dst_start: 2,
+            bit_index: 3,
+            valid: true,
+            failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+        }
+    );
+    assert_eq!(children.active_count(), 2);
+    assert_eq!(children.bits(2), [1, 0, 0, 0, 0, 0, 0, 0]);
+    assert_eq!(children.bits(3), [1, 0, 0, 1, 0, 0, 0, 0]);
+}
+
+#[test]
+fn fixed_scl_path_buffer_try_write_rejects_invalid_parent_without_writing() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [1, 0, 0, 0, 0, 0, 0, 0]);
+
+    let mut children = FixedSclPathBuffer::<4, 8>::new();
+    children.set_candidate(0, 99, [1; 8]);
+    let before = children;
+
+    let check = children.try_write_binary_children_from(&parents, 2, 2, 3, 5, 9);
+
+    assert_eq!(
+        check,
+        FixedSclBinaryChildWriteDomainCheck {
+            parent_capacity: 2,
+            child_capacity: 4,
+            bit_width: 8,
+            parent_slot: 2,
+            dst_start: 2,
+            bit_index: 3,
+            valid: false,
+            failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+        }
+    );
+    assert_eq!(children, before);
 }
 
 #[test]

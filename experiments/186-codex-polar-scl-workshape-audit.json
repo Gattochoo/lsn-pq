@@ -33,6 +33,8 @@
   "prototype_building_blocks": [
     "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending",
     "FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending",
+    "fixed_scl_binary_child_write_domain_check: public child-write domain validator for parent slot, destination capacity, and bit index before fixed-slot writes; not wired into decode_scl; generated-code and timing audit pending",
+    "try_write_binary_children_from: non-panicking child-write wrapper that skips fixed-slot writes on invalid public inputs; not wired into decode_scl; generated-code and timing audit pending",
     "write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending",
     "expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending",
     "expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending",
