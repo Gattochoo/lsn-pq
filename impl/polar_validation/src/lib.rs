@@ -662,14 +662,8 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         &self,
         rounds: [FixedSclRound; ROUNDS],
     ) -> FixedSclPublicRoundScheduleRun<L, N> {
-        let mut bit_indices = [0usize; ROUNDS];
-        for (index, round) in rounds.iter().enumerate() {
-            bit_indices[index] = round.bit_index;
-        }
         let plan =
-            fixed_scl_public_round_schedule_plan::<CAP, N, FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(
-                bit_indices,
-            );
+            fixed_scl_round_schedule_plan::<CAP, N, FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(rounds);
         if !plan.path_domain_check.valid {
             return FixedSclPublicRoundScheduleRun {
                 path_domain_check: plan.path_domain_check,
@@ -885,6 +879,25 @@ pub fn high_noise_control_configs(trials: usize, seed: u64) -> Vec<SimulationCon
 
 pub fn fixed_schedule_top_l_compare_count(width: usize) -> usize {
     width.saturating_mul(width.saturating_sub(1)) / 2
+}
+
+pub fn fixed_scl_round_schedule_plan<
+    const CAP: usize,
+    const N: usize,
+    const FIRST_CHILD_CAP: usize,
+    const CHILD_CAP: usize,
+    const L: usize,
+    const ROUNDS: usize,
+>(
+    rounds: [FixedSclRound; ROUNDS],
+) -> FixedSclPublicRoundSchedulePlan {
+    let mut bit_indices = [0usize; ROUNDS];
+    for (index, round) in rounds.iter().enumerate() {
+        bit_indices[index] = round.bit_index;
+    }
+    fixed_scl_public_round_schedule_plan::<CAP, N, FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(
+        bit_indices,
+    )
 }
 
 pub fn fixed_scl_public_round_work_counts(
@@ -1331,6 +1344,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"try_expand_then_compact_two_public_bits: non-panicking two-round public-bit helper that delegates to public schedule domain checks; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_public_rounds: non-panicking multi-round public schedule wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_round_schedule_plan: execution-free FixedSclRound schedule preflight that extracts public bit indices and pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_schedule_plan: execution-free public schedule preflight that pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending\",\n",

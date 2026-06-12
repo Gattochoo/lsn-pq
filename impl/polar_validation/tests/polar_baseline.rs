@@ -22,27 +22,28 @@ use polar_validation::{
     fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
     fixed_scl_path_buffer_schedule_domain_check, fixed_scl_path_domain_failure_label,
     fixed_scl_public_round_schedule_plan, fixed_scl_public_round_work_counts,
-    fixed_scl_public_round_work_counts_with_capacities, high_noise_control_configs,
-    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    try_fixed_scl_integer_round_schedule, zero_error_upper_bound,
-    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
-    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundSchedulePlan,
-    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
-    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
-    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
-    FixedSclPathDomainFailureLabel, FixedSclPublicRoundSchedulePlan,
-    FixedSclPublicRoundScheduleRun, FixedSclPublicRoundWorkCounts, FixedSclRound, FixedTopLEntry,
-    PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
-    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
-    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
-    FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
-    FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE, FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS,
-    FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_OK,
-    FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
+    fixed_scl_public_round_work_counts_with_capacities, fixed_scl_round_schedule_plan,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
+    zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck,
+    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
+    FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
+    FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
+    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
+    FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun, FixedSclPublicRoundWorkCounts,
+    FixedSclRound, FixedTopLEntry, PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY, FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_OK, FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS,
+    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK, FIXED_SCL_NO_INVALID_ROUND,
+    FIXED_SCL_PATH_DOMAIN_BIT_INDEX, FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
+    FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS, FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
+    FIXED_SCL_PATH_DOMAIN_OK, FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY,
+    FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
 };
 
 #[test]
@@ -242,6 +243,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("non-panicking two-round public-bit helper"));
     assert!(json.contains("try_expand_then_compact_public_rounds"));
     assert!(json.contains("non-panicking multi-round public schedule wrapper"));
+    assert!(json.contains("fixed_scl_round_schedule_plan"));
+    assert!(json.contains("execution-free FixedSclRound schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_schedule_plan"));
     assert!(json.contains("execution-free public schedule preflight"));
     assert!(json.contains("fixed_scl_integer_round_schedule_plan"));
@@ -1259,6 +1262,53 @@ fn fixed_scl_public_round_schedule_plan_reports_status_and_work_counts_without_r
             compacted_slots_written: 0,
         }
     );
+}
+
+#[test]
+fn fixed_scl_round_schedule_plan_reads_round_bit_indices_without_expansion() {
+    let rounds = [
+        FixedSclRound::new(2, 5, -1),
+        FixedSclRound::new(4, 7, 0),
+        FixedSclRound::new(5, 4, -2),
+    ];
+
+    assert_eq!(
+        fixed_scl_round_schedule_plan::<2, 8, 4, 4, 2, 3>(rounds),
+        FixedSclPublicRoundSchedulePlan {
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                bit_width: 8,
+                valid: true,
+                failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                top_l_compare_exchanges: 18,
+                child_slots_written: 12,
+                compacted_slots_written: 6,
+            },
+        }
+    );
+
+    let invalid = fixed_scl_round_schedule_plan::<2, 8, 4, 4, 2, 2>([
+        FixedSclRound::new(2, 5, -1),
+        FixedSclRound::new(8, 7, 0),
+    ]);
+    assert_eq!(
+        invalid.path_domain_check.failure_code,
+        FIXED_SCL_PATH_DOMAIN_BIT_INDEX
+    );
+    assert_eq!(invalid.path_domain_check.first_invalid_round, 1);
+    assert_eq!(invalid.work_counts.rounds, 0);
 }
 
 #[test]
