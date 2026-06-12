@@ -741,7 +741,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, centralizes toy label generation through membership_labels, supports caller-owned label buffers via membership_labels_into, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, centralizes toy label generation through membership_labels, supports caller-owned label buffers via membership_labels_into, fills public-sample membership labels in-place before noise xor, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
@@ -1076,6 +1076,7 @@ fn public_samples(
     let mut noise_rng = XorShift64::new(noise_seed);
     let mut points = Vec::with_capacity(params.sample_count);
     let mut noise_bits = Vec::with_capacity(params.sample_count);
+    let mut labels = vec![0u8; params.sample_count];
 
     for _ in 0..params.sample_count {
         let point = sample_rng.next_index(universe) as u32;
@@ -1083,12 +1084,10 @@ fn public_samples(
         points.push(point);
         noise_bits.push(u8::from(noisy));
     }
-    let membership_labels = fixed_secret.membership_labels(&points);
-    let labels = membership_labels
-        .iter()
-        .zip(noise_bits.iter())
-        .map(|(&membership, &noise)| membership ^ noise)
-        .collect();
+    fixed_secret.membership_labels_into(&points, &mut labels);
+    for (label, &noise) in labels.iter_mut().zip(noise_bits.iter()) {
+        *label ^= noise;
+    }
 
     (points, labels)
 }

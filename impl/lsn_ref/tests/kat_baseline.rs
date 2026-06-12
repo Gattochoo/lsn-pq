@@ -135,6 +135,14 @@ fn toy_public_sample_source_takes_fixed_lagrangian_boundary() {
 }
 
 #[test]
+fn toy_public_sample_source_uses_membership_labels_into() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(source.contains("fixed_secret.membership_labels_into(&points, &mut labels);"));
+    assert!(!source.contains("let membership_labels = fixed_secret.membership_labels(&points);"));
+}
+
+#[test]
 fn toy_kat_parts_source_takes_fixed_lagrangian_boundary() {
     let source = include_str!("../src/lib.rs");
 

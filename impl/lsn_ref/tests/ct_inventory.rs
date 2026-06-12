@@ -37,6 +37,7 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     ));
     assert!(json.contains("centralizes toy label generation through membership_labels"));
     assert!(json.contains("caller-owned label buffers via membership_labels_into"));
+    assert!(json.contains("fills public-sample membership labels in-place before noise xor"));
     assert!(
         json.contains("derives toy membership labels through a single contains_mask lookup path")
     );
