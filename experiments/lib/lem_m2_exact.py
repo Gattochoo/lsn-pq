@@ -237,15 +237,35 @@ def rank_conditioned_counts(m: int, rank: int, bases=None) -> tuple[list[int], i
     row_mask = (1 << 4) - 1
     matched = 0
 
+    # Precompute all (A, x, e) triples once, hoisting the loop outside B enumeration.
+    triples = []
+    for a0, a1 in bases:
+        for x in range(1 << 2):
+            a = 0
+            if x & 1:
+                a ^= a0
+            if x & 2:
+                a ^= a1
+            for e in range(1 << 4):
+                weight = 3 ** (4 - e.bit_count())
+                v = a ^ e
+                triples.append((a0, a1, v, weight))
+
+    mask = (1 << m) - 1
     for bits in range(num_B):
         rows = [((bits >> (j * 4)) & row_mask) for j in range(m)]
         if matrix_rank_f2(rows, 4) != rank:
             continue
         matched += 1
         B_cols = _rows_to_columns(rows, 4)
-        c = reduction_counts_for_B(B_cols, bases, m)
-        for i in range(size):
-            counts[i] += c[i]
+        # Precompute B*x for all 4-bit vectors x once per B.
+        Bx = [apply_matrix(B_cols, x) & mask for x in range(1 << 4)]
+        for a0, a1, v, weight in triples:
+            c0 = Bx[a0]
+            c1 = Bx[a1]
+            y = Bx[v]
+            key = ((c0 << m) | c1) << m | y
+            counts[key] += weight
 
     denom = matched * 15360
     return counts, denom

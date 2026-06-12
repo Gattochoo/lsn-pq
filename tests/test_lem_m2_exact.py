@@ -131,3 +131,33 @@ def test_rank_conditioned_counts_full_rank_m3():
     num_full_rank = (2 ** 4 - 1) * (2 ** 4 - 2) * (2 ** 4 - 4)
     assert denom == num_full_rank * 15360
     assert sum(counts) == denom
+
+
+def test_rank_conditioned_counts_matches_brute_force_m2():
+    """For m=2, rank=2, compare helper with brute-force rank-conditioned sum."""
+    from experiments.lib.lem_m2_exact import (
+        enumerate_lagrangian_bases,
+        matrix_rank_f2,
+        reduction_counts_for_B,
+        _rows_to_columns,
+    )
+
+    m = 2
+    rank = 2
+    bases = list(enumerate_lagrangian_bases())
+    red_counts, _ = rank_conditioned_counts(m, rank=rank, bases=bases)
+
+    num_B = 1 << (4 * m)
+    row_mask = (1 << 4) - 1
+    size = 1 << (3 * m)
+    brute = [0] * size
+    for bits in range(num_B):
+        rows = [((bits >> (j * 4)) & row_mask) for j in range(m)]
+        if matrix_rank_f2(rows, 4) != rank:
+            continue
+        B_cols = _rows_to_columns(rows, 4)
+        counts = reduction_counts_for_B(B_cols, bases, m)
+        for i in range(size):
+            brute[i] += counts[i]
+
+    assert red_counts == brute
