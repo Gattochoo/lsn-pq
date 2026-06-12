@@ -906,6 +906,24 @@ fn fixed_i64_magnitude_uses_saturating_abs_without_min_branch() {
 }
 
 #[test]
+fn fixed_i64_minsum_f_uses_sign_flag_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("fn f_llr_minsum_i64(")
+        .expect("f_llr_minsum_i64 source should be present");
+    let helper_end = source[helper_start..]
+        .find("fn g_llr(")
+        .map(|offset| helper_start + offset)
+        .expect("g_llr source should follow f_llr_minsum_i64");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if (a < 0) ^ (b < 0)"));
+    assert!(helper_source.contains("let sign = i64_negative_flag(a) ^ i64_negative_flag(b);"));
+    assert!(helper_source.contains("let sign_mask = 0i64.wrapping_sub(i64::from(sign));"));
+    assert!(helper_source.contains("select_i64(sign_mask, min_abs, min_abs.saturating_neg())"));
+}
+
+#[test]
 fn fixed_i64_integer_llr_recursion_uses_fixed_scratch_buffers() {
     let source = include_str!("../src/lib.rs");
 

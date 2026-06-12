@@ -3349,11 +3349,10 @@ fn f_llr_minsum(a: f64, b: f64) -> f64 {
 
 fn f_llr_minsum_i64(a: i64, b: i64) -> i64 {
     let min_abs = i64_abs_saturating(a).min(i64_abs_saturating(b));
-    if (a < 0) ^ (b < 0) {
-        min_abs.saturating_neg()
-    } else {
-        min_abs
-    }
+    let sign = i64_negative_flag(a) ^ i64_negative_flag(b);
+    let sign_mask = 0i64.wrapping_sub(i64::from(sign));
+
+    select_i64(sign_mask, min_abs, min_abs.saturating_neg())
 }
 
 fn g_llr(a: f64, b: f64, u: u8) -> f64 {
