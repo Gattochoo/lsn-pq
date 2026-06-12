@@ -38,6 +38,12 @@
     {"code": 4, "name": "top_l_width", "meaning": "list size must fit the parent and child selection widths"},
     {"code": 5, "name": "bit_index", "meaning": "every public bit index must be inside the path bit width"}
   ],
+  "public_child_write_failure_codes": [
+    {"code": 0, "name": "ok", "meaning": "valid public fixed child-write domain"},
+    {"code": 1, "name": "parent_slot", "meaning": "parent slot must be inside the fixed parent buffer"},
+    {"code": 2, "name": "dst_capacity", "meaning": "destination child buffer must have room for both children"},
+    {"code": 3, "name": "bit_index", "meaning": "public bit index must be inside the path bit width"}
+  ],
   "prototype_building_blocks": [
     "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending",
     "FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending",

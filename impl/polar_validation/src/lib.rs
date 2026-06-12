@@ -97,6 +97,45 @@ pub const FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY: u8 = 2;
 pub const FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX: u8 = 3;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclChildWriteDomainFailureLabel {
+    pub code: u8,
+    pub name: &'static str,
+    pub meaning: &'static str,
+}
+
+pub const FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS: [FixedSclChildWriteDomainFailureLabel; 4] = [
+    FixedSclChildWriteDomainFailureLabel {
+        code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+        name: "ok",
+        meaning: "valid public fixed child-write domain",
+    },
+    FixedSclChildWriteDomainFailureLabel {
+        code: FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+        name: "parent_slot",
+        meaning: "parent slot must be inside the fixed parent buffer",
+    },
+    FixedSclChildWriteDomainFailureLabel {
+        code: FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+        name: "dst_capacity",
+        meaning: "destination child buffer must have room for both children",
+    },
+    FixedSclChildWriteDomainFailureLabel {
+        code: FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
+        name: "bit_index",
+        meaning: "public bit index must be inside the path bit width",
+    },
+];
+
+pub fn fixed_scl_child_write_domain_failure_label(code: u8) -> &'static str {
+    for label in FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS {
+        if label.code == code {
+            return label.name;
+        }
+    }
+    "unknown"
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPathDomainFailureLabel {
     pub code: u8,
     pub name: &'static str,
@@ -1104,6 +1143,12 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"code\": 3, \"name\": \"repeated_child_capacity\", \"meaning\": \"repeated child buffer must hold two children per compacted path\"},\n",
         "    {\"code\": 4, \"name\": \"top_l_width\", \"meaning\": \"list size must fit the parent and child selection widths\"},\n",
         "    {\"code\": 5, \"name\": \"bit_index\", \"meaning\": \"every public bit index must be inside the path bit width\"}\n",
+        "  ],\n",
+        "  \"public_child_write_failure_codes\": [\n",
+        "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid public fixed child-write domain\"},\n",
+        "    {\"code\": 1, \"name\": \"parent_slot\", \"meaning\": \"parent slot must be inside the fixed parent buffer\"},\n",
+        "    {\"code\": 2, \"name\": \"dst_capacity\", \"meaning\": \"destination child buffer must have room for both children\"},\n",
+        "    {\"code\": 3, \"name\": \"bit_index\", \"meaning\": \"public bit index must be inside the path bit width\"}\n",
         "  ],\n",
         "  \"prototype_building_blocks\": [\n",
         "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",

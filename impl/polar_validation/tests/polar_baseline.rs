@@ -17,21 +17,23 @@ use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
     fixed_schedule_top_l_i64, fixed_scl_binary_child_write_domain_check,
-    fixed_scl_integer_metric_deltas, fixed_scl_integer_round_schedule,
-    fixed_scl_integer_schedule_domain_check, fixed_scl_path_buffer_schedule_domain_check,
-    fixed_scl_path_domain_failure_label, fixed_scl_public_round_work_counts,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    fixed_scl_child_write_domain_failure_label, fixed_scl_integer_metric_deltas,
+    fixed_scl_integer_round_schedule, fixed_scl_integer_schedule_domain_check,
+    fixed_scl_path_buffer_schedule_domain_check, fixed_scl_path_domain_failure_label,
+    fixed_scl_public_round_work_counts, high_noise_control_configs, importance_results_to_json,
+    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck, FixedSclIntegerRoundScheduleBuild,
+    zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck,
+    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
     FixedSclIntegerScheduleDomainCheck, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
     FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
     FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
     FixedSclPublicRoundScheduleRun, FixedSclRound, FixedTopLEntry, PolarCode,
     FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_OK, FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
-    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+    FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
     FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE, FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS,
     FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_OK,
     FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
@@ -214,6 +216,9 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("FixedSclPathBuffer"));
     assert!(json.contains("fixed_scl_binary_child_write_domain_check"));
     assert!(json.contains("public child-write domain validator"));
+    assert!(json.contains("\"public_child_write_failure_codes\""));
+    assert!(json.contains("\"dst_capacity\""));
+    assert!(json.contains("\"parent_slot\""));
     assert!(json.contains("try_write_binary_children_from"));
     assert!(json.contains("non-panicking child-write wrapper"));
     assert!(json.contains("write_binary_children_from"));
@@ -300,6 +305,40 @@ fn fixed_scl_path_domain_failure_labels_cover_public_codes() {
         "repeated_child_capacity"
     );
     assert_eq!(fixed_scl_path_domain_failure_label(255), "unknown");
+}
+
+#[test]
+fn fixed_scl_child_write_domain_failure_labels_cover_public_codes() {
+    assert_eq!(
+        FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS,
+        [
+            FixedSclChildWriteDomainFailureLabel {
+                code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+                name: "ok",
+                meaning: "valid public fixed child-write domain",
+            },
+            FixedSclChildWriteDomainFailureLabel {
+                code: FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+                name: "parent_slot",
+                meaning: "parent slot must be inside the fixed parent buffer",
+            },
+            FixedSclChildWriteDomainFailureLabel {
+                code: FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+                name: "dst_capacity",
+                meaning: "destination child buffer must have room for both children",
+            },
+            FixedSclChildWriteDomainFailureLabel {
+                code: FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
+                name: "bit_index",
+                meaning: "public bit index must be inside the path bit width",
+            },
+        ]
+    );
+    assert_eq!(
+        fixed_scl_child_write_domain_failure_label(FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY),
+        "dst_capacity"
+    );
+    assert_eq!(fixed_scl_child_write_domain_failure_label(255), "unknown");
 }
 
 #[test]
