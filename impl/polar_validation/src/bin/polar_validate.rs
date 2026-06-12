@@ -30,6 +30,7 @@ fn main() {
     let mut decoder = String::from("sc");
     let mut list_size = 8usize;
     let mut suite = String::from("baseline");
+    let mut check: Option<PathBuf> = None;
 
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
@@ -50,6 +51,9 @@ fn main() {
             }
             "--output" => {
                 output = PathBuf::from(args.next().expect("--output requires a path"));
+            }
+            "--check" => {
+                check = Some(PathBuf::from(args.next().expect("--check requires a path")));
             }
             "--decoder" => {
                 decoder = args.next().expect("--decoder requires sc or scl");
@@ -111,6 +115,19 @@ fn main() {
     };
 
     let json = results_to_json_with_decoder(&experiment, &decoder_label, &results);
+    if let Some(check_path) = check {
+        let expected = fs::read_to_string(&check_path).expect("failed to read polar fixture");
+        if expected != json {
+            eprintln!(
+                "polar validate check failed: generated JSON differs from {}",
+                check_path.display()
+            );
+            std::process::exit(1);
+        }
+        eprintln!("verified {}", check_path.display());
+        return;
+    }
+
     if let Some(parent) = output.parent() {
         fs::create_dir_all(parent).expect("failed to create output directory");
     }
@@ -186,6 +203,7 @@ fn print_help() {
         "polar-validate [--trials N] [--seed U64] [--output PATH]\n\
          [--suite baseline|n2048|high-noise]\n\
          [--decoder sc|scl|scl-fast|fixed-i64] [--list-size L]\n\
+         [--check PATH]\n\
          Runs a Codex P1 Rust polar validation suite."
     );
 }

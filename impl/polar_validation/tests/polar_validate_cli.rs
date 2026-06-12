@@ -25,22 +25,26 @@ fn temp_fixture_path(name: &str) -> PathBuf {
     path
 }
 
+fn fixed_i64_baseline_args() -> [&'static str; 8] {
+    [
+        "--decoder",
+        "fixed-i64",
+        "--suite",
+        "baseline",
+        "--trials",
+        "1",
+        "--seed",
+        "5397",
+    ]
+}
+
 #[test]
 fn cli_writes_fixed_i64_baseline_fixture() {
     let path = temp_fixture_path("fixed_i64");
 
     let output = Command::new(validate_bin())
-        .args([
-            "--decoder",
-            "fixed-i64",
-            "--suite",
-            "baseline",
-            "--trials",
-            "1",
-            "--seed",
-            "5397",
-            "--output",
-        ])
+        .args(fixed_i64_baseline_args())
+        .args(["--output"])
         .arg(&path)
         .output()
         .expect("failed to run polar-validate fixed-i64 generator");
@@ -57,6 +61,29 @@ fn cli_writes_fixed_i64_baseline_fixture() {
     assert!(json.contains("\"decoder\": \"scl_l8_fixed_i64_metric_scale_1024\""));
     assert!(json.contains("\"N\": 128"));
     assert!(json.contains("\"N\": 512"));
+
+    let _ = fs::remove_file(path);
+}
+
+#[test]
+fn cli_check_accepts_matching_fixed_i64_fixture() {
+    let path = temp_fixture_path("fixed_i64_check");
+
+    let generate_status = Command::new(validate_bin())
+        .args(fixed_i64_baseline_args())
+        .args(["--output"])
+        .arg(&path)
+        .status()
+        .expect("failed to run polar-validate fixed-i64 generator");
+    assert!(generate_status.success());
+
+    let check_status = Command::new(validate_bin())
+        .args(fixed_i64_baseline_args())
+        .args(["--check"])
+        .arg(&path)
+        .status()
+        .expect("failed to run polar-validate fixed-i64 checker");
+    assert!(check_status.success());
 
     let _ = fs::remove_file(path);
 }
