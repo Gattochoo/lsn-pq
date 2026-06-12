@@ -1,8 +1,11 @@
 from fractions import Fraction
-
 from experiments.lib.lem_m2_exact import (
+    apply_matrix,
     bernoulli_product,
     enumerate_lagrangian_bases,
+    exact_sd_counts,
+    lpn_target_counts,
+    reduction_counts_for_B,
     sd_to_product,
     symplectic_form,
 )
@@ -39,3 +42,24 @@ def test_bernoulli_product_normalized():
 def test_bernoulli_product_support():
     dist = bernoulli_product(Fraction(1, 4), 3)
     assert len(dist) == 2 ** 3
+
+
+def test_lpn_target_counts_normalized():
+    counts, denom = lpn_target_counts(m=3, p=Fraction(1, 4))
+    assert sum(counts) == denom
+
+
+def test_reduction_counts_zero_B():
+    m = 3
+    B_cols = [0, 0, 0, 0]
+    counts = reduction_counts_for_B(B_cols, enumerate_lagrangian_bases(), m)
+    assert sum(counts) == 15360
+    assert counts[0] == 15360
+    assert all(c == 0 for c in counts[1:])
+
+
+def test_exact_sd_identical():
+    counts = [0, 2, 1]
+    denom = 3
+    sd = exact_sd_counts(counts, denom, counts, denom)
+    assert sd == Fraction(0)
