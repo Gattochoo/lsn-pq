@@ -1563,15 +1563,24 @@ pub fn fixed_scl_public_round_schedule_plan<
         L,
         ROUNDS,
     >(bit_indices);
-    let rounds = if path_domain_check.valid { ROUNDS } else { 0 };
+    let invalid_usize = usize::from(path_domain_check.valid) ^ 1;
+    let invalid_mask_usize = 0usize.wrapping_sub(invalid_usize);
+    let full_work_counts = fixed_scl_public_round_work_counts_with_capacities(
+        CAP,
+        FIRST_CHILD_CAP,
+        CHILD_CAP,
+        L,
+        ROUNDS,
+    );
+    let zero_work_counts =
+        fixed_scl_public_round_work_counts_with_capacities(CAP, FIRST_CHILD_CAP, CHILD_CAP, L, 0);
+
     FixedSclPublicRoundSchedulePlan {
         path_domain_check,
-        work_counts: fixed_scl_public_round_work_counts_with_capacities(
-            CAP,
-            FIRST_CHILD_CAP,
-            CHILD_CAP,
-            L,
-            rounds,
+        work_counts: select_public_round_work_counts(
+            invalid_mask_usize,
+            full_work_counts,
+            zero_work_counts,
         ),
     }
 }

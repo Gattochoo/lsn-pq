@@ -2036,6 +2036,26 @@ fn fixed_scl_public_round_schedule_plan_reports_status_and_work_counts_without_r
 }
 
 #[test]
+fn fixed_scl_public_round_schedule_plan_uses_status_selected_work_counts() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn fixed_scl_public_round_schedule_plan")
+        .expect("fixed_scl_public_round_schedule_plan source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_integer_round_schedule_plan")
+        .map(|offset| helper_start + offset)
+        .expect("integer schedule plan should follow public schedule plan");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if path_domain_check.valid"));
+    assert!(helper_source.contains("let invalid_usize = usize::from(path_domain_check.valid) ^ 1;"));
+    assert!(helper_source.contains("let invalid_mask_usize = 0usize.wrapping_sub(invalid_usize);"));
+    assert!(helper_source.contains("let full_work_counts ="));
+    assert!(helper_source.contains("let zero_work_counts ="));
+    assert!(helper_source.contains("work_counts: select_public_round_work_counts("));
+}
+
+#[test]
 fn fixed_scl_public_round_schedule_shape_plan_pairs_path_domain_with_top_l_work_shape() {
     assert_eq!(
         fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5]),
