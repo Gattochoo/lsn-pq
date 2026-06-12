@@ -14,8 +14,9 @@
 // limitations under the License.
 
 use lsn_ref::{
-    FixedLagrangian, FixedLagrangianError, LSN_REF_FIXED_LAGRANGIAN_WORDS,
-    LSN_REF_MAX_FIXED_LAGRANGIAN_N, ToyKemParams, diagnostic_honest_only_points,
+    DiagnosticHonestOnlyMask, FixedLagrangian, FixedLagrangianError,
+    LSN_REF_FIXED_LAGRANGIAN_WORDS, LSN_REF_MAX_FIXED_LAGRANGIAN_N, ToyKemParams,
+    diagnostic_honest_only_point_masks, diagnostic_honest_only_points,
     toy_divergent_wrong_secret_control, toy_find_wrong_secret_control, toy_kat_vector,
     toy_wrong_secret_control, toy_wrong_secret_control_to_json,
     toy_wrong_secret_control_to_json_with_diagnostics,
@@ -134,6 +135,36 @@ fn diagnostic_honest_only_points_uses_fixed_wrong_secret_boundary() {
     let honest_only = diagnostic_honest_only_points(&honest_points, &wrong_secret);
 
     assert_eq!(honest_only, vec![6, 9, 15]);
+}
+
+#[test]
+fn diagnostic_honest_only_point_masks_keep_fixed_shape_boundary() {
+    let honest_points = [0, 6, 9, 15];
+    let wrong_secret = FixedLagrangian::from_points(2, &[0, 2, 12, 14]);
+
+    let masks = diagnostic_honest_only_point_masks(&honest_points, &wrong_secret);
+
+    assert_eq!(
+        masks,
+        vec![
+            DiagnosticHonestOnlyMask {
+                point: 0,
+                include_mask: 0
+            },
+            DiagnosticHonestOnlyMask {
+                point: 6,
+                include_mask: u64::MAX
+            },
+            DiagnosticHonestOnlyMask {
+                point: 9,
+                include_mask: u64::MAX
+            },
+            DiagnosticHonestOnlyMask {
+                point: 15,
+                include_mask: u64::MAX
+            },
+        ]
+    );
 }
 
 #[test]

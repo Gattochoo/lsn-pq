@@ -20,7 +20,7 @@
       "id": "ct-002",
       "surface": "public-sample selection and toy divergent diagnostic selector",
       "classification": "diagnostic_only_not_public_distribution",
-      "issue": "diagnostic selector depends on the wrong secret, is intentionally outside the public LSN distribution, and is isolated behind an explicit diagnostic_honest_only_points boundary",
+      "issue": "diagnostic selector depends on the wrong secret, is intentionally outside the public LSN distribution, and is isolated behind an explicit diagnostic_honest_only_point_masks fixed-shape mask boundary before deriving the legacy diagnostic_honest_only_points list",
       "required_action": "keep divergent diagnostics out of production APIs and use random-public-samples profiles for public-distribution KAT plumbing"
     },
     {

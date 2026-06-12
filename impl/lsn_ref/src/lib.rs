@@ -225,14 +225,39 @@ impl FixedLagrangian {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct DiagnosticHonestOnlyMask {
+    pub point: u32,
+    pub include_mask: u64,
+}
+
+pub fn diagnostic_honest_only_point_masks(
+    honest_points: &[u32],
+    wrong_secret: &FixedLagrangian,
+) -> Vec<DiagnosticHonestOnlyMask> {
+    honest_points
+        .iter()
+        .copied()
+        .map(|point| DiagnosticHonestOnlyMask {
+            point,
+            include_mask: !wrong_secret.contains_mask_scanned(point),
+        })
+        .collect()
+}
+
 pub fn diagnostic_honest_only_points(
     honest_points: &[u32],
     wrong_secret: &FixedLagrangian,
 ) -> Vec<u32> {
-    honest_points
-        .iter()
-        .copied()
-        .filter(|&point| wrong_secret.contains_u8_scanned(point) == 0)
+    diagnostic_honest_only_point_masks(honest_points, wrong_secret)
+        .into_iter()
+        .filter_map(|candidate| {
+            if candidate.include_mask == u64::MAX {
+                Some(candidate.point)
+            } else {
+                None
+            }
+        })
         .collect()
 }
 
@@ -727,7 +752,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-002\",\n",
         "      \"surface\": \"public-sample selection and toy divergent diagnostic selector\",\n",
         "      \"classification\": \"diagnostic_only_not_public_distribution\",\n",
-        "      \"issue\": \"diagnostic selector depends on the wrong secret, is intentionally outside the public LSN distribution, and is isolated behind an explicit diagnostic_honest_only_points boundary\",\n",
+        "      \"issue\": \"diagnostic selector depends on the wrong secret, is intentionally outside the public LSN distribution, and is isolated behind an explicit diagnostic_honest_only_point_masks fixed-shape mask boundary before deriving the legacy diagnostic_honest_only_points list\",\n",
         "      \"required_action\": \"keep divergent diagnostics out of production APIs and use random-public-samples profiles for public-distribution KAT plumbing\"\n",
         "    },\n",
         "    {\n",
