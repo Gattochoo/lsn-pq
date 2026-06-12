@@ -869,6 +869,32 @@ fn fixed_i64_integer_llr_recursion_uses_fixed_scratch_buffers() {
 }
 
 #[test]
+fn fixed_i64_decoder_reuses_scratch_buffers_across_public_rounds() {
+    let source = include_str!("../src/lib.rs");
+    let decode_start = source
+        .find("pub fn decode_scl_fixed_i64<")
+        .expect("decode_scl_fixed_i64 source should be present");
+    let decode_end = source[decode_start..]
+        .find("pub fn decode_scl_fixed_i64_l8_validation")
+        .map(|offset| decode_start + offset)
+        .expect("decode_scl_fixed_i64_l8_validation source should follow fixed decoder");
+    let fixed_decoder = &source[decode_start..decode_end];
+
+    let scratch_pos = fixed_decoder
+        .find("let mut llr_scratch = [0i64; N];")
+        .expect("fixed-i64 decoder should declare LLR scratch");
+    let partial_pos = fixed_decoder
+        .find("let mut partial_scratch = [0u8; N];")
+        .expect("fixed-i64 decoder should declare partial scratch");
+    let loop_pos = fixed_decoder
+        .find("for phi in 0..N {")
+        .expect("fixed-i64 decoder should iterate over public bit positions");
+
+    assert!(scratch_pos < loop_pos);
+    assert!(partial_pos < loop_pos);
+}
+
+#[test]
 fn fixed_scl_binary_child_write_domain_check_accepts_public_inputs() {
     assert_eq!(
         fixed_scl_binary_child_write_domain_check::<2, 4, 8>(0, 2, 3),

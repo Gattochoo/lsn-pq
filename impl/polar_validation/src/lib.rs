@@ -2672,11 +2672,11 @@ pub fn decode_scl_fixed_i64<const N: usize, const L: usize, const CHILD_CAP: usi
     let quantized_llr = quantize_llrs_i64::<N>(llr, metric_scale);
     let mut paths = FixedSclPathBuffer::<L, N>::new();
     paths.set_candidate(0, 0, [0; N]);
+    let mut llr_scratch = [0i64; N];
+    let mut partial_scratch = [0u8; N];
 
     for phi in 0..N {
         let mut children = FixedSclPathBuffer::<CHILD_CAP, N>::new();
-        let mut llr_scratch = [0i64; N];
-        let mut partial_scratch = [0u8; N];
         for parent_slot in 0..L {
             let bits = paths.bits(parent_slot);
             let bit_llr = sc_bit_llr_minsum_i64(
