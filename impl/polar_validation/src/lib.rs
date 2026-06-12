@@ -231,12 +231,12 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
 
         self.set_candidate(
             dst_start,
-            parent.metric.saturating_add(bit0_metric_delta),
+            fixed_scl_metric_add(parent.metric, bit0_metric_delta),
             bit0,
         );
         self.set_candidate(
             dst_start + 1,
-            parent.metric.saturating_add(bit1_metric_delta),
+            fixed_scl_metric_add(parent.metric, bit1_metric_delta),
             bit1,
         );
     }
@@ -595,6 +595,14 @@ fn select_i64(mask: i64, keep: i64, replace: i64) -> i64 {
 
 fn select_usize(mask: usize, keep: usize, replace: usize) -> usize {
     (keep & !mask) | (replace & mask)
+}
+
+fn fixed_scl_metric_add(parent_metric: i64, metric_delta: i64) -> i64 {
+    if parent_metric == i64::MAX || metric_delta == FIXED_SCL_FORBIDDEN_METRIC_DELTA {
+        FIXED_SCL_FORBIDDEN_METRIC_DELTA
+    } else {
+        parent_metric.saturating_add(metric_delta)
+    }
 }
 
 pub fn scl_work_shape_audit_json() -> &'static str {

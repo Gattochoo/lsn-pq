@@ -333,6 +333,19 @@ fn fixed_scl_path_buffer_writes_binary_children_into_fixed_slots() {
 }
 
 #[test]
+fn fixed_scl_forbidden_delta_survives_negative_parent_metric() {
+    let mut parents = FixedSclPathBuffer::<1, 4>::new();
+    parents.set_candidate(0, -100, [0; 4]);
+
+    let mut children = FixedSclPathBuffer::<2, 4>::new();
+    children.write_binary_children_from(&parents, 0, 0, 1, 0, FIXED_SCL_FORBIDDEN_METRIC_DELTA);
+
+    let entries = children.metric_entries();
+    assert_eq!(entries[0].metric, -100);
+    assert_eq!(entries[1].metric, FIXED_SCL_FORBIDDEN_METRIC_DELTA);
+}
+
+#[test]
 #[should_panic(expected = "binary child destination requires two slots")]
 fn fixed_scl_path_buffer_rejects_child_slot_overflow() {
     let parents = FixedSclPathBuffer::<1, 4>::new();
