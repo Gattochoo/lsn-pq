@@ -304,6 +304,13 @@ pub struct FixedSclPublicRoundSchedulePlan {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPublicRoundScheduleShapePlan {
+    pub valid: bool,
+    pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
+    pub work_shape_plan: FixedSclPublicRoundWorkShapePlan,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclIntegerRoundSchedulePlan {
     pub domain_check: FixedSclIntegerScheduleDomainCheck,
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
@@ -1056,6 +1063,35 @@ pub fn fixed_scl_public_round_work_shape_plan(
     }
 }
 
+pub fn fixed_scl_public_round_schedule_shape_plan<
+    const CAP: usize,
+    const N: usize,
+    const FIRST_CHILD_CAP: usize,
+    const CHILD_CAP: usize,
+    const L: usize,
+    const ROUNDS: usize,
+>(
+    bit_indices: [usize; ROUNDS],
+) -> FixedSclPublicRoundScheduleShapePlan {
+    let path_domain_check = fixed_scl_path_buffer_schedule_domain_check::<
+        CAP,
+        N,
+        FIRST_CHILD_CAP,
+        CHILD_CAP,
+        L,
+        ROUNDS,
+    >(bit_indices);
+    let active_rounds = if path_domain_check.valid { ROUNDS } else { 0 };
+    let work_shape_plan =
+        fixed_scl_public_round_work_shape_plan(CAP, FIRST_CHILD_CAP, CHILD_CAP, L, active_rounds);
+
+    FixedSclPublicRoundScheduleShapePlan {
+        valid: path_domain_check.valid && work_shape_plan.valid,
+        path_domain_check,
+        work_shape_plan,
+    }
+}
+
 pub fn fixed_scl_public_round_schedule_plan<
     const CAP: usize,
     const N: usize,
@@ -1465,6 +1501,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"try_expand_then_compact_public_rounds: non-panicking multi-round public schedule wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_round_schedule_plan: execution-free FixedSclRound schedule preflight that extracts public bit indices and pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_schedule_plan: execution-free public schedule preflight that pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_public_round_schedule_shape_plan: execution-free public schedule shape certificate that pairs path-domain status with first/repeated top-L preflights and public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_shape_plan: execution-free public round work-shape plan that pairs first/repeated top-L preflights with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",

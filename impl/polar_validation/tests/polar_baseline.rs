@@ -22,21 +22,22 @@ use polar_validation::{
     fixed_scl_integer_round_schedule_plan, fixed_scl_integer_schedule_domain_check,
     fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
     fixed_scl_path_domain_failure_label, fixed_scl_public_round_schedule_plan,
-    fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
-    fixed_scl_public_round_work_shape_plan, fixed_scl_round_schedule_plan,
-    fixed_top_l_selection_domain_failure_label, high_noise_control_configs,
-    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    try_fixed_scl_integer_round_schedule, zero_error_upper_bound,
-    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
-    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
-    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundSchedulePlan,
-    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
-    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
-    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
-    FixedSclPathDomainFailureLabel, FixedSclPublicRoundSchedulePlan,
-    FixedSclPublicRoundScheduleRun, FixedSclPublicRoundWorkCounts,
+    fixed_scl_public_round_schedule_shape_plan, fixed_scl_public_round_work_counts,
+    fixed_scl_public_round_work_counts_with_capacities, fixed_scl_public_round_work_shape_plan,
+    fixed_scl_round_schedule_plan, fixed_top_l_selection_domain_failure_label,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
+    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
+    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
+    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
+    FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
+    FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
+    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
+    FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun,
+    FixedSclPublicRoundScheduleShapePlan, FixedSclPublicRoundWorkCounts,
     FixedSclPublicRoundWorkShapePlan, FixedSclRound, FixedTopLEntry, PolarCode,
     FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
@@ -256,6 +257,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("execution-free FixedSclRound schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_schedule_plan"));
     assert!(json.contains("execution-free public schedule preflight"));
+    assert!(json.contains("fixed_scl_public_round_schedule_shape_plan"));
+    assert!(json.contains("execution-free public schedule shape certificate"));
     assert!(json.contains("fixed_scl_integer_round_schedule_plan"));
     assert!(json.contains("execution-free integer schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_work_counts"));
@@ -1321,6 +1324,73 @@ fn fixed_scl_public_round_schedule_plan_reports_status_and_work_counts_without_r
             child_slots_written: 0,
             compacted_slots_written: 0,
         }
+    );
+}
+
+#[test]
+fn fixed_scl_public_round_schedule_shape_plan_pairs_path_domain_with_top_l_work_shape() {
+    assert_eq!(
+        fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5]),
+        FixedSclPublicRoundScheduleShapePlan {
+            valid: true,
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                bit_width: 8,
+                valid: true,
+                failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            work_shape_plan: FixedSclPublicRoundWorkShapePlan {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                valid: true,
+                first_top_l_plan: FixedScheduleTopLSelectionPlan {
+                    width: 4,
+                    list_size: 2,
+                    valid: true,
+                    failure_code: FIXED_TOP_L_SELECTION_DOMAIN_OK,
+                    compare_exchanges: 6,
+                },
+                repeated_top_l_plan: FixedScheduleTopLSelectionPlan {
+                    width: 4,
+                    list_size: 2,
+                    valid: true,
+                    failure_code: FIXED_TOP_L_SELECTION_DOMAIN_OK,
+                    compare_exchanges: 6,
+                },
+                work_counts: FixedSclPublicRoundWorkCounts {
+                    parent_capacity: 2,
+                    first_child_capacity: 4,
+                    repeated_child_capacity: 4,
+                    list_size: 2,
+                    rounds: 3,
+                    top_l_compare_exchanges: 18,
+                    child_slots_written: 12,
+                    compacted_slots_written: 6,
+                },
+            },
+        }
+    );
+
+    let invalid = fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>([2, 8, 5]);
+
+    assert!(!invalid.valid);
+    assert_eq!(
+        invalid.path_domain_check.failure_code,
+        FIXED_SCL_PATH_DOMAIN_BIT_INDEX
+    );
+    assert!(invalid.work_shape_plan.valid);
+    assert_eq!(invalid.work_shape_plan.work_counts.rounds, 0);
+    assert_eq!(
+        invalid.work_shape_plan.work_counts.top_l_compare_exchanges,
+        0
     );
 }
 
