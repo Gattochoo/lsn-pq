@@ -14,10 +14,10 @@
 // limitations under the License.
 
 use lsn_ref::{
-    FixedLagrangian, ToyKemParams, diagnostic_honest_only_points,
-    toy_divergent_wrong_secret_control, toy_find_wrong_secret_control, toy_kat_vector,
-    toy_wrong_secret_control, toy_wrong_secret_control_to_json,
-    toy_wrong_secret_control_to_json_with_diagnostics,
+    FixedLagrangian, FixedLagrangianError, LSN_REF_MAX_FIXED_LAGRANGIAN_N, ToyKemParams,
+    diagnostic_honest_only_points, toy_divergent_wrong_secret_control,
+    toy_find_wrong_secret_control, toy_kat_vector, toy_wrong_secret_control,
+    toy_wrong_secret_control_to_json, toy_wrong_secret_control_to_json_with_diagnostics,
 };
 
 #[test]
@@ -60,6 +60,27 @@ fn fixed_lagrangian_scanned_membership_matches_direct_membership() {
 
     assert_eq!(fixed.contains_mask_scanned(256), 0);
     assert_eq!(fixed.contains_u8_scanned(256), 0);
+}
+
+#[test]
+fn fixed_lagrangian_try_from_points_rejects_out_of_layout_inputs() {
+    assert_eq!(LSN_REF_MAX_FIXED_LAGRANGIAN_N, 8);
+    assert_eq!(
+        FixedLagrangian::try_from_points(LSN_REF_MAX_FIXED_LAGRANGIAN_N + 1, &[]),
+        Err(FixedLagrangianError::NTooLarge {
+            n: LSN_REF_MAX_FIXED_LAGRANGIAN_N + 1,
+            max_n: LSN_REF_MAX_FIXED_LAGRANGIAN_N,
+        })
+    );
+    assert_eq!(
+        FixedLagrangian::try_from_points(2, &[16]),
+        Err(FixedLagrangianError::PointOutOfRange {
+            n: 2,
+            point: 16,
+            universe: 16,
+        })
+    );
+    assert!(FixedLagrangian::try_from_points(2, &[0, 6, 9, 15]).is_ok());
 }
 
 #[test]

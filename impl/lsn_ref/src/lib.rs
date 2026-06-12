@@ -83,6 +83,21 @@ pub struct ToyPublicPreflightScanReport {
     pub found_wrong_secret_seed: Option<u64>,
 }
 
+pub const LSN_REF_MAX_FIXED_LAGRANGIAN_N: usize = 8;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FixedLagrangianError {
+    NTooLarge {
+        n: usize,
+        max_n: usize,
+    },
+    PointOutOfRange {
+        n: usize,
+        point: u32,
+        universe: usize,
+    },
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FixedLagrangian {
     n: usize,
@@ -97,23 +112,29 @@ impl FixedLagrangian {
     }
 
     pub fn from_points(n: usize, points: &[u32]) -> Self {
+        Self::try_from_points(n, points).expect("invalid fixed Lagrangian layout")
+    }
+
+    pub fn try_from_points(n: usize, points: &[u32]) -> Result<Self, FixedLagrangianError> {
+        if n > LSN_REF_MAX_FIXED_LAGRANGIAN_N {
+            return Err(FixedLagrangianError::NTooLarge {
+                n,
+                max_n: LSN_REF_MAX_FIXED_LAGRANGIAN_N,
+            });
+        }
+
         let total_dim = 2 * n;
-        assert!(
-            total_dim < usize::BITS as usize,
-            "fixed Lagrangian universe is too large for this reference platform"
-        );
         let universe = 1usize << total_dim;
         let mut words = vec![0u64; universe.div_ceil(64)];
         for &point in points {
             let index = point as usize;
-            assert!(
-                index < universe,
-                "Lagrangian point {point} is outside the n={n} universe"
-            );
+            if index >= universe {
+                return Err(FixedLagrangianError::PointOutOfRange { n, point, universe });
+            }
             words[index >> 6] |= 1u64 << (index & 63);
         }
 
-        Self { n, universe, words }
+        Ok(Self { n, universe, words })
     }
 
     pub fn n(&self) -> usize {
@@ -658,8 +679,8 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now uses scanned mask lookup for toy membership label generation, but secret construction, diagnostic selectors, and leakage audit remain non-production\",\n",
-        "      \"required_action\": \"replace remaining set-style construction and diagnostic membership, freeze production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now uses scanned mask lookup for toy membership label generation and an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but secret construction, diagnostic selectors, and leakage audit remain non-production\",\n",
+        "      \"required_action\": \"replace remaining set-style construction and diagnostic membership, replace the bounded reference layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
         "      \"id\": \"ct-002\",\n",

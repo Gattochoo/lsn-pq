@@ -30,6 +30,8 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     );
     assert!(json.contains("FixedLagrangian bitset scaffold"));
     assert!(json.contains("scanned mask lookup"));
+    assert!(json.contains("bounded reference layout"));
+    assert!(json.contains("LSN_REF_MAX_FIXED_LAGRANGIAN_N"));
     assert!(json.contains("polar SCL path pruning"));
     assert!(json.contains("explicit diagnostic_honest_only_points boundary"));
     assert!(json.contains("diagnostic selector depends on the wrong secret"));
