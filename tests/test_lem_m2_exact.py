@@ -5,6 +5,7 @@ from experiments.lib.lem_m2_exact import (
     enumerate_lagrangian_bases,
     exact_sd_counts,
     lpn_target_counts,
+    num_lagrangian_subspaces,
     reduction_counts_for_B,
     sd_to_product,
     symplectic_form,
@@ -53,9 +54,19 @@ def test_reduction_counts_zero_B():
     m = 3
     B_cols = [0, 0, 0, 0]
     counts = reduction_counts_for_B(B_cols, enumerate_lagrangian_bases(), m)
+    # 15360 = 15 bases * 4 x-values * 256 total error weight
     assert sum(counts) == 15360
     assert counts[0] == 15360
     assert all(c == 0 for c in counts[1:])
+
+
+def test_full_joint_sd_zero_B():
+    m = 3
+    p = Fraction(1, 4)
+    lpn_counts, lpn_denom = lpn_target_counts(m, p)
+    red_counts = reduction_counts_for_B([0, 0, 0, 0], enumerate_lagrangian_bases(), m)
+    sd = exact_sd_counts(red_counts, 15360, lpn_counts, lpn_denom)
+    assert sd > Fraction(9, 10)
 
 
 def test_exact_sd_identical():
@@ -63,9 +74,6 @@ def test_exact_sd_identical():
     denom = 3
     sd = exact_sd_counts(counts, denom, counts, denom)
     assert sd == Fraction(0)
-
-
-from experiments.lib.lem_m2_exact import num_lagrangian_subspaces
 
 
 def test_num_lagrangian_subspaces():

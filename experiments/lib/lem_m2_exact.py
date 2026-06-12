@@ -95,11 +95,12 @@ def reduction_counts_for_B(B_cols: list[int], bases: list[tuple[int, int]], m: i
                 a ^= a0
             if x & 2:
                 a ^= a1
-            for e in range(1 << 4):
+            for e in range(1 << 4):  # ambient dimension 2n for n=2
                 w = e.bit_count()
                 v = a ^ e
                 y = apply_matrix(B_cols, v) & mask
                 key = (C_key << m) | y
+                # 3**(4-w) comes from Bernoulli(1/4) noise weights after clearing denominators.
                 counts[key] += 3 ** (4 - w)
     return counts
 
