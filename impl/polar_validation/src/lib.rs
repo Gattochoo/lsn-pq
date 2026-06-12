@@ -3364,11 +3364,12 @@ fn g_llr(a: f64, b: f64, u: u8) -> f64 {
 }
 
 fn g_llr_i64(a: i64, b: i64, u: u8) -> i64 {
-    if u == 0 {
-        b.saturating_add(a)
-    } else {
-        b.saturating_sub(a)
-    }
+    let add = b.saturating_add(a);
+    let sub = b.saturating_sub(a);
+    let bit = u & 1;
+    let bit_mask = 0i64.wrapping_sub(i64::from(bit));
+
+    select_i64(bit_mask, add, sub)
 }
 
 #[derive(Clone, Debug)]

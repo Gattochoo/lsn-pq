@@ -924,6 +924,24 @@ fn fixed_i64_minsum_f_uses_sign_flag_selection() {
 }
 
 #[test]
+fn fixed_i64_g_node_uses_bit_mask_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("fn g_llr_i64(")
+        .expect("g_llr_i64 source should be present");
+    let helper_end = source[helper_start..]
+        .find("#[derive(Clone, Debug)]")
+        .map(|offset| helper_start + offset)
+        .expect("Lcg64 source should follow g_llr_i64");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if u == 0"));
+    assert!(helper_source.contains("let bit = u & 1;"));
+    assert!(helper_source.contains("let bit_mask = 0i64.wrapping_sub(i64::from(bit));"));
+    assert!(helper_source.contains("select_i64(bit_mask, add, sub)"));
+}
+
+#[test]
 fn fixed_i64_integer_llr_recursion_uses_fixed_scratch_buffers() {
     let source = include_str!("../src/lib.rs");
 
