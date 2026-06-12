@@ -1,0 +1,163 @@
+{
+  "track": "C",
+  "experiment": 220,
+  "purpose": "exact distribution of quadrant count t and TV to Bin(2n,1/4)",
+  "claims": {
+    "distribution_formula": "THEOREM (derived from thm:mj-general via binomial transform)",
+    "enumeration_check": "EVIDENCE (exact enumeration, n=2,3,4)",
+    "tv_values": "EVIDENCE (exact rational computation, n=2..10)"
+  },
+  "interpretation_guard": {
+    "comparison_distribution": "Bin(2n,1/4): exact law of t under unconstrained i.i.d. uniform rows; natural matched benchmark for the same statistic",
+    "scaling": "single secret pair (pairwise-level); no m parameter; not a joint multi-pair analysis",
+    "hardness_implication": "structural distribution result only; does not by itself imply SQ hardness for full learning tasks"
+  },
+  "per_n": {
+    "2": {
+      "N": 4,
+      "P_isotropic_pairs": 90,
+      "binomial_moments_B_j": [
+        "1",
+        "16/15",
+        "14/45",
+        "0",
+        "0"
+      ],
+      "transform_distribution": [
+        "11/45",
+        "4/9",
+        "14/45",
+        "0",
+        "0"
+      ],
+      "enumeration_distribution": [
+        "11/45",
+        "4/9",
+        "14/45",
+        "0",
+        "0"
+      ],
+      "transform_equals_enumeration": true
+    },
+    "3": {
+      "N": 6,
+      "P_isotropic_pairs": 1890,
+      "binomial_moments_B_j": [
+        "1",
+        "32/21",
+        "284/315",
+        "16/63",
+        "11/315",
+        "0",
+        "0"
+      ],
+      "transform_distribution": [
+        "10/63",
+        "12/35",
+        "22/63",
+        "4/35",
+        "11/315",
+        "0",
+        "0"
+      ],
+      "enumeration_distribution": [
+        "10/63",
+        "12/35",
+        "22/63",
+        "4/35",
+        "11/315",
+        "0",
+        "0"
+      ],
+      "transform_equals_enumeration": true
+    },
+    "4": {
+      "N": 8,
+      "P_isotropic_pairs": 32130,
+      "binomial_moments_B_j": [
+        "1",
+        "512/255",
+        "1856/1071",
+        "128/153",
+        "232/945",
+        "32/765",
+        "4/1071",
+        "0",
+        "0"
+      ],
+      "transform_distribution": [
+        "1541/16065",
+        "824/3213",
+        "596/1785",
+        "3184/16065",
+        "212/2295",
+        "104/5355",
+        "4/1071",
+        "0",
+        "0"
+      ],
+      "enumeration_distribution": [
+        "1541/16065",
+        "824/3213",
+        "596/1785",
+        "3184/16065",
+        "212/2295",
+        "104/5355",
+        "4/1071",
+        "0",
+        "0"
+      ],
+      "transform_equals_enumeration": true
+    }
+  },
+  "verification": {
+    "transform_matches_enumeration": true
+  },
+  "tv_summary": {
+    "2": {
+      "N": 4,
+      "tv_exact": "707/5760",
+      "tv_float": 0.12274305555555555
+    },
+    "3": {
+      "N": 6,
+      "tv_exact": "35183/645120",
+      "tv_float": 0.05453714037698413
+    },
+    "4": {
+      "N": 8,
+      "tv_exact": "14891599/526417920",
+      "tv_float": 0.028288548763689504
+    },
+    "5": {
+      "N": 10,
+      "tv_exact": "788813171/54707355648",
+      "tv_float": 0.014418777176425956
+    },
+    "6": {
+      "N": 12,
+      "tv_exact": "129011724689/17570715402240",
+      "tv_float": 0.007342428679514834
+    },
+    "7": {
+      "N": 14,
+      "tv_exact": "90177646929/23821297909760",
+      "tv_float": 0.003785589150961109
+    },
+    "8": {
+      "N": 16,
+      "tv_exact": "8866562072659001/4611334179001466880",
+      "tv_float": 0.0019227758666969905
+    },
+    "9": {
+      "N": 18,
+      "tv_exact": "12710182327048981/13117434475422154752",
+      "tv_float": 0.0009689533689582187
+    },
+    "10": {
+      "N": 20,
+      "tv_exact": "29399506915728870947/60446002750575209349120",
+      "tv_float": 0.00048637636200764495
+    }
+  }
+}
