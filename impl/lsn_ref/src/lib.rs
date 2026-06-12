@@ -298,7 +298,8 @@ pub fn toy_kat_vector(
 
     let public_majority_bits =
         block_majorities(&selected_indices, &public_labels, params.repetition);
-    let clean_membership_labels = fixed_secret.membership_labels(&public_points);
+    let mut clean_membership_labels = vec![0u8; public_points.len()];
+    fixed_secret.membership_labels_into(&public_points, &mut clean_membership_labels);
     let clean_majority_bits = block_majorities(
         &selected_indices,
         &clean_membership_labels,
@@ -355,7 +356,8 @@ pub fn toy_wrong_secret_control(
     let wrong_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut wrong_secret_rng);
     let fixed_wrong_secret = FixedLagrangian::from_lagrangian(params.n, &wrong_secret);
     let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
-    let wrong_secret_labels = fixed_wrong_secret.membership_labels(&honest.public_points);
+    let mut wrong_secret_labels = vec![0u8; honest.public_points.len()];
+    fixed_wrong_secret.membership_labels_into(&honest.public_points, &mut wrong_secret_labels);
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
         &wrong_secret_labels,
@@ -435,7 +437,8 @@ pub fn toy_divergent_wrong_secret_control(
     );
 
     let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
-    let wrong_secret_labels = fixed_wrong_secret.membership_labels(&honest.public_points);
+    let mut wrong_secret_labels = vec![0u8; honest.public_points.len()];
+    fixed_wrong_secret.membership_labels_into(&honest.public_points, &mut wrong_secret_labels);
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
         &wrong_secret_labels,
@@ -568,7 +571,8 @@ fn toy_kat_from_parts(
     let codeword = encode(&code, &message_bits);
     let public_majority_bits =
         block_majorities(&selected_indices, &public_labels, params.repetition);
-    let clean_membership_labels = fixed_secret.membership_labels(&public_points);
+    let mut clean_membership_labels = vec![0u8; public_points.len()];
+    fixed_secret.membership_labels_into(&public_points, &mut clean_membership_labels);
     let clean_majority_bits = block_majorities(
         &selected_indices,
         &clean_membership_labels,
@@ -741,7 +745,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, centralizes toy label generation through membership_labels, supports caller-owned label buffers via membership_labels_into, fills public-sample membership labels in-place before noise xor, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, centralizes toy label generation through membership_labels, supports caller-owned label buffers via membership_labels_into, fills public-sample membership labels in-place before noise xor, routes toy clean and wrong-secret label generation through caller-owned buffers, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",

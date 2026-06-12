@@ -143,6 +143,21 @@ fn toy_public_sample_source_uses_membership_labels_into() {
 }
 
 #[test]
+fn toy_clean_and_wrong_label_sources_use_membership_labels_into() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(source.contains(
+        "fixed_secret.membership_labels_into(&public_points, &mut clean_membership_labels);"
+    ));
+    assert!(
+        source
+            .contains(".membership_labels_into(&honest.public_points, &mut wrong_secret_labels);")
+    );
+    assert!(!source.contains("fixed_secret.membership_labels(&public_points);"));
+    assert!(!source.contains("fixed_wrong_secret.membership_labels(&honest.public_points);"));
+}
+
+#[test]
 fn toy_kat_parts_source_takes_fixed_lagrangian_boundary() {
     let source = include_str!("../src/lib.rs");
 
