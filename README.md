@@ -27,19 +27,18 @@ supported by SQ lower bounds and a near-complete linear-reduction barrier landsc
 (three of four cells closed unconditionally; the fourth — marginal-adaptive — is a
 precisely-stated open problem). No production-security claim is made.
 
-## Paper
-
-- `paper/lsn-paper.tex` / `paper/lsn-paper.pdf` — **English, canonical**
-- `paper/lsn-paper-ko.tex` / `paper/lsn-paper-ko.pdf` — Korean reading edition
-  (저자 통독용 번역판; 불일치 시 영어판이 우선)
+## Building
 
 Build with [Tectonic](https://tectonic-typesetting.github.io/):
 
 ```bash
-cd paper && tectonic lsn-paper.tex
+cd paper
+tectonic lsn-core.tex      # core paper (submitted to IACR ePrint)
+tectonic lsn-paper.tex     # companion technical report (constructions)
+tectonic lsn-paper-ko.tex  # Korean reading edition of the companion
 ```
 
-(The Korean edition additionally requires the macOS system font "Apple SD Gothic Neo".)
+The companion has a Korean reading edition (`lsn-paper-ko.pdf`, 저자 통독용; 불일치 시 영어판이 우선), which additionally requires the macOS system font "Apple SD Gothic Neo".
 
 ## Repository structure
 
@@ -60,14 +59,16 @@ re-derivation before entering the paper (`meta/2026-06-10-CLAUDE-*` adjudication
 
 ## Status
 
-- Paper: **preprint-ready** (v2); IACR ePrint v2 updated. arXiv submission pending.
-- Open research: the marginal-adaptive corner of the linear-reduction landscape
-  (Open Problem 9). Open Problem 8 (membership↔stabilizer-decoding bridge) is now closed:
-  an independent-Clifford obstruction has been proven.
+- Paper: the core paper (`lsn-core.pdf`) has been submitted to the IACR Cryptology ePrint
+  Archive. arXiv submission pending.
+- Open research: the marginal-adaptive corner of the linear-reduction landscape, and the
+  membership↔stabilizer-decoding bridge. Both are stated as open problems in the paper,
+  with named obstructions that block the natural maps but do **not** constitute
+  impossibility results.
 - Implementation: Python prototypes validate parameters and algorithms; Rust reference
   implementations (`impl/lsn_ref/`, `impl/lsn_cryptanalysis/`, `impl/polar_validation/`)
   are active. A production constant-time Rust implementation with full N=2048 validation
-  and KAT generation is planned.
+  and KAT generation is in progress.
 
 ## License
 
