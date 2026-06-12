@@ -239,6 +239,7 @@ pub struct FixedSclIntegerScheduleDomainCheck {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclIntegerRoundScheduleBuild<const ROUNDS: usize> {
     pub domain_check: FixedSclIntegerScheduleDomainCheck,
+    pub round_slots_written: usize,
     pub rounds: [FixedSclRound; ROUNDS],
 }
 
@@ -1195,12 +1196,14 @@ pub fn try_fixed_scl_integer_round_schedule<const ROUNDS: usize>(
     if !domain_check.valid {
         return FixedSclIntegerRoundScheduleBuild {
             domain_check,
+            round_slots_written: 0,
             rounds: [FixedSclRound::new(0, 0, 0); ROUNDS],
         };
     }
 
     FixedSclIntegerRoundScheduleBuild {
         domain_check,
+        round_slots_written: ROUNDS,
         rounds: fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes),
     }
 }
@@ -1329,7 +1332,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"wrapper\": \"try_expand_then_compact_one_bit\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclOneBitExpansionRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclOneBitExpansionRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_two_public_bits\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_public_rounds\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
-        "    {\"wrapper\": \"try_fixed_scl_integer_round_schedule\", \"failure_family\": \"integer_schedule_domain_failure_codes\", \"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\"},\n",
+        "    {\"wrapper\": \"try_fixed_scl_integer_round_schedule\", \"failure_family\": \"integer_schedule_domain_failure_codes\", \"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\", \"work_count_field\": \"FixedSclIntegerRoundScheduleBuild.round_slots_written\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_integer_round_schedule\", \"failure_family\": \"public_path_domain_failure_codes\", \"path_status_field\": \"FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code\", \"integer_status_family\": \"integer_schedule_domain_failure_codes\", \"integer_status_field\": \"FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code\", \"work_count_field\": \"FixedSclPathBufferIntegerScheduleRun.work_counts\"}\n",
         "  ],\n",
         "  \"prototype_building_blocks\": [\n",

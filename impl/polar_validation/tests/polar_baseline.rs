@@ -262,6 +262,7 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("\"magnitude\""));
     assert!(json.contains("try_fixed_scl_integer_round_schedule"));
     assert!(json.contains("non-panicking integer schedule builder"));
+    assert!(json.contains("FixedSclIntegerRoundScheduleBuild.round_slots_written"));
     assert!(json.contains("fixed_scl_path_buffer_schedule_domain_check"));
     assert!(json.contains("public path-buffer shape validator"));
     assert!(json.contains("\"public_path_domain_failure_codes\""));
@@ -1696,6 +1697,7 @@ fn try_fixed_scl_integer_round_schedule_builds_valid_rounds() {
                 failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
+            round_slots_written: 2,
             rounds: [
                 FixedSclRound::new(0, 3, 0),
                 FixedSclRound::new(1, 5, FIXED_SCL_FORBIDDEN_METRIC_DELTA),
@@ -1715,6 +1717,7 @@ fn try_fixed_scl_integer_round_schedule_reports_invalid_without_panicking() {
                 failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
                 first_invalid_round: 1,
             },
+            round_slots_written: 0,
             rounds: [FixedSclRound::new(0, 0, 0), FixedSclRound::new(0, 0, 0)],
         }
     );
