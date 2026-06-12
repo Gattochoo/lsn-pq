@@ -7,9 +7,19 @@
   "production_constant_time_claim": false,
   "audited_functions": [
     "decode_scl",
+    "decode_scl_fixed_i64",
     "decode_scl_fast",
     "scl_decode_node",
     "prune_paths"
+  ],
+  "active_decoder_entrypoints": [
+    {
+      "name": "decode_scl_fixed_i64",
+      "cli_decoder": "fixed-i64",
+      "status": "active_fixed_i64_reference_entrypoint_not_production_ct",
+      "metric_domain": "i64 path metrics with public validation scale",
+      "claim": "KAT/BLER-tested validation rail only; generated-code and timing/leakage audit pending before any production constant-time claim"
+    }
   ],
   "variable_shape_surfaces": [
     "path metric sort in prune_paths",
@@ -79,6 +89,7 @@
     {"wrapper": "try_expand_then_compact_integer_round_schedule", "failure_family": "public_path_domain_failure_codes", "path_status_field": "FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code", "integer_status_family": "integer_schedule_domain_failure_codes", "integer_status_field": "FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code", "work_count_field": "FixedSclPathBufferIntegerScheduleRun.work_counts"}
   ],
   "prototype_building_blocks": [
+    "decode_scl_fixed_i64: active fixed-i64 validation entrypoint; not production constant-time; generated-code and timing audit pending",
     "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_schedule_top_l_selection_plan: execution-free top-L selection preflight for public width, list size, and compare-exchange count only; not wired into decode_scl; generated-code and timing audit pending",
     "FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending",

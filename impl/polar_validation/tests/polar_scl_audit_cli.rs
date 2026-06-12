@@ -30,6 +30,12 @@ fn polar_scl_audit_cli_writes_and_checks_exact_json() {
     let json = fs::read_to_string(&path).expect("failed to read generated SCL audit");
     assert!(json.contains("\"experiment\": \"codex-polar-scl-workshape-audit\""));
     assert!(json.contains("\"current_verdict\": \"not_constant_time\""));
+    assert!(json.contains("\"active_decoder_entrypoints\""));
+    assert!(json.contains("\"name\": \"decode_scl_fixed_i64\""));
+    assert!(
+        json.contains("\"status\": \"active_fixed_i64_reference_entrypoint_not_production_ct\"")
+    );
+    assert!(json.contains("\"production_constant_time_claim\": false"));
 
     let check = Command::new(&bin)
         .args(["--check", path.to_str().expect("temp path must be UTF-8")])
