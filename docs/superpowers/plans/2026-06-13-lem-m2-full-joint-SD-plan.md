@@ -29,7 +29,7 @@ Key sizes for $n=2$:
 - $(C,y)$ key space size: $2^{2m} \cdot 2^m = 2^{3m}$.
 
 Integer weights:
-- Reduction per-$B$ total weight: $15 \cdot 4 \cdot 256 = 3840$.
+- Reduction per-$B$ total weight: $15 \cdot 4 \cdot 256 = 15360$.
 - LPN target denominator: $4^m \cdot 4 \cdot 4^m = 4^{2m+1}$.
 
 ---
@@ -223,7 +223,7 @@ def main():
     for bits in range(num_B):
         B_cols = [((bits >> (j * m)) & mask) for j in range(4)]
         red_counts = reduction_counts_for_B(B_cols, bases, m)
-        sd = exact_sd_counts(red_counts, 3840, lpn_counts, lpn_denom)
+        sd = exact_sd_counts(red_counts, 15360, lpn_counts, lpn_denom)
         sd_sum += sd
         if sd < best_sd:
             best_sd = sd
