@@ -2760,11 +2760,7 @@ fn llr_i64_metric_magnitude(llr: i64) -> i64 {
 }
 
 fn i64_abs_saturating(value: i64) -> i64 {
-    if value == i64::MIN {
-        i64::MAX
-    } else {
-        value.abs()
-    }
+    value.saturating_abs()
 }
 
 pub fn simulate_bsc_sc(n: usize, k: usize, p: f64, trials: usize, seed: u64) -> SimulationResult {

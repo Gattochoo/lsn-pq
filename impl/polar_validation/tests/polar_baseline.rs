@@ -897,6 +897,15 @@ fn fixed_i64_decoder_uses_sign_bit_hard_decision() {
 }
 
 #[test]
+fn fixed_i64_magnitude_uses_saturating_abs_without_min_branch() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("if value == i64::MIN"));
+    assert!(source.contains("fn i64_abs_saturating(value: i64) -> i64"));
+    assert!(source.contains("value.saturating_abs()"));
+}
+
+#[test]
 fn fixed_i64_integer_llr_recursion_uses_fixed_scratch_buffers() {
     let source = include_str!("../src/lib.rs");
 
