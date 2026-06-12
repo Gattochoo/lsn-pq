@@ -388,6 +388,7 @@ pub fn toy_divergent_wrong_secret_control(
 
     let mut honest_secret_rng = XorShift64::new(honest_secret_seed);
     let honest_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut honest_secret_rng);
+    let fixed_honest_secret = FixedLagrangian::from_lagrangian(params.n, &honest_secret);
     let mut wrong_secret_rng = XorShift64::new(wrong_secret_seed);
     let wrong_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut wrong_secret_rng);
     let fixed_wrong_secret = FixedLagrangian::from_lagrangian(params.n, &wrong_secret);
@@ -420,7 +421,7 @@ pub fn toy_divergent_wrong_secret_control(
         public_points,
         public_labels,
         selected_indices,
-        &honest_secret,
+        &fixed_honest_secret,
     );
 
     let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
@@ -554,14 +555,13 @@ fn toy_kat_from_parts(
     public_points: Vec<u32>,
     public_labels: Vec<u8>,
     selected_indices: Vec<usize>,
-    secret: &Lagrangian,
+    fixed_secret: &FixedLagrangian,
 ) -> ToyKatVector {
     let message_bits = bits_from_seed(params.polar_k, encaps_seed ^ 0xA5A5_5A5A_D3C1_B2E0);
     let code = PolarCode::new(params.polar_n, params.polar_k, params.decoder_design_p);
     let codeword = encode(&code, &message_bits);
     let public_majority_bits =
         block_majorities(&selected_indices, &public_labels, params.repetition);
-    let fixed_secret = FixedLagrangian::from_lagrangian(params.n, secret);
     let clean_membership_labels = public_points
         .iter()
         .map(|&point| fixed_secret.contains_u8(point))
@@ -738,7 +738,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation through a FixedLagrangian boundary, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",

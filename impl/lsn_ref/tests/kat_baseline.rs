@@ -113,6 +113,14 @@ fn toy_public_sample_source_takes_fixed_lagrangian_boundary() {
 }
 
 #[test]
+fn toy_kat_parts_source_takes_fixed_lagrangian_boundary() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(source.contains("    fixed_secret: &FixedLagrangian,\n) -> ToyKatVector {"));
+    assert!(!source.contains("    secret: &Lagrangian,\n) -> ToyKatVector {"));
+}
+
+#[test]
 fn fixed_lagrangian_try_from_points_rejects_out_of_layout_inputs() {
     assert_eq!(LSN_REF_MAX_FIXED_LAGRANGIAN_N, 8);
     assert_eq!(

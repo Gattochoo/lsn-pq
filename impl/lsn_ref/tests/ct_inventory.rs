@@ -32,9 +32,9 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     assert!(json.contains("exact public Lagrangian point count"));
     assert!(json.contains("full-slice masked range validation"));
     assert!(json.contains("fixed max-word backing storage"));
-    assert!(
-        json.contains("routes public-sample label generation through a FixedLagrangian boundary")
-    );
+    assert!(json.contains(
+        "routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary"
+    ));
     assert!(
         json.contains("derives toy membership labels through a single contains_mask lookup path")
     );
