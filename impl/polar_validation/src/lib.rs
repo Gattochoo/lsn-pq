@@ -2693,7 +2693,7 @@ pub fn decode_scl_fixed_i64<const N: usize, const L: usize, const CHILD_CAP: usi
                 &mut llr_scratch,
                 &mut partial_scratch,
             );
-            let hard_bit = u8::from(bit_llr < 0);
+            let hard_bit = i64_negative_flag(bit_llr);
             let magnitude = llr_i64_metric_magnitude(bit_llr);
             let deltas =
                 fixed_scl_integer_metric_deltas(code.frozen_mask[phi], hard_bit, magnitude);
@@ -2722,6 +2722,10 @@ pub fn decode_scl_fixed_i64_l8_validation(code: &PolarCode, llr: &[f64]) -> Vec<
         2048 => decode_scl_fixed_i64::<2048, 8, 16>(code, llr, FIXED_I64_VALIDATION_METRIC_SCALE),
         other => panic!("fixed-i64 L8 validation decode does not support N={other}"),
     }
+}
+
+fn i64_negative_flag(value: i64) -> u8 {
+    ((value as u64) >> 63) as u8
 }
 
 fn llr_metric_magnitude_i64(llr: f64, metric_scale: f64) -> i64 {

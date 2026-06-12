@@ -887,6 +887,16 @@ fn fixed_i64_decoder_source_uses_integer_llr_recursion() {
 }
 
 #[test]
+fn fixed_i64_decoder_uses_sign_bit_hard_decision() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("let hard_bit = u8::from(bit_llr < 0);"));
+    assert!(source.contains("let hard_bit = i64_negative_flag(bit_llr);"));
+    assert!(source.contains("fn i64_negative_flag(value: i64) -> u8"));
+    assert!(source.contains("((value as u64) >> 63) as u8"));
+}
+
+#[test]
 fn fixed_i64_integer_llr_recursion_uses_fixed_scratch_buffers() {
     let source = include_str!("../src/lib.rs");
 
