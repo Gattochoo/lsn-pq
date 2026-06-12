@@ -1837,21 +1837,26 @@ pub fn fixed_scl_integer_metric_domain_check(
     hard_bit: u8,
     magnitude: i64,
 ) -> FixedSclIntegerMetricDomainCheck {
-    if hard_bit > 1 {
-        return FixedSclIntegerMetricDomainCheck {
-            valid: false,
-            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
-        };
-    }
-    if magnitude < 0 {
-        return FixedSclIntegerMetricDomainCheck {
-            valid: false,
-            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
-        };
-    }
+    let hard_invalid = u8::from(hard_bit > 1);
+    let magnitude_invalid = u8::from(magnitude < 0);
+    let hard_mask = 0u8.wrapping_sub(hard_invalid);
+    let magnitude_selected = magnitude_invalid & (hard_invalid ^ 1);
+    let magnitude_mask = 0u8.wrapping_sub(magnitude_selected);
+    let failure_after_magnitude = select_u8(
+        magnitude_mask,
+        FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+        FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+    );
+    let failure_code = select_u8(
+        hard_mask,
+        failure_after_magnitude,
+        FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+    );
+    let invalid = hard_invalid | magnitude_invalid;
+
     FixedSclIntegerMetricDomainCheck {
-        valid: true,
-        failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+        valid: invalid == 0,
+        failure_code,
     }
 }
 

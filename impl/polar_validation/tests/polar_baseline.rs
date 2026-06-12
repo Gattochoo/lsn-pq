@@ -2794,6 +2794,28 @@ fn fixed_scl_integer_metric_domain_check_labels_single_round_inputs() {
 }
 
 #[test]
+fn fixed_scl_integer_metric_domain_check_uses_status_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn fixed_scl_integer_metric_domain_check(")
+        .expect("fixed_scl_integer_metric_domain_check source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_integer_metric_deltas(")
+        .map(|offset| helper_start + offset)
+        .expect("fixed_scl_integer_metric_deltas should follow domain check");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if hard_bit > 1"));
+    assert!(!helper_source.contains("if magnitude < 0"));
+    assert!(!helper_source.contains("return FixedSclIntegerMetricDomainCheck"));
+    assert!(helper_source.contains("let hard_invalid = u8::from(hard_bit > 1);"));
+    assert!(helper_source.contains("let magnitude_invalid = u8::from(magnitude < 0);"));
+    assert!(helper_source.contains("let hard_mask = 0u8.wrapping_sub(hard_invalid);"));
+    assert!(helper_source.contains("let magnitude_mask = 0u8.wrapping_sub(magnitude_selected);"));
+    assert!(helper_source.contains("select_u8("));
+}
+
+#[test]
 fn try_fixed_scl_integer_metric_deltas_reports_invalid_without_panicking() {
     assert_eq!(
         try_fixed_scl_integer_metric_deltas(false, 1, 7),
