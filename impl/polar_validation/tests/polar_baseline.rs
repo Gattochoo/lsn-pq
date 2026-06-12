@@ -20,17 +20,18 @@ use polar_validation::{
     fixed_scl_child_write_domain_failure_label, fixed_scl_integer_metric_deltas,
     fixed_scl_integer_round_schedule, fixed_scl_integer_schedule_domain_check,
     fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
-    fixed_scl_path_domain_failure_label, fixed_scl_public_round_work_counts,
-    fixed_scl_public_round_work_counts_with_capacities, high_noise_control_configs,
-    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    try_fixed_scl_integer_round_schedule, zero_error_upper_bound,
-    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
-    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerScheduleDomainCheck,
-    FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
-    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
-    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
+    fixed_scl_path_domain_failure_label, fixed_scl_public_round_schedule_plan,
+    fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
+    zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck,
+    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
+    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
+    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
+    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
+    FixedSclPathDomainFailureLabel, FixedSclPublicRoundSchedulePlan,
     FixedSclPublicRoundScheduleRun, FixedSclPublicRoundWorkCounts, FixedSclRound, FixedTopLEntry,
     PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
@@ -240,6 +241,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("non-panicking two-round public-bit helper"));
     assert!(json.contains("try_expand_then_compact_public_rounds"));
     assert!(json.contains("non-panicking multi-round public schedule wrapper"));
+    assert!(json.contains("fixed_scl_public_round_schedule_plan"));
+    assert!(json.contains("execution-free public schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_work_counts"));
     assert!(json.contains("public work-count audit"));
     assert!(json.contains("fixed_scl_integer_metric_deltas"));
@@ -1207,6 +1210,50 @@ fn fixed_scl_path_buffer_schedule_domain_check_rejects_bit_index_outside_width()
             valid: false,
             failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
             first_invalid_round: 1,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_public_round_schedule_plan_reports_status_and_work_counts_without_running() {
+    assert_eq!(
+        fixed_scl_public_round_schedule_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5]),
+        FixedSclPublicRoundSchedulePlan {
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                bit_width: 8,
+                valid: true,
+                failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                top_l_compare_exchanges: 18,
+                child_slots_written: 12,
+                compacted_slots_written: 6,
+            },
+        }
+    );
+
+    assert_eq!(
+        fixed_scl_public_round_schedule_plan::<2, 8, 4, 4, 2, 3>([2, 8, 5]).work_counts,
+        FixedSclPublicRoundWorkCounts {
+            parent_capacity: 2,
+            first_child_capacity: 4,
+            repeated_child_capacity: 4,
+            list_size: 2,
+            rounds: 0,
+            top_l_compare_exchanges: 0,
+            child_slots_written: 0,
+            compacted_slots_written: 0,
         }
     );
 }
