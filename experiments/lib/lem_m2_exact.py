@@ -95,11 +95,12 @@ def reduction_counts_for_B(B_cols: list[int], bases: list[tuple[int, int]], m: i
                 a ^= a0
             if x & 2:
                 a ^= a1
-            for e in range(1 << 4):
+            for e in range(1 << 4):  # ambient dimension 2n for n=2
                 w = e.bit_count()
                 v = a ^ e
                 y = apply_matrix(B_cols, v) & mask
                 key = (C_key << m) | y
+                # 3**(4-w) comes from Bernoulli(1/4) noise weights after clearing denominators.
                 counts[key] += 3 ** (4 - w)
     return counts
 
@@ -110,3 +111,13 @@ def exact_sd_counts(counts1: list[int], denom1: int, counts2: list[int], denom2:
     for c1, c2 in zip(counts1, counts2):
         num += abs(c1 * denom2 - c2 * denom1)
     return Fraction(num, 2 * denom1 * denom2)
+
+
+def num_lagrangian_subspaces(n: int) -> int:
+    """Number of Lagrangian subspaces of F_2^{2n}."""
+    if n < 1:
+        raise ValueError("n must be >= 1")
+    total = 1
+    for i in range(1, n + 1):
+        total *= (2 ** i + 1)
+    return total
