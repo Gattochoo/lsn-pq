@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""184: lem:m2 exact conditional noise SD for n=2.
+
+Enumerate all B in F_2^{m x 4}, all Lagrangian A, and all noise e,
+then compute exact SD(P(e' | C), Bernoulli(p')^m).
+"""
+import argparse
+import json
+from fractions import Fraction
+from pathlib import Path
+
+from experiments.lib.lem_m2_exact import (
+    apply_matrix,
+    bernoulli_product,
+    enumerate_lagrangian_bases,
+    sd_to_product,
+)
+
+
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument("--m", type=int, required=True, help="number of output rows")
+    p.add_argument("--pgrid", type=str, default="0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5")
+    p.add_argument("--output", type=str, default=None)
+    return p.parse_args()
+
+
+def main():
+    args = parse_args()
+    m = args.m
+    p_values = [Fraction(x) for x in args.pgrid.split(",")]
+    bases = list(enumerate_lagrangian_bases())
+    num_bases = len(bases)
+
+    # Precompute noise vectors and integer weights 3^{4-w}
+    noise_info = []
+    for e in range(1 << 4):
+        w = e.bit_count()
+        noise_info.append((e, 3 ** (4 - w)))
+
+    total_weight_per_B = sum(w for _, w in noise_info) * num_bases  # 3840
+
+    num_ep = 1 << m
+    num_C = 1 << (2 * m)
+    mask = num_ep - 1
+
+    # Precompute Bernoulli(p)^m as integer numerators q_int[p][ep] / D[p]
+    q_int = {}
+    D = {}
+    for p in p_values:
+        D[p] = p.denominator ** m
+        q_int[p] = [0] * num_ep
+        for ep in range(num_ep):
+            w = ep.bit_count()
+            q_int[p][ep] = (p.numerator ** w) * ((p.denominator - p.numerator) ** (m - w))
+
+    # Global joint/marginal over all B, accumulated via (A,e) counting.
+    # For fixed A and e, the linear constraints BA=C, Be=e' on B have a constant
+    # number of solutions for each feasible (C,e'), so we update in bulk.
+    global_joint = [0] * (num_C * num_ep)
+    global_marginal_C = [0] * num_C
+
+    for a0, a1 in bases:
+        span = {0: (0, 0), a0: (1, 0), a1: (0, 1), a0 ^ a1: (1, 1)}
+        for e, w_e in noise_info:
+            if e in span:
+                alpha, beta = span[e]
+                count_B = 1 << (2 * m)  # 4^m solutions per (C, e'(C))
+                add = count_B * w_e
+                for C_key in range(num_C):
+                    c0 = C_key >> m
+                    c1 = C_key & mask
+                    eprime = 0
+                    if alpha:
+                        eprime ^= c0
+                    if beta:
+                        eprime ^= c1
+                    idx = C_key * num_ep + eprime
+                    global_joint[idx] += add
+                    global_marginal_C[C_key] += add
+            else:
+                count_B = 1 << m  # 2^m solutions per (C, e')
+                add = count_B * w_e
+                for C_key in range(num_C):
+                    base = C_key * num_ep
+                    for ep in range(num_ep):
+                        global_joint[base + ep] += add
+                    global_marginal_C[C_key] += add * num_ep
+
+    # Per-B enumeration: P(e' | C) = P(e') because e and A are independent,
+    # so the per-B average SD reduces to SD(P(e'), Q).
+    num_B = 1 << (4 * m)
+    total_weight = num_B * total_weight_per_B
+
+    best_B = None
+    best_avg_sd = Fraction(2)
+    worst_avg_sd = Fraction(-1)
+
+    # Accumulate e' marginal for unconditional SD (without the uniform A factor,
+    # which is reintroduced when normalising).
+    global_uncond_weight = [0] * num_ep
+
+    p25 = Fraction(1, 4)
+    D25 = D[p25]
+    q25 = q_int[p25]
+    denom25 = 2 * 256 * D25
+
+    for bits in range(num_B):
+        b0 = bits & mask
+        b1 = (bits >> m) & mask
+        b2 = (bits >> (2 * m)) & mask
+        b3 = (bits >> (3 * m)) & mask
+        B_cols = [b0, b1, b2, b3]
+
+        eprime_weight = [0] * num_ep
+        for e, w_e in noise_info:
+            eprime = apply_matrix(B_cols, e)
+            eprime_weight[eprime] += w_e
+
+        for ep in range(num_ep):
+            global_uncond_weight[ep] += eprime_weight[ep]
+
+        sd_num = 0
+        for ep in range(num_ep):
+            sd_num += abs(eprime_weight[ep] * D25 - q25[ep] * 256)
+        avg_sd_p25 = Fraction(sd_num, denom25)
+
+        if avg_sd_p25 < best_avg_sd:
+            best_avg_sd = avg_sd_p25
+            best_B = B_cols[:]
+        if avg_sd_p25 > worst_avg_sd:
+            worst_avg_sd = avg_sd_p25
+
+    result = {
+        "n": 2,
+        "m": m,
+        "num_lagrangian": num_bases,
+        "num_B": num_B,
+        "p_grid": [str(p) for p in p_values],
+        "best_B_p25": best_B,
+        "best_avg_sd_p25": str(best_avg_sd),
+        "worst_avg_sd_p25": str(worst_avg_sd),
+    }
+
+    # Conditional SD averaged over C (computed from global aggregates).
+    for p in p_values:
+        Dp = D[p]
+        q = q_int[p]
+        sd_sum_num = 0
+        for C_key in range(num_C):
+            marg = global_marginal_C[C_key]
+            if marg == 0:
+                continue
+            base = C_key * num_ep
+            for ep in range(num_ep):
+                joint = global_joint[base + ep]
+                sd_sum_num += abs(joint * Dp - q[ep] * marg)
+        result[f"global_avg_conditional_sd_p{p}"] = str(Fraction(sd_sum_num, 2 * Dp * total_weight))
+
+    # Unconditional SD(P(e'), Q)
+    for p in p_values:
+        Dp = D[p]
+        q = q_int[p]
+        # eprime_marginal includes the factor num_bases from summing over A
+        eprime_marginal = [15 * w for w in global_uncond_weight]
+        sd_num = 0
+        for ep in range(num_ep):
+            sd_num += abs(eprime_marginal[ep] * Dp - q[ep] * total_weight)
+        result[f"global_unconditional_sd_p{p}"] = str(Fraction(sd_num, 2 * Dp * total_weight))
+
+    out_path = Path(args.output) if args.output else Path("experiments/output") / f"184-lem-m2-n2-exact-conditional-noise-SD-m{m}.json"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w") as f:
+        json.dump(result, f, indent=2)
+    print(f"Saved: {out_path}")
+
+
+if __name__ == "__main__":
+    main()
