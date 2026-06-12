@@ -1,0 +1,20 @@
+{
+  "n": 2,
+  "m": 5,
+  "restarts": 1,
+  "iters_per_restart": 300000,
+  "random_SD": 0.5363278580554967,
+  "results": [
+    {
+      "restart": 0,
+      "seed": 1000,
+      "best_SD": 0.45782735235572747,
+      "best_marg": 0.0
+    }
+  ],
+  "best_overall": {
+    "restart": 0,
+    "best_SD": 0.45782735235572747,
+    "best_marg": 0.0
+  }
+}

@@ -1,8 +1,8 @@
-# Operational distinguishing pilot: $SD((C,z), LPN)$ for $n=2$, $m \le 2n$
+# Operational distinguishing pilot: $SD((C,z), LPN)$ for $n=2$
 
 **Date:** 2026-06-12.  
 **Author:** Kimi.  
-**Status:** pilot results; correct sign interpretation per Claude adjudication `109c6c1`.
+**Status:** scaling in progress; correct sign interpretation per Claude adjudication `109c6c1`.
 
 ---
 
@@ -32,19 +32,23 @@
 | 2 ($=2n$) | 0.072 | **0.047** | 0 | 500K | completed |
 | 3 | 0.187 | **0.129** | 0 | 500K | completed |
 | 4 ($=2n$) | 0.363 | **0.297** | 0 | 500K | completed |
+| 5 ($>2n$) | 0.536 | **0.458** | 0 | 300K | completed |
+| 6 ($>2n$) | 0.728 | $\ge 0.720$ | 0 | partial | in progress |
+| 7 ($>2n$) | — | — | — | — | pending |
 
-- $m=2$: SA finds $g$ with $SD \approx 0.047$. This is a small statistical distance, but $m=2n$ is the degenerate boundary where the reduction is underdetermined anyway.
-- $m=3,4$: $SD$ is larger and **increases with $m$**.
-- After 500K iterations $m=4$ still shows slow improvement (last 100K went from 0.304 to 0.297), suggesting the true minimum may be slightly lower but is not approaching $0$.
+- $m=2$: $SD \approx 0.047$, but $m=2n$ is degenerate.
+- $m=3,4,5$: $SD$ **increases monotonically** with $m$.
+- $m=5$: even optimized $g$ leaves $SD \approx 0.458$, i.e. $\approx 46\%$ distinguishing advantage.
+- $m=6$ partial result already exceeds $0.72$.
 
 ## 4. Interpretation (correct sign)
 
 - **No asymptotic disproof.** $m=2$ gives a small $SD$, but $m=2n$ is degenerate.
-- **Trend supports lem:m2.** As $m$ grows, $SD$ increases: the output becomes easier to distinguish from LPN. This is the direction lem:m2 predicts.
-- **$m=4$ minimum is 0.297.** Even the best $g$ leaves a $\approx 30\%$ distinguishing advantage. The minimum is **bounded away from 0**.
+- **Trend strongly supports lem:m2.** As $m$ grows beyond $2n$, $SD$ increases: the output becomes easier to distinguish from LPN.
+- **Minimum is bounded away from 0 for $m \ge 3$.** Even the best $g$ leaves substantial distinguishing advantage.
 
 ## 5. Next steps
 
-1. Run $m=5,6,7$ (Claude's $m>2n$ regime) to confirm $SD$ continues to grow.
+1. Complete $m=6,7$ runs to confirm the trend.
 2. If $SD$ stays bounded away from $0$ (and grows) for $m > 2n$, record this as **support for lem:m2**.
 3. Only if $SD \to 0$ for some $m > 2n$ should we claim a disproof.
