@@ -16,8 +16,8 @@ all verification experiments, and the complete research/adjudication record.
 - `lsn-paper.pdf` — companion technical report including cryptographic constructions
   (KEM, succinct arguments); Korean reading edition: `lsn-paper-ko.pdf`.
 
-**Cite this archive** (all versions): DOI [10.5281/zenodo.20646796](https://doi.org/10.5281/zenodo.20646796).
-The v2.0 snapshot is DOI [10.5281/zenodo.20646797](https://doi.org/10.5281/zenodo.20646797).
+**Cite this archive** (all versions, always resolves to the latest): DOI [10.5281/zenodo.20646796](https://doi.org/10.5281/zenodo.20646796).
+The current snapshot (v2.1, the submitted bibliography-audited paper) is DOI [10.5281/zenodo.20665389](https://doi.org/10.5281/zenodo.20665389).
 
 ## Claims posture (read this first)
 
