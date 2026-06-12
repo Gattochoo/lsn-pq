@@ -141,6 +141,13 @@ pub struct FixedSclBinaryChildWriteDomainCheck {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclOneBitExpansionRun<const CHILD_CAP: usize, const L: usize, const N: usize> {
+    pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
+    pub children: FixedSclPathBuffer<CHILD_CAP, N>,
+    pub top: [FixedTopLEntry; L],
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPathBufferIntegerScheduleRun<const L: usize, const N: usize> {
     pub domain_check: FixedSclIntegerScheduleDomainCheck,
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
@@ -348,6 +355,46 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         }
         let top = children.top_l_entries::<L>();
         (children, top)
+    }
+
+    pub fn try_expand_then_compact_one_bit<const CHILD_CAP: usize, const L: usize>(
+        &self,
+        bit_index: usize,
+        bit0_metric_delta: i64,
+        bit1_metric_delta: i64,
+    ) -> FixedSclOneBitExpansionRun<CHILD_CAP, L, N> {
+        let path_domain_check =
+            fixed_scl_path_buffer_schedule_domain_check::<CAP, N, CHILD_CAP, CHILD_CAP, L, 1>([
+                bit_index,
+            ]);
+        if !path_domain_check.valid {
+            return FixedSclOneBitExpansionRun {
+                path_domain_check,
+                children: FixedSclPathBuffer::<CHILD_CAP, N>::new(),
+                top: [FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                }; L],
+            };
+        }
+
+        let mut children = FixedSclPathBuffer::<CHILD_CAP, N>::new();
+        for parent_slot in 0..CAP {
+            let _ = children.try_write_binary_children_from(
+                self,
+                parent_slot,
+                parent_slot * 2,
+                bit_index,
+                bit0_metric_delta,
+                bit1_metric_delta,
+            );
+        }
+        let top = children.top_l_entries::<L>();
+        FixedSclOneBitExpansionRun {
+            path_domain_check,
+            children,
+            top,
+        }
     }
 
     fn from_top_entries<const SRC_CAP: usize>(
@@ -916,6 +963,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"try_write_binary_children_from: non-panicking child-write wrapper that skips fixed-slot writes on invalid public inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"try_expand_then_compact_one_bit: non-panicking one-bit expand then compact wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",

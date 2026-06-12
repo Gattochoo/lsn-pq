@@ -24,12 +24,12 @@ use polar_validation::{
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
     zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck, FixedSclIntegerRoundScheduleBuild,
-    FixedSclIntegerScheduleDomainCheck, FixedSclMetricDeltas, FixedSclPathBuffer,
-    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck, FixedSclRound,
-    FixedTopLEntry, PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
-    FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+    FixedSclIntegerScheduleDomainCheck, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
+    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclRound, FixedTopLEntry, PolarCode,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_OK, FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
     FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_OK,
 };
 
@@ -216,6 +216,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("integer child expansion"));
     assert!(json.contains("expand_then_compact_one_bit"));
     assert!(json.contains("one-bit expand then compact"));
+    assert!(json.contains("try_expand_then_compact_one_bit"));
+    assert!(json.contains("non-panicking one-bit expand then compact wrapper"));
     assert!(json.contains("expand_then_compact_two_public_bits"));
     assert!(json.contains("two-round public-bit loop"));
     assert!(json.contains("FixedSclRound"));
@@ -529,6 +531,109 @@ fn fixed_scl_path_buffer_expands_then_compacts_one_bit() {
                 index: 1,
             },
         ]
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_try_expand_then_compact_one_bit_matches_valid_expansion() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let run = parents.try_expand_then_compact_one_bit::<4, 3>(2, 5, -1);
+    let (children, top) = parents.expand_then_compact_one_bit::<4, 3>(2, 5, -1);
+
+    assert_eq!(
+        run,
+        FixedSclOneBitExpansionRun {
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 3,
+                rounds: 1,
+                bit_width: 8,
+                valid: true,
+                failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            children,
+            top,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_try_expand_then_compact_one_bit_rejects_small_child_buffer() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let run = parents.try_expand_then_compact_one_bit::<3, 2>(2, 5, -1);
+
+    assert_eq!(
+        run,
+        FixedSclOneBitExpansionRun {
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 3,
+                repeated_child_capacity: 3,
+                list_size: 2,
+                rounds: 1,
+                bit_width: 8,
+                valid: false,
+                failure_code: FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            children: FixedSclPathBuffer::<3, 8>::new(),
+            top: [
+                FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                },
+                FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                },
+            ],
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_try_expand_then_compact_one_bit_rejects_bit_index() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let run = parents.try_expand_then_compact_one_bit::<4, 2>(8, 5, -1);
+
+    assert_eq!(
+        run,
+        FixedSclOneBitExpansionRun {
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 1,
+                bit_width: 8,
+                valid: false,
+                failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+                first_invalid_round: 0,
+            },
+            children: FixedSclPathBuffer::<4, 8>::new(),
+            top: [
+                FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                },
+                FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                },
+            ],
+        }
     );
 }
 
