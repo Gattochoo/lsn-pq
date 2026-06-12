@@ -742,6 +742,14 @@ fn fixed_scl_compact_source_avoids_entry_index_branch_and_load() {
 }
 
 #[test]
+fn fixed_scl_effective_metric_source_avoids_active_branch() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("if self.active == 0"));
+    assert!(source.contains("effective_metric"));
+}
+
+#[test]
 fn fixed_scl_binary_child_write_domain_check_accepts_public_inputs() {
     assert_eq!(
         fixed_scl_binary_child_write_domain_check::<2, 4, 8>(0, 2, 3),

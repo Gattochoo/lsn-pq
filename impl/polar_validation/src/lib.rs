@@ -597,11 +597,9 @@ impl<const N: usize> FixedSclCandidate<N> {
     };
 
     pub fn effective_metric(self) -> i64 {
-        if self.active == 0 {
-            i64::MAX
-        } else {
-            self.metric
-        }
+        let active = self.active & 1;
+        let active_i64_mask = 0i64.wrapping_sub(i64::from(active));
+        select_i64(active_i64_mask, i64::MAX, self.metric)
     }
 }
 
