@@ -266,6 +266,7 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
         "\"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\""
     ));
     assert!(json.contains("\"wrapper\": \"try_expand_then_compact_integer_round_schedule\""));
+    assert!(json.contains("\"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\""));
     assert!(json.contains("\"integer_status_family\": \"integer_schedule_domain_failure_codes\""));
     assert!(json.contains(
         "\"path_status_field\": \"FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code\""
@@ -854,6 +855,16 @@ fn fixed_scl_path_buffer_try_two_public_bits_matches_valid_helper() {
                 failure_code: FIXED_SCL_PATH_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 2,
+                top_l_compare_exchanges: 12,
+                child_slots_written: 8,
+                compacted_slots_written: 4,
+            },
             paths,
             top,
         }
@@ -880,6 +891,16 @@ fn fixed_scl_path_buffer_try_two_public_bits_rejects_invalid_second_bit() {
                 valid: false,
                 failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
                 first_invalid_round: 1,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 0,
+                top_l_compare_exchanges: 0,
+                child_slots_written: 0,
+                compacted_slots_written: 0,
             },
             paths: FixedSclPathBuffer::<2, 8>::new(),
             top: [
@@ -955,6 +976,16 @@ fn fixed_scl_path_buffer_try_public_round_schedule_matches_valid_schedule() {
                 failure_code: FIXED_SCL_PATH_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                top_l_compare_exchanges: 18,
+                child_slots_written: 12,
+                compacted_slots_written: 6,
+            },
             paths,
             top,
         }
@@ -981,6 +1012,16 @@ fn fixed_scl_path_buffer_try_public_round_schedule_rejects_empty_schedule() {
                 valid: false,
                 failure_code: FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 0,
+                top_l_compare_exchanges: 0,
+                child_slots_written: 0,
+                compacted_slots_written: 0,
             },
             paths: FixedSclPathBuffer::<2, 8>::new(),
             top: [
@@ -1018,6 +1059,16 @@ fn fixed_scl_path_buffer_try_public_round_schedule_rejects_invalid_bit_index() {
                 valid: false,
                 failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
                 first_invalid_round: 1,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 0,
+                top_l_compare_exchanges: 0,
+                child_slots_written: 0,
+                compacted_slots_written: 0,
             },
             paths: FixedSclPathBuffer::<2, 8>::new(),
             top: [

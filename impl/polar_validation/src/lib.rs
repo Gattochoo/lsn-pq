@@ -277,6 +277,7 @@ pub struct FixedSclOneBitExpansionRun<const CHILD_CAP: usize, const L: usize, co
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPublicRoundScheduleRun<const L: usize, const N: usize> {
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
+    pub work_counts: FixedSclPublicRoundWorkCounts,
     pub paths: FixedSclPathBuffer<L, N>,
     pub top: [FixedTopLEntry; L],
 }
@@ -652,9 +653,17 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
             L,
             ROUNDS,
         >(bit_indices);
+        let zero_work_counts = fixed_scl_public_round_work_counts_with_capacities(
+            CAP,
+            FIRST_CHILD_CAP,
+            CHILD_CAP,
+            L,
+            0,
+        );
         if !path_domain_check.valid {
             return FixedSclPublicRoundScheduleRun {
                 path_domain_check,
+                work_counts: zero_work_counts,
                 paths: FixedSclPathBuffer::<L, N>::new(),
                 top: [FixedTopLEntry {
                     metric: i64::MAX,
@@ -666,6 +675,7 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         let Some(first_round) = rounds.first().copied() else {
             return FixedSclPublicRoundScheduleRun {
                 path_domain_check,
+                work_counts: zero_work_counts,
                 paths: FixedSclPathBuffer::<L, N>::new(),
                 top: [FixedTopLEntry {
                     metric: i64::MAX,
@@ -695,6 +705,13 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
 
         FixedSclPublicRoundScheduleRun {
             path_domain_check,
+            work_counts: fixed_scl_public_round_work_counts_with_capacities(
+                CAP,
+                FIRST_CHILD_CAP,
+                CHILD_CAP,
+                L,
+                ROUNDS,
+            ),
             paths: compacted,
             top: final_top,
         }
@@ -1248,8 +1265,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "  \"non_panicking_wrapper_failure_code_map\": [\n",
         "    {\"wrapper\": \"try_write_binary_children_from\", \"failure_family\": \"public_child_write_failure_codes\", \"status_field\": \"FixedSclBinaryChildWriteDomainCheck.failure_code\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_one_bit\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclOneBitExpansionRun.path_domain_check.failure_code\"},\n",
-        "    {\"wrapper\": \"try_expand_then_compact_two_public_bits\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\"},\n",
-        "    {\"wrapper\": \"try_expand_then_compact_public_rounds\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\"},\n",
+        "    {\"wrapper\": \"try_expand_then_compact_two_public_bits\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
+        "    {\"wrapper\": \"try_expand_then_compact_public_rounds\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_fixed_scl_integer_round_schedule\", \"failure_family\": \"integer_schedule_domain_failure_codes\", \"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_integer_round_schedule\", \"failure_family\": \"public_path_domain_failure_codes\", \"path_status_field\": \"FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code\", \"integer_status_family\": \"integer_schedule_domain_failure_codes\", \"integer_status_field\": \"FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code\", \"work_count_field\": \"FixedSclPathBufferIntegerScheduleRun.work_counts\"}\n",
         "  ],\n",
