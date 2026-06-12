@@ -95,6 +95,44 @@ pub const FIXED_SCL_CHILD_WRITE_DOMAIN_OK: u8 = 0;
 pub const FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT: u8 = 1;
 pub const FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY: u8 = 2;
 pub const FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX: u8 = 3;
+pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK: u8 = 0;
+pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT: u8 = 1;
+pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE: u8 = 2;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerScheduleDomainFailureLabel {
+    pub code: u8,
+    pub name: &'static str,
+    pub meaning: &'static str,
+}
+
+pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS:
+    [FixedSclIntegerScheduleDomainFailureLabel; 3] = [
+    FixedSclIntegerScheduleDomainFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+        name: "ok",
+        meaning: "valid public integer schedule inputs",
+    },
+    FixedSclIntegerScheduleDomainFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+        name: "hard_bit",
+        meaning: "hard decisions must be public bits",
+    },
+    FixedSclIntegerScheduleDomainFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+        name: "magnitude",
+        meaning: "integer metric magnitudes must be non-negative",
+    },
+];
+
+pub fn fixed_scl_integer_schedule_domain_failure_label(code: u8) -> &'static str {
+    for label in FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS {
+        if label.code == code {
+            return label.name;
+        }
+    }
+    "unknown"
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclChildWriteDomainFailureLabel {
@@ -194,6 +232,7 @@ pub struct FixedSclMetricDeltas {
 pub struct FixedSclIntegerScheduleDomainCheck {
     pub rounds: usize,
     pub valid: bool,
+    pub failure_code: u8,
     pub first_invalid_round: usize,
 }
 
@@ -952,10 +991,19 @@ pub fn fixed_scl_integer_schedule_domain_check<const ROUNDS: usize>(
     magnitudes: [i64; ROUNDS],
 ) -> FixedSclIntegerScheduleDomainCheck {
     for index in 0..ROUNDS {
-        if hard_bits[index] > 1 || magnitudes[index] < 0 {
+        if hard_bits[index] > 1 {
             return FixedSclIntegerScheduleDomainCheck {
                 rounds: ROUNDS,
                 valid: false,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+                first_invalid_round: index,
+            };
+        }
+        if magnitudes[index] < 0 {
+            return FixedSclIntegerScheduleDomainCheck {
+                rounds: ROUNDS,
+                valid: false,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
                 first_invalid_round: index,
             };
         }
@@ -964,6 +1012,7 @@ pub fn fixed_scl_integer_schedule_domain_check<const ROUNDS: usize>(
     FixedSclIntegerScheduleDomainCheck {
         rounds: ROUNDS,
         valid: true,
+        failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
         first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
     }
 }
@@ -1149,6 +1198,11 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"code\": 1, \"name\": \"parent_slot\", \"meaning\": \"parent slot must be inside the fixed parent buffer\"},\n",
         "    {\"code\": 2, \"name\": \"dst_capacity\", \"meaning\": \"destination child buffer must have room for both children\"},\n",
         "    {\"code\": 3, \"name\": \"bit_index\", \"meaning\": \"public bit index must be inside the path bit width\"}\n",
+        "  ],\n",
+        "  \"integer_schedule_domain_failure_codes\": [\n",
+        "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid public integer schedule inputs\"},\n",
+        "    {\"code\": 1, \"name\": \"hard_bit\", \"meaning\": \"hard decisions must be public bits\"},\n",
+        "    {\"code\": 2, \"name\": \"magnitude\", \"meaning\": \"integer metric magnitudes must be non-negative\"}\n",
         "  ],\n",
         "  \"non_panicking_wrapper_failure_code_map\": [\n",
         "    {\"wrapper\": \"try_write_binary_children_from\", \"failure_family\": \"public_child_write_failure_codes\", \"status_field\": \"FixedSclBinaryChildWriteDomainCheck.failure_code\"},\n",

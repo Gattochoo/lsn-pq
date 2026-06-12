@@ -19,20 +19,23 @@ use polar_validation::{
     fixed_schedule_top_l_i64, fixed_scl_binary_child_write_domain_check,
     fixed_scl_child_write_domain_failure_label, fixed_scl_integer_metric_deltas,
     fixed_scl_integer_round_schedule, fixed_scl_integer_schedule_domain_check,
-    fixed_scl_path_buffer_schedule_domain_check, fixed_scl_path_domain_failure_label,
-    fixed_scl_public_round_work_counts, high_noise_control_configs, importance_results_to_json,
-    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
+    fixed_scl_path_domain_failure_label, fixed_scl_public_round_work_counts,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
     zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck,
     FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
-    FixedSclIntegerScheduleDomainCheck, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
-    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
-    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
-    FixedSclPublicRoundScheduleRun, FixedSclRound, FixedTopLEntry, PolarCode,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
+    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
+    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
+    FixedSclPathDomainFailureLabel, FixedSclPublicRoundScheduleRun, FixedSclRound, FixedTopLEntry,
+    PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
     FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
     FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
     FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE, FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS,
     FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_OK,
@@ -244,6 +247,9 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("public integer round schedule audit"));
     assert!(json.contains("fixed_scl_integer_schedule_domain_check"));
     assert!(json.contains("active integer schedule domain validator"));
+    assert!(json.contains("\"integer_schedule_domain_failure_codes\""));
+    assert!(json.contains("\"hard_bit\""));
+    assert!(json.contains("\"magnitude\""));
     assert!(json.contains("try_fixed_scl_integer_round_schedule"));
     assert!(json.contains("non-panicking integer schedule builder"));
     assert!(json.contains("fixed_scl_path_buffer_schedule_domain_check"));
@@ -344,6 +350,38 @@ fn fixed_scl_child_write_domain_failure_labels_cover_public_codes() {
         "dst_capacity"
     );
     assert_eq!(fixed_scl_child_write_domain_failure_label(255), "unknown");
+}
+
+#[test]
+fn fixed_scl_integer_schedule_domain_failure_labels_cover_public_codes() {
+    assert_eq!(
+        FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS,
+        [
+            FixedSclIntegerScheduleDomainFailureLabel {
+                code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+                name: "ok",
+                meaning: "valid public integer schedule inputs",
+            },
+            FixedSclIntegerScheduleDomainFailureLabel {
+                code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+                name: "hard_bit",
+                meaning: "hard decisions must be public bits",
+            },
+            FixedSclIntegerScheduleDomainFailureLabel {
+                code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+                name: "magnitude",
+                meaning: "integer metric magnitudes must be non-negative",
+            },
+        ]
+    );
+    assert_eq!(
+        fixed_scl_integer_schedule_domain_failure_label(FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT),
+        "hard_bit"
+    );
+    assert_eq!(
+        fixed_scl_integer_schedule_domain_failure_label(255),
+        "unknown"
+    );
 }
 
 #[test]
@@ -1079,6 +1117,7 @@ fn fixed_scl_path_buffer_try_integer_round_schedule_matches_valid_schedule() {
             domain_check: FixedSclIntegerScheduleDomainCheck {
                 rounds: 3,
                 valid: true,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
             path_domain_check: FixedSclPathBufferScheduleDomainCheck {
@@ -1134,6 +1173,7 @@ fn fixed_scl_path_buffer_try_integer_round_schedule_reports_invalid_without_expa
             domain_check: FixedSclIntegerScheduleDomainCheck {
                 rounds: 3,
                 valid: false,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
                 first_invalid_round: 1,
             },
             path_domain_check: FixedSclPathBufferScheduleDomainCheck {
@@ -1181,6 +1221,7 @@ fn fixed_scl_path_buffer_try_integer_round_schedule_reports_invalid_bit_index_wi
             domain_check: FixedSclIntegerScheduleDomainCheck {
                 rounds: 3,
                 valid: true,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
             path_domain_check: FixedSclPathBufferScheduleDomainCheck {
@@ -1269,6 +1310,7 @@ fn fixed_scl_integer_schedule_domain_check_accepts_active_inputs() {
         FixedSclIntegerScheduleDomainCheck {
             rounds: 3,
             valid: true,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
             first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
         }
     );
@@ -1281,6 +1323,7 @@ fn fixed_scl_integer_schedule_domain_check_rejects_negative_magnitude() {
         FixedSclIntegerScheduleDomainCheck {
             rounds: 3,
             valid: false,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
             first_invalid_round: 1,
         }
     );
@@ -1293,6 +1336,7 @@ fn fixed_scl_integer_schedule_domain_check_rejects_non_bit_hard_decision() {
         FixedSclIntegerScheduleDomainCheck {
             rounds: 3,
             valid: false,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
             first_invalid_round: 1,
         }
     );
@@ -1306,6 +1350,7 @@ fn try_fixed_scl_integer_round_schedule_builds_valid_rounds() {
             domain_check: FixedSclIntegerScheduleDomainCheck {
                 rounds: 2,
                 valid: true,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
             rounds: [
@@ -1324,6 +1369,7 @@ fn try_fixed_scl_integer_round_schedule_reports_invalid_without_panicking() {
             domain_check: FixedSclIntegerScheduleDomainCheck {
                 rounds: 2,
                 valid: false,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
                 first_invalid_round: 1,
             },
             rounds: [FixedSclRound::new(0, 0, 0), FixedSclRound::new(0, 0, 0)],
