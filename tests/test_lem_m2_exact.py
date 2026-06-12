@@ -109,3 +109,25 @@ def test_randomized_uniform_B_counts_matches_brute_force():
             brute[i] += counts[i]
 
     assert red_counts == brute
+
+
+from experiments.lib.lem_m2_exact import matrix_rank_f2, rank_conditioned_counts
+
+
+def test_matrix_rank_f2():
+    # rows of identity-like matrix in F2^4
+    rows = [1, 2, 4, 8]
+    assert matrix_rank_f2(rows, 4) == 4
+    rows = [1, 2, 3, 0]
+    assert matrix_rank_f2(rows, 4) == 2
+    rows = [0, 0, 0]
+    assert matrix_rank_f2(rows, 4) == 0
+
+
+def test_rank_conditioned_counts_full_rank_m3():
+    m = 3
+    counts, denom = rank_conditioned_counts(m, rank=m)
+    # sum of counts must equal number of full-rank 3x4 matrices * 15360
+    num_full_rank = (2 ** 4 - 1) * (2 ** 4 - 2) * (2 ** 4 - 4)
+    assert denom == num_full_rank * 15360
+    assert sum(counts) == denom

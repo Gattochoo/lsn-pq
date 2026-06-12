@@ -194,3 +194,58 @@ def randomized_uniform_B_counts(m: int, bases=None) -> tuple[list[int], int]:
     # Denominator = sum over (A, x, e) of weight_e * 2^{4m}.
     red_denom = len(bases) * (1 << 2) * 256 * (1 << (4 * m))
     return counts, red_denom
+
+
+def matrix_rank_f2(rows: list[int], n_cols: int) -> int:
+    """Rank of a matrix over F_2 given as a list of row bitmasks."""
+    pivots = {}
+    for r in rows:
+        x = r & ((1 << n_cols) - 1)
+        if x == 0:
+            continue
+        for p in sorted(pivots.keys(), reverse=True):
+            if (x >> p) & 1:
+                x ^= pivots[p]
+        if x:
+            pivots[x.bit_length() - 1] = x
+    return len(pivots)
+
+
+def _rows_to_columns(rows: list[int], n_cols: int) -> list[int]:
+    """Convert row representation to column representation for apply_matrix."""
+    m = len(rows)
+    cols = [0] * n_cols
+    for j in range(n_cols):
+        col_val = 0
+        for i, r in enumerate(rows):
+            if (r >> j) & 1:
+                col_val |= 1 << i
+        cols[j] = col_val
+    return cols
+
+
+def rank_conditioned_counts(m: int, rank: int, bases=None) -> tuple[list[int], int]:
+    """Exact counts for (C, y) when B is uniform over m x 4 matrices of given rank."""
+    if bases is None:
+        bases = enumerate_lagrangian_bases()
+    if rank > min(m, 4):
+        raise ValueError("rank cannot exceed min(m, 4)")
+
+    size = 1 << (3 * m)
+    counts = [0] * size
+    num_B = 1 << (4 * m)
+    row_mask = (1 << 4) - 1
+    matched = 0
+
+    for bits in range(num_B):
+        rows = [((bits >> (j * 4)) & row_mask) for j in range(m)]
+        if matrix_rank_f2(rows, 4) != rank:
+            continue
+        matched += 1
+        B_cols = _rows_to_columns(rows, 4)
+        c = reduction_counts_for_B(B_cols, bases, m)
+        for i in range(size):
+            counts[i] += c[i]
+
+    denom = matched * 15360
+    return counts, denom
