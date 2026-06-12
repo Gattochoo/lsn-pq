@@ -102,6 +102,9 @@ pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_OK: u8 = 0;
 pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_INTEGER_DOMAIN: u8 = 1;
 pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN: u8 = 2;
 pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE: u8 = 3;
+pub const FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK: u8 = 0;
+pub const FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN: u8 = 1;
+pub const FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE: u8 = 2;
 pub const FIXED_TOP_L_SELECTION_DOMAIN_OK: u8 = 0;
 pub const FIXED_TOP_L_SELECTION_DOMAIN_WIDTH: u8 = 1;
 
@@ -203,6 +206,41 @@ pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_LABELS:
 
 pub fn fixed_scl_integer_schedule_shape_failure_label(code: u8) -> &'static str {
     for label in FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_LABELS {
+        if label.code == code {
+            return label.name;
+        }
+    }
+    "unknown"
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPublicRoundScheduleShapeFailureLabel {
+    pub code: u8,
+    pub name: &'static str,
+    pub meaning: &'static str,
+}
+
+pub const FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_LABELS:
+    [FixedSclPublicRoundScheduleShapeFailureLabel; 3] = [
+    FixedSclPublicRoundScheduleShapeFailureLabel {
+        code: FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK,
+        name: "ok",
+        meaning: "valid public schedule-shape preflight",
+    },
+    FixedSclPublicRoundScheduleShapeFailureLabel {
+        code: FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN,
+        name: "path_domain",
+        meaning: "public path-buffer schedule domain failed first",
+    },
+    FixedSclPublicRoundScheduleShapeFailureLabel {
+        code: FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE,
+        name: "work_shape",
+        meaning: "public top-L work-shape envelope failed after path-domain checks",
+    },
+];
+
+pub fn fixed_scl_public_round_schedule_shape_failure_label(code: u8) -> &'static str {
+    for label in FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_LABELS {
         if label.code == code {
             return label.name;
         }
@@ -1544,6 +1582,18 @@ pub fn fixed_scl_integer_schedule_shape_failure_family(
     }
 }
 
+pub fn fixed_scl_public_round_schedule_shape_failure_family(
+    plan: FixedSclPublicRoundScheduleShapePlan,
+) -> u8 {
+    if !plan.path_domain_check.valid {
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN
+    } else if !plan.work_shape_plan.valid {
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE
+    } else {
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK
+    }
+}
+
 pub fn fixed_scl_binary_child_write_domain_check<
     const SRC_CAP: usize,
     const CHILD_CAP: usize,
@@ -1919,6 +1969,11 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"code\": 2, \"name\": \"path_domain\", \"meaning\": \"public path-buffer schedule domain failed first\"},\n",
         "    {\"code\": 3, \"name\": \"work_shape\", \"meaning\": \"public top-L work-shape envelope failed after domain checks\"}\n",
         "  ],\n",
+        "  \"public_round_schedule_shape_failure_families\": [\n",
+        "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid public schedule-shape preflight\"},\n",
+        "    {\"code\": 1, \"name\": \"path_domain\", \"meaning\": \"public path-buffer schedule domain failed first\"},\n",
+        "    {\"code\": 2, \"name\": \"work_shape\", \"meaning\": \"public top-L work-shape envelope failed after path-domain checks\"}\n",
+        "  ],\n",
         "  \"non_panicking_wrapper_failure_code_map\": [\n",
         "    {\"wrapper\": \"try_write_binary_children_from\", \"failure_family\": \"public_child_write_failure_codes\", \"status_field\": \"FixedSclBinaryChildWriteDomainCheck.failure_code\", \"work_count_field\": \"FixedSclBinaryChildWriteDomainCheck.child_slots_written\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_one_bit\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclOneBitExpansionRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclOneBitExpansionRun.work_counts\"},\n",
@@ -1955,6 +2010,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_round_schedule_shape_parity_check: FixedSclRound schedule/public shape parity record that compares round-derived public top-L envelopes with explicit public bit-index shape preflight only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_schedule_plan: execution-free public schedule preflight that pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_schedule_shape_plan: execution-free public schedule shape certificate that pairs path-domain status with first/repeated top-L preflights and public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_public_round_schedule_shape_failure_family: public schedule-shape failure-family classifier over public path/top-L envelope statuses only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_shape_plan: execution-free public round work-shape plan that pairs first/repeated top-L preflights with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",

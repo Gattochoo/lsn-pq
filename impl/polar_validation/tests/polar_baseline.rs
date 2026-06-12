@@ -29,29 +29,31 @@ use polar_validation::{
     fixed_scl_integer_shape_parity_check, fixed_scl_one_bit_run_plan_certificate,
     fixed_scl_one_bit_shape_parity_check, fixed_scl_path_buffer_schedule_domain_check,
     fixed_scl_path_domain_failure_label, fixed_scl_public_round_run_shape_certificate,
-    fixed_scl_public_round_schedule_plan, fixed_scl_public_round_schedule_shape_plan,
-    fixed_scl_public_round_shape_parity_check, fixed_scl_public_round_work_counts,
-    fixed_scl_public_round_work_counts_with_capacities, fixed_scl_public_round_work_shape_plan,
-    fixed_scl_round_schedule_plan, fixed_scl_round_schedule_plan_certificate,
-    fixed_scl_round_schedule_plan_parity_check, fixed_scl_round_schedule_shape_parity_check,
-    fixed_scl_round_schedule_shape_plan, fixed_scl_round_schedule_shape_plan_certificate,
-    fixed_top_l_selection_domain_failure_label, high_noise_control_configs,
-    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    try_fixed_scl_integer_round_schedule, two_public_bits_run_shape_certificate,
-    two_public_bits_shape_parity_check, zero_error_upper_bound,
-    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
-    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
-    FixedSclChildWriteParityCheck, FixedSclIntegerRoundScheduleBuild,
-    FixedSclIntegerRoundScheduleBuildParityCheck, FixedSclIntegerRoundScheduleBuildPlan,
-    FixedSclIntegerRoundSchedulePlan, FixedSclIntegerRoundScheduleShapePlan,
-    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
-    FixedSclIntegerScheduleShapeFailureLabel, FixedSclIntegerScheduleShapeParityCheck,
-    FixedSclIntegerShapeParityCheck, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
-    FixedSclOneBitShapeParityCheck, FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
-    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
-    FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun,
+    fixed_scl_public_round_schedule_plan, fixed_scl_public_round_schedule_shape_failure_family,
+    fixed_scl_public_round_schedule_shape_failure_label,
+    fixed_scl_public_round_schedule_shape_plan, fixed_scl_public_round_shape_parity_check,
+    fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
+    fixed_scl_public_round_work_shape_plan, fixed_scl_round_schedule_plan,
+    fixed_scl_round_schedule_plan_certificate, fixed_scl_round_schedule_plan_parity_check,
+    fixed_scl_round_schedule_shape_parity_check, fixed_scl_round_schedule_shape_plan,
+    fixed_scl_round_schedule_shape_plan_certificate, fixed_top_l_selection_domain_failure_label,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
+    two_public_bits_run_shape_certificate, two_public_bits_shape_parity_check,
+    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
+    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
+    FixedSclChildWriteDomainFailureLabel, FixedSclChildWriteParityCheck,
+    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundScheduleBuildParityCheck,
+    FixedSclIntegerRoundScheduleBuildPlan, FixedSclIntegerRoundSchedulePlan,
+    FixedSclIntegerRoundScheduleShapePlan, FixedSclIntegerScheduleDomainCheck,
+    FixedSclIntegerScheduleDomainFailureLabel, FixedSclIntegerScheduleShapeFailureLabel,
+    FixedSclIntegerScheduleShapeParityCheck, FixedSclIntegerShapeParityCheck, FixedSclMetricDeltas,
+    FixedSclOneBitExpansionRun, FixedSclOneBitShapeParityCheck, FixedSclPathBuffer,
+    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
+    FixedSclPathDomainFailureLabel, FixedSclPublicRoundSchedulePlan,
+    FixedSclPublicRoundScheduleRun, FixedSclPublicRoundScheduleShapeFailureLabel,
     FixedSclPublicRoundScheduleShapePlan, FixedSclPublicRoundShapeParityCheck,
     FixedSclPublicRoundWorkCounts, FixedSclPublicRoundWorkShapePlan, FixedSclRound,
     FixedSclRoundSchedulePlanParityCheck, FixedSclRoundScheduleShapeParityCheck, FixedTopLEntry,
@@ -68,8 +70,12 @@ use polar_validation::{
     FIXED_SCL_PATH_DOMAIN_BIT_INDEX, FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
     FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS, FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
     FIXED_SCL_PATH_DOMAIN_OK, FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY,
-    FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH, FIXED_TOP_L_SELECTION_DOMAIN_FAILURE_LABELS,
-    FIXED_TOP_L_SELECTION_DOMAIN_OK, FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
+    FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH, FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK,
+    FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN,
+    FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE,
+    FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_LABELS,
+    FIXED_TOP_L_SELECTION_DOMAIN_FAILURE_LABELS, FIXED_TOP_L_SELECTION_DOMAIN_OK,
+    FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
 };
 
 #[test]
@@ -297,6 +303,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("execution-free public schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_schedule_shape_plan"));
     assert!(json.contains("execution-free public schedule shape certificate"));
+    assert!(json.contains("fixed_scl_public_round_schedule_shape_failure_family"));
+    assert!(json.contains("public schedule-shape failure-family classifier"));
     assert!(json.contains("fixed_scl_integer_round_schedule_plan"));
     assert!(json.contains("execution-free integer schedule preflight"));
     assert!(json.contains("fixed_scl_integer_round_schedule_build_plan"));
@@ -1583,6 +1591,73 @@ fn fixed_scl_public_round_schedule_shape_plan_pairs_path_domain_with_top_l_work_
     assert_eq!(
         invalid.work_shape_plan.work_counts.top_l_compare_exchanges,
         0
+    );
+}
+
+#[test]
+fn fixed_scl_public_round_schedule_shape_failure_family_labels_status_sources() {
+    assert_eq!(
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_LABELS,
+        [
+            FixedSclPublicRoundScheduleShapeFailureLabel {
+                code: FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK,
+                name: "ok",
+                meaning: "valid public schedule-shape preflight",
+            },
+            FixedSclPublicRoundScheduleShapeFailureLabel {
+                code: FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN,
+                name: "path_domain",
+                meaning: "public path-buffer schedule domain failed first",
+            },
+            FixedSclPublicRoundScheduleShapeFailureLabel {
+                code: FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE,
+                name: "work_shape",
+                meaning: "public top-L work-shape envelope failed after path-domain checks",
+            },
+        ]
+    );
+
+    let valid_plan = fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5]);
+    assert_eq!(
+        fixed_scl_public_round_schedule_shape_failure_family(valid_plan),
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK
+    );
+    assert_eq!(
+        fixed_scl_public_round_schedule_shape_failure_label(
+            FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK
+        ),
+        "ok"
+    );
+
+    let invalid_path_plan =
+        fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>([2, 8, 5]);
+    assert_eq!(
+        fixed_scl_public_round_schedule_shape_failure_family(invalid_path_plan),
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN
+    );
+    assert_eq!(
+        fixed_scl_public_round_schedule_shape_failure_label(
+            FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN
+        ),
+        "path_domain"
+    );
+
+    let mut invalid_work_shape_plan = valid_plan;
+    invalid_work_shape_plan.valid = false;
+    invalid_work_shape_plan.work_shape_plan = fixed_scl_public_round_work_shape_plan(2, 1, 1, 2, 1);
+    assert_eq!(
+        fixed_scl_public_round_schedule_shape_failure_family(invalid_work_shape_plan),
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE
+    );
+    assert_eq!(
+        fixed_scl_public_round_schedule_shape_failure_label(
+            FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE
+        ),
+        "work_shape"
+    );
+    assert_eq!(
+        fixed_scl_public_round_schedule_shape_failure_label(99),
+        "unknown"
     );
 }
 

@@ -59,6 +59,11 @@
     {"code": 2, "name": "path_domain", "meaning": "public path-buffer schedule domain failed first"},
     {"code": 3, "name": "work_shape", "meaning": "public top-L work-shape envelope failed after domain checks"}
   ],
+  "public_round_schedule_shape_failure_families": [
+    {"code": 0, "name": "ok", "meaning": "valid public schedule-shape preflight"},
+    {"code": 1, "name": "path_domain", "meaning": "public path-buffer schedule domain failed first"},
+    {"code": 2, "name": "work_shape", "meaning": "public top-L work-shape envelope failed after path-domain checks"}
+  ],
   "non_panicking_wrapper_failure_code_map": [
     {"wrapper": "try_write_binary_children_from", "failure_family": "public_child_write_failure_codes", "status_field": "FixedSclBinaryChildWriteDomainCheck.failure_code", "work_count_field": "FixedSclBinaryChildWriteDomainCheck.child_slots_written"},
     {"wrapper": "try_expand_then_compact_one_bit", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclOneBitExpansionRun.path_domain_check.failure_code", "work_count_field": "FixedSclOneBitExpansionRun.work_counts"},
@@ -95,6 +100,7 @@
     "fixed_scl_round_schedule_shape_parity_check: FixedSclRound schedule/public shape parity record that compares round-derived public top-L envelopes with explicit public bit-index shape preflight only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_public_round_schedule_plan: execution-free public schedule preflight that pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_public_round_schedule_shape_plan: execution-free public schedule shape certificate that pairs path-domain status with first/repeated top-L preflights and public work counts only; not wired into decode_scl; generated-code and timing audit pending",
+    "fixed_scl_public_round_schedule_shape_failure_family: public schedule-shape failure-family classifier over public path/top-L envelope statuses only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_public_round_work_shape_plan: execution-free public round work-shape plan that pairs first/repeated top-L preflights with public work counts only; not wired into decode_scl; generated-code and timing audit pending",
