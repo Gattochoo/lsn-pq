@@ -21,6 +21,7 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 | S4 | **최대블록 분산승수 폐형**(prop:vmax): $V_{2n}$ 일반-σ² 정확 폐형, p=1/4에서 상대편차 $-2(25/64)^n+O(4^{-n})$(음·지수소) | batch-variance commit | prop:vmax 신설(cor:bundle 직후); "suppression 폐형 없음" 문장 대체; Honest-Lim "fixed order+one growing-block functional"로 한정 강화(j=Θ(n) 분포 전체는 여전히 open) | exp/**196** 3중(정의-열거 n=2,3,4·독자유도 n=2..14·점근 7.422e-9) + 일반-p 4개 잡음률 정확 대조 |
 | S5 | **★OP7 궤도-family 정리**(Track B): 모든 $n$·모든 $S_1,S_2\in\mathrm{Sp}$에서 SD$=1-\tfrac{p^2+(1-p)^2}{4^n}=1-\tfrac{5}{8\cdot4^n}$ — freshness 음성 결판(T-독립성 전단사 + 대각질량) | ecacd48 + OP7-upgrade commit | Open Problems "Sample freshness" 격상: n=2 경험적→모든 n 정리; 열린 질문을 궤도-family 밖으로 정밀화 | exp/**251** 직접구성(전단사 우회): n=2 random T 10개·n=3 random T 3개·n=1 경계 전부 폐형 일치; Q 대각질량 5/128·5/512 확인 |
 | S6 | **★sympLPN 정확 상관 + SQ 하한**(Track E, 정정 통합): likelihood-ratio diag $(1+\tau)^{2n}{-}1$·off $-\,$diag$/(2^{2n}{-}1)$ (unconstrained=0과 대조, OP1 상관-수준 답) + $2^{c_pn}$-쿼리 SQ 하한($c_p{=}1{-}2\log_2(1{+}\tau)\approx0.356$@p=1/4) | aa02290 + sympLPN-integrate commit | §4 끝 subsec:symplpn-sq 신설(thm:symplpn-corr + cor:symplpn-sq, σ-twist 수정 증명); abstract·기여 bullet 갱신. **Kimi §6 SDA 적용은 3중 결함으로 기각·정정본만 수록**(인덱싱 스왑/singleton 대각/지수 대각 VSTAT 잠식) | exp/**253** 전 앙상블 전수(90·22680행렬): character 평균 전 S×w, n=2 (A,y) 완전직접+주변화 항등식, σ-twist 반례 자동발견 |
+| S7 | **conj:pencil 소규모 정확 검증**(Track D, evidence): n=2 전수(2^15, max ratio 5/2, singleton만; size-3 최대=k=1 pencils) + n=3 size-3/4 **전수 정확 최대** 3·81/32(k=2 pencil 달성) + 대형 크기 탐색 ratio>3 없음 | trackD commits + pencil-evidence commit | conj:pencil 동기 단락에 evidence 한 문장(명시적 "evidence, not proof") — conjecture 지위 불변 | exp/**254** from-scratch: 관행 검증(선형성·대각포함=thm:distance), n=2 전수 재현, n=3 size-3(398K)·size-4(13.2M) 전수 정확화 |
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
@@ -76,7 +77,10 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 > (the isotropic conditioning contributes exactly -((1+tau)^{2n}-1)/(2^{2n}-1) off-diagonal,
 > versus 0 for the unconstrained ensemble) and a 2^{c_p n}-query SQ lower bound at constant
 > VSTAT strength (c_p = 1 - 2 log2(1+tau), about 0.356 at p = 1/4), answering the
-> correlation-level form of Open Problem 1 for the sympLPN formulation. [+ 이후 항목 추가]
+> correlation-level form of Open Problem 1 for the sympLPN formulation. (7) Documented exact
+> small-case support for the pencil-extremality conjecture (explicitly labeled evidence):
+> exhaustive n=2 verification (max ratio 5/2 over all 2^15 subsets) and exact n=3 maxima at
+> sizes 3 and 4 (ratios 3 and 81/32, attained by pencils). [+ 이후 항목 추가]
 
 ## 6. 비고
 - lsn-core 소스 ≠ 제출 PDF는 **의도된 상태**(staging). 혼동 금지 — 제출본은 v2.1 PDF, 소스는 앞섬.
