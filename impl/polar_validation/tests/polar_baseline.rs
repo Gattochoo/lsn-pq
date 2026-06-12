@@ -18,16 +18,17 @@ use polar_validation::{
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
     fixed_schedule_top_l_i64, fixed_scl_binary_child_write_domain_check,
     fixed_scl_child_write_domain_failure_label, fixed_scl_integer_metric_deltas,
-    fixed_scl_integer_round_schedule, fixed_scl_integer_schedule_domain_check,
-    fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
-    fixed_scl_path_domain_failure_label, fixed_scl_public_round_schedule_plan,
-    fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
-    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck,
-    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
+    fixed_scl_integer_round_schedule, fixed_scl_integer_round_schedule_plan,
+    fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
+    fixed_scl_path_buffer_schedule_domain_check, fixed_scl_path_domain_failure_label,
+    fixed_scl_public_round_schedule_plan, fixed_scl_public_round_work_counts,
+    fixed_scl_public_round_work_counts_with_capacities, high_noise_control_configs,
+    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
+    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
+    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
+    try_fixed_scl_integer_round_schedule, zero_error_upper_bound,
+    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
+    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundSchedulePlan,
     FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
     FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
     FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
@@ -243,6 +244,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("non-panicking multi-round public schedule wrapper"));
     assert!(json.contains("fixed_scl_public_round_schedule_plan"));
     assert!(json.contains("execution-free public schedule preflight"));
+    assert!(json.contains("fixed_scl_integer_round_schedule_plan"));
+    assert!(json.contains("execution-free integer schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_work_counts"));
     assert!(json.contains("public work-count audit"));
     assert!(json.contains("fixed_scl_integer_metric_deltas"));
@@ -1256,6 +1259,84 @@ fn fixed_scl_public_round_schedule_plan_reports_status_and_work_counts_without_r
             compacted_slots_written: 0,
         }
     );
+}
+
+#[test]
+fn fixed_scl_integer_round_schedule_plan_reports_dual_status_and_work_counts_without_running() {
+    assert_eq!(
+        fixed_scl_integer_round_schedule_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5], [1, 1, 1], [5, 7, 4],),
+        FixedSclIntegerRoundSchedulePlan {
+            domain_check: FixedSclIntegerScheduleDomainCheck {
+                rounds: 3,
+                valid: true,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                bit_width: 8,
+                valid: true,
+                failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                top_l_compare_exchanges: 18,
+                child_slots_written: 12,
+                compacted_slots_written: 6,
+            },
+        }
+    );
+
+    let invalid_integer =
+        fixed_scl_integer_round_schedule_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5], [1, 1, 1], [5, -7, 4]);
+    assert_eq!(
+        invalid_integer.domain_check,
+        FixedSclIntegerScheduleDomainCheck {
+            rounds: 3,
+            valid: false,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+            first_invalid_round: 1,
+        }
+    );
+    assert_eq!(
+        invalid_integer.path_domain_check.failure_code,
+        FIXED_SCL_PATH_DOMAIN_OK
+    );
+    assert_eq!(
+        invalid_integer.work_counts,
+        FixedSclPublicRoundWorkCounts {
+            parent_capacity: 2,
+            first_child_capacity: 4,
+            repeated_child_capacity: 4,
+            list_size: 2,
+            rounds: 0,
+            top_l_compare_exchanges: 0,
+            child_slots_written: 0,
+            compacted_slots_written: 0,
+        }
+    );
+
+    let invalid_path =
+        fixed_scl_integer_round_schedule_plan::<2, 8, 4, 4, 2, 3>([2, 8, 5], [1, 1, 1], [5, 7, 4]);
+    assert_eq!(
+        invalid_path.domain_check.failure_code,
+        FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK
+    );
+    assert_eq!(
+        invalid_path.path_domain_check.failure_code,
+        FIXED_SCL_PATH_DOMAIN_BIT_INDEX
+    );
+    assert_eq!(invalid_path.path_domain_check.first_invalid_round, 1);
+    assert_eq!(invalid_path.work_counts.rounds, 0);
 }
 
 #[test]
