@@ -36,6 +36,18 @@ pub struct SimulationResult {
 }
 
 #[derive(Clone, Debug, PartialEq)]
+pub struct FixedI64DecoderAgreement {
+    pub n: usize,
+    pub k: usize,
+    pub p: f64,
+    pub trials: usize,
+    pub decoded_mismatches: usize,
+    pub fast_errors: usize,
+    pub fixed_errors: usize,
+    pub seed: u64,
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct ImportanceSamplingResult {
     pub n: usize,
     pub k: usize,
@@ -2860,6 +2872,67 @@ pub fn simulate_bsc_scl_fixed_i64<const N: usize, const L: usize, const CHILD_CA
         p,
         trials,
         errors,
+        seed,
+    }
+}
+
+pub fn compare_scl_fast_fixed_i64_decoded_bits<
+    const N: usize,
+    const L: usize,
+    const CHILD_CAP: usize,
+>(
+    k: usize,
+    p: f64,
+    trials: usize,
+    seed: u64,
+    metric_scale: f64,
+) -> FixedI64DecoderAgreement {
+    let code = PolarCode::new(N, k, p);
+    let mut rng = Lcg64::new(seed);
+    let llr0 = ((1.0 - p) / p).ln();
+    let llr1 = -llr0;
+    let mut decoded_mismatches = 0usize;
+    let mut fast_errors = 0usize;
+    let mut fixed_errors = 0usize;
+
+    for _ in 0..trials {
+        let message = (0..k)
+            .map(|_| if rng.next_bool() { 1 } else { 0 })
+            .collect::<Vec<_>>();
+        let x = encode(&code, &message);
+        let llr = x
+            .iter()
+            .map(|&bit| {
+                let flipped = rng.next_f64() < p;
+                let y = bit ^ u8::from(flipped);
+                if y == 0 {
+                    llr0
+                } else {
+                    llr1
+                }
+            })
+            .collect::<Vec<_>>();
+        let fast_decoded = decode_scl_fast(&code, &llr, L);
+        let fixed_decoded = decode_scl_fixed_i64::<N, L, CHILD_CAP>(&code, &llr, metric_scale);
+        if fast_decoded != fixed_decoded {
+            decoded_mismatches += 1;
+        }
+        if fast_decoded != message {
+            fast_errors += 1;
+        }
+        if fixed_decoded != message {
+            fixed_errors += 1;
+        }
+    }
+
+    FixedI64DecoderAgreement {
+        n: N,
+        k,
+        p,
+        trials,
+        decoded_mismatches,
+        fast_errors,
+        fixed_errors,
         seed,
     }
 }

@@ -14,18 +14,19 @@
 // limitations under the License.
 
 use polar_validation::{
-    baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
-    decode_scl_fast, decode_scl_fixed_i64, decode_successive_cancellation, encode,
-    fixed_i64_high_noise_control_configs, fixed_schedule_top_l_compare_count,
-    fixed_schedule_top_l_i64, fixed_schedule_top_l_selection_plan,
-    fixed_scl_binary_child_write_domain_check, fixed_scl_child_write_domain_failure_label,
-    fixed_scl_child_write_parity_check, fixed_scl_integer_metric_deltas,
-    fixed_scl_integer_metric_domain_check, fixed_scl_integer_metric_domain_failure_label,
-    fixed_scl_integer_round_build_certificate, fixed_scl_integer_round_build_parity_check,
-    fixed_scl_integer_round_run_plan_certificate, fixed_scl_integer_round_run_shape_certificate,
-    fixed_scl_integer_round_schedule, fixed_scl_integer_round_schedule_build_plan,
-    fixed_scl_integer_round_schedule_plan, fixed_scl_integer_round_schedule_shape_plan,
-    fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
+    baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural,
+    compare_scl_fast_fixed_i64_decoded_bits, decode_scl, decode_scl_fast, decode_scl_fixed_i64,
+    decode_successive_cancellation, encode, fixed_i64_high_noise_control_configs,
+    fixed_schedule_top_l_compare_count, fixed_schedule_top_l_i64,
+    fixed_schedule_top_l_selection_plan, fixed_scl_binary_child_write_domain_check,
+    fixed_scl_child_write_domain_failure_label, fixed_scl_child_write_parity_check,
+    fixed_scl_integer_metric_deltas, fixed_scl_integer_metric_domain_check,
+    fixed_scl_integer_metric_domain_failure_label, fixed_scl_integer_round_build_certificate,
+    fixed_scl_integer_round_build_parity_check, fixed_scl_integer_round_run_plan_certificate,
+    fixed_scl_integer_round_run_shape_certificate, fixed_scl_integer_round_schedule,
+    fixed_scl_integer_round_schedule_build_plan, fixed_scl_integer_round_schedule_plan,
+    fixed_scl_integer_round_schedule_shape_plan, fixed_scl_integer_schedule_domain_check,
+    fixed_scl_integer_schedule_domain_failure_label,
     fixed_scl_integer_schedule_shape_failure_family,
     fixed_scl_integer_schedule_shape_failure_label, fixed_scl_integer_schedule_shape_parity_check,
     fixed_scl_integer_shape_parity_check, fixed_scl_one_bit_run_plan_certificate,
@@ -208,6 +209,16 @@ fn short_bsc_fixed_i64_scl_smoke_matches_fast_scl() {
     assert_eq!(fixed.trials, fast.trials);
     assert_eq!(fixed.errors, fast.errors);
     assert_eq!(fixed.errors, 0);
+}
+
+#[test]
+fn fixed_i64_decoded_bits_match_fast_scl_on_noisy_samples() {
+    let agreement =
+        compare_scl_fast_fixed_i64_decoded_bits::<128, 8, 16>(16, 0.0706, 25, 0xF451C1, 1024.0);
+
+    assert_eq!(agreement.trials, 25);
+    assert_eq!(agreement.decoded_mismatches, 0);
+    assert_eq!(agreement.fast_errors, agreement.fixed_errors);
 }
 
 #[test]
