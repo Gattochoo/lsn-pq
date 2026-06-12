@@ -699,22 +699,28 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         bit0[bit_index] = 0;
         bit1[bit_index] = 1;
 
-        if parent.active == 0 {
-            self.clear_slot(dst_start);
-            self.clear_slot(dst_start + 1);
-            return;
-        }
+        let active = parent.active & 1;
+        let active_i64_mask = 0i64.wrapping_sub(i64::from(active));
+        let active_u8_mask = 0u8.wrapping_sub(active);
 
-        self.set_candidate(
-            dst_start,
-            fixed_scl_metric_add(parent.metric, bit0_metric_delta),
-            bit0,
-        );
-        self.set_candidate(
-            dst_start + 1,
-            fixed_scl_metric_add(parent.metric, bit1_metric_delta),
-            bit1,
-        );
+        self.slots[dst_start] = FixedSclCandidate {
+            metric: select_i64(
+                active_i64_mask,
+                i64::MAX,
+                fixed_scl_metric_add(parent.metric, bit0_metric_delta),
+            ),
+            bits: mask_bits(bit0, active_u8_mask),
+            active,
+        };
+        self.slots[dst_start + 1] = FixedSclCandidate {
+            metric: select_i64(
+                active_i64_mask,
+                i64::MAX,
+                fixed_scl_metric_add(parent.metric, bit1_metric_delta),
+            ),
+            bits: mask_bits(bit1, active_u8_mask),
+            active,
+        };
     }
 
     pub fn try_write_binary_children_from<const SRC_CAP: usize>(
@@ -1987,6 +1993,14 @@ fn select_i64(mask: i64, keep: i64, replace: i64) -> i64 {
 
 fn select_usize(mask: usize, keep: usize, replace: usize) -> usize {
     (keep & !mask) | (replace & mask)
+}
+
+fn mask_bits<const N: usize>(bits: [u8; N], mask: u8) -> [u8; N] {
+    let mut masked = [0u8; N];
+    for index in 0..N {
+        masked[index] = bits[index] & mask;
+    }
+    masked
 }
 
 fn fixed_scl_metric_add(parent_metric: i64, metric_delta: i64) -> i64 {

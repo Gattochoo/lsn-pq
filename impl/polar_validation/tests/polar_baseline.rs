@@ -725,6 +725,14 @@ fn fixed_scl_path_buffer_writes_binary_children_into_fixed_slots() {
 }
 
 #[test]
+fn fixed_scl_child_write_source_avoids_parent_active_branch() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("if parent.active == 0"));
+    assert!(source.contains("write_binary_children_from"));
+}
+
+#[test]
 fn fixed_scl_binary_child_write_domain_check_accepts_public_inputs() {
     assert_eq!(
         fixed_scl_binary_child_write_domain_check::<2, 4, 8>(0, 2, 3),
