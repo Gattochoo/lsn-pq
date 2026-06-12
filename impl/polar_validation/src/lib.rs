@@ -98,6 +98,10 @@ pub const FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX: u8 = 3;
 pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK: u8 = 0;
 pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT: u8 = 1;
 pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE: u8 = 2;
+pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_OK: u8 = 0;
+pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_INTEGER_DOMAIN: u8 = 1;
+pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN: u8 = 2;
+pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE: u8 = 3;
 pub const FIXED_TOP_L_SELECTION_DOMAIN_OK: u8 = 0;
 pub const FIXED_TOP_L_SELECTION_DOMAIN_WIDTH: u8 = 1;
 
@@ -159,6 +163,46 @@ pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS:
 
 pub fn fixed_scl_integer_schedule_domain_failure_label(code: u8) -> &'static str {
     for label in FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS {
+        if label.code == code {
+            return label.name;
+        }
+    }
+    "unknown"
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerScheduleShapeFailureLabel {
+    pub code: u8,
+    pub name: &'static str,
+    pub meaning: &'static str,
+}
+
+pub const FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_LABELS:
+    [FixedSclIntegerScheduleShapeFailureLabel; 4] = [
+    FixedSclIntegerScheduleShapeFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_OK,
+        name: "ok",
+        meaning: "valid integer schedule-shape preflight",
+    },
+    FixedSclIntegerScheduleShapeFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_INTEGER_DOMAIN,
+        name: "integer_domain",
+        meaning: "integer hard-bit or metric-magnitude domain failed first",
+    },
+    FixedSclIntegerScheduleShapeFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN,
+        name: "path_domain",
+        meaning: "public path-buffer schedule domain failed first",
+    },
+    FixedSclIntegerScheduleShapeFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE,
+        name: "work_shape",
+        meaning: "public top-L work-shape envelope failed after domain checks",
+    },
+];
+
+pub fn fixed_scl_integer_schedule_shape_failure_label(code: u8) -> &'static str {
+    for label in FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_LABELS {
         if label.code == code {
             return label.name;
         }
@@ -1486,6 +1530,20 @@ pub fn fixed_scl_integer_schedule_shape_parity_check<const L: usize, const N: us
     }
 }
 
+pub fn fixed_scl_integer_schedule_shape_failure_family(
+    plan: FixedSclIntegerRoundScheduleShapePlan,
+) -> u8 {
+    if !plan.domain_check.valid {
+        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_INTEGER_DOMAIN
+    } else if !plan.path_domain_check.valid {
+        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN
+    } else if !plan.work_shape_plan.valid {
+        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE
+    } else {
+        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_OK
+    }
+}
+
 pub fn fixed_scl_binary_child_write_domain_check<
     const SRC_CAP: usize,
     const CHILD_CAP: usize,
@@ -1855,6 +1913,12 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"code\": 1, \"name\": \"hard_bit\", \"meaning\": \"hard decisions must be public bits\"},\n",
         "    {\"code\": 2, \"name\": \"magnitude\", \"meaning\": \"integer metric magnitudes must be non-negative\"}\n",
         "  ],\n",
+        "  \"integer_schedule_shape_failure_families\": [\n",
+        "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid integer schedule-shape preflight\"},\n",
+        "    {\"code\": 1, \"name\": \"integer_domain\", \"meaning\": \"integer hard-bit or metric-magnitude domain failed first\"},\n",
+        "    {\"code\": 2, \"name\": \"path_domain\", \"meaning\": \"public path-buffer schedule domain failed first\"},\n",
+        "    {\"code\": 3, \"name\": \"work_shape\", \"meaning\": \"public top-L work-shape envelope failed after domain checks\"}\n",
+        "  ],\n",
         "  \"non_panicking_wrapper_failure_code_map\": [\n",
         "    {\"wrapper\": \"try_write_binary_children_from\", \"failure_family\": \"public_child_write_failure_codes\", \"status_field\": \"FixedSclBinaryChildWriteDomainCheck.failure_code\", \"work_count_field\": \"FixedSclBinaryChildWriteDomainCheck.child_slots_written\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_one_bit\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclOneBitExpansionRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclOneBitExpansionRun.work_counts\"},\n",
@@ -1906,6 +1970,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_integer_round_run_shape_certificate: integer run/preflight shape certificate adapter for comparing source-level run status and top-L envelopes with execution-free integer shape preflight; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_shape_parity_check: integer run/preflight shape parity record that compares run-derived and execution-free integer certificates only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_shape_parity_check: integer schedule/run shape parity record that compares run-derived and execution-free integer top-L envelope certificates only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_schedule_shape_failure_family: integer schedule-shape failure-family classifier over public integer/path/top-L envelope statuses only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_fixed_scl_integer_round_schedule: non-panicking integer schedule builder that returns domain-check status before FixedSclRound arrays; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_path_buffer_schedule_domain_check: public path-buffer shape validator for capacities and bit indices before expansion; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_integer_round_schedule: non-panicking path-buffer schedule wrapper that skips expansion on invalid integer inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
