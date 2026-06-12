@@ -325,6 +325,13 @@ pub struct FixedSclIntegerRoundSchedulePlan {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerShapeParityCheck {
+    pub matches: bool,
+    pub run_plan_certificate: FixedSclIntegerRoundSchedulePlan,
+    pub expected_plan: FixedSclIntegerRoundSchedulePlan,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclBinaryChildWriteDomainCheck {
     pub parent_capacity: usize,
     pub child_capacity: usize,
@@ -1192,6 +1199,29 @@ pub fn fixed_scl_integer_round_schedule_plan<
     }
 }
 
+pub fn fixed_scl_integer_round_run_plan_certificate<const L: usize, const N: usize>(
+    run: &FixedSclPathBufferIntegerScheduleRun<L, N>,
+) -> FixedSclIntegerRoundSchedulePlan {
+    FixedSclIntegerRoundSchedulePlan {
+        domain_check: run.domain_check,
+        path_domain_check: run.path_domain_check,
+        work_counts: run.work_counts,
+    }
+}
+
+pub fn fixed_scl_integer_shape_parity_check<const L: usize, const N: usize>(
+    run: &FixedSclPathBufferIntegerScheduleRun<L, N>,
+    expected_plan: FixedSclIntegerRoundSchedulePlan,
+) -> FixedSclIntegerShapeParityCheck {
+    let run_plan_certificate = fixed_scl_integer_round_run_plan_certificate(run);
+
+    FixedSclIntegerShapeParityCheck {
+        matches: run_plan_certificate == expected_plan,
+        run_plan_certificate,
+        expected_plan,
+    }
+}
+
 pub fn fixed_scl_binary_child_write_domain_check<
     const SRC_CAP: usize,
     const CHILD_CAP: usize,
@@ -1550,6 +1580,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule_plan: execution-free integer schedule preflight that pairs integer status, path-domain status, and public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_round_run_plan_certificate: integer run/preflight plan certificate adapter for comparing source-level run status and work counts with execution-free integer preflight; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_shape_parity_check: integer run/preflight shape parity record that compares run-derived and execution-free integer certificates only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_fixed_scl_integer_round_schedule: non-panicking integer schedule builder that returns domain-check status before FixedSclRound arrays; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_path_buffer_schedule_domain_check: public path-buffer shape validator for capacities and bit indices before expansion; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_integer_round_schedule: non-panicking path-buffer schedule wrapper that skips expansion on invalid integer inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
