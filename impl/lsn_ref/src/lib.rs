@@ -267,7 +267,8 @@ pub fn toy_kat_vector(
     let fixed_secret = FixedLagrangian::from_lagrangian(params.n, &secret);
     let secret_lagrangian_points = secret.iter().copied().collect::<Vec<_>>();
 
-    let (public_points, public_labels) = public_samples(params, &secret, sample_seed, noise_seed);
+    let (public_points, public_labels) =
+        public_samples(params, &fixed_secret, sample_seed, noise_seed);
     let selected_indices = selected_indices(
         params.sample_count,
         params.polar_n * params.repetition,
@@ -737,7 +738,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation through a FixedLagrangian boundary, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
@@ -1062,7 +1063,7 @@ fn validate_params(params: ToyKemParams) {
 
 fn public_samples(
     params: ToyKemParams,
-    secret: &Lagrangian,
+    fixed_secret: &FixedLagrangian,
     sample_seed: u64,
     noise_seed: u64,
 ) -> (Vec<u32>, Vec<u8>) {
@@ -1070,7 +1071,6 @@ fn public_samples(
     let universe = 1usize << total_dim;
     let mut sample_rng = XorShift64::new(sample_seed);
     let mut noise_rng = XorShift64::new(noise_seed);
-    let fixed_secret = FixedLagrangian::from_lagrangian(params.n, secret);
     let mut points = Vec::with_capacity(params.sample_count);
     let mut labels = Vec::with_capacity(params.sample_count);
 

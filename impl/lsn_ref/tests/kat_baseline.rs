@@ -101,6 +101,18 @@ fn fixed_lagrangian_source_avoids_secret_dependent_word_indexing() {
 }
 
 #[test]
+fn toy_public_sample_source_takes_fixed_lagrangian_boundary() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(source.contains(
+        "fn public_samples(\n    params: ToyKemParams,\n    fixed_secret: &FixedLagrangian,"
+    ));
+    assert!(
+        !source.contains("fn public_samples(\n    params: ToyKemParams,\n    secret: &Lagrangian,")
+    );
+}
+
+#[test]
 fn fixed_lagrangian_try_from_points_rejects_out_of_layout_inputs() {
     assert_eq!(LSN_REF_MAX_FIXED_LAGRANGIAN_N, 8);
     assert_eq!(
