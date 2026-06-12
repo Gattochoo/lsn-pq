@@ -15,6 +15,8 @@
 
 use std::collections::HashSet;
 
+pub const FIXED_I64_VALIDATION_METRIC_SCALE: f64 = 1024.0;
+
 #[derive(Clone, Debug)]
 pub struct PolarCode {
     pub n: usize,
@@ -1174,6 +1176,40 @@ pub fn fixed_i64_high_noise_control_configs(trials: usize, seed: u64) -> Vec<Sim
             seed: seed.wrapping_add((i as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15)),
         })
         .collect()
+}
+
+pub fn fixed_i64_l8_validation_dispatch(cfg: &SimulationConfig) -> SimulationResult {
+    match cfg.n {
+        128 => simulate_bsc_scl_fixed_i64::<128, 8, 16>(
+            cfg.k,
+            cfg.p,
+            cfg.trials,
+            cfg.seed,
+            FIXED_I64_VALIDATION_METRIC_SCALE,
+        ),
+        256 => simulate_bsc_scl_fixed_i64::<256, 8, 16>(
+            cfg.k,
+            cfg.p,
+            cfg.trials,
+            cfg.seed,
+            FIXED_I64_VALIDATION_METRIC_SCALE,
+        ),
+        512 => simulate_bsc_scl_fixed_i64::<512, 8, 16>(
+            cfg.k,
+            cfg.p,
+            cfg.trials,
+            cfg.seed,
+            FIXED_I64_VALIDATION_METRIC_SCALE,
+        ),
+        2048 => simulate_bsc_scl_fixed_i64::<2048, 8, 16>(
+            cfg.k,
+            cfg.p,
+            cfg.trials,
+            cfg.seed,
+            FIXED_I64_VALIDATION_METRIC_SCALE,
+        ),
+        other => panic!("fixed-i64 validation dispatch does not support N={other}"),
+    }
 }
 
 pub fn fixed_schedule_top_l_compare_count(width: usize) -> usize {

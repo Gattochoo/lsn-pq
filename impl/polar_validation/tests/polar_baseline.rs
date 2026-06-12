@@ -17,7 +17,7 @@ use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural,
     compare_scl_fast_fixed_i64_decoded_bits, decode_scl, decode_scl_fast, decode_scl_fixed_i64,
     decode_successive_cancellation, encode, fixed_i64_high_noise_control_configs,
-    fixed_schedule_top_l_compare_count, fixed_schedule_top_l_i64,
+    fixed_i64_l8_validation_dispatch, fixed_schedule_top_l_compare_count, fixed_schedule_top_l_i64,
     fixed_schedule_top_l_selection_plan, fixed_scl_binary_child_write_domain_check,
     fixed_scl_child_write_domain_failure_label, fixed_scl_child_write_parity_check,
     fixed_scl_integer_metric_deltas, fixed_scl_integer_metric_domain_check,
@@ -63,10 +63,10 @@ use polar_validation::{
     FixedSclPublicRoundShapeParityCheck, FixedSclPublicRoundWorkCounts,
     FixedSclPublicRoundWorkShapePlan, FixedSclRound, FixedSclRoundSchedulePlanParityCheck,
     FixedSclRoundScheduleShapeParityCheck, FixedTopLEntry, PolarCode,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
-    FIXED_SCL_INTEGER_METRIC_DOMAIN_FAILURE_LABELS,
+    FIXED_I64_VALIDATION_METRIC_SCALE, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY, FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_OK, FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_INTEGER_METRIC_DOMAIN_FAILURE_LABELS,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
     FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_INTEGER_DOMAIN,
@@ -219,6 +219,24 @@ fn fixed_i64_decoded_bits_match_fast_scl_on_noisy_samples() {
     assert_eq!(agreement.trials, 25);
     assert_eq!(agreement.decoded_mismatches, 0);
     assert_eq!(agreement.fast_errors, agreement.fixed_errors);
+}
+
+#[test]
+fn fixed_i64_l8_validation_dispatch_matches_generic_simulator() {
+    let cfg = target_n2048_configs(1, 5397)
+        .into_iter()
+        .next()
+        .expect("n2048 target configs must be non-empty");
+    let dispatched = fixed_i64_l8_validation_dispatch(&cfg);
+    let generic = simulate_bsc_scl_fixed_i64::<2048, 8, 16>(
+        cfg.k,
+        cfg.p,
+        cfg.trials,
+        cfg.seed,
+        FIXED_I64_VALIDATION_METRIC_SCALE,
+    );
+
+    assert_eq!(dispatched, generic);
 }
 
 #[test]

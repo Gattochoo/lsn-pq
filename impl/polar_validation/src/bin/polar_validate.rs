@@ -16,12 +16,10 @@
 use std::{env, fs, path::PathBuf};
 
 use polar_validation::{
-    baseline_reproduction_configs, high_noise_control_configs, results_to_json_with_decoder,
-    simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast, simulate_bsc_scl_fixed_i64,
+    baseline_reproduction_configs, fixed_i64_l8_validation_dispatch, high_noise_control_configs,
+    results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     target_n2048_configs, SimulationConfig, SimulationResult,
 };
-
-const FIXED_I64_METRIC_SCALE: f64 = 1024.0;
 
 fn main() {
     let mut trials = 200usize;
@@ -106,7 +104,11 @@ fn main() {
         ),
         "fixed-i64" => (
             run_and_report(&configs, |cfg| {
-                simulate_bsc_scl_fixed_i64_dispatch(cfg, list_size)
+                assert_eq!(
+                    list_size, 8,
+                    "fixed-i64 polar-validate currently supports --list-size 8 only"
+                );
+                fixed_i64_l8_validation_dispatch(cfg)
             }),
             format!("scl_l{list_size}_fixed_i64_metric_scale_1024"),
             format!("codex-p1-rust-scl-fixed-i64-l{list_size}-{suite}"),
@@ -154,48 +156,6 @@ where
         results.push(result);
     }
     results
-}
-
-fn simulate_bsc_scl_fixed_i64_dispatch(
-    cfg: &SimulationConfig,
-    list_size: usize,
-) -> SimulationResult {
-    assert_eq!(
-        list_size, 8,
-        "fixed-i64 polar-validate currently supports --list-size 8 only"
-    );
-
-    match cfg.n {
-        128 => simulate_bsc_scl_fixed_i64::<128, 8, 16>(
-            cfg.k,
-            cfg.p,
-            cfg.trials,
-            cfg.seed,
-            FIXED_I64_METRIC_SCALE,
-        ),
-        256 => simulate_bsc_scl_fixed_i64::<256, 8, 16>(
-            cfg.k,
-            cfg.p,
-            cfg.trials,
-            cfg.seed,
-            FIXED_I64_METRIC_SCALE,
-        ),
-        512 => simulate_bsc_scl_fixed_i64::<512, 8, 16>(
-            cfg.k,
-            cfg.p,
-            cfg.trials,
-            cfg.seed,
-            FIXED_I64_METRIC_SCALE,
-        ),
-        2048 => simulate_bsc_scl_fixed_i64::<2048, 8, 16>(
-            cfg.k,
-            cfg.p,
-            cfg.trials,
-            cfg.seed,
-            FIXED_I64_METRIC_SCALE,
-        ),
-        other => panic!("fixed-i64 polar-validate does not support N={other}"),
-    }
 }
 
 fn print_help() {
