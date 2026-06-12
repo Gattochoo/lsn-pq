@@ -23,30 +23,32 @@ use polar_validation::{
     fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
     fixed_scl_path_domain_failure_label, fixed_scl_public_round_schedule_plan,
     fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
-    fixed_scl_round_schedule_plan, fixed_top_l_selection_domain_failure_label,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
-    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
-    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
-    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
-    FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
-    FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
-    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
-    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
-    FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun, FixedSclPublicRoundWorkCounts,
-    FixedSclRound, FixedTopLEntry, PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY, FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_OK, FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
-    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS,
-    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
-    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK, FIXED_SCL_NO_INVALID_ROUND,
-    FIXED_SCL_PATH_DOMAIN_BIT_INDEX, FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
-    FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS, FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
-    FIXED_SCL_PATH_DOMAIN_OK, FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY,
-    FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH, FIXED_TOP_L_SELECTION_DOMAIN_FAILURE_LABELS,
-    FIXED_TOP_L_SELECTION_DOMAIN_OK, FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
+    fixed_scl_public_round_work_shape_plan, fixed_scl_round_schedule_plan,
+    fixed_top_l_selection_domain_failure_label, high_noise_control_configs,
+    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
+    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
+    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
+    try_fixed_scl_integer_round_schedule, zero_error_upper_bound,
+    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
+    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
+    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundSchedulePlan,
+    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
+    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
+    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
+    FixedSclPathDomainFailureLabel, FixedSclPublicRoundSchedulePlan,
+    FixedSclPublicRoundScheduleRun, FixedSclPublicRoundWorkCounts,
+    FixedSclPublicRoundWorkShapePlan, FixedSclRound, FixedTopLEntry, PolarCode,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+    FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+    FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+    FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE, FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS,
+    FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_OK,
+    FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
+    FIXED_TOP_L_SELECTION_DOMAIN_FAILURE_LABELS, FIXED_TOP_L_SELECTION_DOMAIN_OK,
+    FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
 };
 
 #[test]
@@ -258,6 +260,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("execution-free integer schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_work_counts"));
     assert!(json.contains("public work-count audit"));
+    assert!(json.contains("fixed_scl_public_round_work_shape_plan"));
+    assert!(json.contains("execution-free public round work-shape plan"));
     assert!(json.contains("fixed_scl_integer_metric_deltas"));
     assert!(json.contains("integer metric delta audit"));
     assert!(json.contains("fixed_scl_integer_round_schedule"));
@@ -1660,6 +1664,59 @@ fn fixed_scl_public_round_work_counts_are_public_parameters() {
     assert_eq!(empty_counts.top_l_compare_exchanges, 0);
     assert_eq!(empty_counts.child_slots_written, 0);
     assert_eq!(empty_counts.compacted_slots_written, 0);
+}
+
+#[test]
+fn fixed_scl_public_round_work_shape_plan_pairs_top_l_plans_with_counts() {
+    assert_eq!(
+        fixed_scl_public_round_work_shape_plan(3, 6, 4, 2, 3),
+        FixedSclPublicRoundWorkShapePlan {
+            parent_capacity: 3,
+            first_child_capacity: 6,
+            repeated_child_capacity: 4,
+            list_size: 2,
+            rounds: 3,
+            valid: true,
+            first_top_l_plan: FixedScheduleTopLSelectionPlan {
+                width: 6,
+                list_size: 2,
+                valid: true,
+                failure_code: FIXED_TOP_L_SELECTION_DOMAIN_OK,
+                compare_exchanges: 15,
+            },
+            repeated_top_l_plan: FixedScheduleTopLSelectionPlan {
+                width: 4,
+                list_size: 2,
+                valid: true,
+                failure_code: FIXED_TOP_L_SELECTION_DOMAIN_OK,
+                compare_exchanges: 6,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 3,
+                first_child_capacity: 6,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                top_l_compare_exchanges: 27,
+                child_slots_written: 14,
+                compacted_slots_written: 6,
+            },
+        }
+    );
+
+    let invalid = fixed_scl_public_round_work_shape_plan(3, 1, 4, 2, 3);
+
+    assert!(!invalid.valid);
+    assert_eq!(
+        invalid.first_top_l_plan.failure_code,
+        FIXED_TOP_L_SELECTION_DOMAIN_WIDTH
+    );
+    assert_eq!(
+        invalid.repeated_top_l_plan.failure_code,
+        FIXED_TOP_L_SELECTION_DOMAIN_OK
+    );
+    assert_eq!(invalid.work_counts.rounds, 0);
+    assert_eq!(invalid.work_counts.top_l_compare_exchanges, 0);
 }
 
 #[test]

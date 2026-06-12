@@ -360,6 +360,19 @@ pub struct FixedSclPublicRoundWorkCounts {
     pub compacted_slots_written: usize,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPublicRoundWorkShapePlan {
+    pub parent_capacity: usize,
+    pub first_child_capacity: usize,
+    pub repeated_child_capacity: usize,
+    pub list_size: usize,
+    pub rounds: usize,
+    pub valid: bool,
+    pub first_top_l_plan: FixedScheduleTopLSelectionPlan,
+    pub repeated_top_l_plan: FixedScheduleTopLSelectionPlan,
+    pub work_counts: FixedSclPublicRoundWorkCounts,
+}
+
 impl FixedSclRound {
     pub const fn new(bit_index: usize, bit0_metric_delta: i64, bit1_metric_delta: i64) -> Self {
         Self {
@@ -1008,6 +1021,41 @@ pub fn fixed_scl_public_round_work_counts_with_capacities(
     }
 }
 
+pub fn fixed_scl_public_round_work_shape_plan(
+    parent_capacity: usize,
+    first_child_capacity: usize,
+    repeated_child_capacity: usize,
+    list_size: usize,
+    rounds: usize,
+) -> FixedSclPublicRoundWorkShapePlan {
+    let first_top_l_plan = fixed_schedule_top_l_selection_plan(first_child_capacity, list_size);
+    let repeated_top_l_plan =
+        fixed_schedule_top_l_selection_plan(repeated_child_capacity, list_size);
+    let first_round_active = rounds > 0;
+    let repeated_round_active = rounds > 1;
+    let valid = (!first_round_active || first_top_l_plan.valid)
+        && (!repeated_round_active || repeated_top_l_plan.valid);
+    let work_rounds = if valid { rounds } else { 0 };
+
+    FixedSclPublicRoundWorkShapePlan {
+        parent_capacity,
+        first_child_capacity,
+        repeated_child_capacity,
+        list_size,
+        rounds,
+        valid,
+        first_top_l_plan,
+        repeated_top_l_plan,
+        work_counts: fixed_scl_public_round_work_counts_with_capacities(
+            parent_capacity,
+            first_child_capacity,
+            repeated_child_capacity,
+            list_size,
+            work_rounds,
+        ),
+    }
+}
+
 pub fn fixed_scl_public_round_schedule_plan<
     const CAP: usize,
     const N: usize,
@@ -1419,6 +1467,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_public_round_schedule_plan: execution-free public schedule preflight that pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_public_round_work_shape_plan: execution-free public round work-shape plan that pairs first/repeated top-L preflights with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
