@@ -1762,52 +1762,81 @@ pub fn fixed_scl_path_buffer_schedule_domain_check<
 >(
     bit_indices: [usize; ROUNDS],
 ) -> FixedSclPathBufferScheduleDomainCheck {
-    let mut check = FixedSclPathBufferScheduleDomainCheck {
+    let empty_invalid = u8::from(ROUNDS == 0);
+    let first_child_invalid = u8::from(CAP.saturating_mul(2) > FIRST_CHILD_CAP);
+    let top_l_invalid = u8::from(L > FIRST_CHILD_CAP || (ROUNDS > 1 && L > CHILD_CAP));
+    let repeated_child_invalid = u8::from(ROUNDS > 1 && L.saturating_mul(2) > CHILD_CAP);
+    let empty_valid = empty_invalid ^ 1;
+    let first_child_valid = first_child_invalid ^ 1;
+    let top_l_valid = top_l_invalid ^ 1;
+    let first_child_selected = first_child_invalid & empty_valid;
+    let top_l_selected = top_l_invalid & empty_valid & first_child_valid;
+    let repeated_child_selected =
+        repeated_child_invalid & empty_valid & first_child_valid & top_l_valid;
+    let shape_invalid =
+        empty_invalid | first_child_invalid | top_l_invalid | repeated_child_invalid;
+    let mut bit_invalid_seen = 0u8;
+    let mut first_bit_invalid_round = FIXED_SCL_NO_INVALID_ROUND;
+
+    for (round, bit_index) in bit_indices.iter().enumerate() {
+        let bit_invalid = u8::from(*bit_index >= N);
+        let first_bit_for_round = (bit_invalid_seen ^ 1) & bit_invalid;
+        let first_bit_mask = 0usize.wrapping_sub(usize::from(first_bit_for_round));
+
+        first_bit_invalid_round = select_usize(first_bit_mask, first_bit_invalid_round, round);
+        bit_invalid_seen |= bit_invalid;
+    }
+
+    let bit_selected = bit_invalid_seen & (shape_invalid ^ 1);
+    let empty_mask = 0u8.wrapping_sub(empty_invalid);
+    let first_child_mask = 0u8.wrapping_sub(first_child_selected);
+    let top_l_mask = 0u8.wrapping_sub(top_l_selected);
+    let repeated_child_mask = 0u8.wrapping_sub(repeated_child_selected);
+    let bit_mask = 0u8.wrapping_sub(bit_selected);
+    let bit_round_mask = 0usize.wrapping_sub(usize::from(bit_selected));
+    let failure_after_bit = select_u8(
+        bit_mask,
+        FIXED_SCL_PATH_DOMAIN_OK,
+        FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+    );
+    let failure_after_repeated_child = select_u8(
+        repeated_child_mask,
+        failure_after_bit,
+        FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY,
+    );
+    let failure_after_top_l = select_u8(
+        top_l_mask,
+        failure_after_repeated_child,
+        FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
+    );
+    let failure_after_first_child = select_u8(
+        first_child_mask,
+        failure_after_top_l,
+        FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
+    );
+    let failure_code = select_u8(
+        empty_mask,
+        failure_after_first_child,
+        FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
+    );
+    let first_invalid_round = select_usize(
+        bit_round_mask,
+        FIXED_SCL_NO_INVALID_ROUND,
+        first_bit_invalid_round,
+    );
+    let invalid = shape_invalid | bit_invalid_seen;
+
+    FixedSclPathBufferScheduleDomainCheck {
         parent_capacity: CAP,
         first_child_capacity: FIRST_CHILD_CAP,
         repeated_child_capacity: CHILD_CAP,
         list_size: L,
         rounds: ROUNDS,
         bit_width: N,
-        valid: true,
-        failure_code: FIXED_SCL_PATH_DOMAIN_OK,
-        first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
-    };
-
-    if ROUNDS == 0 {
-        check.valid = false;
-        check.failure_code = FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE;
-        return check;
+        valid: invalid == 0,
+        failure_code,
+        first_invalid_round,
     }
-
-    if CAP.saturating_mul(2) > FIRST_CHILD_CAP {
-        check.valid = false;
-        check.failure_code = FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY;
-        return check;
-    }
-
-    if L > FIRST_CHILD_CAP || (ROUNDS > 1 && L > CHILD_CAP) {
-        check.valid = false;
-        check.failure_code = FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH;
-        return check;
-    }
-
-    if ROUNDS > 1 && L.saturating_mul(2) > CHILD_CAP {
-        check.valid = false;
-        check.failure_code = FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY;
-        return check;
-    }
-
-    for (round, bit_index) in bit_indices.iter().enumerate() {
-        if *bit_index >= N {
-            check.valid = false;
-            check.failure_code = FIXED_SCL_PATH_DOMAIN_BIT_INDEX;
-            check.first_invalid_round = round;
-            return check;
-        }
-    }
-
-    check
 }
 
 pub fn fixed_scl_integer_schedule_domain_check<const ROUNDS: usize>(

@@ -1905,6 +1905,71 @@ fn fixed_scl_path_buffer_schedule_domain_check_rejects_bit_index_outside_width()
 }
 
 #[test]
+fn fixed_scl_path_buffer_schedule_domain_check_prefers_shape_faults_over_bit_index() {
+    assert_eq!(
+        fixed_scl_path_buffer_schedule_domain_check::<2, 8, 3, 4, 2, 3>([8, 4, 5]),
+        FixedSclPathBufferScheduleDomainCheck {
+            parent_capacity: 2,
+            first_child_capacity: 3,
+            repeated_child_capacity: 4,
+            list_size: 2,
+            rounds: 3,
+            bit_width: 8,
+            valid: false,
+            failure_code: FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
+            first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_schedule_domain_check_prefers_top_l_over_repeated_child_fault() {
+    assert_eq!(
+        fixed_scl_path_buffer_schedule_domain_check::<3, 8, 6, 4, 5, 2>([2, 4]),
+        FixedSclPathBufferScheduleDomainCheck {
+            parent_capacity: 3,
+            first_child_capacity: 6,
+            repeated_child_capacity: 4,
+            list_size: 5,
+            rounds: 2,
+            bit_width: 8,
+            valid: false,
+            failure_code: FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
+            first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_schedule_domain_check_uses_status_accumulation() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn fixed_scl_path_buffer_schedule_domain_check")
+        .expect("fixed_scl_path_buffer_schedule_domain_check source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_integer_schedule_domain_check")
+        .map(|offset| helper_start + offset)
+        .expect("fixed_scl_integer_schedule_domain_check should follow path domain check");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("return check"));
+    assert!(!helper_source.contains("if ROUNDS == 0"));
+    assert!(!helper_source.contains("if CAP.saturating_mul(2) > FIRST_CHILD_CAP"));
+    assert!(!helper_source.contains("if L > FIRST_CHILD_CAP"));
+    assert!(!helper_source.contains("if *bit_index >= N"));
+    assert!(helper_source.contains("let empty_invalid = u8::from(ROUNDS == 0);"));
+    assert!(helper_source.contains("let first_child_invalid = u8::from("));
+    assert!(helper_source.contains("let top_l_invalid = u8::from("));
+    assert!(helper_source.contains("let repeated_child_invalid = u8::from("));
+    assert!(helper_source.contains("let mut bit_invalid_seen = 0u8;"));
+    assert!(
+        helper_source.contains("let first_bit_for_round = (bit_invalid_seen ^ 1) & bit_invalid;")
+    );
+    assert!(helper_source.contains("select_u8("));
+    assert!(helper_source.contains("select_usize("));
+}
+
+#[test]
 fn fixed_scl_public_round_schedule_plan_reports_status_and_work_counts_without_running() {
     assert_eq!(
         fixed_scl_public_round_schedule_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5]),
