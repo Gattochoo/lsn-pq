@@ -17,8 +17,9 @@ use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, high_noise_control_configs,
     importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound, PolarCode,
+    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
+    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
+    zero_error_upper_bound, PolarCode,
 };
 
 #[test]
@@ -174,6 +175,20 @@ fn high_noise_fast_scl_smoke_fails_when_channel_is_random() {
         result.errors >= 20,
         "expected high-noise BLER near 1, got {result:?}"
     );
+}
+
+#[test]
+fn scl_work_shape_audit_records_non_constant_time_surfaces() {
+    let json = scl_work_shape_audit_json();
+
+    assert!(json.contains("\"experiment\": \"codex-polar-scl-workshape-audit\""));
+    assert!(json.contains("\"ct_surface\": \"ct-003\""));
+    assert!(json.contains("\"current_verdict\": \"not_constant_time\""));
+    assert!(json.contains("\"production_constant_time_claim\": false"));
+    assert!(json.contains("path metric sort"));
+    assert!(json.contains("Vec growth"));
+    assert!(json.contains("floating-point path metrics"));
+    assert!(json.contains("fixed-schedule integer decoder plan required"));
 }
 
 #[test]

@@ -27,8 +27,8 @@
       "id": "ct-003",
       "surface": "polar SCL decoder",
       "classification": "not_constant_time",
-      "issue": "polar SCL path pruning uses data-dependent metrics, sorting, branching, heap-like vector growth, and floating-point operations",
-      "required_action": "replace with fixed-list, fixed-schedule, integer or masked metric updates and data-oblivious selection"
+      "issue": "polar SCL path pruning uses data-dependent metrics, sorting, branching, heap-like vector growth, and floating-point operations; see experiments/186-codex-polar-scl-workshape-audit.json",
+      "required_action": "fixed-schedule integer decoder plan required: replace with fixed-list, fixed-schedule, integer or masked metric updates and data-oblivious selection"
     },
     {
       "id": "ct-004",

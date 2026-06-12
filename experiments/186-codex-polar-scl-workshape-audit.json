@@ -1,0 +1,30 @@
+{
+  "experiment": "codex-polar-scl-workshape-audit",
+  "ct_surface": "ct-003",
+  "component": "impl/polar_validation SCL decoder",
+  "status": "audit boundary only; current decoder is variable-shape reference code",
+  "current_verdict": "not_constant_time",
+  "production_constant_time_claim": false,
+  "audited_functions": [
+    "decode_scl",
+    "decode_scl_fast",
+    "scl_decode_node",
+    "prune_paths"
+  ],
+  "variable_shape_surfaces": [
+    "path metric sort in prune_paths",
+    "Vec growth and truncate in path pruning",
+    "branching on frozen_mask and candidate bit expansion",
+    "floating-point path metrics and total_cmp ordering",
+    "recursive SCL node composition with data-dependent path contents"
+  ],
+  "fixed_schedule_requirements": [
+    "fixed-list array layout for all paths",
+    "integer or masked metric updates",
+    "data-oblivious top-L selection network",
+    "no secret-dependent allocation, sorting, truncation, or branch pruning",
+    "generated-code and timing/leakage audit before any production claim"
+  ],
+  "required_action": "fixed-schedule integer decoder plan required before replacing ct-003",
+  "adjudication": "engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN"
+}

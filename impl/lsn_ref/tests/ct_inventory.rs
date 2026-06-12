@@ -33,6 +33,8 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     assert!(json.contains("bounded reference layout"));
     assert!(json.contains("LSN_REF_MAX_FIXED_LAGRANGIAN_N"));
     assert!(json.contains("polar SCL path pruning"));
+    assert!(json.contains("experiments/186-codex-polar-scl-workshape-audit.json"));
+    assert!(json.contains("fixed-schedule integer decoder plan required"));
     assert!(json.contains("explicit diagnostic_honest_only_points boundary"));
     assert!(json.contains("diagnostic selector depends on the wrong secret"));
 }

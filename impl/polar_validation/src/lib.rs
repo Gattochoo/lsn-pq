@@ -155,6 +155,41 @@ pub fn high_noise_control_configs(trials: usize, seed: u64) -> Vec<SimulationCon
         .collect()
 }
 
+pub fn scl_work_shape_audit_json() -> &'static str {
+    concat!(
+        "{\n",
+        "  \"experiment\": \"codex-polar-scl-workshape-audit\",\n",
+        "  \"ct_surface\": \"ct-003\",\n",
+        "  \"component\": \"impl/polar_validation SCL decoder\",\n",
+        "  \"status\": \"audit boundary only; current decoder is variable-shape reference code\",\n",
+        "  \"current_verdict\": \"not_constant_time\",\n",
+        "  \"production_constant_time_claim\": false,\n",
+        "  \"audited_functions\": [\n",
+        "    \"decode_scl\",\n",
+        "    \"decode_scl_fast\",\n",
+        "    \"scl_decode_node\",\n",
+        "    \"prune_paths\"\n",
+        "  ],\n",
+        "  \"variable_shape_surfaces\": [\n",
+        "    \"path metric sort in prune_paths\",\n",
+        "    \"Vec growth and truncate in path pruning\",\n",
+        "    \"branching on frozen_mask and candidate bit expansion\",\n",
+        "    \"floating-point path metrics and total_cmp ordering\",\n",
+        "    \"recursive SCL node composition with data-dependent path contents\"\n",
+        "  ],\n",
+        "  \"fixed_schedule_requirements\": [\n",
+        "    \"fixed-list array layout for all paths\",\n",
+        "    \"integer or masked metric updates\",\n",
+        "    \"data-oblivious top-L selection network\",\n",
+        "    \"no secret-dependent allocation, sorting, truncation, or branch pruning\",\n",
+        "    \"generated-code and timing/leakage audit before any production claim\"\n",
+        "  ],\n",
+        "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",
+        "  \"adjudication\": \"engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN\"\n",
+        "}\n",
+    )
+}
+
 pub fn run_configs(configs: &[SimulationConfig]) -> Vec<SimulationResult> {
     configs
         .iter()
