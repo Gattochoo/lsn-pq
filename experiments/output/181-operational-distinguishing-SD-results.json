@@ -1,0 +1,30 @@
+{
+  "n": 2,
+  "note": "m=4 SA was killed at 200K/500K iterations; partial best SD reported",
+  "results": [
+    {
+      "m": 2,
+      "random_SD": 0.072465,
+      "best_constrained_SD": 0.04744,
+      "best_marg": 0.0,
+      "SA_iters": 500000,
+      "status": "completed"
+    },
+    {
+      "m": 3,
+      "random_SD": 0.186545,
+      "best_constrained_SD": 0.129438,
+      "best_marg": 0.0,
+      "SA_iters": 500000,
+      "status": "completed"
+    },
+    {
+      "m": 4,
+      "random_SD": 0.363014,
+      "best_constrained_SD": 0.328075,
+      "best_marg": 0.0,
+      "SA_iters": 200000,
+      "status": "partial (timeout)"
+    }
+  ]
+}
