@@ -1806,30 +1806,42 @@ pub fn fixed_scl_integer_schedule_domain_check<const ROUNDS: usize>(
     hard_bits: [u8; ROUNDS],
     magnitudes: [i64; ROUNDS],
 ) -> FixedSclIntegerScheduleDomainCheck {
+    let mut invalid_seen = 0u8;
+    let mut failure_code = FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK;
+    let mut first_invalid_round = FIXED_SCL_NO_INVALID_ROUND;
+
     for index in 0..ROUNDS {
-        if hard_bits[index] > 1 {
-            return FixedSclIntegerScheduleDomainCheck {
-                rounds: ROUNDS,
-                valid: false,
-                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
-                first_invalid_round: index,
-            };
-        }
-        if magnitudes[index] < 0 {
-            return FixedSclIntegerScheduleDomainCheck {
-                rounds: ROUNDS,
-                valid: false,
-                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
-                first_invalid_round: index,
-            };
-        }
+        let hard_invalid = u8::from(hard_bits[index] > 1);
+        let magnitude_invalid = u8::from(magnitudes[index] < 0);
+        let hard_valid = hard_invalid ^ 1;
+        let magnitude_selected = magnitude_invalid & hard_valid;
+        let round_invalid = hard_invalid | magnitude_invalid;
+        let first_for_round = (invalid_seen ^ 1) & round_invalid;
+        let magnitude_mask = 0u8.wrapping_sub(magnitude_selected);
+        let hard_mask = 0u8.wrapping_sub(hard_invalid);
+        let first_mask = 0u8.wrapping_sub(first_for_round);
+        let first_round_mask = 0usize.wrapping_sub(usize::from(first_for_round));
+        let failure_after_magnitude = select_u8(
+            magnitude_mask,
+            FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+            FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+        );
+        let round_failure_code = select_u8(
+            hard_mask,
+            failure_after_magnitude,
+            FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+        );
+
+        failure_code = select_u8(first_mask, failure_code, round_failure_code);
+        first_invalid_round = select_usize(first_round_mask, first_invalid_round, index);
+        invalid_seen |= round_invalid;
     }
 
     FixedSclIntegerScheduleDomainCheck {
         rounds: ROUNDS,
-        valid: true,
-        failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
-        first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+        valid: invalid_seen == 0,
+        failure_code,
+        first_invalid_round,
     }
 }
 

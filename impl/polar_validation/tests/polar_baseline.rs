@@ -2898,6 +2898,42 @@ fn fixed_scl_integer_schedule_domain_check_rejects_non_bit_hard_decision() {
 }
 
 #[test]
+fn fixed_scl_integer_schedule_domain_check_prefers_hard_bit_with_same_round_dual_fault() {
+    assert_eq!(
+        fixed_scl_integer_schedule_domain_check([2], [-1]),
+        FixedSclIntegerScheduleDomainCheck {
+            rounds: 1,
+            valid: false,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+            first_invalid_round: 0,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_schedule_domain_check_uses_status_accumulation() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn fixed_scl_integer_schedule_domain_check")
+        .expect("fixed_scl_integer_schedule_domain_check source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_integer_metric_domain_check")
+        .map(|offset| helper_start + offset)
+        .expect("fixed_scl_integer_metric_domain_check should follow schedule domain check");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("return FixedSclIntegerScheduleDomainCheck"));
+    assert!(!helper_source.contains("if hard_bits[index] > 1"));
+    assert!(!helper_source.contains("if magnitudes[index] < 0"));
+    assert!(helper_source.contains("let mut invalid_seen = 0u8;"));
+    assert!(helper_source.contains("let hard_invalid = u8::from(hard_bits[index] > 1);"));
+    assert!(helper_source.contains("let magnitude_invalid = u8::from(magnitudes[index] < 0);"));
+    assert!(helper_source.contains("let first_for_round = (invalid_seen ^ 1) & round_invalid;"));
+    assert!(helper_source.contains("select_u8("));
+    assert!(helper_source.contains("select_usize("));
+}
+
+#[test]
 fn try_fixed_scl_integer_round_schedule_builds_valid_rounds() {
     assert_eq!(
         try_fixed_scl_integer_round_schedule([0, 1], [false, true], [1, 1], [3, 5]),
