@@ -1452,6 +1452,28 @@ fn fixed_scl_path_buffer_try_expand_then_compact_one_bit_rejects_bit_index() {
 }
 
 #[test]
+fn fixed_scl_path_buffer_try_one_bit_uses_masked_invalid_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn try_expand_then_compact_one_bit")
+        .expect("try_expand_then_compact_one_bit source should be present");
+    let helper_end = source[helper_start..]
+        .find("fn from_top_entries")
+        .map(|offset| helper_start + offset)
+        .expect("from_top_entries should follow one-bit wrapper");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if !path_domain_check.valid"));
+    assert!(!helper_source.contains("return FixedSclOneBitExpansionRun"));
+    assert!(helper_source.contains("let invalid_usize = usize::from(path_domain_check.valid) ^ 1;"));
+    assert!(helper_source.contains("let invalid_mask_usize = 0usize.wrapping_sub(invalid_usize);"));
+    assert!(helper_source.contains("let invalid_mask_i64 = 0i64.wrapping_sub(invalid_i64);"));
+    assert!(helper_source.contains("work_counts: select_public_round_work_counts("));
+    assert!(helper_source.contains("children: select_path_buffer("));
+    assert!(helper_source.contains("top: select_top_l_entries("));
+}
+
+#[test]
 #[should_panic(expected = "expand-then-compact child capacity requires two slots per parent")]
 fn fixed_scl_path_buffer_expand_then_compact_rejects_small_child_buffer() {
     let parents = FixedSclPathBuffer::<2, 4>::new();

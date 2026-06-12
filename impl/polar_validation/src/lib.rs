@@ -686,6 +686,34 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         fixed_schedule_top_l_i64::<CAP, L>(metrics)
     }
 
+    fn top_l_entries_padded<const L: usize>(&self) -> [FixedTopLEntry; L] {
+        let mut entries = self.metric_entries();
+        for i in 0..CAP {
+            for j in (i + 1)..CAP {
+                fixed_compare_exchange(&mut entries, i, j);
+            }
+        }
+
+        let mut top = [FixedTopLEntry {
+            metric: i64::MAX,
+            index: usize::MAX,
+        }; L];
+        for (dst_index, top_entry) in top.iter_mut().enumerate() {
+            let mut selected = FixedTopLEntry {
+                metric: i64::MAX,
+                index: usize::MAX,
+            };
+            for (src_index, entry) in entries.iter().enumerate() {
+                let take = usize::from(dst_index == src_index);
+                let take_usize_mask = 0usize.wrapping_sub(take);
+                let take_i64_mask = 0i64.wrapping_sub(take as i64);
+                selected = select_top_l_entry(take_usize_mask, take_i64_mask, selected, *entry);
+            }
+            *top_entry = selected;
+        }
+        top
+    }
+
     pub fn write_binary_children_from<const SRC_CAP: usize>(
         &mut self,
         parents: &FixedSclPathBuffer<SRC_CAP, N>,
@@ -799,17 +827,12 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
             ]);
         let zero_work_counts =
             fixed_scl_public_round_work_counts_with_capacities(CAP, CHILD_CAP, CHILD_CAP, L, 0);
-        if !path_domain_check.valid {
-            return FixedSclOneBitExpansionRun {
-                path_domain_check,
-                work_counts: zero_work_counts,
-                children: FixedSclPathBuffer::<CHILD_CAP, N>::new(),
-                top: [FixedTopLEntry {
-                    metric: i64::MAX,
-                    index: usize::MAX,
-                }; L],
-            };
-        }
+        let invalid_usize = usize::from(path_domain_check.valid) ^ 1;
+        let invalid_i64 = invalid_usize as i64;
+        let invalid_u8 = invalid_usize as u8;
+        let invalid_mask_usize = 0usize.wrapping_sub(invalid_usize);
+        let invalid_mask_i64 = 0i64.wrapping_sub(invalid_i64);
+        let invalid_mask_u8 = 0u8.wrapping_sub(invalid_u8);
 
         let mut children = FixedSclPathBuffer::<CHILD_CAP, N>::new();
         for parent_slot in 0..CAP {
@@ -822,14 +845,26 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
                 bit1_metric_delta,
             );
         }
-        let top = children.top_l_entries::<L>();
+        let top = children.top_l_entries_padded::<L>();
+        let zero_children = FixedSclPathBuffer::<CHILD_CAP, N>::new();
+        let zero_top = [FixedTopLEntry {
+            metric: i64::MAX,
+            index: usize::MAX,
+        }; L];
         FixedSclOneBitExpansionRun {
             path_domain_check,
-            work_counts: fixed_scl_public_round_work_counts_with_capacities(
-                CAP, CHILD_CAP, CHILD_CAP, L, 1,
+            work_counts: select_public_round_work_counts(
+                invalid_mask_usize,
+                fixed_scl_public_round_work_counts_with_capacities(CAP, CHILD_CAP, CHILD_CAP, L, 1),
+                zero_work_counts,
             ),
-            children,
-            top,
+            children: select_path_buffer(
+                invalid_mask_i64,
+                invalid_mask_u8,
+                children,
+                zero_children,
+            ),
+            top: select_top_l_entries(invalid_mask_usize, invalid_mask_i64, top, zero_top),
         }
     }
 
@@ -2168,6 +2203,82 @@ fn select_usize(mask: usize, keep: usize, replace: usize) -> usize {
 
 fn select_u8(mask: u8, keep: u8, replace: u8) -> u8 {
     (keep & !mask) | (replace & mask)
+}
+
+fn select_top_l_entry(
+    mask_usize: usize,
+    mask_i64: i64,
+    keep: FixedTopLEntry,
+    replace: FixedTopLEntry,
+) -> FixedTopLEntry {
+    FixedTopLEntry {
+        metric: select_i64(mask_i64, keep.metric, replace.metric),
+        index: select_usize(mask_usize, keep.index, replace.index),
+    }
+}
+
+fn select_top_l_entries<const L: usize>(
+    mask_usize: usize,
+    mask_i64: i64,
+    keep: [FixedTopLEntry; L],
+    replace: [FixedTopLEntry; L],
+) -> [FixedTopLEntry; L] {
+    let mut selected = keep;
+    for index in 0..L {
+        selected[index] = select_top_l_entry(mask_usize, mask_i64, keep[index], replace[index]);
+    }
+    selected
+}
+
+fn select_public_round_work_counts(
+    mask_usize: usize,
+    keep: FixedSclPublicRoundWorkCounts,
+    replace: FixedSclPublicRoundWorkCounts,
+) -> FixedSclPublicRoundWorkCounts {
+    FixedSclPublicRoundWorkCounts {
+        parent_capacity: select_usize(mask_usize, keep.parent_capacity, replace.parent_capacity),
+        first_child_capacity: select_usize(
+            mask_usize,
+            keep.first_child_capacity,
+            replace.first_child_capacity,
+        ),
+        repeated_child_capacity: select_usize(
+            mask_usize,
+            keep.repeated_child_capacity,
+            replace.repeated_child_capacity,
+        ),
+        list_size: select_usize(mask_usize, keep.list_size, replace.list_size),
+        rounds: select_usize(mask_usize, keep.rounds, replace.rounds),
+        top_l_compare_exchanges: select_usize(
+            mask_usize,
+            keep.top_l_compare_exchanges,
+            replace.top_l_compare_exchanges,
+        ),
+        child_slots_written: select_usize(
+            mask_usize,
+            keep.child_slots_written,
+            replace.child_slots_written,
+        ),
+        compacted_slots_written: select_usize(
+            mask_usize,
+            keep.compacted_slots_written,
+            replace.compacted_slots_written,
+        ),
+    }
+}
+
+fn select_path_buffer<const CAP: usize, const N: usize>(
+    mask_i64: i64,
+    mask_u8: u8,
+    keep: FixedSclPathBuffer<CAP, N>,
+    replace: FixedSclPathBuffer<CAP, N>,
+) -> FixedSclPathBuffer<CAP, N> {
+    let mut selected = keep;
+    for index in 0..CAP {
+        selected.slots[index] =
+            select_candidate(mask_i64, mask_u8, keep.slots[index], replace.slots[index]);
+    }
+    selected
 }
 
 fn select_round(
