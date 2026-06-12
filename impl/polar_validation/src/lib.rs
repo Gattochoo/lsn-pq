@@ -76,6 +76,23 @@ pub struct FixedSclCandidate<const N: usize> {
     pub active: u8,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclRound {
+    pub bit_index: usize,
+    pub bit0_metric_delta: i64,
+    pub bit1_metric_delta: i64,
+}
+
+impl FixedSclRound {
+    pub const fn new(bit_index: usize, bit0_metric_delta: i64, bit1_metric_delta: i64) -> Self {
+        Self {
+            bit_index,
+            bit0_metric_delta,
+            bit1_metric_delta,
+        }
+    }
+}
+
 impl<const N: usize> FixedSclCandidate<N> {
     pub const EMPTY: Self = Self {
         metric: i64::MAX,
@@ -273,6 +290,43 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
             FixedSclPathBuffer::<L, N>::from_top_entries(&second_children, second_top);
         (second_compacted, second_top)
     }
+
+    pub fn expand_then_compact_public_rounds<
+        const FIRST_CHILD_CAP: usize,
+        const CHILD_CAP: usize,
+        const L: usize,
+        const ROUNDS: usize,
+    >(
+        &self,
+        rounds: [FixedSclRound; ROUNDS],
+    ) -> (FixedSclPathBuffer<L, N>, [FixedTopLEntry; L]) {
+        assert!(
+            ROUNDS > 0,
+            "public round schedule requires at least one round"
+        );
+
+        let first_round = rounds[0];
+        let (first_children, first_top) = self.expand_then_compact_one_bit::<FIRST_CHILD_CAP, L>(
+            first_round.bit_index,
+            first_round.bit0_metric_delta,
+            first_round.bit1_metric_delta,
+        );
+        let mut compacted =
+            FixedSclPathBuffer::<L, N>::from_top_entries(&first_children, first_top);
+        let mut final_top = first_top;
+
+        for round in rounds.iter().skip(1) {
+            let (children, top) = compacted.expand_then_compact_one_bit::<CHILD_CAP, L>(
+                round.bit_index,
+                round.bit0_metric_delta,
+                round.bit1_metric_delta,
+            );
+            compacted = FixedSclPathBuffer::<L, N>::from_top_entries(&children, top);
+            final_top = top;
+        }
+
+        (compacted, final_top)
+    }
 }
 
 impl<const CAP: usize, const N: usize> Default for FixedSclPathBuffer<CAP, N> {
@@ -469,7 +523,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
-        "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",
         "  \"adjudication\": \"engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN\"\n",

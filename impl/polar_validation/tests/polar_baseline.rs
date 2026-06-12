@@ -20,7 +20,7 @@ use polar_validation::{
     polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound,
-    FixedSclPathBuffer, FixedTopLEntry, PolarCode,
+    FixedSclPathBuffer, FixedSclRound, FixedTopLEntry, PolarCode,
 };
 
 #[test]
@@ -198,6 +198,9 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("one-bit expand then compact"));
     assert!(json.contains("expand_then_compact_two_public_bits"));
     assert!(json.contains("two-round public-bit loop"));
+    assert!(json.contains("FixedSclRound"));
+    assert!(json.contains("expand_then_compact_public_rounds"));
+    assert!(json.contains("public round schedule"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
@@ -384,6 +387,37 @@ fn fixed_scl_path_buffer_expands_then_compacts_two_public_bits() {
             FixedTopLEntry {
                 metric: 8,
                 index: 3,
+            },
+        ]
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_runs_public_round_schedule() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let rounds = [
+        FixedSclRound::new(2, 5, -1),
+        FixedSclRound::new(4, 7, 0),
+        FixedSclRound::new(5, 4, -2),
+    ];
+    let (final_paths, final_top) = parents.expand_then_compact_public_rounds::<4, 4, 2, 3>(rounds);
+
+    assert_eq!(final_paths.active_count(), 2);
+    assert_eq!(final_paths.bits(0), [1; 8]);
+    assert_eq!(final_paths.bits(1), [1, 1, 1, 1, 1, 0, 1, 1]);
+    assert_eq!(
+        final_top,
+        [
+            FixedTopLEntry {
+                metric: 0,
+                index: 1,
+            },
+            FixedTopLEntry {
+                metric: 6,
+                index: 0,
             },
         ]
     );
