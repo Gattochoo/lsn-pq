@@ -192,6 +192,12 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("Vec growth"));
     assert!(json.contains("floating-point path metrics"));
     assert!(json.contains("fixed-schedule integer decoder plan required"));
+    assert!(json.contains("\"metric_domain_assumptions\""));
+    assert!(json.contains("negative metric deltas are diagnostic-only"));
+    assert!(
+        json.contains("future active integer SCL rail requires fixed-width non-negative penalties")
+    );
+    assert!(json.contains("forbidden sentinel must remain terminal"));
     assert!(json.contains("fixed_schedule_top_l_i64"));
     assert!(json.contains("FixedSclPathBuffer"));
     assert!(json.contains("write_binary_children_from"));

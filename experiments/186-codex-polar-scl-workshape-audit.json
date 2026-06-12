@@ -25,6 +25,11 @@
     "no secret-dependent allocation, sorting, truncation, or branch pruning",
     "generated-code and timing/leakage audit before any production claim"
   ],
+  "metric_domain_assumptions": [
+    "negative metric deltas are diagnostic-only in source-level rail tests",
+    "future active integer SCL rail requires fixed-width non-negative penalties before decoder wiring",
+    "forbidden sentinel must remain terminal under parent-metric addition"
+  ],
   "prototype_building_blocks": [
     "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending",
     "FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending",
