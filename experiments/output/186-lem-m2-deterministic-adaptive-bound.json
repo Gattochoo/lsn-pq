@@ -1,0 +1,41 @@
+{
+  "n": 2,
+  "num_lagrangian": 15,
+  "theorem": "SD((C,y), LPN) >= 1 - |Lagr| / 2^{mn} for deterministic B=g(A)",
+  "bounds": [
+    {
+      "m": 2,
+      "C_space_size": 16,
+      "lower_bound": "1/16",
+      "lower_bound_float": 0.0625
+    },
+    {
+      "m": 3,
+      "C_space_size": 64,
+      "lower_bound": "49/64",
+      "lower_bound_float": 0.765625,
+      "exp185_min_sd": "49/64",
+      "matches_bound": true
+    },
+    {
+      "m": 4,
+      "C_space_size": 256,
+      "lower_bound": "241/256",
+      "lower_bound_float": 0.94140625,
+      "exp185_min_sd": "241/256",
+      "matches_bound": true
+    },
+    {
+      "m": 5,
+      "C_space_size": 1024,
+      "lower_bound": "1009/1024",
+      "lower_bound_float": 0.9853515625
+    },
+    {
+      "m": 6,
+      "C_space_size": 4096,
+      "lower_bound": "4081/4096",
+      "lower_bound_float": 0.996337890625
+    }
+  ]
+}
