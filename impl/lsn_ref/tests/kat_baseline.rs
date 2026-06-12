@@ -44,7 +44,9 @@ fn fixed_lagrangian_membership_matches_point_set_for_public_points() {
 
 #[test]
 fn fixed_lagrangian_scanned_membership_matches_direct_membership() {
-    let points = [0, 1, 63, 64, 127, 128, 191, 255];
+    let points = [
+        0, 1, 2, 3, 63, 64, 65, 66, 127, 128, 129, 130, 191, 192, 193, 255,
+    ];
     let fixed = FixedLagrangian::from_points(4, &points);
 
     assert_eq!(fixed.universe(), 256);
@@ -69,6 +71,7 @@ fn fixed_lagrangian_source_avoids_secret_dependent_word_indexing() {
     assert!(!source.contains("self.words[index >> 6]"));
     assert!(!source.contains("words[index >> 6]"));
     assert!(source.contains("contains_mask_scanned"));
+    assert!(source.contains("PointCountMismatch"));
 }
 
 #[test]
@@ -82,7 +85,15 @@ fn fixed_lagrangian_try_from_points_rejects_out_of_layout_inputs() {
         })
     );
     assert_eq!(
-        FixedLagrangian::try_from_points(2, &[16]),
+        FixedLagrangian::try_from_points(2, &[0, 6, 9]),
+        Err(FixedLagrangianError::PointCountMismatch {
+            n: 2,
+            expected: 4,
+            actual: 3,
+        })
+    );
+    assert_eq!(
+        FixedLagrangian::try_from_points(2, &[0, 6, 9, 16]),
         Err(FixedLagrangianError::PointOutOfRange {
             n: 2,
             point: 16,

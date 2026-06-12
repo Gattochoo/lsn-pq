@@ -91,6 +91,11 @@ pub enum FixedLagrangianError {
         n: usize,
         max_n: usize,
     },
+    PointCountMismatch {
+        n: usize,
+        expected: usize,
+        actual: usize,
+    },
     PointOutOfRange {
         n: usize,
         point: u32,
@@ -125,6 +130,15 @@ impl FixedLagrangian {
 
         let total_dim = 2 * n;
         let universe = 1usize << total_dim;
+        let expected_points = 1usize << n;
+        if points.len() != expected_points {
+            return Err(FixedLagrangianError::PointCountMismatch {
+                n,
+                expected: expected_points,
+                actual: points.len(),
+            });
+        }
+
         for &point in points {
             let index = point as usize;
             if index >= universe {
@@ -688,8 +702,8 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now uses scanned mask lookup for toy membership label generation and an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but secret construction, diagnostic selectors, and leakage audit remain non-production\",\n",
-        "      \"required_action\": \"replace remaining set-style construction and diagnostic membership, replace the bounded reference layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses scanned mask lookup for toy membership label generation, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
         "      \"id\": \"ct-002\",\n",
