@@ -1,7 +1,5 @@
 """Exact small-n helpers for lem:m2 noise-side enumeration."""
-from collections import Counter
 from fractions import Fraction
-from itertools import combinations, product
 
 
 def symplectic_form(u: int, v: int) -> int:
@@ -14,7 +12,7 @@ def symplectic_form(u: int, v: int) -> int:
     ) & 1
 
 
-def enumerate_lagrangian_bases():
+def enumerate_lagrangian_bases() -> list[tuple[int, int]]:
     """Return list of Lagrangian subspaces of F_2^4 as (col0,col1) basis pairs."""
     subspaces = {}
     for v1 in range(1, 1 << 4):
@@ -27,7 +25,7 @@ def enumerate_lagrangian_bases():
     return [c for _, c in sorted(subspaces.items())]
 
 
-def apply_matrix(B_cols, x):
+def apply_matrix(B_cols: list[int], x: int) -> int:
     """B * x over F_2; B_cols is list of m-bit column ints, x is 4-bit int."""
     y = 0
     for j, col in enumerate(B_cols):
@@ -36,7 +34,7 @@ def apply_matrix(B_cols, x):
     return y
 
 
-def bernoulli_product(p: Fraction, m: int):
+def bernoulli_product(p: Fraction, m: int) -> dict[int, Fraction]:
     """Return dict {e_prime: probability} for Bernoulli(p)^m."""
     q = Fraction(1) - p
     dist = {}
@@ -46,7 +44,7 @@ def bernoulli_product(p: Fraction, m: int):
     return dist
 
 
-def sd_to_product(dist, product_dist):
+def sd_to_product(dist: dict[int, Fraction], product_dist: dict[int, Fraction]) -> Fraction:
     """Exact SD between dict dist (sums to 1) and product_dist."""
     keys = set(dist.keys()) | set(product_dist.keys())
     total = Fraction(0)
