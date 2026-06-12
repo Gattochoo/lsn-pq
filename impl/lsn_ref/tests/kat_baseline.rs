@@ -79,6 +79,17 @@ fn fixed_lagrangian_membership_labels_use_mask_path() {
 }
 
 #[test]
+fn fixed_lagrangian_membership_labels_into_fills_existing_buffer() {
+    let fixed = FixedLagrangian::from_points(2, &[0, 6, 9, 15]);
+    let query_points = [15, 14, 9, 6, 0];
+    let mut labels = [9u8; 5];
+
+    fixed.membership_labels_into(&query_points, &mut labels);
+
+    assert_eq!(labels, [1, 0, 1, 1, 1]);
+}
+
+#[test]
 fn fixed_lagrangian_uses_fixed_max_word_storage() {
     assert_eq!(LSN_REF_FIXED_LAGRANGIAN_WORDS, 1024);
 

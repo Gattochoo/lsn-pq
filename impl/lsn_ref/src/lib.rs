@@ -216,11 +216,21 @@ impl FixedLagrangian {
         (self.contains_mask(point) & 1) as u8
     }
 
+    pub fn membership_labels_into(&self, points: &[u32], labels: &mut [u8]) {
+        assert_eq!(
+            points.len(),
+            labels.len(),
+            "membership label output must match public point count"
+        );
+        for (label, &point) in labels.iter_mut().zip(points.iter()) {
+            *label = self.contains_u8(point);
+        }
+    }
+
     pub fn membership_labels(&self, points: &[u32]) -> Vec<u8> {
-        points
-            .iter()
-            .map(|&point| self.contains_u8(point))
-            .collect()
+        let mut labels = vec![0u8; points.len()];
+        self.membership_labels_into(points, &mut labels);
+        labels
     }
 }
 
@@ -731,7 +741,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, centralizes toy label generation through membership_labels, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, centralizes toy label generation through membership_labels, supports caller-owned label buffers via membership_labels_into, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
