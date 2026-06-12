@@ -37,7 +37,7 @@ The practical replacement for exhaustive search is **multi-restart simulated ann
 
 ## What *is* feasible to exhaust
 
-- **$n=1$:** $|A|=3$, so $g$ has $12m$ bits.  Exhaustive search is possible for $m \le 4$.  However, $n=1$ sympLPN is essentially standard LPN and is not representative of the $n \ge 2$ regime.
+- **$n=1$:** $|A|=3$, and $B$ is $m \times 2$, so $g$ has $6m$ bits.  Exhaustive search is possible for $m \le 4$.  However, $n=1$ sympLPN is essentially standard LPN and is not representative of the $n \ge 2$ regime.
 - **Fixed $B$ (independent of $A$):** the space is $2^{4m}$, which is tiny ($2^{16}=65536$ for $m=4$).  But fixed $B$ is not the correct adversarial model $B=g(A)$.
 
 ## Conclusion
