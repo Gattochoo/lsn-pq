@@ -148,6 +148,13 @@ pub struct FixedSclOneBitExpansionRun<const CHILD_CAP: usize, const L: usize, co
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPublicRoundScheduleRun<const L: usize, const N: usize> {
+    pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
+    pub paths: FixedSclPathBuffer<L, N>,
+    pub top: [FixedTopLEntry; L],
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPathBufferIntegerScheduleRun<const L: usize, const N: usize> {
     pub domain_check: FixedSclIntegerScheduleDomainCheck,
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
@@ -479,6 +486,75 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         (compacted, final_top)
     }
 
+    pub fn try_expand_then_compact_public_rounds<
+        const FIRST_CHILD_CAP: usize,
+        const CHILD_CAP: usize,
+        const L: usize,
+        const ROUNDS: usize,
+    >(
+        &self,
+        rounds: [FixedSclRound; ROUNDS],
+    ) -> FixedSclPublicRoundScheduleRun<L, N> {
+        let mut bit_indices = [0usize; ROUNDS];
+        for (index, round) in rounds.iter().enumerate() {
+            bit_indices[index] = round.bit_index;
+        }
+        let path_domain_check = fixed_scl_path_buffer_schedule_domain_check::<
+            CAP,
+            N,
+            FIRST_CHILD_CAP,
+            CHILD_CAP,
+            L,
+            ROUNDS,
+        >(bit_indices);
+        if !path_domain_check.valid {
+            return FixedSclPublicRoundScheduleRun {
+                path_domain_check,
+                paths: FixedSclPathBuffer::<L, N>::new(),
+                top: [FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                }; L],
+            };
+        }
+
+        let Some(first_round) = rounds.first().copied() else {
+            return FixedSclPublicRoundScheduleRun {
+                path_domain_check,
+                paths: FixedSclPathBuffer::<L, N>::new(),
+                top: [FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                }; L],
+            };
+        };
+
+        let first_run = self.try_expand_then_compact_one_bit::<FIRST_CHILD_CAP, L>(
+            first_round.bit_index,
+            first_round.bit0_metric_delta,
+            first_round.bit1_metric_delta,
+        );
+        let mut compacted =
+            FixedSclPathBuffer::<L, N>::from_top_entries(&first_run.children, first_run.top);
+        let mut final_top = first_run.top;
+
+        for round in rounds.iter().skip(1) {
+            let run = compacted.try_expand_then_compact_one_bit::<CHILD_CAP, L>(
+                round.bit_index,
+                round.bit0_metric_delta,
+                round.bit1_metric_delta,
+            );
+            compacted = FixedSclPathBuffer::<L, N>::from_top_entries(&run.children, run.top);
+            final_top = run.top;
+        }
+
+        FixedSclPublicRoundScheduleRun {
+            path_domain_check,
+            paths: compacted,
+            top: final_top,
+        }
+    }
+
     pub fn expand_then_compact_integer_round_schedule<
         const FIRST_CHILD_CAP: usize,
         const CHILD_CAP: usize,
@@ -508,20 +584,19 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         hard_bits: [u8; ROUNDS],
         magnitudes: [i64; ROUNDS],
     ) -> FixedSclPathBufferIntegerScheduleRun<L, N> {
-        let path_domain_check = fixed_scl_path_buffer_schedule_domain_check::<
-            CAP,
-            N,
-            FIRST_CHILD_CAP,
-            CHILD_CAP,
-            L,
-            ROUNDS,
-        >(bit_indices);
         let schedule =
             try_fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes);
-        if !schedule.domain_check.valid || !path_domain_check.valid {
+        if !schedule.domain_check.valid {
             return FixedSclPathBufferIntegerScheduleRun {
                 domain_check: schedule.domain_check,
-                path_domain_check,
+                path_domain_check: fixed_scl_path_buffer_schedule_domain_check::<
+                    CAP,
+                    N,
+                    FIRST_CHILD_CAP,
+                    CHILD_CAP,
+                    L,
+                    ROUNDS,
+                >(bit_indices),
                 paths: FixedSclPathBuffer::<L, N>::new(),
                 top: [FixedTopLEntry {
                     metric: i64::MAX,
@@ -530,15 +605,15 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
             };
         }
 
-        let (paths, top) = self
-            .expand_then_compact_public_rounds::<FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(
+        let run = self
+            .try_expand_then_compact_public_rounds::<FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(
                 schedule.rounds,
             );
         FixedSclPathBufferIntegerScheduleRun {
             domain_check: schedule.domain_check,
-            path_domain_check,
-            paths,
-            top,
+            path_domain_check: run.path_domain_check,
+            paths: run.paths,
+            top: run.top,
         }
     }
 }
@@ -966,6 +1041,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"try_expand_then_compact_one_bit: non-panicking one-bit expand then compact wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"try_expand_then_compact_public_rounds: non-panicking multi-round public schedule wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
