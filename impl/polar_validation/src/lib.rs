@@ -2046,9 +2046,12 @@ pub fn fixed_scl_integer_round_schedule_build_plan<const ROUNDS: usize>(
     magnitudes: [i64; ROUNDS],
 ) -> FixedSclIntegerRoundScheduleBuildPlan {
     let domain_check = fixed_scl_integer_schedule_domain_check(hard_bits, magnitudes);
+    let invalid_usize = usize::from(domain_check.valid) ^ 1;
+    let invalid_mask_usize = 0usize.wrapping_sub(invalid_usize);
+
     FixedSclIntegerRoundScheduleBuildPlan {
         domain_check,
-        round_slots_written: if domain_check.valid { ROUNDS } else { 0 },
+        round_slots_written: select_usize(invalid_mask_usize, ROUNDS, 0),
     }
 }
 

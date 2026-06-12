@@ -3142,6 +3142,40 @@ fn fixed_scl_integer_round_build_parity_check_reports_match_and_mismatch() {
 }
 
 #[test]
+fn fixed_scl_integer_round_schedule_build_plan_reports_invalid_without_work() {
+    assert_eq!(
+        fixed_scl_integer_round_schedule_build_plan([1, 1], [3, -5]),
+        FixedSclIntegerRoundScheduleBuildPlan {
+            domain_check: FixedSclIntegerScheduleDomainCheck {
+                rounds: 2,
+                valid: false,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+                first_invalid_round: 1,
+            },
+            round_slots_written: 0,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_round_schedule_build_plan_uses_status_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn fixed_scl_integer_round_schedule_build_plan")
+        .expect("fixed_scl_integer_round_schedule_build_plan source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_integer_round_build_certificate")
+        .map(|offset| helper_start + offset)
+        .expect("fixed_scl_integer_round_build_certificate should follow build plan");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if domain_check.valid"));
+    assert!(helper_source.contains("let invalid_usize = usize::from(domain_check.valid) ^ 1;"));
+    assert!(helper_source.contains("let invalid_mask_usize = 0usize.wrapping_sub(invalid_usize);"));
+    assert!(helper_source.contains("round_slots_written: select_usize("));
+}
+
+#[test]
 fn try_fixed_scl_integer_round_schedule_reports_invalid_without_panicking() {
     assert_eq!(
         try_fixed_scl_integer_round_schedule([0, 1], [false, true], [1, 1], [3, -5]),
