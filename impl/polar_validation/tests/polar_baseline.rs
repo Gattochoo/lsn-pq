@@ -32,6 +32,7 @@ use polar_validation::{
     polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
+    two_public_bits_run_shape_certificate, two_public_bits_shape_parity_check,
     zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
     FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
     FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
@@ -254,6 +255,10 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("one-bit run/preflight shape parity record"));
     assert!(json.contains("expand_then_compact_two_public_bits"));
     assert!(json.contains("two-round public-bit loop"));
+    assert!(json.contains("two_public_bits_run_shape_certificate"));
+    assert!(json.contains("two-public-bits run/preflight shape certificate adapter"));
+    assert!(json.contains("two_public_bits_shape_parity_check"));
+    assert!(json.contains("two-public-bits run/preflight shape parity record"));
     assert!(json.contains("FixedSclRound"));
     assert!(json.contains("expand_then_compact_public_rounds"));
     assert!(json.contains("public round schedule"));
@@ -1027,6 +1032,39 @@ fn fixed_scl_path_buffer_try_two_public_bits_matches_valid_helper() {
             },
             paths,
             top,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_two_public_bits_shape_parity_check_reports_match_and_mismatch() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let run = parents.try_expand_then_compact_two_public_bits::<4, 4, 2>((2, 5, -1), (4, 7, 0));
+    let expected_shape_plan =
+        fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 2>([2, 4]);
+
+    assert_eq!(
+        two_public_bits_shape_parity_check(&run, expected_shape_plan),
+        FixedSclPublicRoundShapeParityCheck {
+            matches: true,
+            run_shape_certificate: expected_shape_plan,
+            expected_shape_plan,
+        }
+    );
+
+    let mut altered_run = run;
+    altered_run.work_counts.rounds = 0;
+    let altered_certificate = two_public_bits_run_shape_certificate(&altered_run);
+
+    assert_eq!(
+        two_public_bits_shape_parity_check(&altered_run, expected_shape_plan),
+        FixedSclPublicRoundShapeParityCheck {
+            matches: false,
+            run_shape_certificate: altered_certificate,
+            expected_shape_plan,
         }
     );
 }

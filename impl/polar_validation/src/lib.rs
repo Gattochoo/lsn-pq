@@ -1145,6 +1145,19 @@ pub fn fixed_scl_public_round_shape_parity_check<const L: usize, const N: usize>
     }
 }
 
+pub fn two_public_bits_run_shape_certificate<const L: usize, const N: usize>(
+    run: &FixedSclPublicRoundScheduleRun<L, N>,
+) -> FixedSclPublicRoundScheduleShapePlan {
+    fixed_scl_public_round_run_shape_certificate(run)
+}
+
+pub fn two_public_bits_shape_parity_check<const L: usize, const N: usize>(
+    run: &FixedSclPublicRoundScheduleRun<L, N>,
+    expected_shape_plan: FixedSclPublicRoundScheduleShapePlan,
+) -> FixedSclPublicRoundShapeParityCheck {
+    fixed_scl_public_round_shape_parity_check(run, expected_shape_plan)
+}
+
 pub fn fixed_scl_one_bit_run_plan_certificate<
     const CHILD_CAP: usize,
     const L: usize,
@@ -1605,6 +1618,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_one_bit_shape_parity_check: one-bit run/preflight shape parity record that compares run-derived and execution-free one-bit certificates only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_two_public_bits: non-panicking two-round public-bit helper that delegates to public schedule domain checks; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"two_public_bits_run_shape_certificate: two-public-bits run/preflight shape certificate adapter for comparing wrapper-specific source-level run status and work shape with execution-free public preflight; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"two_public_bits_shape_parity_check: two-public-bits run/preflight shape parity record that reuses the public-round parity surface for the dedicated wrapper; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_public_rounds: non-panicking multi-round public schedule wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_run_shape_certificate: public run-shape certificate adapter for comparing source-level run status and work counts with execution-free schedule-shape preflight; not wired into decode_scl; generated-code and timing audit pending\",\n",
