@@ -203,6 +203,10 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("public round schedule"));
     assert!(json.contains("fixed_scl_public_round_work_counts"));
     assert!(json.contains("public work-count audit"));
+    assert!(json.contains("\"public_work_count_examples\""));
+    assert!(json.contains("\"top_l_compare_exchanges\": 18"));
+    assert!(json.contains("\"child_slots_written\": 12"));
+    assert!(json.contains("\"compacted_slots_written\": 6"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
