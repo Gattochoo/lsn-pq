@@ -40,14 +40,16 @@ tectonic lsn-paper.tex  # companion technical report (constructions)
 ## Repository structure
 
 ```
-paper/           LaTeX sources and PDFs
+paper/           LaTeX sources and PDFs (lsn-core = submitted core paper;
+                 lsn-paper = companion technical report).
 experiments/     Numbered Python verification scripts + result JSONs.
                  Every numerical claim in the paper has a reproducing script here.
+impl/            Rust crates: lsn_ref (reference scaffold + KAT), lsn_cryptanalysis
+                 (attack screens), polar_validation (polar-code decoder validation).
 meta/            Research record: source-accuracy pins (verbatim quotes of cited
                  theorems with page numbers), adjudication reports, research
                  directives, and dated decision documents.
-kat/             Reserved for LSN-KEM known-answer test vectors (future production impl)
-test_vectors/    Reserved for additional LSN test vectors
+docs/            Design and planning documents.
 ```
 
 The `meta/` directory is the project's audit trail: external citations are pinned verbatim
@@ -71,7 +73,7 @@ re-derivation before entering the paper (`meta/2026-06-10-CLAUDE-*` adjudication
 
 Dual-licensed:
 
-- **Code** (`experiments/`, `impl/`, `kat/`, `test_vectors/`, future implementations): [Apache License 2.0](LICENSE) — permissive, with an explicit patent grant and retaliation clause.
+- **Code** (`experiments/`, `impl/`, and future implementations): [Apache License 2.0](LICENSE) — permissive, with an explicit patent grant and retaliation clause.
 - **Documents** (`paper/`, `meta/`, this README): [CC BY 4.0](LICENSE-docs) — free to share and adapt with attribution.
 
 See `NOTICE` for the attribution line. No patents are or will be sought on the LSN constructions by the author; the scheme is offered royalty-free to maximize community analysis and adoption.
