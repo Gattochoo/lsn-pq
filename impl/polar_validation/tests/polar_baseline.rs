@@ -209,6 +209,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("integer metric delta audit"));
     assert!(json.contains("fixed_scl_integer_round_schedule"));
     assert!(json.contains("public integer round schedule audit"));
+    assert!(json.contains("expand_then_compact_integer_round_schedule"));
+    assert!(json.contains("integer schedule source-level loop"));
     assert!(json.contains("\"public_work_count_examples\""));
     assert!(json.contains("\"top_l_compare_exchanges\": 18"));
     assert!(json.contains("\"child_slots_written\": 12"));
@@ -430,6 +432,38 @@ fn fixed_scl_path_buffer_runs_public_round_schedule() {
             FixedTopLEntry {
                 metric: 6,
                 index: 0,
+            },
+        ]
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_runs_generated_integer_round_schedule() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let (final_paths, final_top) = parents
+        .expand_then_compact_integer_round_schedule::<4, 4, 2, 3>(
+            [2, 4, 5],
+            [false, false, true],
+            [1, 1, 1],
+            [5, 7, 4],
+        );
+
+    assert_eq!(final_paths.active_count(), 2);
+    assert_eq!(final_paths.bits(0), [1, 1, 1, 1, 1, 0, 1, 1]);
+    assert_eq!(final_paths.bits(1), [1, 1, 0, 1, 1, 0, 1, 1]);
+    assert_eq!(
+        final_top,
+        [
+            FixedTopLEntry {
+                metric: 7,
+                index: 0,
+            },
+            FixedTopLEntry {
+                metric: 12,
+                index: 2,
             },
         ]
     );

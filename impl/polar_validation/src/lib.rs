@@ -347,6 +347,23 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
 
         (compacted, final_top)
     }
+
+    pub fn expand_then_compact_integer_round_schedule<
+        const FIRST_CHILD_CAP: usize,
+        const CHILD_CAP: usize,
+        const L: usize,
+        const ROUNDS: usize,
+    >(
+        &self,
+        bit_indices: [usize; ROUNDS],
+        frozen_bits: [bool; ROUNDS],
+        hard_bits: [u8; ROUNDS],
+        magnitudes: [i64; ROUNDS],
+    ) -> (FixedSclPathBuffer<L, N>, [FixedTopLEntry; L]) {
+        let rounds =
+            fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes);
+        self.expand_then_compact_public_rounds::<FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(rounds)
+    }
 }
 
 impl<const CAP: usize, const N: usize> Default for FixedSclPathBuffer<CAP, N> {
@@ -618,7 +635,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
-        "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"expand_then_compact_integer_round_schedule: integer schedule source-level loop over fixed path buffers only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"public_work_count_examples\": [\n",
         "    {\n",
