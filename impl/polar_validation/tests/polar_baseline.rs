@@ -16,18 +16,18 @@
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
-    fixed_schedule_top_l_i64, fixed_scl_binary_child_write_domain_check,
-    fixed_scl_child_write_domain_failure_label, fixed_scl_integer_metric_deltas,
-    fixed_scl_integer_round_schedule, fixed_scl_integer_round_schedule_plan,
-    fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
-    fixed_scl_path_buffer_schedule_domain_check, fixed_scl_path_domain_failure_label,
-    fixed_scl_public_round_schedule_plan, fixed_scl_public_round_work_counts,
-    fixed_scl_public_round_work_counts_with_capacities, fixed_scl_round_schedule_plan,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    fixed_schedule_top_l_i64, fixed_schedule_top_l_selection_plan,
+    fixed_scl_binary_child_write_domain_check, fixed_scl_child_write_domain_failure_label,
+    fixed_scl_integer_metric_deltas, fixed_scl_integer_round_schedule,
+    fixed_scl_integer_round_schedule_plan, fixed_scl_integer_schedule_domain_check,
+    fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
+    fixed_scl_path_domain_failure_label, fixed_scl_public_round_schedule_plan,
+    fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
+    fixed_scl_round_schedule_plan, high_noise_control_configs, importance_results_to_json,
+    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck,
+    zero_error_upper_bound, FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
     FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
     FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
     FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
@@ -43,7 +43,8 @@ use polar_validation::{
     FIXED_SCL_PATH_DOMAIN_BIT_INDEX, FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
     FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS, FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
     FIXED_SCL_PATH_DOMAIN_OK, FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY,
-    FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
+    FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH, FIXED_TOP_L_SELECTION_DOMAIN_OK,
+    FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
 };
 
 #[test]
@@ -220,6 +221,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     );
     assert!(json.contains("forbidden sentinel must remain terminal"));
     assert!(json.contains("fixed_schedule_top_l_i64"));
+    assert!(json.contains("fixed_schedule_top_l_selection_plan"));
+    assert!(json.contains("execution-free top-L selection preflight"));
     assert!(json.contains("FixedSclPathBuffer"));
     assert!(json.contains("fixed_scl_binary_child_write_domain_check"));
     assert!(json.contains("public child-write domain validator"));
@@ -447,6 +450,30 @@ fn fixed_schedule_top_l_selects_lowest_metrics_with_stable_ties() {
         ]
     );
     assert_eq!(fixed_schedule_top_l_compare_count(8), 28);
+}
+
+#[test]
+fn fixed_schedule_top_l_selection_plan_reports_public_shape_without_sorting() {
+    assert_eq!(
+        fixed_schedule_top_l_selection_plan(8, 4),
+        FixedScheduleTopLSelectionPlan {
+            width: 8,
+            list_size: 4,
+            valid: true,
+            failure_code: FIXED_TOP_L_SELECTION_DOMAIN_OK,
+            compare_exchanges: 28,
+        }
+    );
+    assert_eq!(
+        fixed_schedule_top_l_selection_plan(2, 3),
+        FixedScheduleTopLSelectionPlan {
+            width: 2,
+            list_size: 3,
+            valid: false,
+            failure_code: FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
+            compare_exchanges: 0,
+        }
+    );
 }
 
 #[test]

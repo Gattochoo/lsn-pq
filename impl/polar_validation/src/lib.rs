@@ -98,6 +98,8 @@ pub const FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX: u8 = 3;
 pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK: u8 = 0;
 pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT: u8 = 1;
 pub const FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE: u8 = 2;
+pub const FIXED_TOP_L_SELECTION_DOMAIN_OK: u8 = 0;
+pub const FIXED_TOP_L_SELECTION_DOMAIN_WIDTH: u8 = 1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclIntegerScheduleDomainFailureLabel {
@@ -226,6 +228,15 @@ pub fn fixed_scl_path_domain_failure_label(code: u8) -> &'static str {
 pub struct FixedSclMetricDeltas {
     pub bit0_metric_delta: i64,
     pub bit1_metric_delta: i64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedScheduleTopLSelectionPlan {
+    pub width: usize,
+    pub list_size: usize,
+    pub valid: bool,
+    pub failure_code: u8,
+    pub compare_exchanges: usize,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -882,6 +893,28 @@ pub fn fixed_schedule_top_l_compare_count(width: usize) -> usize {
     width.saturating_mul(width.saturating_sub(1)) / 2
 }
 
+pub fn fixed_schedule_top_l_selection_plan(
+    width: usize,
+    list_size: usize,
+) -> FixedScheduleTopLSelectionPlan {
+    let valid = list_size <= width;
+    FixedScheduleTopLSelectionPlan {
+        width,
+        list_size,
+        valid,
+        failure_code: if valid {
+            FIXED_TOP_L_SELECTION_DOMAIN_OK
+        } else {
+            FIXED_TOP_L_SELECTION_DOMAIN_WIDTH
+        },
+        compare_exchanges: if valid {
+            fixed_schedule_top_l_compare_count(width)
+        } else {
+            0
+        },
+    }
+}
+
 pub fn fixed_scl_round_schedule_plan<
     const CAP: usize,
     const N: usize,
@@ -1337,6 +1370,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "  ],\n",
         "  \"prototype_building_blocks\": [\n",
         "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_schedule_top_l_selection_plan: execution-free top-L selection preflight for public width, list size, and compare-exchange count only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_binary_child_write_domain_check: public child-write domain validator for parent slot, destination capacity, and bit index before fixed-slot writes; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_write_binary_children_from: non-panicking child-write wrapper that skips fixed-slot writes on invalid public inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
