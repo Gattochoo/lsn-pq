@@ -29,7 +29,8 @@ use polar_validation::{
     fixed_scl_public_round_schedule_plan, fixed_scl_public_round_schedule_shape_plan,
     fixed_scl_public_round_shape_parity_check, fixed_scl_public_round_work_counts,
     fixed_scl_public_round_work_counts_with_capacities, fixed_scl_public_round_work_shape_plan,
-    fixed_scl_round_schedule_plan, fixed_top_l_selection_domain_failure_label,
+    fixed_scl_round_schedule_plan, fixed_scl_round_schedule_plan_certificate,
+    fixed_scl_round_schedule_plan_parity_check, fixed_top_l_selection_domain_failure_label,
     high_noise_control_configs, importance_results_to_json, polar_rate_row,
     polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
@@ -46,8 +47,9 @@ use polar_validation::{
     FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
     FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun,
     FixedSclPublicRoundScheduleShapePlan, FixedSclPublicRoundShapeParityCheck,
-    FixedSclPublicRoundWorkCounts, FixedSclPublicRoundWorkShapePlan, FixedSclRound, FixedTopLEntry,
-    PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FixedSclPublicRoundWorkCounts, FixedSclPublicRoundWorkShapePlan, FixedSclRound,
+    FixedSclRoundSchedulePlanParityCheck, FixedTopLEntry, PolarCode,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
     FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
@@ -277,6 +279,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("public run/preflight shape parity record"));
     assert!(json.contains("fixed_scl_round_schedule_plan"));
     assert!(json.contains("execution-free FixedSclRound schedule preflight"));
+    assert!(json.contains("fixed_scl_round_schedule_plan_parity_check"));
+    assert!(json.contains("FixedSclRound schedule/public preflight parity record"));
     assert!(json.contains("fixed_scl_public_round_schedule_plan"));
     assert!(json.contains("execution-free public schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_schedule_shape_plan"));
@@ -1611,6 +1615,44 @@ fn fixed_scl_round_schedule_plan_reads_round_bit_indices_without_expansion() {
     );
     assert_eq!(invalid.path_domain_check.first_invalid_round, 1);
     assert_eq!(invalid.work_counts.rounds, 0);
+}
+
+#[test]
+fn fixed_scl_round_schedule_plan_parity_check_reports_match_and_mismatch() {
+    let rounds = [
+        FixedSclRound::new(2, 5, -1),
+        FixedSclRound::new(4, 7, 0),
+        FixedSclRound::new(5, 4, -2),
+    ];
+    let expected_public_plan = fixed_scl_public_round_schedule_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5]);
+
+    assert_eq!(
+        fixed_scl_round_schedule_plan_parity_check::<2, 8, 4, 4, 2, 3>(
+            rounds,
+            expected_public_plan,
+        ),
+        FixedSclRoundSchedulePlanParityCheck {
+            matches: true,
+            round_schedule_plan: expected_public_plan,
+            expected_public_plan,
+        }
+    );
+
+    let altered_expected_public_plan =
+        fixed_scl_public_round_schedule_plan::<2, 8, 4, 4, 2, 3>([2, 8, 5]);
+    let round_schedule_plan = fixed_scl_round_schedule_plan_certificate::<2, 8, 4, 4, 2, 3>(rounds);
+
+    assert_eq!(
+        fixed_scl_round_schedule_plan_parity_check::<2, 8, 4, 4, 2, 3>(
+            rounds,
+            altered_expected_public_plan,
+        ),
+        FixedSclRoundSchedulePlanParityCheck {
+            matches: false,
+            round_schedule_plan,
+            expected_public_plan: altered_expected_public_plan,
+        }
+    );
 }
 
 #[test]
