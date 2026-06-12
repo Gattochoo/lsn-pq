@@ -33,13 +33,13 @@
 | 3 | 0.187 | **0.129** | 0 | 500K | completed |
 | 4 ($=2n$) | 0.363 | **0.297** | 0 | 500K | completed |
 | 5 ($>2n$) | 0.536 | **0.458** | 0 | 300K | completed |
-| 6 ($>2n$) | 0.728 | $\ge 0.720$ | 0 | partial | in progress |
-| 7 ($>2n$) | — | — | — | — | pending |
+| 6 ($>2n$) | 0.728 | **0.704** | 0 | 100K | partial (timeout) |
+| 7 ($>2n$) | — | — | — | 50K | in progress |
 
 - $m=2$: $SD \approx 0.047$, but $m=2n$ is degenerate.
-- $m=3,4,5$: $SD$ **increases monotonically** with $m$.
-- $m=5$: even optimized $g$ leaves $SD \approx 0.458$, i.e. $\approx 46\%$ distinguishing advantage.
-- $m=6$ partial result already exceeds $0.72$.
+- $m=3,4,5,6$: $SD$ **increases monotonically** with $m$.
+- $m=5$: optimized $g$ leaves $SD \approx 0.458$ ($\approx 46\%$ distinguishing advantage).
+- $m=6$ partial (100K iters): $SD$ down to $0.704$ and still slowly improving; clearly bounded away from $0$.
 
 ## 4. Interpretation (correct sign)
 
@@ -49,6 +49,6 @@
 
 ## 5. Next steps
 
-1. Complete $m=6,7$ runs to confirm the trend.
-2. If $SD$ stays bounded away from $0$ (and grows) for $m > 2n$, record this as **support for lem:m2**.
+1. Complete $m=7$ run to confirm the trend.
+2. If $m=7$ also gives $SD$ bounded away from $0$, record this as **support for lem:m2**.
 3. Only if $SD \to 0$ for some $m > 2n$ should we claim a disproof.
