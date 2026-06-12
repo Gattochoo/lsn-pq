@@ -54,7 +54,7 @@
 \maketitle
 
 \begin{abstract}
-We study the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem in which the secret is a Lagrangian subspace of a symplectic vector space over $\F_2$ rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form; closely related problems were recently introduced by Khesin et al.\ and Lu et al. Our results are of three kinds. (1)~\emph{Lower bounds.} We prove an exact pairwise-correlation formula for the membership formulation, with no asymptotic error term, and derive from it an unconditional Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, as well as a conditional $2^{2n-O(1)}$ bound under a precisely stated extremality conjecture. We further prove an exact closed form for every subset moment of the isotropic row ensemble, showing that fixed-size row bundles converge to the unconstrained LPN ensemble at rate $\Theta(4^{-n})$. (2)~\emph{Barriers.} We establish a near-complete impossibility landscape for linear reductions from symplectic LPN to standard LPN: a transport-based rank stratification rules out every public-matrix linear reduction at all sample counts and noise rates; an entropy-continuity argument rules out every fixed linear reduction; and an entropy-support counting bound forces all but $O(n)$ rows, in expectation, of any marginally-uniform adaptive reduction to have linear Hamming weight. Three of the four cells of the linear landscape are thereby closed unconditionally, and the deterministic half of the fourth (marginal-adaptive) cell is also closed by a support-counting bound, leaving only the randomized marginal-adaptive half as a single precisely stated open problem. (3)~\emph{Separations.} We separate the membership and batch formulations by information-theoretic floors, give a precise positioning against the stabilizer-decoding formulation, and state the standard-model gap that remains for general non-linear reductions. Every claim in the paper is a proved theorem, an explicitly labeled piece of empirical evidence, or an explicitly labeled conjecture.
+We study the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem in which the secret is a Lagrangian subspace of a symplectic vector space over $\F_2$ rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form; closely related problems were recently introduced by Khesin et al.\ and Lu et al. Our results are of three kinds. (1)~\emph{Lower bounds.} We prove an exact pairwise-correlation formula for the membership formulation, with no asymptotic error term, and derive from it an unconditional Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, as well as a conditional $2^{2n-O(1)}$ bound under a precisely stated extremality conjecture. We further prove an exact closed form for every subset moment of the isotropic row ensemble, showing that fixed-size row bundles converge to the unconstrained LPN ensemble at rate $\Theta(4^{-n})$; the same character-sum technique gives exact likelihood-ratio correlations for the sympLPN formulation itself (off-diagonal exactly $-((1+\tau)^{2n}-1)/(2^{2n}-1)$, versus $0$ unconstrained) and a $2^{c_p n}$-query SQ bound at constant VSTAT strength. (2)~\emph{Barriers.} We establish a near-complete impossibility landscape for linear reductions from symplectic LPN to standard LPN: a transport-based rank stratification rules out every public-matrix linear reduction at all sample counts and noise rates; an entropy-continuity argument rules out every fixed linear reduction; and an entropy-support counting bound forces all but $O(n)$ rows, in expectation, of any marginally-uniform adaptive reduction to have linear Hamming weight. Three of the four cells of the linear landscape are thereby closed unconditionally, and the deterministic half of the fourth (marginal-adaptive) cell is also closed by a support-counting bound, leaving only the randomized marginal-adaptive half as a single precisely stated open problem. (3)~\emph{Separations.} We separate the membership and batch formulations by information-theoretic floors, give a precise positioning against the stabilizer-decoding formulation, and state the standard-model gap that remains for general non-linear reductions. Every claim in the paper is a proved theorem, an explicitly labeled piece of empirical evidence, or an explicitly labeled conjecture.
 \end{abstract}
 
 \paragraph{\textbf{Keywords.}} Post-quantum cryptography, Learning Parity with Noise, statistical query model, symplectic geometry, lower bounds, black-box reductions.
@@ -93,7 +93,7 @@ Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cit
 Our contributions are organized around lower bounds, exact moment computations, and reduction barriers.
 
 \begin{enumerate}
-    \item \textbf{Exact SQ lower bound (\Cref{sec:sq}).} We prove an unconditional $\Omega(2^n)$ SQ query lower bound via an explicit symplectic spread, and a conditional $q \geq 2^{2n - O(1)}$ bound under a pencil-extremality conjecture. Both rest on an exact pairwise-correlation formula
+    \item \textbf{Exact SQ lower bound (\Cref{sec:sq}).} We prove an unconditional $\Omega(2^n)$ SQ query lower bound via an explicit symplectic spread, and a conditional $q \geq 2^{2n - O(1)}$ bound under a pencil-extremality conjecture. For the sympLPN formulation itself we prove exact likelihood-ratio correlations (\Cref{thm:symplpn-corr}; the isotropic conditioning contributes only an exponentially small negative off-diagonal term) and a $2^{c_p n}$-query SQ bound at constant VSTAT strength (\Cref{cor:symplpn-sq}). Both membership bounds rest on an exact pairwise-correlation formula
     \[
     \langle D_L, D_{L'} \rangle = \frac{(1-2p)^2}{p(1-p)} \cdot 2^{j-2n},
     \]
@@ -545,6 +545,46 @@ For real-linear queries, direct computation gives that $\E_a[\langle w,a\rangle]
 \]
 If $w\in L^\perp$ then $\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]=0$ and the advantage is $(1-2p)2^{-n}$. If $w\notin L^\perp$ then $\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]=2^{-n-1}$ and the expectation collapses to $1/2$, giving advantage $0$. Thus no F$_2$-linear query has advantage larger than $(1-2p)2^{-n}$.
 \end{proof}
+
+\subsection{The sympLPN Formulation: Exact Correlations and an SQ Bound}
+\label{subsec:symplpn-sq}
+
+The bounds above concern the membership formulation. The same character-sum technique gives exact pairwise correlations --- and an SQ lower bound --- for the \emph{sympLPN} formulation itself, whose secret space is only $\F_2^n$, so no bound for it can exceed $2^n$. Here one sample is the full block $(A, y)$ with $A \sim \mathcal{A}_n$, $y = Ax + e$, $e \sim \mathrm{Bernoulli}(p)^{2n}$; the null $D_0$ draws $y$ uniform, independent of $A$.
+
+\begin{theorem}[Exact sympLPN correlations]
+\label{thm:symplpn-corr}
+Let $\tau = (1-2p)^2$ and $\langle D_x, D_{x'} \rangle = \E_{D_0}[(\tfrac{D_x}{D_0}-1)(\tfrac{D_{x'}}{D_0}-1)]$. Under the isotropic ensemble,
+\[
+\langle D_x, D_x \rangle = (1+\tau)^{2n} - 1, \qquad
+\langle D_x, D_{x'} \rangle = -\frac{(1+\tau)^{2n}-1}{2^{2n}-1} \quad (x \neq x').
+\]
+Moreover, for every non-empty $S \subseteq [2n]$, the bundle-parity query $h^{(S)}(A,y) = (-1)^{\sum_{i \in S} y_i}$ has advantage function $g_x(A) = \E_{D_x \mid A}[h^{(S)}] = (-1)^{\langle \mathbf 1_S, Ax\rangle}(1-2p)^{|S|}$ with $\E_A[g_x g_{x'}] = (1-2p)^{2|S|}$ if $x = x'$ and $-(1-2p)^{2|S|}/(2^{2n}-1)$ otherwise.
+\end{theorem}
+
+\begin{proof}
+Conditioned on $A$ the likelihood ratio factorizes, $D_x(y \mid A)/D_0(y \mid A) = \prod_{i=1}^{2n} \bigl(1 + (1-2p)(-1)^{y_i + \langle a_i, x \rangle}\bigr)$, and averaging the product for the pair $(x,x')$ over $y \sim D_0$ leaves $\prod_{i=1}^{2n}(1 + \tau(-1)^{v_i})$ with $v = A(x + x')$. For $x = x'$ this is $(1+\tau)^{2n}$. For $x \neq x'$, expand $\prod_i (1 + \tau (-1)^{v_i}) = \sum_{S} \tau^{|S|} (-1)^{\langle \mathbf 1_S, v \rangle}$; the vector $v = Aw$ ($w = x + x' \neq 0$) is uniform over $L \setminus \{0\}$ for $L = \operatorname{colspan}(A)$. For a fixed Lagrangian the character sum is
+\[
+\sum_{v \in L} (-1)^{\langle \mathbf 1_S, v \rangle} = 2^n \cdot \mathbf 1_{\{J \mathbf 1_S \in L\}},
+\]
+where $J$ is the Gram matrix of $\Omega$ (the coordinate involution $i \mapsto i \pm n$): the Euclidean dual of $L$ is $J L^{\perp_\Omega} = JL$, and the twist by $J$ matters --- e.g.\ $L = \operatorname{span}\{e_1, e_2\}$ with $S = \{1\}$ has sum $0$, not $2^n$. Since $J \mathbf 1_S \neq 0$, $\Pr_L[J \mathbf 1_S \in L] = 1/(2^n+1)$ by $\mathrm{Sp}$-transitivity, whence for every non-empty $S$
+\[
+\E_A\bigl[(-1)^{\langle \mathbf 1_S, Aw \rangle}\bigr] = \frac{1}{2^n - 1}\Bigl(\frac{2^n}{2^n+1} - 1\Bigr) = -\frac{1}{2^{2n}-1}.
+\]
+Summing the expansion gives the off-diagonal value; the bundle-parity statement is the single-$S$ case. All values were verified by exhaustive enumeration of the full ensemble at $n = 2, 3$.
+\end{proof}
+
+Two readings. First, this answers the correlation-level form of Open Problem~1 for the sympLPN formulation: for the \emph{unconstrained} LPN ensemble the off-diagonal correlation is exactly $0$ (there $Aw$ is uniform over $\F_2^{2n}$), so the isotropic conditioning $S_A = 0$ contributes exactly $-((1+\tau)^{2n}-1)/(2^{2n}-1)$ --- negative, and exponentially smaller than the diagonal. The conditioning does not help an SQ adversary. Second, the diagonal $(1+\tau)^{2n}-1$ is exponentially \emph{large} (one sympLPN sample is a full $2n$-row block), which intrinsically limits the VSTAT strength of the resulting bound:
+
+\begin{corollary}[sympLPN SQ bound]
+\label{cor:symplpn-sq}
+Let $\beta = (1+\tau)^{2n}-1$ and fix $0 \leq t \leq n-1$. Every subset of $\{D_x\}_{x \in \F_2^n}$ of size at least $2^{n-t}$ has diagonal-inclusive average correlation at most $\gamma_t = 2\beta\, 2^{t-n}$, so $\SDA(B(\{D_x\}, D_0), \gamma_t) \geq 2^t$, and any SQ algorithm distinguishing $\{D_x\}$ from $D_0$ with probability $> 2/3$ requires $\geq 2^t/3$ queries to $\VSTAT(2^{n-t}/(6\beta))$. The oracle is non-trivial ($\VSTAT$ strength $\geq 1$) for $t \leq c_p\, n - O(1)$ with $c_p = 1 - 2\log_2(1+\tau)$; at $p = 1/4$, $c_p = 1 - 2\log_2(5/4) \approx 0.356$, giving a $2^{c_p n - O(1)}$-query bound at constant VSTAT strength.
+\end{corollary}
+
+\begin{proof}
+For $|T| \geq 2^{n-t}$ the off-diagonal terms contribute at most $\beta/(2^{2n}-1)$ each and the diagonal terms $\beta/|T| \leq \beta\, 2^{t-n}$, so the average is at most $\beta(2^{t-n} + (2^{2n}-1)^{-1}) \leq 2\beta\, 2^{t-n}$. Hence $\SDA \geq 2^n/2^{n-t} = 2^t$, and \Cref{thm:feldman} with $\alpha = 2/3$ gives the query bound. The strength condition $2^{n-t} \geq 6\beta$ rearranges to $t \leq n(1 - 2\log_2(1+\tau)) - O(1)$.
+\end{proof}
+
+The $2^n$ cap (small secret space) and the $c_p$ haircut (per-block $\chi^2$) are both intrinsic to the sympLPN formulation; the membership formulation, whose per-sample divergence is exponentially small, is where the $\Omega(2^n)$ unconditional and $2^{2n-O(1)}$ conditional bounds live. The two formulations are complementary, not interchangeable.
 
 
 \section{Exact Moments of the Isotropic Row Ensemble}

@@ -20,6 +20,7 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 | S3 | **★일반-j moment 폐형**(thm:mj-general): 모든 $1\le j\le 2n$에 대해 $m_j$ 정확 폐형, $\|m_j-(1/4)^j\|=\Theta(4^{-n})$ | general-j commit | abstract "second/third"→"every subset moment"; thm:mj-general 신설; cor:bundle "$k\le3$"→"every fixed $k$"; Honest-Lim "order $j\le3$"→"every fixed $j$"($j{=}\Theta(n)$만 열림) | exp/**194** from-scratch(정의-열거, 궤도분해 우회) 모든 $j$·$n{=}2,3,4$ 정확 일치; Kimi "Consequences" 부호오류 2개 배제 |
 | S4 | **최대블록 분산승수 폐형**(prop:vmax): $V_{2n}$ 일반-σ² 정확 폐형, p=1/4에서 상대편차 $-2(25/64)^n+O(4^{-n})$(음·지수소) | batch-variance commit | prop:vmax 신설(cor:bundle 직후); "suppression 폐형 없음" 문장 대체; Honest-Lim "fixed order+one growing-block functional"로 한정 강화(j=Θ(n) 분포 전체는 여전히 open) | exp/**196** 3중(정의-열거 n=2,3,4·독자유도 n=2..14·점근 7.422e-9) + 일반-p 4개 잡음률 정확 대조 |
 | S5 | **★OP7 궤도-family 정리**(Track B): 모든 $n$·모든 $S_1,S_2\in\mathrm{Sp}$에서 SD$=1-\tfrac{p^2+(1-p)^2}{4^n}=1-\tfrac{5}{8\cdot4^n}$ — freshness 음성 결판(T-독립성 전단사 + 대각질량) | ecacd48 + OP7-upgrade commit | Open Problems "Sample freshness" 격상: n=2 경험적→모든 n 정리; 열린 질문을 궤도-family 밖으로 정밀화 | exp/**251** 직접구성(전단사 우회): n=2 random T 10개·n=3 random T 3개·n=1 경계 전부 폐형 일치; Q 대각질량 5/128·5/512 확인 |
+| S6 | **★sympLPN 정확 상관 + SQ 하한**(Track E, 정정 통합): likelihood-ratio diag $(1+\tau)^{2n}{-}1$·off $-\,$diag$/(2^{2n}{-}1)$ (unconstrained=0과 대조, OP1 상관-수준 답) + $2^{c_pn}$-쿼리 SQ 하한($c_p{=}1{-}2\log_2(1{+}\tau)\approx0.356$@p=1/4) | aa02290 + sympLPN-integrate commit | §4 끝 subsec:symplpn-sq 신설(thm:symplpn-corr + cor:symplpn-sq, σ-twist 수정 증명); abstract·기여 bullet 갱신. **Kimi §6 SDA 적용은 3중 결함으로 기각·정정본만 수록**(인덱싱 스왑/singleton 대각/지수 대각 VSTAT 잠식) | exp/**253** 전 앙상블 전수(90·22680행렬): character 평균 전 S×w, n=2 (A,y) 완전직접+주변화 항등식, σ-twist 반례 자동발견 |
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
@@ -32,9 +33,11 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 ### 3.1 현재 상태(2026-06-14): 트리거 #3 *기술적으로* 충족, 그러나 대기 권고
 - 새 **정리** 누적: S1(결정론 하한) + S3(일반-j 폐형) + S4(V_{2n} 폐형) + S5(OP7 궤도-family
-  정리) = **4건** → #3의 글자상 조건 충족. (S2는 evidence-sharpen이라 정리 카운트 제외;
-  S5 도착으로 S2는 S5에 흡수됨.) S-표가 충분히 두꺼워져 사용자가 원하면 지금 묶어도 자연스러운
-  분량이나, posture 변화(lem:m2/L2)는 여전히 없음 → 기본 권고는 대기 유지.
+  정리) + S6(sympLPN 상관+SQ) = **5건** → #3의 글자상 조건 충족. (S2는 evidence-sharpen이라
+  정리 카운트 제외; S5 도착으로 S2는 S5에 흡수됨.) S-표가 충분히 두꺼워져 사용자가 원하면 지금
+  묶어도 자연스러운 분량이나, posture 변화(lem:m2/L2)는 여전히 없음 → 기본 권고는 대기 유지.
+  (참고: lem:m2 트랙은 meta-수준 진전만 — mixture 정리·m-단조성·coarse 하한·n=3 분수 정정 —
+  본문 델타 없음이라 S-표 비등재; 기록은 트랙A 판정문 2건.)
 - **그럼에도 대기 권고.** 근거: S1·S3 둘 다 **posture-불변 보조정리 강화**(SQ-하한 기계·barrier
   landscape를 sharpen할 뿐, 헤드라인은 여전히 "3.5 of 4 cells"·OPEN·lem:m2 무진전·L2 미닫힘).
   revision의 실효 사건은 **posture를 바꾸는 것**(lem:m2 증명→"all four cells", 또는 L2 닫힘→
@@ -69,7 +72,11 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 > statistical distance between the transformed pair and fresh samples is exactly
 > 1 - (p^2+(1-p)^2)/4^n (= 1 - 5/(8 4^n) at p = 1/4), so the orbit family cannot manufacture
 > freshness at any n; the open problem is correspondingly narrowed to transformations outside
-> the orbit family. [+ 이후 항목 추가]
+> the orbit family. (6) Added exact likelihood-ratio correlations for the sympLPN formulation
+> (the isotropic conditioning contributes exactly -((1+tau)^{2n}-1)/(2^{2n}-1) off-diagonal,
+> versus 0 for the unconstrained ensemble) and a 2^{c_p n}-query SQ lower bound at constant
+> VSTAT strength (c_p = 1 - 2 log2(1+tau), about 0.356 at p = 1/4), answering the
+> correlation-level form of Open Problem 1 for the sympLPN formulation. [+ 이후 항목 추가]
 
 ## 6. 비고
 - lsn-core 소스 ≠ 제출 PDF는 **의도된 상태**(staging). 혼동 금지 — 제출본은 v2.1 PDF, 소스는 앞섬.
