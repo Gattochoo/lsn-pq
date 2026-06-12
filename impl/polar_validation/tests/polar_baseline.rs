@@ -2981,6 +2981,31 @@ fn try_fixed_scl_integer_metric_deltas_reports_invalid_without_panicking() {
 }
 
 #[test]
+fn try_fixed_scl_integer_metric_deltas_uses_masked_sentinel_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn try_fixed_scl_integer_metric_deltas(")
+        .expect("try_fixed_scl_integer_metric_deltas source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_integer_round_schedule")
+        .map(|offset| helper_start + offset)
+        .expect("fixed_scl_integer_round_schedule should follow metric delta wrapper");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if !domain_check.valid"));
+    assert!(!helper_source.contains("return FixedSclIntegerMetricDeltaRun"));
+    assert!(helper_source.contains("let invalid_i64 = i64::from(domain_check.valid) ^ 1;"));
+    assert!(helper_source.contains("let invalid_mask = 0i64.wrapping_sub(invalid_i64);"));
+    assert!(helper_source.contains("let magnitude_negative = i64::from(magnitude < 0);"));
+    assert!(helper_source.contains("let safe_magnitude = select_i64("));
+    assert!(helper_source.contains("bit0_metric_delta: select_i64("));
+    assert!(helper_source.contains("bit1_metric_delta: select_i64("));
+    assert!(helper_source.contains("invalid_mask,"));
+    assert!(helper_source.contains("bit0_metric_delta,"));
+    assert!(helper_source.contains("bit1_metric_delta,"));
+}
+
+#[test]
 fn fixed_scl_integer_schedule_domain_check_accepts_active_inputs() {
     assert_eq!(
         fixed_scl_integer_schedule_domain_check([0, 1, 1], [0, 5, 7]),

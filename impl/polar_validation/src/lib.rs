@@ -1945,19 +1945,37 @@ pub fn try_fixed_scl_integer_metric_deltas(
     magnitude: i64,
 ) -> FixedSclIntegerMetricDeltaRun {
     let domain_check = fixed_scl_integer_metric_domain_check(hard_bit, magnitude);
-    if !domain_check.valid {
-        return FixedSclIntegerMetricDeltaRun {
-            domain_check,
-            deltas: FixedSclMetricDeltas {
-                bit0_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
-                bit1_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
-            },
-        };
-    }
+    let invalid_i64 = i64::from(domain_check.valid) ^ 1;
+    let invalid_mask = 0i64.wrapping_sub(invalid_i64);
+    let magnitude_negative = i64::from(magnitude < 0);
+    let magnitude_negative_mask = 0i64.wrapping_sub(magnitude_negative);
+    let safe_magnitude = select_i64(magnitude_negative_mask, magnitude, 0);
+    let hard_bit_i64 = i64::from(hard_bit & 1);
+    let hard_bit_mask = 0i64.wrapping_sub(hard_bit_i64);
+    let frozen_i64 = i64::from(frozen_bit);
+    let frozen_mask = 0i64.wrapping_sub(frozen_i64);
+    let bit0_metric_delta = select_i64(hard_bit_mask, 0, safe_magnitude);
+    let unfrozen_bit1_delta = select_i64(hard_bit_mask, safe_magnitude, 0);
+    let bit1_metric_delta = select_i64(
+        frozen_mask,
+        unfrozen_bit1_delta,
+        FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+    );
 
     FixedSclIntegerMetricDeltaRun {
         domain_check,
-        deltas: fixed_scl_integer_metric_deltas(frozen_bit, hard_bit, magnitude),
+        deltas: FixedSclMetricDeltas {
+            bit0_metric_delta: select_i64(
+                invalid_mask,
+                bit0_metric_delta,
+                FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+            ),
+            bit1_metric_delta: select_i64(
+                invalid_mask,
+                bit1_metric_delta,
+                FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+            ),
+        },
     }
 }
 
