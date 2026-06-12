@@ -45,7 +45,7 @@ fn fixed_lagrangian_membership_matches_point_set_for_public_points() {
 }
 
 #[test]
-fn fixed_lagrangian_scanned_membership_matches_direct_membership() {
+fn fixed_lagrangian_mask_membership_handles_word_boundaries() {
     let points = [
         0, 1, 2, 3, 63, 64, 65, 66, 127, 128, 129, 130, 191, 192, 193, 255,
     ];
@@ -55,18 +55,16 @@ fn fixed_lagrangian_scanned_membership_matches_direct_membership() {
     assert_eq!(fixed.word_count(), 4);
 
     for point in 0..256 {
+        let expected = points.contains(&point);
         assert_eq!(
-            fixed.contains_mask_scanned(point),
-            fixed.contains_mask(point)
+            fixed.contains_mask(point),
+            if expected { u64::MAX } else { 0 }
         );
-        assert_eq!(
-            (fixed.contains_mask_scanned(point) & 1) as u8,
-            fixed.contains_u8(point)
-        );
+        assert_eq!(fixed.contains_u8(point), u8::from(expected));
     }
 
-    assert_eq!(fixed.contains_mask_scanned(256), 0);
-    assert_eq!((fixed.contains_mask_scanned(256) & 1) as u8, 0);
+    assert_eq!(fixed.contains_mask(256), 0);
+    assert_eq!(fixed.contains_u8(256), 0);
 }
 
 #[test]
@@ -97,7 +95,7 @@ fn fixed_lagrangian_source_avoids_secret_dependent_word_indexing() {
         "if index >= universe {\n                return Err(FixedLagrangianError::PointOutOfRange"
     ));
     assert!(source.contains("words: [u64; LSN_REF_FIXED_LAGRANGIAN_WORDS]"));
-    assert!(source.contains("contains_mask_scanned"));
+    assert!(!source.contains("contains_mask_scanned"));
     assert!(!source.contains("contains_u8_scanned"));
     assert!(source.contains("PointCountMismatch"));
 }

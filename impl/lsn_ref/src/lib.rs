@@ -197,10 +197,6 @@ impl FixedLagrangian {
     }
 
     pub fn contains_mask(&self, point: u32) -> u64 {
-        self.contains_mask_scanned(point)
-    }
-
-    pub fn contains_mask_scanned(&self, point: u32) -> u64 {
         let index = point as usize;
         let target_word_index = index >> 6;
         let bit_index = index & 63;
@@ -236,7 +232,7 @@ pub fn diagnostic_honest_only_point_masks(
         .copied()
         .map(|point| DiagnosticHonestOnlyMask {
             point,
-            include_mask: !wrong_secret.contains_mask_scanned(point),
+            include_mask: !wrong_secret.contains_mask(point),
         })
         .collect()
 }
@@ -741,7 +737,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, and derives toy membership labels through contains_mask plus scanned mask lookup, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
