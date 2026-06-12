@@ -3,6 +3,10 @@
 
 For each Lagrangian A in F_2^6, B is drawn uniformly from F_2^{m x 6}.
 Compute exact SD((C, y), LPN_{1/4}) for n=3, m=3,4.
+
+WARNING: the output noise rate is p_eff = (1-(3/4)^{2n})/2 -> 1/2, not 1/4.
+The values below are raw distances to LPN_{1/4}; the correct lem:m2 comparison
+uses matched-rate LPN_{p_eff}.  See meta/2026-06-14-KIMI-lem-m2-n3-uniform-B-exact.md.
 """
 import argparse
 import json

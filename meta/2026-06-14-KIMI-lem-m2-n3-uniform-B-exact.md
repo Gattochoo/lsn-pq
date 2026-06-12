@@ -21,18 +21,61 @@
 
 (Values computed by `experiments/189-KIMI-lem-m2-n3-uniform-B-exact.py`.)
 
-## Interpretation
+## Why the naive comparison to $\mathrm{LPN}_{1/4}$ is misleading
 
-The $n=3$ SD values are **even smaller** than the corresponding $n=2$ values
-($m=3$ drops from $\approx 0.0984$ to $\approx 0.046947$, and $m=4$ drops from
-$\approx 0.1801$ to $\approx 0.077998$).  This means the output distribution
-remains close to $\mathrm{LPN}_{1/4}$ when the ambient dimension grows from
-$2n=4$ to $2n=6$.  Uniform $B$ per $A$ therefore does not appear to be an
-artifact of the smallest case; the randomized reduction scales favorably and
-continues to threaten `lem:m2` beyond the minimal $n=2$ setting.
+The raw numbers above compare the reduction output to $\mathrm{LPN}_{1/4}$,
+but the **output noise rate is not $1/4$**.  For a fixed secret dimension $n$,
+each output coordinate is
+$$
+  y_i = \langle b_i, Ax+e\rangle = \langle b_i, Ax\rangle + \langle b_i,e\rangle,
+$$
+and the error bit $\langle b_i,e\rangle$ has rate
+$$
+  p_{\rm eff}(n) = \Pr[\langle b,e\rangle = 1]
+                 = \frac{1-(3/4)^{2n}}{2},
+$$
+because $b$ is uniform over $\F_2^{2n}$.  Thus
+- $n=2$: $p_{\rm eff}=175/512 \approx 0.3418$,
+- $n=3$: $p_{\rm eff}=3367/8192 \approx 0.4110$,
+- $n\to\infty$: $p_{\rm eff}\to 1/2$.
+
+So the output is converging to **trivial noise-$1/2$ LPN**, which is exactly the
+regime already ruled out by `lem:m1` for marginal-uniform $B$.  Comparing to
+$\mathrm{LPN}_{1/4}$ therefore conflates the $B$-induced noise increase with the
+correlation structure that `lem:m2` actually asks about.
+
+## Matched-rate SD: the right comparison
+
+To isolate the correlation, compare the reduction output to
+$\mathrm{LPN}_{p_{\rm eff}}$ with the **same per-coordinate noise rate**.
+
+| $n$ | $m$ | $p_{\rm eff}$ | $\mathrm{SD}(P_{\rm out}, \mathrm{LPN}_{p_{\rm eff}})$ |
+|----:|----:|--------------:|--------------------------------------------------------:|
+| 2   | 2   | 0.3418        | $36575/524288 \approx 0.0698$                           |
+| 2   | 3   | 0.3418        | $695896635/4294967296 \approx 0.1620$                   |
+| 2   | 4   | 0.3418        | $277825754675/1099511627776 \approx 0.2527$             |
+| 2   | 5   | 0.3418        | $11668368577886825/36028797018963968 \approx 0.3239$    |
+| 3   | 3   | 0.4110        | $27456165227309/422212465065984 \approx 0.0650$         |
+| 3   | 4   | 0.4110        | $2606451312633458017/20752587082923245568 \approx 0.1256$ |
+
+Along the relevant axis ($m$ increasing with $n$ fixed, or ideally $m=2n$),
+the matched SD **grows** rather than shrinks.  This means the correlation
+introduced by $B$ is detectable and becomes more so as more rows are produced.
+It is consistent with the sampling evidence that `lem:m2` remains hard.
+
+## Corrected conclusion
+
+- The $n=3$ reduction output is **not** close to $\mathrm{LPN}_{1/4}$; it is
+  close to $\mathrm{LPN}_{p_{\rm eff}}$ with $p_{\rm eff}\approx 0.411$.
+- When the comparison target is matched and the scaling axis is $m$ rather than
+  $n$, the SD increases.  Uniform-$B$ per $A$ therefore does **not** threaten
+  `lem:m2`; if anything it supports the difficulty of `lem:m2` along the
+  relevant $m=\Omega(n)$ scaling.
+- `lem:m2` remains open.
 
 ## Limitations
 
 - Only uniform $B$ per $A$ is analyzed.
-- Only $n=3$, $m=3,4$.
-- Larger $n$ or $m$ will require sampling or symbolic methods.
+- Only $n=2,3$, small $m$.
+- The full `lem:m2` scaling $m \ge 4n/(1-2p')^2$ with $p' < 1/2$ fixed is not
+  yet reached exactly.
