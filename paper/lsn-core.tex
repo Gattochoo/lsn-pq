@@ -703,7 +703,23 @@ where $V_{2n}^{\mathrm{iid}} = (1+\sigma^2/4)^{2n} = (16/9)^n$ is the unconstrai
 At $k=2n$ the bundle sum is exact rather than an average: $V_{2n} = \sum_{S \subseteq [2n]} \sigma^{2|S|}\Pr[S \subseteq Q] = \sum_{j}\binom{2n}{j}\sigma^{2j} m_j$. Substituting \Cref{thm:mj-general} and writing $D_j = X/2^j$ splits the sum into three binomial series --- $\sum_j \binom{2n}{j}(\sigma^2/4)^j$ from the $D_j^2$ part, $\sum_j \binom{2n}{j}(\sigma^2/2)^j$ from the $D_j$ part, and $\sum_i \binom{n}{i}(\sigma^4/4)^i$ from the even-$j$ orbit part --- which evaluate to the three bracketed terms. The expansion at $p=1/4$ follows by dividing by $9^n(X-1)(X-4)$ and expanding in $X^{-1}$; the closed form was additionally checked by exact-fraction summation for $n \le 14$ and four noise rates, and against direct enumeration at $n = 2,3,4$.
 \end{proof}
 
-Two remarks. First, \Cref{prop:vmax} does \emph{not} close the full $j=\Theta(n)$ regime: it controls one functional (the variance multiplier) at growing block size, while the individual moments near $j = 2n$ deviate by $\Theta(1)$ relative factors ($m_j = 0$ for $j \ge 2n-1$, whereas $(1/4)^j > 0$) --- their weight in $V_{2n}$ is simply exponentially small. The full distribution of growing bundles (higher cumulants) remains open. Second, the suppression is consistent in sign at every scale: exact enumeration shows the bundle correlation is \emph{sub-multiplicative} in $k$ --- the isotropic coupling slightly \emph{reduces} correlation relative to independent rows --- and \Cref{prop:vmax} now gives this suppression a closed form at the maximal block, $-2(25/64)^n(1+o(1))$ relative at $p=1/4$: the conditioning helps rather than harms the lower-bound side. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
+Two remarks. First, \Cref{prop:vmax} controls one functional (the variance multiplier) at growing block size, while the individual moments near $j = 2n$ deviate by $\Theta(1)$ relative factors ($m_j = 0$ for $j \ge 2n-1$, whereas $(1/4)^j > 0$) --- their weight in $V_{2n}$ is simply exponentially small. The full \emph{law} of the quadrant count is, however, exactly recoverable (\Cref{prop:tdist} below). Second, the suppression is consistent in sign at every scale: exact enumeration shows the bundle correlation is \emph{sub-multiplicative} in $k$ --- the isotropic coupling slightly \emph{reduces} correlation relative to independent rows --- and \Cref{prop:vmax} now gives this suppression a closed form at the maximal block, $-2(25/64)^n(1+o(1))$ relative at $p=1/4$: the conditioning helps rather than harms the lower-bound side.
+
+\begin{proposition}[Exact law of the quadrant count]
+\label{prop:tdist}
+For every $n \ge 1$ and $0 \le \ell \le 2n$,
+\[
+\Pr[t = \ell] \;=\; \sum_{j \ge \ell} (-1)^{j-\ell} \binom{j}{\ell} B_j,
+\qquad B_j = \binom{2n}{j} m_j,
+\]
+with $m_j$ from \Cref{thm:mj-general} --- an exact rational expression for every $n$ (e.g.\ $(11/45,\,4/9,\,14/45,\,0,\,0)$ at $n=2$). Consequently \emph{every} statistic of the pair-level quadrant count --- all moments, all cumulants, $V_k$ for every $k$ --- is exactly computable. The exact total-variation distance to the unconstrained law $\mathrm{Bin}(2n,1/4)$ is $707/5760 \approx 0.1227$ at $n=2$ and decays empirically like $2^{-(n+1)}$ ($2^n \cdot \mathrm{TV} = 0.491, \dots, 0.498$ for $n \le 10$; the rate is evidence, not a proven limit).
+\end{proposition}
+
+\begin{proof}
+$B_j = \E[\binom{t}{j}]$, so the formula is the standard binomial (inclusion--exclusion) inversion; it is exact because \Cref{thm:mj-general} is. The resulting laws were checked against direct enumeration of the isotropic-pair ensemble at $n = 2, 3, 4$ (identical rationals), and structurally for $n \le 10$: they sum to one, are non-negative, vanish for $\ell \ge 2n-1$, and re-contract to every $B_j$.
+\end{proof}
+
+What this does not close: the joint four-category row composition beyond $t$ (the counts $t_{10}, t_{01}, t_{00}$ jointly with $t$), and the multi-secret-pair level. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
 
 \section{Quantum Analysis}
 \label{sec:quantum}
@@ -1141,7 +1157,7 @@ We state explicitly the gaps a reader should weigh against the results above.
 
 \item \textbf{Two results are conditional.} The $2^{2n-O(1)}$ SQ bound depends on the pencil-extremality conjecture (\Cref{conj:pencil}), and the marginal-adaptive barrier (\Cref{thm:marginal-adaptive}) depends on \Cref{lem:m2}, which remains unproven; both dependencies are stated where they occur.
 
-\item \textbf{Moment results cover fixed order plus one growing-block functional.} The closed forms of \Cref{sec:moments} are exact for every fixed order $j$, and \Cref{prop:vmax} controls the variance multiplier exactly even at the maximal block $k=2n$ (exponentially small deviation). What remains open in the $j=\Theta(n)$ regime is the full distribution of growing bundles: individual moments near $j=2n$ deviate by $\Theta(1)$ relative factors, and higher cumulants are not controlled by the variance summary alone.
+\item \textbf{Moment results close the pair-level quadrant count; the joint composition is open.} The closed forms of \Cref{sec:moments} are exact for every order $j$, \Cref{prop:vmax} controls the variance multiplier at the maximal block, and \Cref{prop:tdist} recovers the full exact law of the pair-level quadrant count $t$ (hence every statistic that factors through $t$). What remains open at the pairwise level is the joint four-category row composition beyond $t$, and beyond that the multi-secret-pair joint level; the conjectured TV rate $2^{-(n+1)}$ to the unconstrained law is evidence, not proof.
 
 \item \textbf{Quantum hardness is conjectural.} We rule out the natural quantum attack families (\Cref{sec:quantum}) but prove no quantum query lower bound; \Cref{conj:quantum} has the same epistemic status as the corresponding conjectures for LPN and LWE.
 \end{enumerate}

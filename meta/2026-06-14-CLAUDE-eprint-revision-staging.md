@@ -22,6 +22,7 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 | S5 | **★OP7 궤도-family 정리**(Track B): 모든 $n$·모든 $S_1,S_2\in\mathrm{Sp}$에서 SD$=1-\tfrac{p^2+(1-p)^2}{4^n}=1-\tfrac{5}{8\cdot4^n}$ — freshness 음성 결판(T-독립성 전단사 + 대각질량) | ecacd48 + OP7-upgrade commit | Open Problems "Sample freshness" 격상: n=2 경험적→모든 n 정리; 열린 질문을 궤도-family 밖으로 정밀화 | exp/**251** 직접구성(전단사 우회): n=2 random T 10개·n=3 random T 3개·n=1 경계 전부 폐형 일치; Q 대각질량 5/128·5/512 확인 |
 | S6 | **★sympLPN 정확 상관 + SQ 하한**(Track E, 정정 통합): likelihood-ratio diag $(1+\tau)^{2n}{-}1$·off $-\,$diag$/(2^{2n}{-}1)$ (unconstrained=0과 대조, OP1 상관-수준 답) + $2^{c_pn}$-쿼리 SQ 하한($c_p{=}1{-}2\log_2(1{+}\tau)\approx0.356$@p=1/4) | aa02290 + sympLPN-integrate commit | §4 끝 subsec:symplpn-sq 신설(thm:symplpn-corr + cor:symplpn-sq, σ-twist 수정 증명); abstract·기여 bullet 갱신. **Kimi §6 SDA 적용은 3중 결함으로 기각·정정본만 수록**(인덱싱 스왑/singleton 대각/지수 대각 VSTAT 잠식) | exp/**253** 전 앙상블 전수(90·22680행렬): character 평균 전 S×w, n=2 (A,y) 완전직접+주변화 항등식, σ-twist 반례 자동발견 |
 | S7 | **conj:pencil 소규모 정확 검증**(Track D, evidence): n=2 전수(2^15, max ratio 5/2, singleton만; size-3 최대=k=1 pencils) + n=3 size-3/4 **전수 정확 최대** 3·81/32(k=2 pencil 달성) + 대형 크기 탐색 ratio>3 없음 | trackD commits + pencil-evidence commit | conj:pencil 동기 단락에 evidence 한 문장(명시적 "evidence, not proof") — conjecture 지위 불변 | exp/**254** from-scratch: 관행 검증(선형성·대각포함=thm:distance), n=2 전수 재현, n=3 size-3(398K)·size-4(13.2M) 전수 정확화 |
+| S8 | **★t의 정확 법칙**(Track C, prop:tdist): $\Pr[t{=}\ell]=\sum_j(-1)^{j-\ell}\binom{j}{\ell}B_j$ — t를 통과하는 모든 통계(전 moment·cumulant·$V_k$) 정확 계산 가능; TV(dist(t), Bin(2n,1/4)) 정확표 n≤10, rate $2^{-(n+1)}$ evidence | a517440 + tdist-integrate commit | §Moments prop:tdist 신설 + remarks 정합 + Honest-Lim 재정밀화(남은 것 = 4-카테고리 결합 조성·다중쌍 수준·rate 증명) | exp/**255** from-scratch: pmf 3중 동일(직접열거==Kimi==역변환, n=2,3,4), TV 분수 9개 전부 일치, 구조 sanity(B_j 재수축 등) |
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
@@ -80,7 +81,12 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 > correlation-level form of Open Problem 1 for the sympLPN formulation. (7) Documented exact
 > small-case support for the pencil-extremality conjecture (explicitly labeled evidence):
 > exhaustive n=2 verification (max ratio 5/2 over all 2^15 subsets) and exact n=3 maxima at
-> sizes 3 and 4 (ratios 3 and 81/32, attained by pencils). [+ 이후 항목 추가]
+> sizes 3 and 4 (ratios 3 and 81/32, attained by pencils). (8) Added the exact law of the
+> pair-level quadrant count t (binomial inversion of the closed-form moments), making every
+> statistic that factors through t exactly computable, with exact total-variation distances
+> to the unconstrained Bin(2n,1/4) law for n <= 10 (empirical rate 2^{-(n+1)}, labeled
+> evidence); the honest-limitations item is narrowed to the joint four-category composition
+> and the multi-pair level. [+ 이후 항목 추가]
 
 ## 6. 비고
 - lsn-core 소스 ≠ 제출 PDF는 **의도된 상태**(staging). 혼동 금지 — 제출본은 v2.1 PDF, 소스는 앞섬.
