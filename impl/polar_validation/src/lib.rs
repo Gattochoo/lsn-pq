@@ -83,6 +83,14 @@ pub struct FixedSclRound {
     pub bit1_metric_delta: i64,
 }
 
+pub const FIXED_SCL_FORBIDDEN_METRIC_DELTA: i64 = i64::MAX;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclMetricDeltas {
+    pub bit0_metric_delta: i64,
+    pub bit1_metric_delta: i64,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPublicRoundWorkCounts {
     pub parent_capacity: usize,
@@ -466,6 +474,32 @@ pub fn fixed_scl_public_round_work_counts(
     }
 }
 
+pub fn fixed_scl_integer_metric_deltas(
+    frozen_bit: bool,
+    hard_bit: u8,
+    magnitude: i64,
+) -> FixedSclMetricDeltas {
+    assert!(hard_bit <= 1, "integer metric hard bit must be 0 or 1");
+    assert!(
+        magnitude >= 0,
+        "integer metric magnitude must be non-negative"
+    );
+
+    let bit0_metric_delta = if hard_bit == 0 { 0 } else { magnitude };
+    let bit1_metric_delta = if frozen_bit {
+        FIXED_SCL_FORBIDDEN_METRIC_DELTA
+    } else if hard_bit == 1 {
+        0
+    } else {
+        magnitude
+    };
+
+    FixedSclMetricDeltas {
+        bit0_metric_delta,
+        bit1_metric_delta,
+    }
+}
+
 pub fn fixed_schedule_top_l_i64<const WIDTH: usize, const L: usize>(
     metrics: [i64; WIDTH],
 ) -> [FixedTopLEntry; L] {
@@ -560,7 +594,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
-        "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"public_work_count_examples\": [\n",
         "    {\n",

@@ -16,11 +16,13 @@
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
-    fixed_schedule_top_l_i64, fixed_scl_public_round_work_counts, high_noise_control_configs,
-    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    zero_error_upper_bound, FixedSclPathBuffer, FixedSclRound, FixedTopLEntry, PolarCode,
+    fixed_schedule_top_l_i64, fixed_scl_integer_metric_deltas, fixed_scl_public_round_work_counts,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound,
+    FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclRound, FixedTopLEntry, PolarCode,
+    FIXED_SCL_FORBIDDEN_METRIC_DELTA,
 };
 
 #[test]
@@ -203,6 +205,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("public round schedule"));
     assert!(json.contains("fixed_scl_public_round_work_counts"));
     assert!(json.contains("public work-count audit"));
+    assert!(json.contains("fixed_scl_integer_metric_deltas"));
+    assert!(json.contains("integer metric delta audit"));
     assert!(json.contains("\"public_work_count_examples\""));
     assert!(json.contains("\"top_l_compare_exchanges\": 18"));
     assert!(json.contains("\"child_slots_written\": 12"));
@@ -440,6 +444,46 @@ fn fixed_scl_public_round_work_counts_are_public_parameters() {
     assert_eq!(counts.top_l_compare_exchanges, 18);
     assert_eq!(counts.child_slots_written, 12);
     assert_eq!(counts.compacted_slots_written, 6);
+}
+
+#[test]
+fn fixed_scl_integer_metric_deltas_penalize_llr_mismatch() {
+    assert_eq!(
+        fixed_scl_integer_metric_deltas(false, 0, 7),
+        FixedSclMetricDeltas {
+            bit0_metric_delta: 0,
+            bit1_metric_delta: 7,
+        }
+    );
+    assert_eq!(
+        fixed_scl_integer_metric_deltas(false, 1, 7),
+        FixedSclMetricDeltas {
+            bit0_metric_delta: 7,
+            bit1_metric_delta: 0,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_metric_deltas_forbid_frozen_one_branch() {
+    assert_eq!(
+        fixed_scl_integer_metric_deltas(true, 1, 7),
+        FixedSclMetricDeltas {
+            bit0_metric_delta: 7,
+            bit1_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_metric_deltas_saturate_large_penalty() {
+    assert_eq!(
+        fixed_scl_integer_metric_deltas(false, 0, i64::MAX),
+        FixedSclMetricDeltas {
+            bit0_metric_delta: 0,
+            bit1_metric_delta: i64::MAX,
+        }
+    );
 }
 
 #[test]
