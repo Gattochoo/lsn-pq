@@ -285,6 +285,19 @@ pub struct FixedSclIntegerRoundScheduleBuild<const ROUNDS: usize> {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerRoundScheduleBuildPlan {
+    pub domain_check: FixedSclIntegerScheduleDomainCheck,
+    pub round_slots_written: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerRoundScheduleBuildParityCheck {
+    pub matches: bool,
+    pub run_build_certificate: FixedSclIntegerRoundScheduleBuildPlan,
+    pub expected_plan: FixedSclIntegerRoundScheduleBuildPlan,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPathBufferScheduleDomainCheck {
     pub parent_capacity: usize,
     pub first_child_capacity: usize,
@@ -1492,6 +1505,39 @@ pub fn try_fixed_scl_integer_round_schedule<const ROUNDS: usize>(
     }
 }
 
+pub fn fixed_scl_integer_round_schedule_build_plan<const ROUNDS: usize>(
+    hard_bits: [u8; ROUNDS],
+    magnitudes: [i64; ROUNDS],
+) -> FixedSclIntegerRoundScheduleBuildPlan {
+    let domain_check = fixed_scl_integer_schedule_domain_check(hard_bits, magnitudes);
+    FixedSclIntegerRoundScheduleBuildPlan {
+        domain_check,
+        round_slots_written: if domain_check.valid { ROUNDS } else { 0 },
+    }
+}
+
+pub fn fixed_scl_integer_round_build_certificate<const ROUNDS: usize>(
+    build: &FixedSclIntegerRoundScheduleBuild<ROUNDS>,
+) -> FixedSclIntegerRoundScheduleBuildPlan {
+    FixedSclIntegerRoundScheduleBuildPlan {
+        domain_check: build.domain_check,
+        round_slots_written: build.round_slots_written,
+    }
+}
+
+pub fn fixed_scl_integer_round_build_parity_check<const ROUNDS: usize>(
+    build: &FixedSclIntegerRoundScheduleBuild<ROUNDS>,
+    expected_plan: FixedSclIntegerRoundScheduleBuildPlan,
+) -> FixedSclIntegerRoundScheduleBuildParityCheck {
+    let run_build_certificate = fixed_scl_integer_round_build_certificate(build);
+
+    FixedSclIntegerRoundScheduleBuildParityCheck {
+        matches: run_build_certificate == expected_plan,
+        run_build_certificate,
+        expected_plan,
+    }
+}
+
 pub fn fixed_schedule_top_l_i64<const WIDTH: usize, const L: usize>(
     metrics: [i64; WIDTH],
 ) -> [FixedTopLEntry; L] {
@@ -1652,6 +1698,9 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_round_schedule_build_plan: execution-free integer schedule-build preflight that pairs integer status with public round-slot write count only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_round_build_certificate: integer schedule-build run certificate adapter for comparing returned domain status and round-slot write count with execution-free build preflight; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_round_build_parity_check: integer schedule-build run/preflight parity record that compares schedule-builder status and public round-slot write count only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule_plan: execution-free integer schedule preflight that pairs integer status, path-domain status, and public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_run_plan_certificate: integer run/preflight plan certificate adapter for comparing source-level run status and work counts with execution-free integer preflight; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_shape_parity_check: integer run/preflight shape parity record that compares run-derived and execution-free integer certificates only; not wired into decode_scl; generated-code and timing audit pending\",\n",

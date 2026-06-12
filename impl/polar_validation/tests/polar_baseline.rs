@@ -19,28 +19,30 @@ use polar_validation::{
     fixed_schedule_top_l_i64, fixed_schedule_top_l_selection_plan,
     fixed_scl_binary_child_write_domain_check, fixed_scl_child_write_domain_failure_label,
     fixed_scl_child_write_parity_check, fixed_scl_integer_metric_deltas,
+    fixed_scl_integer_round_build_certificate, fixed_scl_integer_round_build_parity_check,
     fixed_scl_integer_round_run_plan_certificate, fixed_scl_integer_round_schedule,
-    fixed_scl_integer_round_schedule_plan, fixed_scl_integer_schedule_domain_check,
-    fixed_scl_integer_schedule_domain_failure_label, fixed_scl_integer_shape_parity_check,
-    fixed_scl_one_bit_run_plan_certificate, fixed_scl_one_bit_shape_parity_check,
-    fixed_scl_path_buffer_schedule_domain_check, fixed_scl_path_domain_failure_label,
-    fixed_scl_public_round_run_shape_certificate, fixed_scl_public_round_schedule_plan,
-    fixed_scl_public_round_schedule_shape_plan, fixed_scl_public_round_shape_parity_check,
-    fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
-    fixed_scl_public_round_work_shape_plan, fixed_scl_round_schedule_plan,
-    fixed_top_l_selection_domain_failure_label, high_noise_control_configs,
-    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    try_fixed_scl_integer_round_schedule, two_public_bits_run_shape_certificate,
-    two_public_bits_shape_parity_check, zero_error_upper_bound,
-    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
-    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
-    FixedSclChildWriteParityCheck, FixedSclIntegerRoundScheduleBuild,
-    FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
-    FixedSclIntegerScheduleDomainFailureLabel, FixedSclIntegerShapeParityCheck,
-    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclOneBitShapeParityCheck,
-    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    fixed_scl_integer_round_schedule_build_plan, fixed_scl_integer_round_schedule_plan,
+    fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
+    fixed_scl_integer_shape_parity_check, fixed_scl_one_bit_run_plan_certificate,
+    fixed_scl_one_bit_shape_parity_check, fixed_scl_path_buffer_schedule_domain_check,
+    fixed_scl_path_domain_failure_label, fixed_scl_public_round_run_shape_certificate,
+    fixed_scl_public_round_schedule_plan, fixed_scl_public_round_schedule_shape_plan,
+    fixed_scl_public_round_shape_parity_check, fixed_scl_public_round_work_counts,
+    fixed_scl_public_round_work_counts_with_capacities, fixed_scl_public_round_work_shape_plan,
+    fixed_scl_round_schedule_plan, fixed_top_l_selection_domain_failure_label,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
+    two_public_bits_run_shape_certificate, two_public_bits_shape_parity_check,
+    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
+    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
+    FixedSclChildWriteDomainFailureLabel, FixedSclChildWriteParityCheck,
+    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundScheduleBuildParityCheck,
+    FixedSclIntegerRoundScheduleBuildPlan, FixedSclIntegerRoundSchedulePlan,
+    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
+    FixedSclIntegerShapeParityCheck, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
+    FixedSclOneBitShapeParityCheck, FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
     FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
     FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun,
     FixedSclPublicRoundScheduleShapePlan, FixedSclPublicRoundShapeParityCheck,
@@ -281,6 +283,10 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("execution-free public schedule shape certificate"));
     assert!(json.contains("fixed_scl_integer_round_schedule_plan"));
     assert!(json.contains("execution-free integer schedule preflight"));
+    assert!(json.contains("fixed_scl_integer_round_schedule_build_plan"));
+    assert!(json.contains("execution-free integer schedule-build preflight"));
+    assert!(json.contains("fixed_scl_integer_round_build_parity_check"));
+    assert!(json.contains("integer schedule-build run/preflight parity record"));
     assert!(json.contains("fixed_scl_integer_round_run_plan_certificate"));
     assert!(json.contains("integer run/preflight plan certificate adapter"));
     assert!(json.contains("fixed_scl_integer_shape_parity_check"));
@@ -2088,6 +2094,47 @@ fn try_fixed_scl_integer_round_schedule_builds_valid_rounds() {
                 FixedSclRound::new(0, 3, 0),
                 FixedSclRound::new(1, 5, FIXED_SCL_FORBIDDEN_METRIC_DELTA),
             ],
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_round_build_parity_check_reports_match_and_mismatch() {
+    let build = try_fixed_scl_integer_round_schedule([0, 1], [false, true], [1, 1], [3, 5]);
+    let expected_plan = fixed_scl_integer_round_schedule_build_plan([1, 1], [3, 5]);
+
+    assert_eq!(
+        fixed_scl_integer_round_build_parity_check(&build, expected_plan),
+        FixedSclIntegerRoundScheduleBuildParityCheck {
+            matches: true,
+            run_build_certificate: expected_plan,
+            expected_plan,
+        }
+    );
+
+    let mut altered_build = build;
+    altered_build.round_slots_written = 0;
+    let altered_certificate = fixed_scl_integer_round_build_certificate(&altered_build);
+
+    assert_eq!(
+        fixed_scl_integer_round_build_parity_check(&altered_build, expected_plan),
+        FixedSclIntegerRoundScheduleBuildParityCheck {
+            matches: false,
+            run_build_certificate: altered_certificate,
+            expected_plan,
+        }
+    );
+
+    assert_eq!(
+        expected_plan,
+        FixedSclIntegerRoundScheduleBuildPlan {
+            domain_check: FixedSclIntegerScheduleDomainCheck {
+                rounds: 2,
+                valid: true,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            round_slots_written: 2,
         }
     );
 }
