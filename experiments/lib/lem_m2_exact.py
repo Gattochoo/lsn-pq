@@ -121,3 +121,76 @@ def num_lagrangian_subspaces(n: int) -> int:
     for i in range(1, n + 1):
         total *= (2 ** i + 1)
     return total
+
+
+def randomized_uniform_B_counts(m: int, bases=None) -> tuple[list[int], int]:
+    r"""Integer counts for (C, y) when B ~ Unif(F_2^{m x 4}) is drawn per A.
+
+    Uses the three-case decomposition from the design spec:
+      * v = 0            -> 2^{2m} matrices per (C, 0)
+      * v in span(A)\{0} -> 2^{2m} matrices per graph point
+      * v not in span(A) -> 2^{m} matrices per full-space point
+
+    Returns (counts, denominator) so that counts[key] / denominator is the
+    exact probability of output key = (C_key << m) | y.
+    """
+    if bases is None:
+        bases = enumerate_lagrangian_bases()
+
+    mask = (1 << m) - 1
+    num_C = 1 << (2 * m)
+    size = 1 << (3 * m)
+    counts = [0] * size
+
+    # Precompute c0/c1 for every C_key to avoid repeated bit slicing.
+    c0_list = [(C_key >> m) & mask for C_key in range(num_C)]
+    c1_list = [C_key & mask for C_key in range(num_C)]
+
+    two_to_m = 1 << m
+    two_to_2m = 1 << (2 * m)
+    case3_weight_sum = 0
+
+    for a0, a1 in bases:
+        span_map = {
+            0: (0, 0),
+            a0: (1, 0),
+            a1: (0, 1),
+            a0 ^ a1: (1, 1),
+        }
+        for x in range(1 << 2):
+            a = 0
+            if x & 1:
+                a ^= a0
+            if x & 2:
+                a ^= a1
+            for e in range(1 << 4):
+                w = e.bit_count()
+                weight = 3 ** (4 - w)
+                v = a ^ e
+
+                if v == 0:
+                    # y is forced to 0; C is uniform.
+                    add = weight * two_to_2m
+                    for C_key in range(num_C):
+                        counts[(C_key << m)] += add
+                elif v in span_map:
+                    alpha, beta = span_map[v]
+                    add = weight * two_to_2m
+                    for C_key in range(num_C):
+                        y = 0
+                        if alpha:
+                            y ^= c0_list[C_key]
+                        if beta:
+                            y ^= c1_list[C_key]
+                        counts[(C_key << m) | y] += add
+                else:
+                    # Full-space uniform contribution; delay the actual add.
+                    case3_weight_sum += weight
+
+    case3_add = case3_weight_sum * two_to_m
+    for key in range(size):
+        counts[key] += case3_add
+
+    # Denominator = sum over (A, x, e) of weight_e * 2^{4m}.
+    red_denom = len(bases) * (1 << 2) * 256 * (1 << (4 * m))
+    return counts, red_denom
