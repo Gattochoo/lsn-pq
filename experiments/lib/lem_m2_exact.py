@@ -51,3 +51,62 @@ def sd_to_product(dist: dict[int, Fraction], product_dist: dict[int, Fraction]) 
     for k in keys:
         total += abs(Fraction(dist.get(k, 0)) - Fraction(product_dist.get(k, 0)))
     return total / 2
+
+
+def lpn_target_counts(m: int, p: Fraction) -> tuple[list[int], int]:
+    """Integer counts and denominator for LPN_p distribution over (C, y)."""
+    mask = (1 << m) - 1
+    num_C = 1 << (2 * m)
+    num_y = 1 << m
+    size = num_C * num_y
+    counts = [0] * size
+    D = p.denominator ** m
+    total_denom = num_C * 4 * D
+    for C_key in range(num_C):
+        c0 = (C_key >> m) & mask
+        c1 = C_key & mask
+        for x in range(1 << 2):
+            cx = 0
+            if x & 1:
+                cx ^= c0
+            if x & 2:
+                cx ^= c1
+            for eprime in range(num_y):
+                w = eprime.bit_count()
+                num = (p.numerator ** w) * ((p.denominator - p.numerator) ** (m - w))
+                y = cx ^ eprime
+                key = (C_key << m) | y
+                counts[key] += num
+    return counts, total_denom
+
+
+def reduction_counts_for_B(B_cols: list[int], bases: list[tuple[int, int]], m: int) -> list[int]:
+    """Integer counts for reduction output (C, y) for a fixed B."""
+    mask = (1 << m) - 1
+    size = 1 << (3 * m)
+    counts = [0] * size
+    for a0, a1 in bases:
+        c0 = apply_matrix(B_cols, a0) & mask
+        c1 = apply_matrix(B_cols, a1) & mask
+        C_key = (c0 << m) | c1
+        for x in range(1 << 2):
+            a = 0
+            if x & 1:
+                a ^= a0
+            if x & 2:
+                a ^= a1
+            for e in range(1 << 4):
+                w = e.bit_count()
+                v = a ^ e
+                y = apply_matrix(B_cols, v) & mask
+                key = (C_key << m) | y
+                counts[key] += 3 ** (4 - w)
+    return counts
+
+
+def exact_sd_counts(counts1: list[int], denom1: int, counts2: list[int], denom2: int) -> Fraction:
+    """Exact SD between two integer-count distributions with different denominators."""
+    num = 0
+    for c1, c2 in zip(counts1, counts2):
+        num += abs(c1 * denom2 - c2 * denom1)
+    return Fraction(num, 2 * denom1 * denom2)

@@ -29,7 +29,7 @@ Key sizes for $n=2$:
 - $(C,y)$ key space size: $2^{2m} \cdot 2^m = 2^{3m}$.
 
 Integer weights:
-- Reduction per-$B$ total weight: $15 \cdot 4 \cdot 256 = 3840$.
+- Reduction per-$B$ total weight: $15 \cdot 4 \cdot 256 = 15360$.
 - LPN target denominator: $4^m \cdot 4 \cdot 4^m = 4^{2m+1}$.
 
 ---
@@ -64,8 +64,8 @@ def test_reduction_counts_zero_B():
     m = 3
     B_cols = [0, 0, 0, 0]
     counts = reduction_counts_for_B(B_cols, enumerate_lagrangian_bases(), m)
-    assert sum(counts) == 3840
-    assert counts[0] == 3840  # only C=0, y=0
+    assert sum(counts) == 15360
+    assert counts[0] == 15360  # only C=0, y=0
     assert all(c == 0 for c in counts[1:])
 
 
@@ -223,7 +223,7 @@ def main():
     for bits in range(num_B):
         B_cols = [((bits >> (j * m)) & mask) for j in range(4)]
         red_counts = reduction_counts_for_B(B_cols, bases, m)
-        sd = exact_sd_counts(red_counts, 3840, lpn_counts, lpn_denom)
+        sd = exact_sd_counts(red_counts, 15360, lpn_counts, lpn_denom)
         sd_sum += sd
         if sd < best_sd:
             best_sd = sd
@@ -320,7 +320,7 @@ def check_zero_B_is_far():
     B_cols = [0, 0, 0, 0]
     red_counts = reduction_counts_for_B(B_cols, enumerate_lagrangian_bases(), m)
     lpn_counts, lpn_denom = lpn_target_counts(m, Fraction(1, 4))
-    sd = exact_sd_counts(red_counts, 3840, lpn_counts, lpn_denom)
+    sd = exact_sd_counts(red_counts, 15360, lpn_counts, lpn_denom)
     assert sd > Fraction(9, 10), f"zero-B SD unexpectedly small: {sd}"
     print(f"zero-B SD for m={m}: {sd} (OK)")
 
@@ -334,7 +334,7 @@ def check_bounds():
     for bits in range(1 << (4 * m)):
         B_cols = [((bits >> (j * m)) & mask) for j in range(4)]
         red_counts = reduction_counts_for_B(B_cols, enumerate_lagrangian_bases(), m)
-        sd = exact_sd_counts(red_counts, 3840, lpn_counts, lpn_denom)
+        sd = exact_sd_counts(red_counts, 15360, lpn_counts, lpn_denom)
         assert 0 <= sd <= 1
         if sd < best:
             best = sd

@@ -44,7 +44,7 @@ $$
 Integer weights (cleared denominators):
 
 $$
-w(A,x,e) = 3^{4-|e|}, \qquad \text{total weight per }B = 15 \cdot 4 \cdot 256 = 3840.
+w(A,x,e) = 3^{4-|e|}, \qquad \text{total weight per }B = 15 \cdot 4 \cdot 256 = 15360.
 $$
 
 ### 2.2 Target LPN distribution
@@ -68,8 +68,8 @@ For each $B$:
 
 $$
 \operatorname{SD}_B
-= \frac{1}{2 \cdot 3840 \cdot D}
-  \sum_{C,y} \bigl|\, out\_counts[C,y] \cdot D - lpn\_counts[C,y] \cdot 3840 \,\bigr|.
+= \frac{1}{2 \cdot 15360 \cdot D}
+  \sum_{C,y} \bigl|\, out\_counts[C,y] \cdot D - lpn\_counts[C,y] \cdot 15360 \,\bigr|.
 $$
 
 All arithmetic is exact integer arithmetic; no floating point.
@@ -123,11 +123,11 @@ JSON file per $m$:
   "p_prime": "1/4",
   "num_lagrangian": 15,
   "num_B": 4096,
-  "min_sd": "0",
-  "max_sd": "37/64",
-  "avg_sd": "...",
-  "best_B": [4, 2, 1, 0],
-  "worst_B": [...]
+  "min_sd": "49/64",
+  "max_sd": "4069/4096",
+  "avg_sd": "70093009/83886080",
+  "best_B": [4, 2, 1, 1],
+  "worst_B": [0, 0, 0, 0]
 }
 ```
 
