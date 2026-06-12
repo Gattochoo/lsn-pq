@@ -1667,15 +1667,32 @@ pub fn fixed_scl_integer_schedule_shape_parity_check<const L: usize, const N: us
 pub fn fixed_scl_integer_schedule_shape_failure_family(
     plan: FixedSclIntegerRoundScheduleShapePlan,
 ) -> u8 {
-    if !plan.domain_check.valid {
-        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_INTEGER_DOMAIN
-    } else if !plan.path_domain_check.valid {
-        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN
-    } else if !plan.work_shape_plan.valid {
-        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE
-    } else {
-        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_OK
-    }
+    let domain_invalid = u8::from(!plan.domain_check.valid);
+    let path_invalid = u8::from(!plan.path_domain_check.valid);
+    let work_invalid = u8::from(!plan.work_shape_plan.valid);
+    let domain_valid = domain_invalid ^ 1;
+    let path_valid = path_invalid ^ 1;
+    let path_selected = path_invalid & domain_valid;
+    let work_selected = work_invalid & domain_valid & path_valid;
+    let domain_mask = 0u8.wrapping_sub(domain_invalid);
+    let path_mask = 0u8.wrapping_sub(path_selected);
+    let work_mask = 0u8.wrapping_sub(work_selected);
+    let failure_after_work = select_u8(
+        work_mask,
+        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_OK,
+        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE,
+    );
+    let failure_after_path = select_u8(
+        path_mask,
+        failure_after_work,
+        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN,
+    );
+
+    select_u8(
+        domain_mask,
+        failure_after_path,
+        FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_INTEGER_DOMAIN,
+    )
 }
 
 pub fn fixed_scl_public_round_schedule_shape_failure_family(
