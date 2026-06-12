@@ -44,6 +44,13 @@
     {"code": 2, "name": "dst_capacity", "meaning": "destination child buffer must have room for both children"},
     {"code": 3, "name": "bit_index", "meaning": "public bit index must be inside the path bit width"}
   ],
+  "non_panicking_wrapper_failure_code_map": [
+    {"wrapper": "try_write_binary_children_from", "failure_family": "public_child_write_failure_codes", "status_field": "FixedSclBinaryChildWriteDomainCheck.failure_code"},
+    {"wrapper": "try_expand_then_compact_one_bit", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclOneBitExpansionRun.path_domain_check.failure_code"},
+    {"wrapper": "try_expand_then_compact_two_public_bits", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclPublicRoundScheduleRun.path_domain_check.failure_code"},
+    {"wrapper": "try_expand_then_compact_public_rounds", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclPublicRoundScheduleRun.path_domain_check.failure_code"},
+    {"wrapper": "try_expand_then_compact_integer_round_schedule", "failure_family": "public_path_domain_failure_codes", "integer_status_family": "integer_schedule_domain_check", "status_field": "FixedSclPathBufferIntegerScheduleRun.domain_check + path_domain_check.failure_code"}
+  ],
   "prototype_building_blocks": [
     "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending",
     "FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending",
