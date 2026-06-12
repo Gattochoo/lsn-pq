@@ -18,24 +18,25 @@ use polar_validation::{
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
     fixed_schedule_top_l_i64, fixed_schedule_top_l_selection_plan,
     fixed_scl_binary_child_write_domain_check, fixed_scl_child_write_domain_failure_label,
-    fixed_scl_integer_metric_deltas, fixed_scl_integer_round_run_plan_certificate,
-    fixed_scl_integer_round_schedule, fixed_scl_integer_round_schedule_plan,
-    fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
-    fixed_scl_integer_shape_parity_check, fixed_scl_one_bit_run_plan_certificate,
-    fixed_scl_one_bit_shape_parity_check, fixed_scl_path_buffer_schedule_domain_check,
-    fixed_scl_path_domain_failure_label, fixed_scl_public_round_run_shape_certificate,
-    fixed_scl_public_round_schedule_plan, fixed_scl_public_round_schedule_shape_plan,
-    fixed_scl_public_round_shape_parity_check, fixed_scl_public_round_work_counts,
-    fixed_scl_public_round_work_counts_with_capacities, fixed_scl_public_round_work_shape_plan,
-    fixed_scl_round_schedule_plan, fixed_top_l_selection_domain_failure_label,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
-    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    two_public_bits_run_shape_certificate, two_public_bits_shape_parity_check,
-    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
-    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
-    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
+    fixed_scl_child_write_parity_check, fixed_scl_integer_metric_deltas,
+    fixed_scl_integer_round_run_plan_certificate, fixed_scl_integer_round_schedule,
+    fixed_scl_integer_round_schedule_plan, fixed_scl_integer_schedule_domain_check,
+    fixed_scl_integer_schedule_domain_failure_label, fixed_scl_integer_shape_parity_check,
+    fixed_scl_one_bit_run_plan_certificate, fixed_scl_one_bit_shape_parity_check,
+    fixed_scl_path_buffer_schedule_domain_check, fixed_scl_path_domain_failure_label,
+    fixed_scl_public_round_run_shape_certificate, fixed_scl_public_round_schedule_plan,
+    fixed_scl_public_round_schedule_shape_plan, fixed_scl_public_round_shape_parity_check,
+    fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
+    fixed_scl_public_round_work_shape_plan, fixed_scl_round_schedule_plan,
+    fixed_top_l_selection_domain_failure_label, high_noise_control_configs,
+    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
+    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
+    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
+    try_fixed_scl_integer_round_schedule, two_public_bits_run_shape_certificate,
+    two_public_bits_shape_parity_check, zero_error_upper_bound,
+    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
+    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
+    FixedSclChildWriteParityCheck, FixedSclIntegerRoundScheduleBuild,
     FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
     FixedSclIntegerScheduleDomainFailureLabel, FixedSclIntegerShapeParityCheck,
     FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclOneBitShapeParityCheck,
@@ -238,6 +239,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("FixedSclPathBuffer"));
     assert!(json.contains("fixed_scl_binary_child_write_domain_check"));
     assert!(json.contains("public child-write domain validator"));
+    assert!(json.contains("fixed_scl_child_write_parity_check"));
+    assert!(json.contains("child-write run/preflight parity record"));
     assert!(json.contains("\"public_child_write_failure_codes\""));
     assert!(json.contains("\"dst_capacity\""));
     assert!(json.contains("\"parent_slot\""));
@@ -714,6 +717,37 @@ fn fixed_scl_path_buffer_try_writes_binary_children_from_valid_parent() {
     assert_eq!(children.active_count(), 2);
     assert_eq!(children.bits(2), [1, 0, 0, 0, 0, 0, 0, 0]);
     assert_eq!(children.bits(3), [1, 0, 0, 1, 0, 0, 0, 0]);
+}
+
+#[test]
+fn fixed_scl_child_write_parity_check_reports_match_and_mismatch() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [1, 0, 0, 0, 0, 0, 0, 0]);
+
+    let mut children = FixedSclPathBuffer::<4, 8>::new();
+    let run_domain_check = children.try_write_binary_children_from(&parents, 0, 2, 3, 5, 9);
+    let expected_domain_check = fixed_scl_binary_child_write_domain_check::<2, 4, 8>(0, 2, 3);
+
+    assert_eq!(
+        fixed_scl_child_write_parity_check(run_domain_check, expected_domain_check),
+        FixedSclChildWriteParityCheck {
+            matches: true,
+            run_domain_check: expected_domain_check,
+            expected_domain_check,
+        }
+    );
+
+    let mut altered_run_domain_check = run_domain_check;
+    altered_run_domain_check.child_slots_written = 0;
+
+    assert_eq!(
+        fixed_scl_child_write_parity_check(altered_run_domain_check, expected_domain_check),
+        FixedSclChildWriteParityCheck {
+            matches: false,
+            run_domain_check: altered_run_domain_check,
+            expected_domain_check,
+        }
+    );
 }
 
 #[test]

@@ -352,6 +352,13 @@ pub struct FixedSclBinaryChildWriteDomainCheck {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclChildWriteParityCheck {
+    pub matches: bool,
+    pub run_domain_check: FixedSclBinaryChildWriteDomainCheck,
+    pub expected_domain_check: FixedSclBinaryChildWriteDomainCheck,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclOneBitExpansionRun<const CHILD_CAP: usize, const L: usize, const N: usize> {
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
     pub work_counts: FixedSclPublicRoundWorkCounts,
@@ -1315,6 +1322,17 @@ pub fn fixed_scl_binary_child_write_domain_check<
     check
 }
 
+pub fn fixed_scl_child_write_parity_check(
+    run_domain_check: FixedSclBinaryChildWriteDomainCheck,
+    expected_domain_check: FixedSclBinaryChildWriteDomainCheck,
+) -> FixedSclChildWriteParityCheck {
+    FixedSclChildWriteParityCheck {
+        matches: run_domain_check == expected_domain_check,
+        run_domain_check,
+        expected_domain_check,
+    }
+}
+
 pub fn fixed_scl_path_buffer_schedule_domain_check<
     const CAP: usize,
     const N: usize,
@@ -1610,6 +1628,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_schedule_top_l_selection_plan: execution-free top-L selection preflight for public width, list size, and compare-exchange count only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_binary_child_write_domain_check: public child-write domain validator for parent slot, destination capacity, and bit index before fixed-slot writes; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_child_write_parity_check: child-write run/preflight parity record that compares the non-panicking wrapper return check with an execution-free child-write preflight only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_write_binary_children_from: non-panicking child-write wrapper that skips fixed-slot writes on invalid public inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",

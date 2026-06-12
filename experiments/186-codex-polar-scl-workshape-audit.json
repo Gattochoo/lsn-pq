@@ -66,6 +66,7 @@
     "fixed_schedule_top_l_selection_plan: execution-free top-L selection preflight for public width, list size, and compare-exchange count only; not wired into decode_scl; generated-code and timing audit pending",
     "FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_binary_child_write_domain_check: public child-write domain validator for parent slot, destination capacity, and bit index before fixed-slot writes; not wired into decode_scl; generated-code and timing audit pending",
+    "fixed_scl_child_write_parity_check: child-write run/preflight parity record that compares the non-panicking wrapper return check with an execution-free child-write preflight only; not wired into decode_scl; generated-code and timing audit pending",
     "try_write_binary_children_from: non-panicking child-write wrapper that skips fixed-slot writes on invalid public inputs; not wired into decode_scl; generated-code and timing audit pending",
     "write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending",
     "expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending",
