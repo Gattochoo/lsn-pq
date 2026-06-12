@@ -106,6 +106,13 @@ pub struct FixedSclIntegerRoundScheduleBuild<const ROUNDS: usize> {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPathBufferIntegerScheduleRun<const L: usize, const N: usize> {
+    pub domain_check: FixedSclIntegerScheduleDomainCheck,
+    pub paths: FixedSclPathBuffer<L, N>,
+    pub top: [FixedTopLEntry; L],
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPublicRoundWorkCounts {
     pub parent_capacity: usize,
     pub first_child_capacity: usize,
@@ -377,6 +384,42 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         let rounds =
             fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes);
         self.expand_then_compact_public_rounds::<FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(rounds)
+    }
+
+    pub fn try_expand_then_compact_integer_round_schedule<
+        const FIRST_CHILD_CAP: usize,
+        const CHILD_CAP: usize,
+        const L: usize,
+        const ROUNDS: usize,
+    >(
+        &self,
+        bit_indices: [usize; ROUNDS],
+        frozen_bits: [bool; ROUNDS],
+        hard_bits: [u8; ROUNDS],
+        magnitudes: [i64; ROUNDS],
+    ) -> FixedSclPathBufferIntegerScheduleRun<L, N> {
+        let schedule =
+            try_fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes);
+        if !schedule.domain_check.valid {
+            return FixedSclPathBufferIntegerScheduleRun {
+                domain_check: schedule.domain_check,
+                paths: FixedSclPathBuffer::<L, N>::new(),
+                top: [FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                }; L],
+            };
+        }
+
+        let (paths, top) = self
+            .expand_then_compact_public_rounds::<FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(
+                schedule.rounds,
+            );
+        FixedSclPathBufferIntegerScheduleRun {
+            domain_check: schedule.domain_check,
+            paths,
+            top,
+        }
     }
 }
 
@@ -706,6 +749,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_fixed_scl_integer_round_schedule: non-panicking integer schedule builder that returns domain-check status before FixedSclRound arrays; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"try_expand_then_compact_integer_round_schedule: non-panicking path-buffer schedule wrapper that skips expansion on invalid integer inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_integer_round_schedule: integer schedule source-level loop over fixed path buffers only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"public_work_count_examples\": [\n",
