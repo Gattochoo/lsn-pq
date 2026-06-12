@@ -196,6 +196,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("integer child expansion"));
     assert!(json.contains("expand_then_compact_one_bit"));
     assert!(json.contains("one-bit expand then compact"));
+    assert!(json.contains("expand_then_compact_two_public_bits"));
+    assert!(json.contains("two-round public-bit loop"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
@@ -358,6 +360,33 @@ fn fixed_scl_path_buffer_expands_then_compacts_one_bit() {
 fn fixed_scl_path_buffer_expand_then_compact_rejects_small_child_buffer() {
     let parents = FixedSclPathBuffer::<2, 4>::new();
     let _ = parents.expand_then_compact_one_bit::<3, 2>(0, 0, 0);
+}
+
+#[test]
+fn fixed_scl_path_buffer_expands_then_compacts_two_public_bits() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let (final_paths, final_top) =
+        parents.expand_then_compact_two_public_bits::<4, 4, 2>((2, 5, -1), (4, 7, 0));
+
+    assert_eq!(final_paths.active_count(), 2);
+    assert_eq!(final_paths.bits(0), [1; 8]);
+    assert_eq!(final_paths.bits(1), [1, 1, 0, 1, 1, 1, 1, 1]);
+    assert_eq!(
+        final_top,
+        [
+            FixedTopLEntry {
+                metric: 2,
+                index: 1,
+            },
+            FixedTopLEntry {
+                metric: 8,
+                index: 3,
+            },
+        ]
+    );
 }
 
 #[test]

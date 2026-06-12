@@ -228,6 +228,51 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         let top = children.top_l_entries::<L>();
         (children, top)
     }
+
+    fn from_top_entries<const SRC_CAP: usize>(
+        source: &FixedSclPathBuffer<SRC_CAP, N>,
+        top: [FixedTopLEntry; CAP],
+    ) -> Self {
+        let mut compacted = Self::new();
+        for (dst_slot, entry) in top.iter().enumerate() {
+            if entry.index < SRC_CAP && source.slots[entry.index].active != 0 {
+                compacted.slots[dst_slot] = source.slots[entry.index];
+            } else {
+                compacted.clear_slot(dst_slot);
+            }
+        }
+        compacted
+    }
+
+    pub fn expand_then_compact_two_public_bits<
+        const FIRST_CHILD_CAP: usize,
+        const SECOND_CHILD_CAP: usize,
+        const L: usize,
+    >(
+        &self,
+        first_round: (usize, i64, i64),
+        second_round: (usize, i64, i64),
+    ) -> (FixedSclPathBuffer<L, N>, [FixedTopLEntry; L]) {
+        let (first_bit, first_bit0_delta, first_bit1_delta) = first_round;
+        let (first_children, first_top) = self.expand_then_compact_one_bit::<FIRST_CHILD_CAP, L>(
+            first_bit,
+            first_bit0_delta,
+            first_bit1_delta,
+        );
+        let first_compacted =
+            FixedSclPathBuffer::<L, N>::from_top_entries(&first_children, first_top);
+
+        let (second_bit, second_bit0_delta, second_bit1_delta) = second_round;
+        let (second_children, second_top) = first_compacted
+            .expand_then_compact_one_bit::<SECOND_CHILD_CAP, L>(
+                second_bit,
+                second_bit0_delta,
+                second_bit1_delta,
+            );
+        let second_compacted =
+            FixedSclPathBuffer::<L, N>::from_top_entries(&second_children, second_top);
+        (second_compacted, second_top)
+    }
 }
 
 impl<const CAP: usize, const N: usize> Default for FixedSclPathBuffer<CAP, N> {
@@ -423,7 +468,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\",\n",
-        "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",
         "  \"adjudication\": \"engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN\"\n",
