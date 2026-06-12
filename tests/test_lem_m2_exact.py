@@ -80,3 +80,32 @@ def test_num_lagrangian_subspaces():
     assert num_lagrangian_subspaces(1) == 3
     assert num_lagrangian_subspaces(2) == 15
     assert num_lagrangian_subspaces(3) == 135
+
+from experiments.lib.lem_m2_exact import randomized_uniform_B_counts
+
+
+def test_randomized_uniform_B_counts_normalized():
+    for m in (2, 3, 4):
+        counts, denom = randomized_uniform_B_counts(m)
+        assert sum(counts) == denom
+
+
+def test_randomized_uniform_B_counts_matches_brute_force():
+    """For m=2, sum reduction_counts_for_B over all B equals the randomized counts."""
+    from experiments.lib.lem_m2_exact import enumerate_lagrangian_bases, reduction_counts_for_B
+
+    m = 2
+    bases = list(enumerate_lagrangian_bases())
+    red_counts, _ = randomized_uniform_B_counts(m, bases)
+
+    num_B = 1 << (4 * m)
+    mask = (1 << m) - 1
+    size = 1 << (3 * m)
+    brute = [0] * size
+    for bits in range(num_B):
+        B_cols = [((bits >> (j * m)) & mask) for j in range(4)]
+        counts = reduction_counts_for_B(B_cols, bases, m)
+        for i in range(size):
+            brute[i] += counts[i]
+
+    assert red_counts == brute
