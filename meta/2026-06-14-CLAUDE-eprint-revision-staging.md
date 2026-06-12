@@ -16,6 +16,8 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 |---|---|---|---|---|
 | S1 | **결정론 marginal-adaptive 하한**(thm:deterministic-marginal-adaptive): SD≥1−\|Lagr\|/2^{mn} | `4a3c661` | abstract "3 of 4" → "3.5 of 4"(결정론 절반 추가 폐쇄); barrier 표/status map/open problem 분리 | 186 독립검증(`bfdfd8b`) ✓; 빌드 32pp 클린 |
 
+| S2 | **OP7 n=2 freshness 부정**: 심플렉틱-궤도 변환은 fresh 못 만듦, SD=123/128 (모든 720쌍; n>=3 OPEN) | OP7-n2 commit | OP7 항목 sharpen(evidence) | exp/193 from-scratch + 192 버그수정 대조 |
+
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
 ## 3. ★ revision을 *지금* 트리거하는 조건 (이 중 하나라도면 batch revision 권고)

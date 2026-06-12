@@ -5,10 +5,10 @@
   "num_lagrangian": 15,
   "min_sd": "123/128",
   "min_sd_float": 0.9609375,
-  "max_sd": "371/384",
-  "max_sd_float": 0.9661458333333334,
-  "mean_sd": "309/320",
-  "mean_sd_float": 0.965625,
-  "median_sd": "309/320",
-  "median_sd_float": 0.965625
+  "max_sd": "123/128",
+  "max_sd_float": 0.9609375,
+  "mean_sd": "123/128",
+  "mean_sd_float": 0.9609375,
+  "median_sd": "123/128",
+  "median_sd_float": 0.9609375
 }

@@ -124,7 +124,7 @@ def exact_sd_for_T(
             in_v = (mask >> v) & 1
             for b in range(2):
                 w_u = (pden - pnum) if (in_u == b) else pnum
-                w_v = (pden - pnum) if (in_v == b) else pnum
+                w_v = (pden - pnum) if (in_u == b) else pnum  # 1_{TL}(Tu)=1_L(u)=in_u (Claude fix: was in_v=1_L(Tu))
                 trans_scaled[u][b] += w_u
                 fresh_match[u][b] += w_u * w_v
 
