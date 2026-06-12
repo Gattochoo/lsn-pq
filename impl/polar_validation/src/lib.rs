@@ -1866,14 +1866,18 @@ pub fn fixed_scl_integer_metric_deltas(
         "integer metric magnitude must be non-negative"
     );
 
-    let bit0_metric_delta = if hard_bit == 0 { 0 } else { magnitude };
-    let bit1_metric_delta = if frozen_bit {
-        FIXED_SCL_FORBIDDEN_METRIC_DELTA
-    } else if hard_bit == 1 {
-        0
-    } else {
-        magnitude
-    };
+    let hard_bit_i64 = i64::from(hard_bit & 1);
+    let hard_bit_mask = 0i64.wrapping_sub(hard_bit_i64);
+    let frozen_i64 = i64::from(frozen_bit);
+    let frozen_mask = 0i64.wrapping_sub(frozen_i64);
+
+    let bit0_metric_delta = select_i64(hard_bit_mask, 0, magnitude);
+    let unfrozen_bit1_delta = select_i64(hard_bit_mask, magnitude, 0);
+    let bit1_metric_delta = select_i64(
+        frozen_mask,
+        unfrozen_bit1_delta,
+        FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+    );
 
     FixedSclMetricDeltas {
         bit0_metric_delta,

@@ -2736,6 +2736,31 @@ fn fixed_scl_integer_metric_deltas_saturate_large_penalty() {
 }
 
 #[test]
+fn fixed_scl_integer_metric_deltas_use_masked_selects() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn fixed_scl_integer_metric_deltas(")
+        .expect("fixed_scl_integer_metric_deltas source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn try_fixed_scl_integer_metric_deltas(")
+        .map(|offset| helper_start + offset)
+        .expect("try_fixed_scl_integer_metric_deltas should follow metric deltas");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if hard_bit == 0"));
+    assert!(!helper_source.contains("if frozen_bit"));
+    assert!(!helper_source.contains("else if hard_bit == 1"));
+    assert!(helper_source.contains("let hard_bit_i64 = i64::from(hard_bit & 1);"));
+    assert!(helper_source.contains("let hard_bit_mask = 0i64.wrapping_sub(hard_bit_i64);"));
+    assert!(helper_source.contains("let frozen_mask = 0i64.wrapping_sub(frozen_i64);"));
+    assert!(helper_source.contains("select_i64(hard_bit_mask, 0, magnitude)"));
+    assert!(helper_source.contains("let bit1_metric_delta = select_i64("));
+    assert!(helper_source.contains("frozen_mask,"));
+    assert!(helper_source.contains("unfrozen_bit1_delta,"));
+    assert!(helper_source.contains("FIXED_SCL_FORBIDDEN_METRIC_DELTA,"));
+}
+
+#[test]
 fn fixed_scl_integer_metric_domain_check_labels_single_round_inputs() {
     assert_eq!(
         fixed_scl_integer_metric_domain_check(1, 7),
