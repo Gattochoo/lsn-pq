@@ -1180,34 +1180,9 @@ pub fn fixed_i64_high_noise_control_configs(trials: usize, seed: u64) -> Vec<Sim
 
 pub fn fixed_i64_l8_validation_dispatch(cfg: &SimulationConfig) -> SimulationResult {
     match cfg.n {
-        128 => simulate_bsc_scl_fixed_i64::<128, 8, 16>(
-            cfg.k,
-            cfg.p,
-            cfg.trials,
-            cfg.seed,
-            FIXED_I64_VALIDATION_METRIC_SCALE,
-        ),
-        256 => simulate_bsc_scl_fixed_i64::<256, 8, 16>(
-            cfg.k,
-            cfg.p,
-            cfg.trials,
-            cfg.seed,
-            FIXED_I64_VALIDATION_METRIC_SCALE,
-        ),
-        512 => simulate_bsc_scl_fixed_i64::<512, 8, 16>(
-            cfg.k,
-            cfg.p,
-            cfg.trials,
-            cfg.seed,
-            FIXED_I64_VALIDATION_METRIC_SCALE,
-        ),
-        2048 => simulate_bsc_scl_fixed_i64::<2048, 8, 16>(
-            cfg.k,
-            cfg.p,
-            cfg.trials,
-            cfg.seed,
-            FIXED_I64_VALIDATION_METRIC_SCALE,
-        ),
+        128 | 256 | 512 | 2048 => {
+            simulate_bsc_scl_fixed_i64_l8_validation(cfg.n, cfg.k, cfg.p, cfg.trials, cfg.seed)
+        }
         other => panic!("fixed-i64 validation dispatch does not support N={other}"),
     }
 }
@@ -2723,6 +2698,16 @@ pub fn decode_scl_fixed_i64<const N: usize, const L: usize, const CHILD_CAP: usi
     code.info_set.iter().map(|&idx| best_bits[idx]).collect()
 }
 
+pub fn decode_scl_fixed_i64_l8_validation(code: &PolarCode, llr: &[f64]) -> Vec<u8> {
+    match code.n {
+        128 => decode_scl_fixed_i64::<128, 8, 16>(code, llr, FIXED_I64_VALIDATION_METRIC_SCALE),
+        256 => decode_scl_fixed_i64::<256, 8, 16>(code, llr, FIXED_I64_VALIDATION_METRIC_SCALE),
+        512 => decode_scl_fixed_i64::<512, 8, 16>(code, llr, FIXED_I64_VALIDATION_METRIC_SCALE),
+        2048 => decode_scl_fixed_i64::<2048, 8, 16>(code, llr, FIXED_I64_VALIDATION_METRIC_SCALE),
+        other => panic!("fixed-i64 L8 validation decode does not support N={other}"),
+    }
+}
+
 fn llr_metric_magnitude_i64(llr: f64, metric_scale: f64) -> i64 {
     let scaled = (llr.abs() * metric_scale).round();
     if !scaled.is_finite() || scaled >= (i64::MAX / 4) as f64 {
@@ -2904,6 +2889,52 @@ pub fn simulate_bsc_scl_fixed_i64<const N: usize, const L: usize, const CHILD_CA
 
     SimulationResult {
         n: N,
+        k,
+        p,
+        trials,
+        errors,
+        seed,
+    }
+}
+
+pub fn simulate_bsc_scl_fixed_i64_l8_validation(
+    n: usize,
+    k: usize,
+    p: f64,
+    trials: usize,
+    seed: u64,
+) -> SimulationResult {
+    let code = PolarCode::new(n, k, p);
+    let mut rng = Lcg64::new(seed);
+    let llr0 = ((1.0 - p) / p).ln();
+    let llr1 = -llr0;
+    let mut errors = 0usize;
+
+    for _ in 0..trials {
+        let message = (0..k)
+            .map(|_| if rng.next_bool() { 1 } else { 0 })
+            .collect::<Vec<_>>();
+        let x = encode(&code, &message);
+        let llr = x
+            .iter()
+            .map(|&bit| {
+                let flipped = rng.next_f64() < p;
+                let y = bit ^ u8::from(flipped);
+                if y == 0 {
+                    llr0
+                } else {
+                    llr1
+                }
+            })
+            .collect::<Vec<_>>();
+        let decoded = decode_scl_fixed_i64_l8_validation(&code, &llr);
+        if decoded != message {
+            errors += 1;
+        }
+    }
+
+    SimulationResult {
+        n,
         k,
         p,
         trials,

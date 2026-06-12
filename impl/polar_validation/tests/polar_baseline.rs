@@ -16,8 +16,9 @@
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural,
     compare_scl_fast_fixed_i64_decoded_bits, decode_scl, decode_scl_fast, decode_scl_fixed_i64,
-    decode_successive_cancellation, encode, fixed_i64_high_noise_control_configs,
-    fixed_i64_l8_validation_dispatch, fixed_schedule_top_l_compare_count, fixed_schedule_top_l_i64,
+    decode_scl_fixed_i64_l8_validation, decode_successive_cancellation, encode,
+    fixed_i64_high_noise_control_configs, fixed_i64_l8_validation_dispatch,
+    fixed_schedule_top_l_compare_count, fixed_schedule_top_l_i64,
     fixed_schedule_top_l_selection_plan, fixed_scl_binary_child_write_domain_check,
     fixed_scl_child_write_domain_failure_label, fixed_scl_child_write_parity_check,
     fixed_scl_integer_metric_deltas, fixed_scl_integer_metric_domain_check,
@@ -235,6 +236,31 @@ fn fixed_i64_l8_validation_dispatch_matches_generic_simulator() {
         cfg.seed,
         FIXED_I64_VALIDATION_METRIC_SCALE,
     );
+
+    assert_eq!(dispatched, generic);
+}
+
+#[test]
+fn fixed_i64_l8_decode_dispatch_matches_generic_decoder() {
+    let code = PolarCode::new(128, 16, 0.0706);
+    let msg = (0..code.k).map(|i| (i % 3 == 0) as u8).collect::<Vec<_>>();
+    let x = encode(&code, &msg);
+    let llr = x
+        .iter()
+        .enumerate()
+        .map(|(i, &bit)| {
+            let observed = bit ^ u8::from(i % 17 == 0);
+            if observed == 0 {
+                2.58
+            } else {
+                -2.58
+            }
+        })
+        .collect::<Vec<_>>();
+
+    let dispatched = decode_scl_fixed_i64_l8_validation(&code, &llr);
+    let generic =
+        decode_scl_fixed_i64::<128, 8, 16>(&code, &llr, FIXED_I64_VALIDATION_METRIC_SCALE);
 
     assert_eq!(dispatched, generic);
 }
