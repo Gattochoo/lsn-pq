@@ -15,11 +15,12 @@
 
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
-    decode_scl_fast, decode_successive_cancellation, encode, high_noise_control_configs,
-    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    zero_error_upper_bound, PolarCode,
+    decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
+    fixed_schedule_top_l_i64, high_noise_control_configs, importance_results_to_json,
+    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound, FixedTopLEntry,
+    PolarCode,
 };
 
 #[test]
@@ -189,6 +190,43 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("Vec growth"));
     assert!(json.contains("floating-point path metrics"));
     assert!(json.contains("fixed-schedule integer decoder plan required"));
+    assert!(json.contains("fixed_schedule_top_l_i64"));
+    assert!(json.contains("source-level fixed schedule only"));
+    assert!(json.contains("not wired into decode_scl"));
+}
+
+#[test]
+fn fixed_schedule_top_l_selects_lowest_metrics_with_stable_ties() {
+    let top = fixed_schedule_top_l_i64::<8, 4>([7, -2, 5, -2, 9, 0, 5, -3]);
+
+    assert_eq!(
+        top,
+        [
+            FixedTopLEntry {
+                metric: -3,
+                index: 7,
+            },
+            FixedTopLEntry {
+                metric: -2,
+                index: 1,
+            },
+            FixedTopLEntry {
+                metric: -2,
+                index: 3,
+            },
+            FixedTopLEntry {
+                metric: 0,
+                index: 5,
+            },
+        ]
+    );
+    assert_eq!(fixed_schedule_top_l_compare_count(8), 28);
+}
+
+#[test]
+#[should_panic(expected = "top-L selector requires L <= WIDTH")]
+fn fixed_schedule_top_l_rejects_invalid_width() {
+    let _ = fixed_schedule_top_l_i64::<2, 3>([0, 1]);
 }
 
 #[test]

@@ -63,6 +63,12 @@ pub struct PolarRateRow {
     pub passes_half_sum_target: bool,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedTopLEntry {
+    pub metric: i64,
+    pub index: usize,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SimulationConfig {
     pub n: usize,
@@ -155,6 +161,68 @@ pub fn high_noise_control_configs(trials: usize, seed: u64) -> Vec<SimulationCon
         .collect()
 }
 
+pub fn fixed_schedule_top_l_compare_count(width: usize) -> usize {
+    width.saturating_mul(width.saturating_sub(1)) / 2
+}
+
+pub fn fixed_schedule_top_l_i64<const WIDTH: usize, const L: usize>(
+    metrics: [i64; WIDTH],
+) -> [FixedTopLEntry; L] {
+    assert!(L <= WIDTH, "top-L selector requires L <= WIDTH");
+    let mut entries = [FixedTopLEntry {
+        metric: i64::MAX,
+        index: usize::MAX,
+    }; WIDTH];
+    for i in 0..WIDTH {
+        entries[i] = FixedTopLEntry {
+            metric: metrics[i],
+            index: i,
+        };
+    }
+
+    for i in 0..WIDTH {
+        for j in (i + 1)..WIDTH {
+            fixed_compare_exchange(&mut entries, i, j);
+        }
+    }
+
+    let mut top = [FixedTopLEntry {
+        metric: i64::MAX,
+        index: usize::MAX,
+    }; L];
+    top[..L].copy_from_slice(&entries[..L]);
+    top
+}
+
+fn fixed_compare_exchange(entries: &mut [FixedTopLEntry], left: usize, right: usize) {
+    let a = entries[left];
+    let b = entries[right];
+    let take_b = usize::from(entry_less(b, a));
+    let mask_usize = 0usize.wrapping_sub(take_b);
+    let mask_i64 = 0i64.wrapping_sub(take_b as i64);
+
+    entries[left] = FixedTopLEntry {
+        metric: select_i64(mask_i64, a.metric, b.metric),
+        index: select_usize(mask_usize, a.index, b.index),
+    };
+    entries[right] = FixedTopLEntry {
+        metric: select_i64(mask_i64, b.metric, a.metric),
+        index: select_usize(mask_usize, b.index, a.index),
+    };
+}
+
+fn entry_less(a: FixedTopLEntry, b: FixedTopLEntry) -> bool {
+    a.metric < b.metric || (a.metric == b.metric && a.index < b.index)
+}
+
+fn select_i64(mask: i64, keep: i64, replace: i64) -> i64 {
+    (keep & !mask) | (replace & mask)
+}
+
+fn select_usize(mask: usize, keep: usize, replace: usize) -> usize {
+    (keep & !mask) | (replace & mask)
+}
+
 pub fn scl_work_shape_audit_json() -> &'static str {
     concat!(
         "{\n",
@@ -183,6 +251,9 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"data-oblivious top-L selection network\",\n",
         "    \"no secret-dependent allocation, sorting, truncation, or branch pruning\",\n",
         "    \"generated-code and timing/leakage audit before any production claim\"\n",
+        "  ],\n",
+        "  \"prototype_building_blocks\": [\n",
+        "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",
         "  \"adjudication\": \"engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN\"\n",
