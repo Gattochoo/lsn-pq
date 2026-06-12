@@ -2008,18 +2008,36 @@ pub fn try_fixed_scl_integer_round_schedule<const ROUNDS: usize>(
     magnitudes: [i64; ROUNDS],
 ) -> FixedSclIntegerRoundScheduleBuild<ROUNDS> {
     let domain_check = fixed_scl_integer_schedule_domain_check(hard_bits, magnitudes);
-    if !domain_check.valid {
-        return FixedSclIntegerRoundScheduleBuild {
-            domain_check,
-            round_slots_written: 0,
-            rounds: [FixedSclRound::new(0, 0, 0); ROUNDS],
-        };
+    let invalid_usize = usize::from(domain_check.valid) ^ 1;
+    let invalid_i64 = i64::from(domain_check.valid) ^ 1;
+    let invalid_mask_usize = 0usize.wrapping_sub(invalid_usize);
+    let invalid_mask_i64 = 0i64.wrapping_sub(invalid_i64);
+    let zero_round = FixedSclRound::new(0, 0, 0);
+    let mut rounds = [zero_round; ROUNDS];
+
+    for index in 0..ROUNDS {
+        let delta_run = try_fixed_scl_integer_metric_deltas(
+            frozen_bits[index],
+            hard_bits[index],
+            magnitudes[index],
+        );
+        let candidate_round = FixedSclRound::new(
+            bit_indices[index],
+            delta_run.deltas.bit0_metric_delta,
+            delta_run.deltas.bit1_metric_delta,
+        );
+        rounds[index] = select_round(
+            invalid_mask_usize,
+            invalid_mask_i64,
+            candidate_round,
+            zero_round,
+        );
     }
 
     FixedSclIntegerRoundScheduleBuild {
         domain_check,
-        round_slots_written: ROUNDS,
-        rounds: fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes),
+        round_slots_written: select_usize(invalid_mask_usize, ROUNDS, 0),
+        rounds,
     }
 }
 
@@ -2120,6 +2138,19 @@ fn select_usize(mask: usize, keep: usize, replace: usize) -> usize {
 
 fn select_u8(mask: u8, keep: u8, replace: u8) -> u8 {
     (keep & !mask) | (replace & mask)
+}
+
+fn select_round(
+    mask_usize: usize,
+    mask_i64: i64,
+    keep: FixedSclRound,
+    replace: FixedSclRound,
+) -> FixedSclRound {
+    FixedSclRound {
+        bit_index: select_usize(mask_usize, keep.bit_index, replace.bit_index),
+        bit0_metric_delta: select_i64(mask_i64, keep.bit0_metric_delta, replace.bit0_metric_delta),
+        bit1_metric_delta: select_i64(mask_i64, keep.bit1_metric_delta, replace.bit1_metric_delta),
+    }
 }
 
 fn select_candidate<const N: usize>(

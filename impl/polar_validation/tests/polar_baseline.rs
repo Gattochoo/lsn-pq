@@ -3159,6 +3159,32 @@ fn try_fixed_scl_integer_round_schedule_reports_invalid_without_panicking() {
 }
 
 #[test]
+fn try_fixed_scl_integer_round_schedule_uses_masked_zero_round_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn try_fixed_scl_integer_round_schedule")
+        .expect("try_fixed_scl_integer_round_schedule source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_integer_round_schedule_build_plan")
+        .map(|offset| helper_start + offset)
+        .expect("fixed_scl_integer_round_schedule_build_plan should follow wrapper");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if !domain_check.valid"));
+    assert!(!helper_source.contains("return FixedSclIntegerRoundScheduleBuild"));
+    assert!(!helper_source.contains("fixed_scl_integer_round_schedule("));
+    assert!(helper_source.contains("let invalid_usize = usize::from(domain_check.valid) ^ 1;"));
+    assert!(helper_source.contains("let invalid_mask_usize = 0usize.wrapping_sub(invalid_usize);"));
+    assert!(helper_source.contains("let invalid_mask_i64 = 0i64.wrapping_sub(invalid_i64);"));
+    assert!(helper_source.contains("try_fixed_scl_integer_metric_deltas("));
+    assert!(helper_source.contains("round_slots_written: select_usize("));
+    assert!(helper_source.contains("rounds[index] ="));
+    assert!(helper_source.contains("select_round("));
+    assert!(helper_source.contains("invalid_mask_usize,"));
+    assert!(helper_source.contains("invalid_mask_i64,"));
+}
+
+#[test]
 fn fixed_scl_integer_round_schedule_maps_public_arrays_to_rounds() {
     let rounds =
         fixed_scl_integer_round_schedule([0, 1, 2], [true, false, false], [1, 0, 1], [3, 5, 7]);
