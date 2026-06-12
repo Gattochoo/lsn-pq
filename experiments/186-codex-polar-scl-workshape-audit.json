@@ -53,6 +53,11 @@
     {"code": 1, "name": "hard_bit", "meaning": "hard decisions must be public bits"},
     {"code": 2, "name": "magnitude", "meaning": "integer metric magnitudes must be non-negative"}
   ],
+  "integer_metric_domain_failure_codes": [
+    {"code": 0, "name": "ok", "meaning": "valid public integer metric inputs"},
+    {"code": 1, "name": "hard_bit", "meaning": "hard decisions must be public bits"},
+    {"code": 2, "name": "magnitude", "meaning": "integer metric magnitudes must be non-negative"}
+  ],
   "integer_schedule_shape_failure_families": [
     {"code": 0, "name": "ok", "meaning": "valid integer schedule-shape preflight"},
     {"code": 1, "name": "integer_domain", "meaning": "integer hard-bit or metric-magnitude domain failed first"},
@@ -69,6 +74,7 @@
     {"wrapper": "try_expand_then_compact_one_bit", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclOneBitExpansionRun.path_domain_check.failure_code", "work_count_field": "FixedSclOneBitExpansionRun.work_counts"},
     {"wrapper": "try_expand_then_compact_two_public_bits", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclPublicRoundScheduleRun.path_domain_check.failure_code", "work_count_field": "FixedSclPublicRoundScheduleRun.work_counts"},
     {"wrapper": "try_expand_then_compact_public_rounds", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclPublicRoundScheduleRun.path_domain_check.failure_code", "work_count_field": "FixedSclPublicRoundScheduleRun.work_counts"},
+    {"wrapper": "try_fixed_scl_integer_metric_deltas", "failure_family": "integer_metric_domain_failure_codes", "status_field": "FixedSclIntegerMetricDeltaRun.domain_check.failure_code", "work_count_field": "none-single-round-delta"},
     {"wrapper": "try_fixed_scl_integer_round_schedule", "failure_family": "integer_schedule_domain_failure_codes", "status_field": "FixedSclIntegerRoundScheduleBuild.domain_check.failure_code", "work_count_field": "FixedSclIntegerRoundScheduleBuild.round_slots_written"},
     {"wrapper": "try_expand_then_compact_integer_round_schedule", "failure_family": "public_path_domain_failure_codes", "path_status_field": "FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code", "integer_status_family": "integer_schedule_domain_failure_codes", "integer_status_field": "FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code", "work_count_field": "FixedSclPathBufferIntegerScheduleRun.work_counts"}
   ],
@@ -104,7 +110,9 @@
     "fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_public_round_work_shape_plan: execution-free public round work-shape plan that pairs first/repeated top-L preflights with public work counts only; not wired into decode_scl; generated-code and timing audit pending",
+    "fixed_scl_integer_metric_domain_check: single-round integer metric domain validator for public hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending",
+    "try_fixed_scl_integer_metric_deltas: non-panicking integer metric delta wrapper that returns terminal sentinels on invalid public metric inputs; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_integer_round_schedule_build_plan: execution-free integer schedule-build preflight that pairs integer status with public round-slot write count only; not wired into decode_scl; generated-code and timing audit pending",

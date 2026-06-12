@@ -173,6 +173,10 @@ pub fn fixed_scl_integer_schedule_domain_failure_label(code: u8) -> &'static str
     "unknown"
 }
 
+pub fn fixed_scl_integer_metric_domain_failure_label(code: u8) -> &'static str {
+    fixed_scl_integer_schedule_domain_failure_label(code)
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclIntegerScheduleShapeFailureLabel {
     pub code: u8,
@@ -340,6 +344,18 @@ pub fn fixed_scl_path_domain_failure_label(code: u8) -> &'static str {
 pub struct FixedSclMetricDeltas {
     pub bit0_metric_delta: i64,
     pub bit1_metric_delta: i64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerMetricDomainCheck {
+    pub valid: bool,
+    pub failure_code: u8,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerMetricDeltaRun {
+    pub domain_check: FixedSclIntegerMetricDomainCheck,
+    pub deltas: FixedSclMetricDeltas,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -1737,6 +1753,28 @@ pub fn fixed_scl_integer_schedule_domain_check<const ROUNDS: usize>(
     }
 }
 
+pub fn fixed_scl_integer_metric_domain_check(
+    hard_bit: u8,
+    magnitude: i64,
+) -> FixedSclIntegerMetricDomainCheck {
+    if hard_bit > 1 {
+        return FixedSclIntegerMetricDomainCheck {
+            valid: false,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+        };
+    }
+    if magnitude < 0 {
+        return FixedSclIntegerMetricDomainCheck {
+            valid: false,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+        };
+    }
+    FixedSclIntegerMetricDomainCheck {
+        valid: true,
+        failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+    }
+}
+
 pub fn fixed_scl_integer_metric_deltas(
     frozen_bit: bool,
     hard_bit: u8,
@@ -1760,6 +1798,28 @@ pub fn fixed_scl_integer_metric_deltas(
     FixedSclMetricDeltas {
         bit0_metric_delta,
         bit1_metric_delta,
+    }
+}
+
+pub fn try_fixed_scl_integer_metric_deltas(
+    frozen_bit: bool,
+    hard_bit: u8,
+    magnitude: i64,
+) -> FixedSclIntegerMetricDeltaRun {
+    let domain_check = fixed_scl_integer_metric_domain_check(hard_bit, magnitude);
+    if !domain_check.valid {
+        return FixedSclIntegerMetricDeltaRun {
+            domain_check,
+            deltas: FixedSclMetricDeltas {
+                bit0_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+                bit1_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+            },
+        };
+    }
+
+    FixedSclIntegerMetricDeltaRun {
+        domain_check,
+        deltas: fixed_scl_integer_metric_deltas(frozen_bit, hard_bit, magnitude),
     }
 }
 
@@ -1963,6 +2023,11 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"code\": 1, \"name\": \"hard_bit\", \"meaning\": \"hard decisions must be public bits\"},\n",
         "    {\"code\": 2, \"name\": \"magnitude\", \"meaning\": \"integer metric magnitudes must be non-negative\"}\n",
         "  ],\n",
+        "  \"integer_metric_domain_failure_codes\": [\n",
+        "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid public integer metric inputs\"},\n",
+        "    {\"code\": 1, \"name\": \"hard_bit\", \"meaning\": \"hard decisions must be public bits\"},\n",
+        "    {\"code\": 2, \"name\": \"magnitude\", \"meaning\": \"integer metric magnitudes must be non-negative\"}\n",
+        "  ],\n",
         "  \"integer_schedule_shape_failure_families\": [\n",
         "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid integer schedule-shape preflight\"},\n",
         "    {\"code\": 1, \"name\": \"integer_domain\", \"meaning\": \"integer hard-bit or metric-magnitude domain failed first\"},\n",
@@ -1979,6 +2044,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"wrapper\": \"try_expand_then_compact_one_bit\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclOneBitExpansionRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclOneBitExpansionRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_two_public_bits\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_public_rounds\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
+        "    {\"wrapper\": \"try_fixed_scl_integer_metric_deltas\", \"failure_family\": \"integer_metric_domain_failure_codes\", \"status_field\": \"FixedSclIntegerMetricDeltaRun.domain_check.failure_code\", \"work_count_field\": \"none-single-round-delta\"},\n",
         "    {\"wrapper\": \"try_fixed_scl_integer_round_schedule\", \"failure_family\": \"integer_schedule_domain_failure_codes\", \"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\", \"work_count_field\": \"FixedSclIntegerRoundScheduleBuild.round_slots_written\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_integer_round_schedule\", \"failure_family\": \"public_path_domain_failure_codes\", \"path_status_field\": \"FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code\", \"integer_status_family\": \"integer_schedule_domain_failure_codes\", \"integer_status_field\": \"FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code\", \"work_count_field\": \"FixedSclPathBufferIntegerScheduleRun.work_counts\"}\n",
         "  ],\n",
@@ -2014,7 +2080,9 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_shape_plan: execution-free public round work-shape plan that pairs first/repeated top-L preflights with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_metric_domain_check: single-round integer metric domain validator for public hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"try_fixed_scl_integer_metric_deltas: non-panicking integer metric delta wrapper that returns terminal sentinels on invalid public metric inputs; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule_build_plan: execution-free integer schedule-build preflight that pairs integer status with public round-slot write count only; not wired into decode_scl; generated-code and timing audit pending\",\n",

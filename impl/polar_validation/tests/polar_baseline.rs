@@ -19,6 +19,7 @@ use polar_validation::{
     fixed_schedule_top_l_i64, fixed_schedule_top_l_selection_plan,
     fixed_scl_binary_child_write_domain_check, fixed_scl_child_write_domain_failure_label,
     fixed_scl_child_write_parity_check, fixed_scl_integer_metric_deltas,
+    fixed_scl_integer_metric_domain_check, fixed_scl_integer_metric_domain_failure_label,
     fixed_scl_integer_round_build_certificate, fixed_scl_integer_round_build_parity_check,
     fixed_scl_integer_round_run_plan_certificate, fixed_scl_integer_round_run_shape_certificate,
     fixed_scl_integer_round_schedule, fixed_scl_integer_round_schedule_build_plan,
@@ -40,11 +41,12 @@ use polar_validation::{
     high_noise_control_configs, importance_results_to_json, polar_rate_row,
     polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    two_public_bits_run_shape_certificate, two_public_bits_shape_parity_check,
-    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
-    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
-    FixedSclChildWriteDomainFailureLabel, FixedSclChildWriteParityCheck,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_metric_deltas,
+    try_fixed_scl_integer_round_schedule, two_public_bits_run_shape_certificate,
+    two_public_bits_shape_parity_check, zero_error_upper_bound,
+    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
+    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
+    FixedSclChildWriteParityCheck, FixedSclIntegerMetricDeltaRun, FixedSclIntegerMetricDomainCheck,
     FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundScheduleBuildParityCheck,
     FixedSclIntegerRoundScheduleBuildPlan, FixedSclIntegerRoundSchedulePlan,
     FixedSclIntegerRoundScheduleShapePlan, FixedSclIntegerScheduleDomainCheck,
@@ -325,6 +327,11 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("execution-free public round work-shape plan"));
     assert!(json.contains("fixed_scl_integer_metric_deltas"));
     assert!(json.contains("integer metric delta audit"));
+    assert!(json.contains("fixed_scl_integer_metric_domain_check"));
+    assert!(json.contains("single-round integer metric domain validator"));
+    assert!(json.contains("try_fixed_scl_integer_metric_deltas"));
+    assert!(json.contains("non-panicking integer metric delta wrapper"));
+    assert!(json.contains("\"integer_metric_domain_failure_codes\""));
     assert!(json.contains("fixed_scl_integer_round_schedule"));
     assert!(json.contains("public integer round schedule audit"));
     assert!(json.contains("fixed_scl_integer_schedule_domain_check"));
@@ -2367,6 +2374,82 @@ fn fixed_scl_integer_metric_deltas_saturate_large_penalty() {
         FixedSclMetricDeltas {
             bit0_metric_delta: 0,
             bit1_metric_delta: i64::MAX,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_metric_domain_check_labels_single_round_inputs() {
+    assert_eq!(
+        fixed_scl_integer_metric_domain_check(1, 7),
+        FixedSclIntegerMetricDomainCheck {
+            valid: true,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+        }
+    );
+    assert_eq!(
+        fixed_scl_integer_metric_domain_check(2, 7),
+        FixedSclIntegerMetricDomainCheck {
+            valid: false,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+        }
+    );
+    assert_eq!(
+        fixed_scl_integer_metric_domain_check(1, -1),
+        FixedSclIntegerMetricDomainCheck {
+            valid: false,
+            failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+        }
+    );
+    assert_eq!(
+        fixed_scl_integer_metric_domain_failure_label(FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT),
+        "hard_bit"
+    );
+    assert_eq!(
+        fixed_scl_integer_metric_domain_failure_label(255),
+        "unknown"
+    );
+}
+
+#[test]
+fn try_fixed_scl_integer_metric_deltas_reports_invalid_without_panicking() {
+    assert_eq!(
+        try_fixed_scl_integer_metric_deltas(false, 1, 7),
+        FixedSclIntegerMetricDeltaRun {
+            domain_check: FixedSclIntegerMetricDomainCheck {
+                valid: true,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+            },
+            deltas: FixedSclMetricDeltas {
+                bit0_metric_delta: 7,
+                bit1_metric_delta: 0,
+            },
+        }
+    );
+    assert_eq!(
+        try_fixed_scl_integer_metric_deltas(false, 2, 7),
+        FixedSclIntegerMetricDeltaRun {
+            domain_check: FixedSclIntegerMetricDomainCheck {
+                valid: false,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+            },
+            deltas: FixedSclMetricDeltas {
+                bit0_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+                bit1_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+            },
+        }
+    );
+    assert_eq!(
+        try_fixed_scl_integer_metric_deltas(true, 1, -1),
+        FixedSclIntegerMetricDeltaRun {
+            domain_check: FixedSclIntegerMetricDomainCheck {
+                valid: false,
+                failure_code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+            },
+            deltas: FixedSclMetricDeltas {
+                bit0_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+                bit1_metric_delta: FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+            },
         }
     );
 }
