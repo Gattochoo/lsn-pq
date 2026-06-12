@@ -30,6 +30,7 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     );
     assert!(json.contains("FixedLagrangian bitset scaffold"));
     assert!(json.contains("exact public Lagrangian point count"));
+    assert!(json.contains("full-slice masked range validation"));
     assert!(json.contains("fixed max-word backing storage"));
     assert!(json.contains("scanned mask lookup"));
     assert!(json.contains("bounded reference layout"));

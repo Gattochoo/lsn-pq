@@ -140,11 +140,23 @@ impl FixedLagrangian {
             });
         }
 
+        let mut out_of_range_seen = 0u64;
+        let mut first_out_of_range_point = 0u32;
         for &point in points {
             let index = point as usize;
-            if index >= universe {
-                return Err(FixedLagrangianError::PointOutOfRange { n, point, universe });
-            }
+            let out_of_range_mask = 0u64.wrapping_sub((index >= universe) as u64);
+            let select_first_mask = out_of_range_mask & !out_of_range_seen;
+            first_out_of_range_point = (((first_out_of_range_point as u64) & !select_first_mask)
+                | ((point as u64) & select_first_mask))
+                as u32;
+            out_of_range_seen |= out_of_range_mask;
+        }
+        if out_of_range_seen != 0 {
+            return Err(FixedLagrangianError::PointOutOfRange {
+                n,
+                point: first_out_of_range_point,
+                universe,
+            });
         }
 
         let active_words = universe.div_ceil(64);
@@ -708,7 +720,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses fixed max-word backing storage plus scanned mask lookup for toy membership label generation, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, and scanned mask lookup for toy membership label generation, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",

@@ -13,7 +13,7 @@
       "id": "ct-001",
       "surface": "Lagrangian membership representation",
       "classification": "partial_fixed_layout_scaffold_not_production_ct",
-      "issue": "FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses fixed max-word backing storage plus scanned mask lookup for toy membership label generation, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production",
+      "issue": "FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, and scanned mask lookup for toy membership label generation, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production",
       "required_action": "replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim"
     },
     {

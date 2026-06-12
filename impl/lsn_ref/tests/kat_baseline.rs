@@ -89,6 +89,9 @@ fn fixed_lagrangian_source_avoids_secret_dependent_word_indexing() {
 
     assert!(!source.contains("self.words[index >> 6]"));
     assert!(!source.contains("words[index >> 6]"));
+    assert!(!source.contains(
+        "if index >= universe {\n                return Err(FixedLagrangianError::PointOutOfRange"
+    ));
     assert!(source.contains("words: [u64; LSN_REF_FIXED_LAGRANGIAN_WORDS]"));
     assert!(source.contains("contains_mask_scanned"));
     assert!(source.contains("PointCountMismatch"));
