@@ -1,0 +1,27 @@
+{
+  "experiment": "codex-p1-rust-scl-fixed-i64-l8-n2048",
+  "decoder": "scl_l8_fixed_i64_metric_scale_1024",
+  "frozen_set": "natural_order_bhattacharyya_z2i_bad_z2i1_good",
+  "results": [
+    {
+      "N": 2048,
+      "K": 256,
+      "p": 0.0706000000,
+      "trials": 1,
+      "errors": 0,
+      "bler": 0.0000000000,
+      "zero_error_upper_95": 0.9500000000,
+      "seed": 5397
+    },
+    {
+      "N": 2048,
+      "K": 256,
+      "p": 0.0343000000,
+      "trials": 1,
+      "errors": 0,
+      "bler": 0.0000000000,
+      "zero_error_upper_95": 0.9500000000,
+      "seed": 11400714819323203882
+    }
+  ]
+}

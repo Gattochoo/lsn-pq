@@ -25,12 +25,32 @@ fn temp_fixture_path(name: &str) -> PathBuf {
     path
 }
 
+fn repo_fixture_path(relative: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("..")
+        .join(relative)
+}
+
 fn fixed_i64_baseline_args() -> [&'static str; 8] {
     [
         "--decoder",
         "fixed-i64",
         "--suite",
         "baseline",
+        "--trials",
+        "1",
+        "--seed",
+        "5397",
+    ]
+}
+
+fn fixed_i64_n2048_smoke_args() -> [&'static str; 8] {
+    [
+        "--decoder",
+        "fixed-i64",
+        "--suite",
+        "n2048",
         "--trials",
         "1",
         "--seed",
@@ -63,6 +83,24 @@ fn cli_writes_fixed_i64_baseline_fixture() {
     assert!(json.contains("\"N\": 512"));
 
     let _ = fs::remove_file(path);
+}
+
+#[test]
+fn cli_check_accepts_repo_fixed_i64_n2048_fixture() {
+    let fixture = repo_fixture_path("experiments/188-codex-polar-rust-fixed-i64-n2048-smoke.json");
+    let output = Command::new(validate_bin())
+        .args(fixed_i64_n2048_smoke_args())
+        .args(["--check"])
+        .arg(&fixture)
+        .output()
+        .expect("failed to run polar-validate fixed-i64 n2048 checker");
+
+    assert!(
+        output.status.success(),
+        "fixed-i64 n2048 check failed: stdout={} stderr={}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 #[test]
