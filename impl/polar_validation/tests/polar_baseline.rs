@@ -260,6 +260,10 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("\"non_panicking_wrapper_failure_code_map\""));
     assert!(json.contains("\"wrapper\": \"try_write_binary_children_from\""));
     assert!(json.contains("\"failure_family\": \"public_child_write_failure_codes\""));
+    assert!(json.contains("\"wrapper\": \"try_fixed_scl_integer_round_schedule\""));
+    assert!(json.contains(
+        "\"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\""
+    ));
     assert!(json.contains("\"wrapper\": \"try_expand_then_compact_integer_round_schedule\""));
     assert!(json.contains("\"integer_status_family\": \"integer_schedule_domain_failure_codes\""));
     assert!(json.contains("try_expand_then_compact_integer_round_schedule"));
