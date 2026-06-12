@@ -16,9 +16,9 @@
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
-    fixed_schedule_top_l_i64, fixed_scl_integer_metric_deltas, fixed_scl_public_round_work_counts,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    fixed_schedule_top_l_i64, fixed_scl_integer_metric_deltas, fixed_scl_integer_round_schedule,
+    fixed_scl_public_round_work_counts, high_noise_control_configs, importance_results_to_json,
+    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound,
     FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclRound, FixedTopLEntry, PolarCode,
@@ -207,6 +207,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("public work-count audit"));
     assert!(json.contains("fixed_scl_integer_metric_deltas"));
     assert!(json.contains("integer metric delta audit"));
+    assert!(json.contains("fixed_scl_integer_round_schedule"));
+    assert!(json.contains("public integer round schedule audit"));
     assert!(json.contains("\"public_work_count_examples\""));
     assert!(json.contains("\"top_l_compare_exchanges\": 18"));
     assert!(json.contains("\"child_slots_written\": 12"));
@@ -483,6 +485,21 @@ fn fixed_scl_integer_metric_deltas_saturate_large_penalty() {
             bit0_metric_delta: 0,
             bit1_metric_delta: i64::MAX,
         }
+    );
+}
+
+#[test]
+fn fixed_scl_integer_round_schedule_maps_public_arrays_to_rounds() {
+    let rounds =
+        fixed_scl_integer_round_schedule([0, 1, 2], [true, false, false], [1, 0, 1], [3, 5, 7]);
+
+    assert_eq!(
+        rounds,
+        [
+            FixedSclRound::new(0, 3, FIXED_SCL_FORBIDDEN_METRIC_DELTA),
+            FixedSclRound::new(1, 0, 5),
+            FixedSclRound::new(2, 7, 0),
+        ]
     );
 }
 

@@ -500,6 +500,28 @@ pub fn fixed_scl_integer_metric_deltas(
     }
 }
 
+pub fn fixed_scl_integer_round_schedule<const ROUNDS: usize>(
+    bit_indices: [usize; ROUNDS],
+    frozen_bits: [bool; ROUNDS],
+    hard_bits: [u8; ROUNDS],
+    magnitudes: [i64; ROUNDS],
+) -> [FixedSclRound; ROUNDS] {
+    let mut rounds = [FixedSclRound::new(0, 0, 0); ROUNDS];
+    for index in 0..ROUNDS {
+        let deltas = fixed_scl_integer_metric_deltas(
+            frozen_bits[index],
+            hard_bits[index],
+            magnitudes[index],
+        );
+        rounds[index] = FixedSclRound::new(
+            bit_indices[index],
+            deltas.bit0_metric_delta,
+            deltas.bit1_metric_delta,
+        );
+    }
+    rounds
+}
+
 pub fn fixed_schedule_top_l_i64<const WIDTH: usize, const L: usize>(
     metrics: [i64; WIDTH],
 ) -> [FixedTopLEntry; L] {
@@ -595,7 +617,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
-        "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"public_work_count_examples\": [\n",
         "    {\n",
