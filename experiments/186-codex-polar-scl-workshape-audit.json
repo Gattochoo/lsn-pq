@@ -50,7 +50,7 @@
     {"code": 2, "name": "magnitude", "meaning": "integer metric magnitudes must be non-negative"}
   ],
   "non_panicking_wrapper_failure_code_map": [
-    {"wrapper": "try_write_binary_children_from", "failure_family": "public_child_write_failure_codes", "status_field": "FixedSclBinaryChildWriteDomainCheck.failure_code"},
+    {"wrapper": "try_write_binary_children_from", "failure_family": "public_child_write_failure_codes", "status_field": "FixedSclBinaryChildWriteDomainCheck.failure_code", "work_count_field": "FixedSclBinaryChildWriteDomainCheck.child_slots_written"},
     {"wrapper": "try_expand_then_compact_one_bit", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclOneBitExpansionRun.path_domain_check.failure_code", "work_count_field": "FixedSclOneBitExpansionRun.work_counts"},
     {"wrapper": "try_expand_then_compact_two_public_bits", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclPublicRoundScheduleRun.path_domain_check.failure_code", "work_count_field": "FixedSclPublicRoundScheduleRun.work_counts"},
     {"wrapper": "try_expand_then_compact_public_rounds", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclPublicRoundScheduleRun.path_domain_check.failure_code", "work_count_field": "FixedSclPublicRoundScheduleRun.work_counts"},

@@ -261,6 +261,9 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("\"non_panicking_wrapper_failure_code_map\""));
     assert!(json.contains("\"wrapper\": \"try_write_binary_children_from\""));
     assert!(json.contains("\"failure_family\": \"public_child_write_failure_codes\""));
+    assert!(json.contains(
+        "\"work_count_field\": \"FixedSclBinaryChildWriteDomainCheck.child_slots_written\""
+    ));
     assert!(json.contains("\"work_count_field\": \"FixedSclOneBitExpansionRun.work_counts\""));
     assert!(json.contains("\"wrapper\": \"try_fixed_scl_integer_round_schedule\""));
     assert!(json.contains(
@@ -532,6 +535,7 @@ fn fixed_scl_binary_child_write_domain_check_accepts_public_inputs() {
             parent_slot: 0,
             dst_start: 2,
             bit_index: 3,
+            child_slots_written: 2,
             valid: true,
             failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
         }
@@ -549,6 +553,7 @@ fn fixed_scl_binary_child_write_domain_check_rejects_parent_slot() {
             parent_slot: 2,
             dst_start: 0,
             bit_index: 3,
+            child_slots_written: 0,
             valid: false,
             failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
         }
@@ -566,6 +571,7 @@ fn fixed_scl_binary_child_write_domain_check_rejects_destination_overflow() {
             parent_slot: 1,
             dst_start: 3,
             bit_index: 3,
+            child_slots_written: 0,
             valid: false,
             failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
         }
@@ -583,6 +589,7 @@ fn fixed_scl_binary_child_write_domain_check_rejects_bit_index() {
             parent_slot: 1,
             dst_start: 2,
             bit_index: 8,
+            child_slots_written: 0,
             valid: false,
             failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
         }
@@ -606,6 +613,7 @@ fn fixed_scl_path_buffer_try_writes_binary_children_from_valid_parent() {
             parent_slot: 0,
             dst_start: 2,
             bit_index: 3,
+            child_slots_written: 2,
             valid: true,
             failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
         }
@@ -635,6 +643,7 @@ fn fixed_scl_path_buffer_try_write_rejects_invalid_parent_without_writing() {
             parent_slot: 2,
             dst_start: 2,
             bit_index: 3,
+            child_slots_written: 0,
             valid: false,
             failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
         }

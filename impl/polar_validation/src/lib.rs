@@ -263,6 +263,7 @@ pub struct FixedSclBinaryChildWriteDomainCheck {
     pub parent_slot: usize,
     pub dst_start: usize,
     pub bit_index: usize,
+    pub child_slots_written: usize,
     pub valid: bool,
     pub failure_code: u8,
 }
@@ -968,6 +969,7 @@ pub fn fixed_scl_binary_child_write_domain_check<
         parent_slot,
         dst_start,
         bit_index,
+        child_slots_written: 0,
         valid: true,
         failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
     };
@@ -990,6 +992,7 @@ pub fn fixed_scl_binary_child_write_domain_check<
         return check;
     }
 
+    check.child_slots_written = 2;
     check
 }
 
@@ -1270,7 +1273,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"code\": 2, \"name\": \"magnitude\", \"meaning\": \"integer metric magnitudes must be non-negative\"}\n",
         "  ],\n",
         "  \"non_panicking_wrapper_failure_code_map\": [\n",
-        "    {\"wrapper\": \"try_write_binary_children_from\", \"failure_family\": \"public_child_write_failure_codes\", \"status_field\": \"FixedSclBinaryChildWriteDomainCheck.failure_code\"},\n",
+        "    {\"wrapper\": \"try_write_binary_children_from\", \"failure_family\": \"public_child_write_failure_codes\", \"status_field\": \"FixedSclBinaryChildWriteDomainCheck.failure_code\", \"work_count_field\": \"FixedSclBinaryChildWriteDomainCheck.child_slots_written\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_one_bit\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclOneBitExpansionRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclOneBitExpansionRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_two_public_bits\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_public_rounds\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\", \"work_count_field\": \"FixedSclPublicRoundScheduleRun.work_counts\"},\n",
