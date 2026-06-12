@@ -54,7 +54,7 @@
 \maketitle
 
 \begin{abstract}
-We study the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem in which the secret is a Lagrangian subspace of a symplectic vector space over $\F_2$ rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form; closely related problems were recently introduced by Khesin et al.\ and Lu et al. Our results are of three kinds. (1)~\emph{Lower bounds.} We prove an exact pairwise-correlation formula for the membership formulation, with no asymptotic error term, and derive from it an unconditional Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, as well as a conditional $2^{2n-O(1)}$ bound under a precisely stated extremality conjecture. We further prove exact closed forms for the second and third subset moments of the isotropic row ensemble, showing that fixed-size row bundles converge to the unconstrained LPN ensemble at rate $O(4^{-n})$. (2)~\emph{Barriers.} We establish a near-complete impossibility landscape for linear reductions from symplectic LPN to standard LPN: a transport-based rank stratification rules out every public-matrix linear reduction at all sample counts and noise rates; an entropy-continuity argument rules out every fixed linear reduction; and an entropy-support counting bound forces all but $O(n)$ rows, in expectation, of any marginally-uniform adaptive reduction to have linear Hamming weight. Three of the four cells of the linear landscape are thereby closed unconditionally, and the deterministic half of the fourth (marginal-adaptive) cell is also closed by a support-counting bound, leaving only the randomized marginal-adaptive half as a single precisely stated open problem. (3)~\emph{Separations.} We separate the membership and batch formulations by information-theoretic floors, give a precise positioning against the stabilizer-decoding formulation, and state the standard-model gap that remains for general non-linear reductions. Every claim in the paper is a proved theorem, an explicitly labeled piece of empirical evidence, or an explicitly labeled conjecture.
+We study the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learning Parity with Noise (LPN) problem in which the secret is a Lagrangian subspace of a symplectic vector space over $\F_2$ rather than a linear function. The secret space, the Lagrangian Grassmannian $\Lagr(2n,\F_2)$, has cardinality $2^{n(n+1)/2+O(1)}$, exponentially larger than LPN's $2^n$ yet tightly constrained by the symplectic form; closely related problems were recently introduced by Khesin et al.\ and Lu et al. Our results are of three kinds. (1)~\emph{Lower bounds.} We prove an exact pairwise-correlation formula for the membership formulation, with no asymptotic error term, and derive from it an unconditional Statistical Query (SQ) lower bound of $\Omega(2^n)$ queries via an explicit symplectic spread, as well as a conditional $2^{2n-O(1)}$ bound under a precisely stated extremality conjecture. We further prove an exact closed form for every subset moment of the isotropic row ensemble, showing that fixed-size row bundles converge to the unconstrained LPN ensemble at rate $\Theta(4^{-n})$. (2)~\emph{Barriers.} We establish a near-complete impossibility landscape for linear reductions from symplectic LPN to standard LPN: a transport-based rank stratification rules out every public-matrix linear reduction at all sample counts and noise rates; an entropy-continuity argument rules out every fixed linear reduction; and an entropy-support counting bound forces all but $O(n)$ rows, in expectation, of any marginally-uniform adaptive reduction to have linear Hamming weight. Three of the four cells of the linear landscape are thereby closed unconditionally, and the deterministic half of the fourth (marginal-adaptive) cell is also closed by a support-counting bound, leaving only the randomized marginal-adaptive half as a single precisely stated open problem. (3)~\emph{Separations.} We separate the membership and batch formulations by information-theoretic floors, give a precise positioning against the stabilizer-decoding formulation, and state the standard-model gap that remains for general non-linear reductions. Every claim in the paper is a proved theorem, an explicitly labeled piece of empirical evidence, or an explicitly labeled conjecture.
 \end{abstract}
 
 \paragraph{\textbf{Keywords.}} Post-quantum cryptography, Learning Parity with Noise, statistical query model, symplectic geometry, lower bounds, black-box reductions.
@@ -105,12 +105,12 @@ Our contributions are organized around lower bounds, exact moment computations, 
     
     \textbf{Two formulations.} We separate the membership and batch/sympLPN formulations and prove information-theoretic floors for the former (\Cref{sec:info-floors}).
 
-    \item \textbf{Exact moments of the isotropic row ensemble (\Cref{sec:moments}).} For the symplectic-LPN public matrix ensemble (uniform full-rank matrices with pairwise symplectically orthogonal columns), we prove exact closed forms for the second and third all-ones subset moments. Writing $u = 2^{2n-2}$, the per-orbit pair counts are $u(u-1)/2$, $u(u-2)/2$, and $u(u-4)/8$, giving
+    \item \textbf{Exact moments of the isotropic row ensemble (\Cref{sec:moments}).} For the symplectic-LPN public matrix ensemble (uniform full-rank matrices with pairwise symplectically orthogonal columns), we prove an exact closed form for \emph{every} all-ones subset moment $m_j$ ($1\le j\le 2n$). Writing $u = 2^{2n-2}$, the low-order cases give
     \[
     m_2 = \frac{(2n-1)u^2-(4n-3)u}{4(2n-1)(4u^2-5u+1)}, \qquad
     m_3 = \frac{u(u-4)}{16(4u^2-5u+1)},
     \]
-    with $m_j = (1/4)^j - \Theta(4^{-n})$. Consequently every fixed-size bundle of rows of the isotropic ensemble converges to the unconstrained LPN ensemble at rate $O(4^{-n})$: conditioning on the symplectic relation $S_A=0$ does not help a constant-size statistical test.
+    and in general $|m_j - (1/4)^j| = \Theta(4^{-n})$ for each fixed $j$. Consequently every fixed-size bundle of rows of the isotropic ensemble converges to the unconstrained LPN ensemble at rate $O(4^{-n})$: conditioning on the symplectic relation $S_A=0$ does not help a constant-size statistical test.
 
     \item \textbf{Explicit claim classification (\Cref{sec:open}).} Every claim is classified as theorem, evidence, or conjecture. We state explicitly the standard-model gap --- the absence of a non-vacuous LPN(low-noise) $\to$ LSN or LWE $\to$ LSN reduction --- that remains open.
 \end{enumerate}
@@ -550,7 +550,7 @@ If $w\in L^\perp$ then $\E_a[\langle w,a\rangle\cdot\mathbf 1_L(a)]=0$ and the a
 \section{Exact Moments of the Isotropic Row Ensemble}
 \label{sec:moments}
 
-The barriers of \Cref{sec:barriers} concern the \emph{symplectic-LPN} formulation, whose public matrix $A \in \F_2^{2n \times n}$ is a uniform full-rank matrix with pairwise symplectically orthogonal columns (equivalently, a uniform ordered basis of a uniform Lagrangian; we call this the \emph{isotropic ensemble} $\mathcal{A}_n$). A natural question --- Open Problem~1 below --- is whether conditioning on the symplectic relation $S_A = 0$ changes the statistical behaviour of the rows of $A$ enough to affect SQ hardness. In this section we answer the question exactly at the level of second and third subset moments: we prove closed forms showing that the row ensemble of $\mathcal{A}_n$ deviates from the unconstrained LPN row ensemble by $\Theta(4^{-n})$, so that no statistical test of constant bundle size can exploit the symplectic conditioning.
+The barriers of \Cref{sec:barriers} concern the \emph{symplectic-LPN} formulation, whose public matrix $A \in \F_2^{2n \times n}$ is a uniform full-rank matrix with pairwise symplectically orthogonal columns (equivalently, a uniform ordered basis of a uniform Lagrangian; we call this the \emph{isotropic ensemble} $\mathcal{A}_n$). A natural question --- Open Problem~1 below --- is whether conditioning on the symplectic relation $S_A = 0$ changes the statistical behaviour of the rows of $A$ enough to affect SQ hardness. In this section we answer the question exactly, at the level of \emph{all} subset moments: we prove a closed form for every $m_j$ showing that the row ensemble of $\mathcal{A}_n$ deviates from the unconstrained LPN row ensemble by $\Theta(4^{-n})$, so that no statistical test of constant bundle size can exploit the symplectic conditioning.
 
 Fix two distinct non-zero secrets $x, x' \in \F_2^n$. Over $\F_2$, any two distinct non-zero vectors are linearly independent, and $\mathrm{GL}(n,2)$ acts transitively on such ordered pairs; since the ensemble $\mathcal{A}_n$ is invariant under right multiplication by $\mathrm{GL}(n,2)$ (change of basis of the Lagrangian), all quantities below are independent of the choice of $(x,x')$, and we take $(x,x') = (e_1, e_2)$. Let $a_1, \dots, a_{2n} \in \F_2^n$ denote the rows of $A$, define the \emph{quadrant} $Q = \{\, i : \langle a_i, x\rangle = \langle a_i, x'\rangle = 1 \,\}$ and $t = |Q|$, and define the subset moments
 \[
@@ -613,6 +613,21 @@ Both 3-subset orbits contribute equally, so $m_3$ is independent of $n$ given $u
 i.e.\ both moments converge to their unconstrained values $(1/4)^j$ at rate $\Theta(4^{-n})$.
 \end{theorem}
 
+The same orbit decomposition closes \emph{all} subset moments.
+
+\begin{theorem}[All subset moments]
+\label{thm:mj-general}
+With $u=2^{2n-2}$, $D_j=2^{2n-j}$, and $P=(2^{2n}-1)(2^{2n-1}-2)$, the $j$-th subset moment is, for every $1\le j\le 2n$,
+\[
+m_j = \frac{\binom{2n}{j}\bigl(\tfrac12 D_j^2 - D_j\bigr) + \mathbf 1_{[j\ \mathrm{even}]}\binom{n}{j/2}\,\tfrac12 D_j}{\binom{2n}{j}\,P}.
+\]
+This reduces to \Cref{thm:mj-closed} at $j=2,3$, vanishes for $j\ge 2n-1$ (then $D_j\le 2$), and for each fixed $j$ satisfies $m_j = (1/4)^j + \Theta(4^{-n})$ --- approaching from above at $j=1$, where $m_1=u/(4u-1)$, and from below for every $j\ge 2$.
+\end{theorem}
+
+\begin{proof}
+$\binom{t}{j}/\binom{2n}{j}$ is the probability that a uniform $j$-subset $S$ of coordinates lies in the common support of $(c_1,c_2)$, so $m_j=\binom{2n}{j}^{-1}P^{-1}\sum_{|S|=j}N(S)$ with $N(S)$ the number of ordered isotropic pairs in $V_S=\{v:v|_S=\mathbf 1\}$. Writing $c_i=v_0+w_i$ with $w_i\in W_S=\{w:w|_S=0\}$, we have $\langle c_1,c_2\rangle=L(w_1)+L(w_2)+\langle w_1,w_2\rangle$ with $L(w)=\langle v_0,w\rangle$. A character-sum evaluation, splitting $W_S$ into its radical (of dimension $b$, the number of symplectic pairs meeting $S$ in exactly one coordinate) and a non-degenerate complement, gives $N(S)=\tfrac12 D_j^2-\tfrac12 D_j$ when $S$ is a union of full symplectic pairs ($b=0$; there are $\binom{n}{j/2}$ such $S$ for even $j$ and none for odd $j$) and $N(S)=\tfrac12 D_j^2-D_j$ otherwise. Summing over the two orbit types yields the formula; it was additionally checked against direct enumeration for all $j$ at $n=2,3,4$.
+\end{proof}
+
 \begin{proof}
 Immediate from Lemmas~\ref{lem:sym2}--\ref{lem:three}: average $q_S$ over the orbit decomposition of $j$-subsets ($n$ symplectic pairs and $\binom{2n}{2}-n$ generic pairs for $j=2$; $n(2n-2)$ pair-containing and $8\binom{n}{3}$ generic triples for $j=3$) and divide by $P$. The rational simplifications and the asymptotic expansions are routine; they were additionally machine-verified symbolically, and the closed forms were checked against exact enumeration for $n = 2,\dots,6$ and against a blind prediction-then-enumeration test at $n=7$ ($P = 134{,}176{,}770$ ordered pairs), all matching as exact fractions.
 \end{proof}
@@ -622,12 +637,12 @@ Immediate from Lemmas~\ref{lem:sym2}--\ref{lem:three}: average $q_S$ over the or
 \begin{corollary}[Fixed-size bundles are LPN-like]
 \label{cor:bundle}
 Let $\sigma^2 = (1-2p)^2/(p(1-p))$ and consider the $k$-row bundle moment
-$V_k = \sum_{j=0}^{k}\binom{k}{j}\sigma^{2j} m_j$, which controls the pairwise SQ correlation of $k$-row bundle examples drawn from the isotropic ensemble. For every fixed $k \le 3$ (so that only the moments $m_0,\dots,m_3$ computed above are needed),
-$V_k = (1+\sigma^2/4)^k\bigl(1 + O(4^{-n})\bigr)$:
+$V_k = \sum_{j=0}^{k}\binom{k}{j}\sigma^{2j} m_j$, which controls the pairwise SQ correlation of $k$-row bundle examples drawn from the isotropic ensemble. For every fixed $k$, using the closed forms of \Cref{thm:mj-general},
+$V_k = (1+\sigma^2/4)^k\bigl(1 + O_k(4^{-n})\bigr)$:
 the isotropic ensemble is indistinguishable from the unconstrained LPN ensemble by any constant-size statistical test, up to an exponentially small advantage.
 \end{corollary}
 
-Two qualifications. First, the closed forms above cover $j \le 3$; the general-$j$ moments (in particular $j = \Theta(n)$, which govern bundles of growing size) remain open. Second, exact enumeration further shows that the bundle correlation is \emph{sub-multiplicative} in $k$ --- the isotropic coupling slightly \emph{reduces} correlation relative to independent rows --- so the conditioning helps rather than harms the lower-bound side at every measured size; we do not yet have a closed form for this suppression. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
+Two remarks. First, the moment formula is exact for every fixed $j$; the only regime it does not directly control is $j=\Theta(n)$ (growing with the ambient dimension), which would govern bundles of growing size. Second, exact enumeration further shows that the bundle correlation is \emph{sub-multiplicative} in $k$ --- the isotropic coupling slightly \emph{reduces} correlation relative to independent rows --- so the conditioning helps rather than harms the lower-bound side at every measured size; we do not yet have a closed form for this suppression. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
 
 \section{Quantum Analysis}
 \label{sec:quantum}
@@ -1061,7 +1076,7 @@ We state explicitly the gaps a reader should weigh against the results above.
 
 \item \textbf{Two results are conditional.} The $2^{2n-O(1)}$ SQ bound depends on the pencil-extremality conjecture (\Cref{conj:pencil}), and the marginal-adaptive barrier (\Cref{thm:marginal-adaptive}) depends on \Cref{lem:m2}, which remains unproven; both dependencies are stated where they occur.
 
-\item \textbf{Moment results cover bounded order.} The closed forms of \Cref{sec:moments} cover subset moments of order $j \le 3$; the regime $j = \Theta(n)$, which governs bundles of growing size, is open.
+\item \textbf{Moment results cover fixed order.} The closed forms of \Cref{sec:moments} are exact for every fixed order $j$; only the regime $j = \Theta(n)$ (growing with the ambient dimension), which governs bundles of growing size, is not directly controlled by them.
 
 \item \textbf{Quantum hardness is conjectural.} We rule out the natural quantum attack families (\Cref{sec:quantum}) but prove no quantum query lower bound; \Cref{conj:quantum} has the same epistemic status as the corresponding conjectures for LPN and LWE.
 \end{enumerate}
