@@ -194,3 +194,168 @@ def randomized_uniform_B_counts(m: int, bases=None) -> tuple[list[int], int]:
     # Denominator = sum over (A, x, e) of weight_e * 2^{4m}.
     red_denom = len(bases) * (1 << 2) * 256 * (1 << (4 * m))
     return counts, red_denom
+
+
+def matrix_rank_f2(rows: list[int], n_cols: int) -> int:
+    """Rank of a matrix over F_2 given as a list of row bitmasks."""
+    pivots = {}
+    for r in rows:
+        x = r & ((1 << n_cols) - 1)
+        if x == 0:
+            continue
+        for p in sorted(pivots.keys(), reverse=True):
+            if (x >> p) & 1:
+                x ^= pivots[p]
+        if x:
+            pivots[x.bit_length() - 1] = x
+    return len(pivots)
+
+
+def _rows_to_columns(rows: list[int], n_cols: int) -> list[int]:
+    """Convert row representation to column representation for apply_matrix."""
+    m = len(rows)
+    cols = [0] * n_cols
+    for j in range(n_cols):
+        col_val = 0
+        for i, r in enumerate(rows):
+            if (r >> j) & 1:
+                col_val |= 1 << i
+        cols[j] = col_val
+    return cols
+
+
+def rank_conditioned_counts(m: int, rank: int, bases=None) -> tuple[list[int], int]:
+    """Exact counts for (C, y) when B is uniform over m x 4 matrices of given rank."""
+    if bases is None:
+        bases = enumerate_lagrangian_bases()
+    if rank > min(m, 4):
+        raise ValueError("rank cannot exceed min(m, 4)")
+
+    size = 1 << (3 * m)
+    counts = [0] * size
+    num_B = 1 << (4 * m)
+    row_mask = (1 << 4) - 1
+    matched = 0
+
+    # Precompute all (A, x, e) triples once, hoisting the loop outside B enumeration.
+    triples = []
+    for a0, a1 in bases:
+        for x in range(1 << 2):
+            a = 0
+            if x & 1:
+                a ^= a0
+            if x & 2:
+                a ^= a1
+            for e in range(1 << 4):
+                weight = 3 ** (4 - e.bit_count())
+                v = a ^ e
+                triples.append((a0, a1, v, weight))
+
+    mask = (1 << m) - 1
+    for bits in range(num_B):
+        rows = [((bits >> (j * 4)) & row_mask) for j in range(m)]
+        if matrix_rank_f2(rows, 4) != rank:
+            continue
+        matched += 1
+        B_cols = _rows_to_columns(rows, 4)
+        # Precompute B*x for all 4-bit vectors x once per B.
+        Bx = [apply_matrix(B_cols, x) & mask for x in range(1 << 4)]
+        for a0, a1, v, weight in triples:
+            c0 = Bx[a0]
+            c1 = Bx[a1]
+            y = Bx[v]
+            key = ((c0 << m) | c1) << m | y
+            counts[key] += weight
+
+    denom = matched * 15360
+    return counts, denom
+
+
+def bernoulli_rows_B_counts(m: int, p: Fraction, bases=None) -> tuple[list[int], int]:
+    """Exact counts for (C, y) when each row of B is i.i.d. Bernoulli(p)^4.
+
+    For each (A, x, e) triple we enumerate all assignments of m rows to the
+    eight possible output-bit patterns (s0, s1, s2) = (r·a0, r·a1, r·v).  The
+    per-row weight numerator is accumulated analytically, so we never iterate
+    over the full 2^{4m} matrix space.
+    """
+    if bases is None:
+        bases = enumerate_lagrangian_bases()
+    if not (0 <= p <= 1):
+        raise ValueError("p must be in [0, 1]")
+
+    size = 1 << (3 * m)
+    counts = [0] * size
+    num_row_patterns = 1 << 4
+
+    # Numerator of row-pattern weight, denominator is p.denominator^4.
+    pattern_weights = [0] * num_row_patterns
+    for r in range(num_row_patterns):
+        w = r.bit_count()
+        pattern_weights[r] = (
+            p.numerator ** w
+        ) * ((p.denominator - p.numerator) ** (4 - w))
+
+    # Bits of the 8 output patterns: t = (s0<<2) | (s1<<1) | s2.
+    t_bits = [((t >> 2) & 1, (t >> 1) & 1, t & 1) for t in range(8)]
+    num_assignments = 8 ** m
+
+    for a0, a1 in bases:
+        span_map = {0: (0, 0), a0: (1, 0), a1: (0, 1), a0 ^ a1: (1, 1)}
+        for x in range(1 << 2):
+            a = 0
+            if x & 1:
+                a ^= a0
+            if x & 2:
+                a ^= a1
+            for e in range(1 << 4):
+                w_e = 3 ** (4 - e.bit_count())
+                v = a ^ e
+
+                # W[t] = total row-pattern weight producing output pattern t.
+                W = [0] * 8
+                if v == 0:
+                    for r in range(num_row_patterns):
+                        s0 = (r & a0).bit_count() & 1
+                        s1 = (r & a1).bit_count() & 1
+                        t = (s0 << 2) | (s1 << 1)
+                        W[t] += pattern_weights[r]
+                elif v in span_map:
+                    alpha, beta = span_map[v]
+                    for r in range(num_row_patterns):
+                        s0 = (r & a0).bit_count() & 1
+                        s1 = (r & a1).bit_count() & 1
+                        s2 = ((alpha * s0) ^ (beta * s1)) & 1
+                        t = (s0 << 2) | (s1 << 1) | s2
+                        W[t] += pattern_weights[r]
+                else:
+                    for r in range(num_row_patterns):
+                        s0 = (r & a0).bit_count() & 1
+                        s1 = (r & a1).bit_count() & 1
+                        s2 = (r & v).bit_count() & 1
+                        t = (s0 << 2) | (s1 << 1) | s2
+                        W[t] += pattern_weights[r]
+
+                # Enumerate all row-to-output-pattern assignments.
+                for assignment in range(num_assignments):
+                    tmp = assignment
+                    c0 = 0
+                    c1 = 0
+                    y = 0
+                    prod = 1
+                    for i in range(m):
+                        t = tmp & 7
+                        tmp >>= 3
+                        prod *= W[t]
+                        s0, s1, s2 = t_bits[t]
+                        if s0:
+                            c0 |= 1 << i
+                        if s1:
+                            c1 |= 1 << i
+                        if s2:
+                            y |= 1 << i
+                    key = ((c0 << m) | c1) << m | y
+                    counts[key] += w_e * prod
+
+    red_denom = 15360 * (p.denominator ** (4 * m))
+    return counts, red_denom
