@@ -449,6 +449,23 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         (second_compacted, second_top)
     }
 
+    pub fn try_expand_then_compact_two_public_bits<
+        const FIRST_CHILD_CAP: usize,
+        const SECOND_CHILD_CAP: usize,
+        const L: usize,
+    >(
+        &self,
+        first_round: (usize, i64, i64),
+        second_round: (usize, i64, i64),
+    ) -> FixedSclPublicRoundScheduleRun<L, N> {
+        let (first_bit, first_bit0_delta, first_bit1_delta) = first_round;
+        let (second_bit, second_bit0_delta, second_bit1_delta) = second_round;
+        self.try_expand_then_compact_public_rounds::<FIRST_CHILD_CAP, SECOND_CHILD_CAP, L, 2>([
+            FixedSclRound::new(first_bit, first_bit0_delta, first_bit1_delta),
+            FixedSclRound::new(second_bit, second_bit0_delta, second_bit1_delta),
+        ])
+    }
+
     pub fn expand_then_compact_public_rounds<
         const FIRST_CHILD_CAP: usize,
         const CHILD_CAP: usize,
@@ -1040,6 +1057,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_one_bit: non-panicking one-bit expand then compact wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"try_expand_then_compact_two_public_bits: non-panicking two-round public-bit helper that delegates to public schedule domain checks; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_public_rounds: non-panicking multi-round public schedule wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",

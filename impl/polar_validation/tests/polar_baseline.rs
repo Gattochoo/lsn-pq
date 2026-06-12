@@ -225,6 +225,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("FixedSclRound"));
     assert!(json.contains("expand_then_compact_public_rounds"));
     assert!(json.contains("public round schedule"));
+    assert!(json.contains("try_expand_then_compact_two_public_bits"));
+    assert!(json.contains("non-panicking two-round public-bit helper"));
     assert!(json.contains("try_expand_then_compact_public_rounds"));
     assert!(json.contains("non-panicking multi-round public schedule wrapper"));
     assert!(json.contains("fixed_scl_public_round_work_counts"));
@@ -672,6 +674,72 @@ fn fixed_scl_path_buffer_expands_then_compacts_two_public_bits() {
                 index: 3,
             },
         ]
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_try_two_public_bits_matches_valid_helper() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let run = parents.try_expand_then_compact_two_public_bits::<4, 4, 2>((2, 5, -1), (4, 7, 0));
+    let (paths, top) =
+        parents.expand_then_compact_two_public_bits::<4, 4, 2>((2, 5, -1), (4, 7, 0));
+
+    assert_eq!(
+        run,
+        FixedSclPublicRoundScheduleRun {
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 2,
+                bit_width: 8,
+                valid: true,
+                failure_code: FIXED_SCL_PATH_DOMAIN_OK,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            paths,
+            top,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_path_buffer_try_two_public_bits_rejects_invalid_second_bit() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+
+    let run = parents.try_expand_then_compact_two_public_bits::<4, 4, 2>((2, 5, -1), (8, 7, 0));
+
+    assert_eq!(
+        run,
+        FixedSclPublicRoundScheduleRun {
+            path_domain_check: FixedSclPathBufferScheduleDomainCheck {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 2,
+                bit_width: 8,
+                valid: false,
+                failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+                first_invalid_round: 1,
+            },
+            paths: FixedSclPathBuffer::<2, 8>::new(),
+            top: [
+                FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                },
+                FixedTopLEntry {
+                    metric: i64::MAX,
+                    index: usize::MAX,
+                },
+            ],
+        }
     );
 }
 
