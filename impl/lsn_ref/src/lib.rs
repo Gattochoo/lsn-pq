@@ -125,13 +125,28 @@ impl FixedLagrangian {
 
         let total_dim = 2 * n;
         let universe = 1usize << total_dim;
-        let mut words = vec![0u64; universe.div_ceil(64)];
         for &point in points {
             let index = point as usize;
             if index >= universe {
                 return Err(FixedLagrangianError::PointOutOfRange { n, point, universe });
             }
-            words[index >> 6] |= 1u64 << (index & 63);
+        }
+
+        let mut words = vec![0u64; universe.div_ceil(64)];
+        for (word_index, word) in words.iter_mut().enumerate() {
+            let mut scanned_word = 0u64;
+            for bit_index in 0..64 {
+                let absolute_index = (word_index << 6) | bit_index;
+                let in_range_mask = 0u64.wrapping_sub((absolute_index < universe) as u64);
+                let mut bit = 0u64;
+                for &point in points {
+                    let point_index = point as usize;
+                    let point_mask = 0u64.wrapping_sub((point_index == absolute_index) as u64);
+                    bit |= point_mask & 1;
+                }
+                scanned_word |= (bit & in_range_mask) << bit_index;
+            }
+            *word = scanned_word;
         }
 
         Ok(Self { n, universe, words })
@@ -150,13 +165,7 @@ impl FixedLagrangian {
     }
 
     pub fn contains_mask(&self, point: u32) -> u64 {
-        let index = point as usize;
-        if index >= self.universe {
-            return 0;
-        }
-
-        let bit = (self.words[index >> 6] >> (index & 63)) & 1;
-        0u64.wrapping_sub(bit)
+        self.contains_mask_scanned(point)
     }
 
     pub fn contains_mask_scanned(&self, point: u32) -> u64 {

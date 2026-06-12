@@ -63,6 +63,15 @@ fn fixed_lagrangian_scanned_membership_matches_direct_membership() {
 }
 
 #[test]
+fn fixed_lagrangian_source_avoids_secret_dependent_word_indexing() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("self.words[index >> 6]"));
+    assert!(!source.contains("words[index >> 6]"));
+    assert!(source.contains("contains_mask_scanned"));
+}
+
+#[test]
 fn fixed_lagrangian_try_from_points_rejects_out_of_layout_inputs() {
     assert_eq!(LSN_REF_MAX_FIXED_LAGRANGIAN_N, 8);
     assert_eq!(
