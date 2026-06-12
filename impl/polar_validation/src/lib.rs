@@ -318,6 +318,13 @@ pub struct FixedSclPublicRoundShapeParityCheck {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclOneBitShapeParityCheck {
+    pub matches: bool,
+    pub run_plan_certificate: FixedSclPublicRoundSchedulePlan,
+    pub expected_plan: FixedSclPublicRoundSchedulePlan,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclIntegerRoundSchedulePlan {
     pub domain_check: FixedSclIntegerScheduleDomainCheck,
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
@@ -1138,6 +1145,36 @@ pub fn fixed_scl_public_round_shape_parity_check<const L: usize, const N: usize>
     }
 }
 
+pub fn fixed_scl_one_bit_run_plan_certificate<
+    const CHILD_CAP: usize,
+    const L: usize,
+    const N: usize,
+>(
+    run: &FixedSclOneBitExpansionRun<CHILD_CAP, L, N>,
+) -> FixedSclPublicRoundSchedulePlan {
+    FixedSclPublicRoundSchedulePlan {
+        path_domain_check: run.path_domain_check,
+        work_counts: run.work_counts,
+    }
+}
+
+pub fn fixed_scl_one_bit_shape_parity_check<
+    const CHILD_CAP: usize,
+    const L: usize,
+    const N: usize,
+>(
+    run: &FixedSclOneBitExpansionRun<CHILD_CAP, L, N>,
+    expected_plan: FixedSclPublicRoundSchedulePlan,
+) -> FixedSclOneBitShapeParityCheck {
+    let run_plan_certificate = fixed_scl_one_bit_run_plan_certificate(run);
+
+    FixedSclOneBitShapeParityCheck {
+        matches: run_plan_certificate == expected_plan,
+        run_plan_certificate,
+        expected_plan,
+    }
+}
+
 pub fn fixed_scl_public_round_schedule_plan<
     const CAP: usize,
     const N: usize,
@@ -1564,6 +1601,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_one_bit: non-panicking one-bit expand then compact wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_one_bit_run_plan_certificate: one-bit run/preflight plan certificate adapter for comparing source-level run status and work counts with execution-free one-bit preflight; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_one_bit_shape_parity_check: one-bit run/preflight shape parity record that compares run-derived and execution-free one-bit certificates only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_two_public_bits: two-round public-bit loop source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_two_public_bits: non-panicking two-round public-bit helper that delegates to public schedule domain checks; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",

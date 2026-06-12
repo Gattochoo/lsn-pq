@@ -21,7 +21,8 @@ use polar_validation::{
     fixed_scl_integer_metric_deltas, fixed_scl_integer_round_run_plan_certificate,
     fixed_scl_integer_round_schedule, fixed_scl_integer_round_schedule_plan,
     fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
-    fixed_scl_integer_shape_parity_check, fixed_scl_path_buffer_schedule_domain_check,
+    fixed_scl_integer_shape_parity_check, fixed_scl_one_bit_run_plan_certificate,
+    fixed_scl_one_bit_shape_parity_check, fixed_scl_path_buffer_schedule_domain_check,
     fixed_scl_path_domain_failure_label, fixed_scl_public_round_run_shape_certificate,
     fixed_scl_public_round_schedule_plan, fixed_scl_public_round_schedule_shape_plan,
     fixed_scl_public_round_shape_parity_check, fixed_scl_public_round_work_counts,
@@ -36,13 +37,13 @@ use polar_validation::{
     FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
     FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
     FixedSclIntegerScheduleDomainFailureLabel, FixedSclIntegerShapeParityCheck,
-    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
-    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
-    FixedSclPathDomainFailureLabel, FixedSclPublicRoundSchedulePlan,
-    FixedSclPublicRoundScheduleRun, FixedSclPublicRoundScheduleShapePlan,
-    FixedSclPublicRoundShapeParityCheck, FixedSclPublicRoundWorkCounts,
-    FixedSclPublicRoundWorkShapePlan, FixedSclRound, FixedTopLEntry, PolarCode,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclOneBitShapeParityCheck,
+    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
+    FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun,
+    FixedSclPublicRoundScheduleShapePlan, FixedSclPublicRoundShapeParityCheck,
+    FixedSclPublicRoundWorkCounts, FixedSclPublicRoundWorkShapePlan, FixedSclRound, FixedTopLEntry,
+    PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
     FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
@@ -247,6 +248,10 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("one-bit expand then compact"));
     assert!(json.contains("try_expand_then_compact_one_bit"));
     assert!(json.contains("non-panicking one-bit expand then compact wrapper"));
+    assert!(json.contains("fixed_scl_one_bit_run_plan_certificate"));
+    assert!(json.contains("one-bit run/preflight plan certificate adapter"));
+    assert!(json.contains("fixed_scl_one_bit_shape_parity_check"));
+    assert!(json.contains("one-bit run/preflight shape parity record"));
     assert!(json.contains("expand_then_compact_two_public_bits"));
     assert!(json.contains("two-round public-bit loop"));
     assert!(json.contains("FixedSclRound"));
@@ -822,6 +827,38 @@ fn fixed_scl_path_buffer_try_expand_then_compact_one_bit_matches_valid_expansion
             },
             children,
             top,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_one_bit_shape_parity_check_reports_match_and_mismatch() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let run = parents.try_expand_then_compact_one_bit::<4, 3>(2, 5, -1);
+    let expected_plan = fixed_scl_public_round_schedule_plan::<2, 8, 4, 4, 3, 1>([2]);
+
+    assert_eq!(
+        fixed_scl_one_bit_shape_parity_check(&run, expected_plan),
+        FixedSclOneBitShapeParityCheck {
+            matches: true,
+            run_plan_certificate: expected_plan,
+            expected_plan,
+        }
+    );
+
+    let mut altered_run = run;
+    altered_run.work_counts.rounds = 0;
+    let altered_certificate = fixed_scl_one_bit_run_plan_certificate(&altered_run);
+
+    assert_eq!(
+        fixed_scl_one_bit_shape_parity_check(&altered_run, expected_plan),
+        FixedSclOneBitShapeParityCheck {
+            matches: false,
+            run_plan_certificate: altered_certificate,
+            expected_plan,
         }
     );
 }
