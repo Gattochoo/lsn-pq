@@ -2748,11 +2748,10 @@ fn quantize_llrs_i64<const N: usize>(llr: &[f64], metric_scale: f64) -> [i64; N]
 
 fn quantize_llr_i64(llr: f64, metric_scale: f64) -> i64 {
     let magnitude = llr_metric_magnitude_i64(llr, metric_scale);
-    if llr < 0.0 {
-        -magnitude
-    } else {
-        magnitude
-    }
+    let negative = (llr < 0.0) as i64;
+    let sign_mask = 0i64.wrapping_sub(negative);
+
+    select_i64(sign_mask, magnitude, magnitude.saturating_neg())
 }
 
 fn llr_i64_metric_magnitude(llr: i64) -> i64 {

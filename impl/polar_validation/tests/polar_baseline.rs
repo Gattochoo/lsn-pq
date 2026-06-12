@@ -942,6 +942,24 @@ fn fixed_i64_g_node_uses_bit_mask_selection() {
 }
 
 #[test]
+fn fixed_i64_quantize_llr_uses_sign_mask_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("fn quantize_llr_i64(")
+        .expect("quantize_llr_i64 source should be present");
+    let helper_end = source[helper_start..]
+        .find("fn llr_i64_metric_magnitude(")
+        .map(|offset| helper_start + offset)
+        .expect("llr_i64_metric_magnitude source should follow quantize_llr_i64");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if llr < 0.0"));
+    assert!(helper_source.contains("let negative = (llr < 0.0) as i64;"));
+    assert!(helper_source.contains("let sign_mask = 0i64.wrapping_sub(negative);"));
+    assert!(helper_source.contains("select_i64(sign_mask, magnitude, magnitude.saturating_neg())"));
+}
+
+#[test]
 fn fixed_i64_integer_llr_recursion_uses_fixed_scratch_buffers() {
     let source = include_str!("../src/lib.rs");
 
