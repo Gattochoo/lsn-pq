@@ -750,6 +750,14 @@ fn fixed_scl_effective_metric_source_avoids_active_branch() {
 }
 
 #[test]
+fn fixed_scl_active_count_source_uses_masked_active_bits() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("candidate.active != 0"));
+    assert!(source.contains("active_count"));
+}
+
+#[test]
 fn fixed_scl_binary_child_write_domain_check_accepts_public_inputs() {
     assert_eq!(
         fixed_scl_binary_child_write_domain_check::<2, 4, 8>(0, 2, 3),

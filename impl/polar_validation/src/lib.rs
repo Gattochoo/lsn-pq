@@ -626,7 +626,7 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
     pub fn active_count(&self) -> usize {
         self.slots
             .iter()
-            .map(|candidate| usize::from(candidate.active != 0))
+            .map(|candidate| usize::from(candidate.active & 1))
             .sum()
     }
 
