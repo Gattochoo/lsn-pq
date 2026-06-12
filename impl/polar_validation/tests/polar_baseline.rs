@@ -733,6 +733,15 @@ fn fixed_scl_child_write_source_avoids_parent_active_branch() {
 }
 
 #[test]
+fn fixed_scl_compact_source_avoids_entry_index_branch_and_load() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("if entry.index < SRC_CAP"));
+    assert!(!source.contains("source.slots[entry.index]"));
+    assert!(source.contains("from_top_entries"));
+}
+
+#[test]
 fn fixed_scl_binary_child_write_domain_check_accepts_public_inputs() {
     assert_eq!(
         fixed_scl_binary_child_write_domain_check::<2, 4, 8>(0, 2, 3),

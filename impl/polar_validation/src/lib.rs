@@ -827,11 +827,19 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
     ) -> Self {
         let mut compacted = Self::new();
         for (dst_slot, entry) in top.iter().enumerate() {
-            if entry.index < SRC_CAP && source.slots[entry.index].active != 0 {
-                compacted.slots[dst_slot] = source.slots[entry.index];
-            } else {
-                compacted.clear_slot(dst_slot);
+            let mut selected = FixedSclCandidate::<N>::EMPTY;
+            for source_slot in 0..SRC_CAP {
+                let take_source = usize::from(source_slot == entry.index);
+                let take_i64_mask = 0i64.wrapping_sub(take_source as i64);
+                let take_u8_mask = 0u8.wrapping_sub(take_source as u8);
+                selected = select_candidate(
+                    take_i64_mask,
+                    take_u8_mask,
+                    selected,
+                    source.slots[source_slot],
+                );
             }
+            compacted.slots[dst_slot] = sanitize_candidate_active(selected);
         }
         compacted
     }
@@ -1993,6 +2001,40 @@ fn select_i64(mask: i64, keep: i64, replace: i64) -> i64 {
 
 fn select_usize(mask: usize, keep: usize, replace: usize) -> usize {
     (keep & !mask) | (replace & mask)
+}
+
+fn select_u8(mask: u8, keep: u8, replace: u8) -> u8 {
+    (keep & !mask) | (replace & mask)
+}
+
+fn select_candidate<const N: usize>(
+    mask_i64: i64,
+    mask_u8: u8,
+    keep: FixedSclCandidate<N>,
+    replace: FixedSclCandidate<N>,
+) -> FixedSclCandidate<N> {
+    let mut bits = [0u8; N];
+    for index in 0..N {
+        bits[index] = select_u8(mask_u8, keep.bits[index], replace.bits[index]);
+    }
+    FixedSclCandidate {
+        metric: select_i64(mask_i64, keep.metric, replace.metric),
+        bits,
+        active: select_u8(mask_u8, keep.active, replace.active),
+    }
+}
+
+fn sanitize_candidate_active<const N: usize>(
+    candidate: FixedSclCandidate<N>,
+) -> FixedSclCandidate<N> {
+    let active = candidate.active & 1;
+    let active_i64_mask = 0i64.wrapping_sub(i64::from(active));
+    let active_u8_mask = 0u8.wrapping_sub(active);
+    FixedSclCandidate {
+        metric: select_i64(active_i64_mask, i64::MAX, candidate.metric),
+        bits: mask_bits(candidate.bits, active_u8_mask),
+        active,
+    }
 }
 
 fn mask_bits<const N: usize>(bits: [u8; N], mask: u8) -> [u8; N] {
