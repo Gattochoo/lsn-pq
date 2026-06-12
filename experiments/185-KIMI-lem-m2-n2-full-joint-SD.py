@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""185: lem:m2 exact full joint SD((C,y), LPN_{1/4}) for n=2, m=3,4.
+"""185: lem:m2 exact full joint SD((C,y), LPN_{1/4}) for n=2, arbitrary m.
 
 Enumerates all B in F_2^{m x 4} and computes the exact statistical distance
 between the reduction output distribution and standard LPN.
@@ -35,6 +35,12 @@ def main():
 
     lpn_counts, lpn_denom = lpn_target_counts(m, p)
 
+    # Total weight denominator for reduction_counts_for_B:
+    # len(bases) choices * 4 x-values * sum over e of 3^(4-|e|).
+    red_denom = len(bases) * (1 << 2) * sum(
+        3 ** (4 - e.bit_count()) for e in range(1 << 4)
+    )
+
     num_B = 1 << (4 * m)
     mask = (1 << m) - 1
 
@@ -47,7 +53,7 @@ def main():
     for bits in range(num_B):
         B_cols = [((bits >> (j * m)) & mask) for j in range(4)]
         red_counts = reduction_counts_for_B(B_cols, bases, m)
-        sd = exact_sd_counts(red_counts, 15360, lpn_counts, lpn_denom)
+        sd = exact_sd_counts(red_counts, red_denom, lpn_counts, lpn_denom)
         sd_sum += sd
         if sd < best_sd:
             best_sd = sd
