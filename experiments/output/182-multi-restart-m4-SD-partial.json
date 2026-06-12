@@ -1,0 +1,36 @@
+{
+  "n": 2,
+  "m": 4,
+  "restarts": 3,
+  "iters_per_restart": 500000,
+  "note": "partial: restart 2 killed at 400K/500K due to 1h timeout; restart 3 not started",
+  "random_SD": 0.363014,
+  "results": [
+    {
+      "restart": 0,
+      "seed": 1000,
+      "best_SD": 0.287304,
+      "best_marg": 0.0,
+      "status": "completed"
+    },
+    {
+      "restart": 1,
+      "seed": 1137,
+      "best_SD": 0.266769,
+      "best_marg": 0.0,
+      "status": "partial (400K/500K)"
+    },
+    {
+      "restart": 2,
+      "seed": 1274,
+      "best_SD": null,
+      "best_marg": null,
+      "status": "not started"
+    }
+  ],
+  "best_overall": {
+    "restart": 1,
+    "best_SD": 0.266769,
+    "best_marg": 0.0
+  }
+}

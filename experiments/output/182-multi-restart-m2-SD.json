@@ -1,0 +1,32 @@
+{
+  "n": 2,
+  "m": 2,
+  "restarts": 3,
+  "iters_per_restart": 500000,
+  "random_SD": 0.07246461334019409,
+  "results": [
+    {
+      "restart": 0,
+      "seed": 1000,
+      "best_SD": 0.034673729005759935,
+      "best_marg": 0.0
+    },
+    {
+      "restart": 1,
+      "seed": 1137,
+      "best_SD": 0.03524305556375511,
+      "best_marg": 0.0
+    },
+    {
+      "restart": 2,
+      "seed": 1274,
+      "best_SD": 0.0495462963034896,
+      "best_marg": 0.0
+    }
+  ],
+  "best_overall": {
+    "restart": 0,
+    "best_SD": 0.034673729005759935,
+    "best_marg": 0.0
+  }
+}

@@ -27,30 +27,46 @@
 
 ## 3. Results
 
-| $m$ | random $g$ SD | best constrained SD | marginal cost | SA iterations | status |
-|-----|---------------|---------------------|---------------|---------------|--------|
-| 2 ($=2n$) | 0.072 | **0.047** | 0 | 500K | completed |
-| 3 | 0.187 | **0.129** | 0 | 500K | completed |
-| 4 ($=2n$) | 0.363 | **0.297** | 0 | 500K | completed |
-| 5 ($>2n$) | 0.536 | **0.458** | 0 | 300K | completed |
-| 6 ($>2n$) | 0.728 | **0.704** | 0 | 100K | partial (timeout) |
-| 7 ($>2n$) | 0.840 | **0.827** | 0 | 32K | partial (timeout) |
+### 3.1 Single-run pilot (original)
 
-- $m=2$: $SD \approx 0.047$, but $m=2n$ is degenerate.
-- $m=3,4,5,6,7$: $SD$ **increases monotonically** with $m$.
-- $m=5$: optimized $g$ leaves $SD \approx 0.458$ ($\approx 46\%$ distinguishing advantage).
-- $m=6$: $SD$ down to $0.704$ after 100K iters (still slowly improving); bounded away from $0$.
-- $m=7$: $SD$ already $0.827$ after 32K iters; random baseline is $0.840$.
+| $m$ | random $g$ SD | best constrained SD | SA iterations | status |
+|-----|---------------|---------------------|---------------|--------|
+| 2 ($=2n$) | 0.072 | 0.047 | 500K | completed |
+| 3 | 0.187 | 0.129 | 500K | completed |
+| 4 ($=2n$) | 0.363 | 0.297 | 500K | completed |
+| 5 ($>2n$) | 0.536 | 0.458 | 300K | completed |
+| 6 ($>2n$) | 0.728 | 0.704 | 100K | partial |
+| 7 ($>2n$) | 0.840 | 0.827 | 32K | partial |
+
+### 3.2 Multi-restart robustness check for small $m$
+
+Exact exhaustive search over $g$ for $n=2$ is infeasible ($2^{720}$–$2^{1440}$ candidates); multi-restart SA is used as a proxy for the true minimum.
+
+| $m$ | restarts | best constrained SD | notes |
+|-----|----------|---------------------|-------|
+| 2 ($=2n$) | 3 $\times$ 500K | **0.035** | all three restarts find $\le 0.050$ |
+| 3 | 3 $\times$ 500K | **0.122** | consistent across restarts |
+| 4 ($=2n$) | 3 $\times$ 500K (partial) | **0.267** | restart 2 reached 0.267 before timeout |
+
+### 3.3 Updated trend
+
+Combining the strongest small-$m$ results with the large-$m$ pilot:
+
+$$0.035 \; (m=2) \;\to\; 0.122 \; (m=3) \;\to\; 0.267 \; (m=4) \;\to\; 0.458 \; (m=5) \;\to\; 0.704 \; (m=6) \;\to\; 0.827 \; (m=7).$$
+
+- $m=2$ ($=2n$) is the only small-$SD$ case, and it is degenerate.
+- $m \ge 3$: $SD$ increases monotonically and stays bounded well away from $0$.
+- $m > 2n$: $SD$ grows rapidly, reaching $\approx 0.83$ at $m=7$.
 
 ## 4. Interpretation (correct sign)
 
 - **No asymptotic disproof.** $m=2$ gives a small $SD$, but $m=2n$ is degenerate.
 - **Trend strongly supports lem:m2.** As $m$ grows beyond $2n$, $SD$ increases: the output becomes easier to distinguish from LPN.
-- **Minimum is bounded away from 0 for $m \ge 3$.** Even the best $g$ leaves substantial distinguishing advantage.
-- **Conclusion (pilot):** This is evidence **supporting lem:m2**, not a disproof. A disproof would require $SD \to 0$ for some $m > 2n$, which is not observed.
+- **Minimum is bounded away from 0 for $m \ge 3$.** Even the best empirically-found $g$ leaves substantial distinguishing advantage.
+- **Conclusion:** This is evidence **supporting lem:m2**, not a disproof. A disproof would require $SD \to 0$ for some $m > 2n$, which is not observed.
 
 ## 5. Caveats
 
-- $m=6,7$ runs are partial due to computational cost; slower convergence at large $m$ is expected.
-- Exact exhaustive search over $g$ for $n=2$ is infeasible ($2^{720}$–$2^{1440}$ candidates); SA minima are empirical.
+- $m=6,7$ and $m=4$ multi-restart runs are partial due to computational cost.
+- Exact exhaustive search over $g$ for $n=2$ is infeasible; SA minima are empirical lower bounds, not certified global minima.
 - Larger $n$ behavior remains open.
