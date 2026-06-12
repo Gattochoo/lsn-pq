@@ -839,6 +839,17 @@ fn fixed_scl_effective_metric_source_avoids_active_branch() {
 }
 
 #[test]
+fn fixed_scl_metric_add_source_uses_masked_forbidden_selection() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains(
+        "if parent_metric == i64::MAX || metric_delta == FIXED_SCL_FORBIDDEN_METRIC_DELTA"
+    ));
+    assert!(source.contains("let forbidden_mask = 0i64.wrapping_sub(forbidden);"));
+    assert!(source.contains("select_i64(forbidden_mask, sum, FIXED_SCL_FORBIDDEN_METRIC_DELTA)"));
+}
+
+#[test]
 fn fixed_scl_active_count_source_uses_masked_active_bits() {
     let source = include_str!("../src/lib.rs");
 

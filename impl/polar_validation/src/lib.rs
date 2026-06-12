@@ -2081,11 +2081,13 @@ fn mask_bits<const N: usize>(bits: [u8; N], mask: u8) -> [u8; N] {
 }
 
 fn fixed_scl_metric_add(parent_metric: i64, metric_delta: i64) -> i64 {
-    if parent_metric == i64::MAX || metric_delta == FIXED_SCL_FORBIDDEN_METRIC_DELTA {
-        FIXED_SCL_FORBIDDEN_METRIC_DELTA
-    } else {
-        parent_metric.saturating_add(metric_delta)
-    }
+    let parent_forbidden = (parent_metric == i64::MAX) as i64;
+    let delta_forbidden = (metric_delta == FIXED_SCL_FORBIDDEN_METRIC_DELTA) as i64;
+    let forbidden = parent_forbidden | delta_forbidden;
+    let forbidden_mask = 0i64.wrapping_sub(forbidden);
+    let sum = parent_metric.saturating_add(metric_delta);
+
+    select_i64(forbidden_mask, sum, FIXED_SCL_FORBIDDEN_METRIC_DELTA)
 }
 
 pub fn scl_work_shape_audit_json() -> &'static str {
