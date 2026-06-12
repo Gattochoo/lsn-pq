@@ -192,6 +192,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("fixed-schedule integer decoder plan required"));
     assert!(json.contains("fixed_schedule_top_l_i64"));
     assert!(json.contains("FixedSclPathBuffer"));
+    assert!(json.contains("write_binary_children_from"));
+    assert!(json.contains("integer child expansion"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
@@ -281,6 +283,40 @@ fn fixed_scl_path_buffer_uses_fixed_capacity_slots_and_top_l_view() {
             },
         ]
     );
+}
+
+#[test]
+fn fixed_scl_path_buffer_writes_binary_children_into_fixed_slots() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [1, 0, 0, 0, 0, 0, 0, 0]);
+
+    let mut children = FixedSclPathBuffer::<4, 8>::new();
+    children.write_binary_children_from(&parents, 0, 2, 3, 5, 9);
+
+    assert_eq!(children.active_count(), 2);
+    assert_eq!(children.bits(2), [1, 0, 0, 0, 0, 0, 0, 0]);
+    assert_eq!(children.bits(3), [1, 0, 0, 1, 0, 0, 0, 0]);
+    assert_eq!(
+        children.top_l_entries::<2>(),
+        [
+            FixedTopLEntry {
+                metric: 15,
+                index: 2,
+            },
+            FixedTopLEntry {
+                metric: 19,
+                index: 3,
+            },
+        ]
+    );
+}
+
+#[test]
+#[should_panic(expected = "binary child destination requires two slots")]
+fn fixed_scl_path_buffer_rejects_child_slot_overflow() {
+    let parents = FixedSclPathBuffer::<1, 4>::new();
+    let mut children = FixedSclPathBuffer::<2, 4>::new();
+    children.write_binary_children_from(&parents, 0, 1, 0, 0, 0);
 }
 
 #[test]

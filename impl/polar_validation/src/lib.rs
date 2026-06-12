@@ -160,6 +160,49 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         }
         fixed_schedule_top_l_i64::<CAP, L>(metrics)
     }
+
+    pub fn write_binary_children_from<const SRC_CAP: usize>(
+        &mut self,
+        parents: &FixedSclPathBuffer<SRC_CAP, N>,
+        parent_slot: usize,
+        dst_start: usize,
+        bit_index: usize,
+        bit0_metric_delta: i64,
+        bit1_metric_delta: i64,
+    ) {
+        assert!(
+            parent_slot < SRC_CAP,
+            "binary child parent slot is outside capacity"
+        );
+        assert!(
+            dst_start + 1 < CAP,
+            "binary child destination requires two slots"
+        );
+        assert!(bit_index < N, "binary child bit index is outside width");
+
+        let parent = parents.slots[parent_slot];
+        let mut bit0 = parent.bits;
+        let mut bit1 = parent.bits;
+        bit0[bit_index] = 0;
+        bit1[bit_index] = 1;
+
+        if parent.active == 0 {
+            self.clear_slot(dst_start);
+            self.clear_slot(dst_start + 1);
+            return;
+        }
+
+        self.set_candidate(
+            dst_start,
+            parent.metric.saturating_add(bit0_metric_delta),
+            bit0,
+        );
+        self.set_candidate(
+            dst_start + 1,
+            parent.metric.saturating_add(bit1_metric_delta),
+            bit1,
+        );
+    }
 }
 
 impl<const CAP: usize, const N: usize> Default for FixedSclPathBuffer<CAP, N> {
@@ -353,7 +396,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "  ],\n",
         "  \"prototype_building_blocks\": [\n",
         "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",
-        "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",
         "  \"adjudication\": \"engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN\"\n",
