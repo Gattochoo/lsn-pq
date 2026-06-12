@@ -1,0 +1,112 @@
+{
+  "track": "G",
+  "experiment": 211,
+  "noise_rate_p": "1/4",
+  "theorem_G1": {
+    "statement": "Pr_fresh[b1 != b2] = 2 (p + (1-2p)/2^n) (1-p - (1-2p)/2^n)",
+    "mu_n": "1/2^n",
+    "q_n": "p + (1-2p)/2^n",
+    "values": {
+      "2": "15/32",
+      "3": "55/128"
+    },
+    "verified_by_enumeration": {
+      "2": "15/32",
+      "3": "55/128"
+    },
+    "label": "THEOREM"
+  },
+  "theorem_G1_lower_bound": {
+    "statement": "For every pair of public bijections f1,f2 of F_2^{2n}, the label-preserving split has SD >= Pr_fresh[b1 != b2]",
+    "reason": "(b1,b2)-marginal of transformed pair is supported on {00,11}; fresh pair puts the stated mass on {01,10}; data processing for total variation",
+    "family": "label-preserving public bijections f1,f2",
+    "label": "THEOREM"
+  },
+  "theorem_G3_invariance": {
+    "statement": "Under same-secret comparison, SD(split_{f1,f2}(D_L), D_L x D_L) = 1 - (p^2+(1-p)^2)/4^n, independent of f1,f2",
+    "closed_form_p_1_4": "1 - 5/(8*4^n)",
+    "n2_target": "123/128",
+    "n3_target": "507/512",
+    "n3_identity_sd": "507/512",
+    "tested_pairs_n2": [
+      {
+        "name": "id_id",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "symplectic_0",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "symplectic_1",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "symplectic_2",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "affine_0",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "affine_1",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "affine_2",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "affine_3",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "affine_4",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "random_0",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "random_1",
+        "sd": "123/128",
+        "matches_target": true
+      },
+      {
+        "name": "random_2",
+        "sd": "123/128",
+        "matches_target": true
+      }
+    ],
+    "label": "THEOREM"
+  },
+  "G2_label_modifying_family": {
+    "definition": "public bijections g_i: F_2^{2n} x F_2 -> F_2^{2n} x F_2; split (x,b) |-> (g_1(x,b), g_2(x,b))",
+    "correctness_constraint": "g_i maps D_L to D_{L'} for some Lagrangian L' (valid LSN sample -> valid LSN sample)",
+    "findings": "If g_i are valid, applying g_i^{-1} to the i-th output reduces to the label-preserving case, so the same universal lower bound applies. Fully general (invalid) label-modifying bijections produce outputs that are not LSN samples; the appropriate comparison distribution is OPEN.",
+    "label": "EVIDENCE/OPEN"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON stores string fractions",
+    "L2_duality_care": "not invoked (no character sums over Lagrangians)",
+    "L3_query_class_hygiene": "distributional TV result; no SQ/query-class statement made"
+  },
+  "interpretation_guard": {
+    "comparison_distribution": "two independent fresh samples from the SAME uniform secret L (natural LSN pair)",
+    "family_names": "label-preserving = split (x,b)|->((f1(x),b),(f2(x),b)); label-modifying = split with bijections g_i(x,b)",
+    "output_sd": "universal exact SD -> 1 as n grows; universal lower bound from duplicated label bit -> 2p(1-p) = 3/8 at p=1/4",
+    "PRE_REGISTERED": "hardness interpretation guarded: this is a structural distributional gap, not a lem:m2 rate or attack claim"
+  }
+}
