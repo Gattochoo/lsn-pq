@@ -97,6 +97,55 @@ pub const FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY: u8 = 2;
 pub const FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX: u8 = 3;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPathDomainFailureLabel {
+    pub code: u8,
+    pub name: &'static str,
+    pub meaning: &'static str,
+}
+
+pub const FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS: [FixedSclPathDomainFailureLabel; 6] = [
+    FixedSclPathDomainFailureLabel {
+        code: FIXED_SCL_PATH_DOMAIN_OK,
+        name: "ok",
+        meaning: "valid public path-buffer schedule shape",
+    },
+    FixedSclPathDomainFailureLabel {
+        code: FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
+        name: "empty_schedule",
+        meaning: "round schedule must contain at least one public round",
+    },
+    FixedSclPathDomainFailureLabel {
+        code: FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
+        name: "first_child_capacity",
+        meaning: "first child buffer must hold two children per parent slot",
+    },
+    FixedSclPathDomainFailureLabel {
+        code: FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY,
+        name: "repeated_child_capacity",
+        meaning: "repeated child buffer must hold two children per compacted path",
+    },
+    FixedSclPathDomainFailureLabel {
+        code: FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
+        name: "top_l_width",
+        meaning: "list size must fit the parent and child selection widths",
+    },
+    FixedSclPathDomainFailureLabel {
+        code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+        name: "bit_index",
+        meaning: "every public bit index must be inside the path bit width",
+    },
+];
+
+pub fn fixed_scl_path_domain_failure_label(code: u8) -> &'static str {
+    for label in FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS {
+        if label.code == code {
+            return label.name;
+        }
+    }
+    "unknown"
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclMetricDeltas {
     pub bit0_metric_delta: i64,
     pub bit1_metric_delta: i64,
@@ -1047,6 +1096,14 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"negative metric deltas are diagnostic-only in source-level rail tests\",\n",
         "    \"future active integer SCL rail requires fixed-width non-negative penalties before decoder wiring\",\n",
         "    \"forbidden sentinel must remain terminal under parent-metric addition\"\n",
+        "  ],\n",
+        "  \"public_path_domain_failure_codes\": [\n",
+        "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid public path-buffer schedule shape\"},\n",
+        "    {\"code\": 1, \"name\": \"empty_schedule\", \"meaning\": \"round schedule must contain at least one public round\"},\n",
+        "    {\"code\": 2, \"name\": \"first_child_capacity\", \"meaning\": \"first child buffer must hold two children per parent slot\"},\n",
+        "    {\"code\": 3, \"name\": \"repeated_child_capacity\", \"meaning\": \"repeated child buffer must hold two children per compacted path\"},\n",
+        "    {\"code\": 4, \"name\": \"top_l_width\", \"meaning\": \"list size must fit the parent and child selection widths\"},\n",
+        "    {\"code\": 5, \"name\": \"bit_index\", \"meaning\": \"every public bit index must be inside the path bit width\"}\n",
         "  ],\n",
         "  \"prototype_building_blocks\": [\n",
         "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",

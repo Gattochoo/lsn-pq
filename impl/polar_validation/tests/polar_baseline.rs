@@ -19,20 +19,22 @@ use polar_validation::{
     fixed_schedule_top_l_i64, fixed_scl_binary_child_write_domain_check,
     fixed_scl_integer_metric_deltas, fixed_scl_integer_round_schedule,
     fixed_scl_integer_schedule_domain_check, fixed_scl_path_buffer_schedule_domain_check,
-    fixed_scl_public_round_work_counts, high_noise_control_configs, importance_results_to_json,
-    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    fixed_scl_path_domain_failure_label, fixed_scl_public_round_work_counts,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
     zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck, FixedSclIntegerRoundScheduleBuild,
     FixedSclIntegerScheduleDomainCheck, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
     FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
-    FixedSclPathBufferScheduleDomainCheck, FixedSclPublicRoundScheduleRun, FixedSclRound,
-    FixedTopLEntry, PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
-    FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
-    FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE, FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
-    FIXED_SCL_PATH_DOMAIN_OK,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
+    FixedSclPublicRoundScheduleRun, FixedSclRound, FixedTopLEntry, PolarCode,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_OK, FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND, FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+    FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE, FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS,
+    FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_OK,
+    FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY, FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
 };
 
 #[test]
@@ -241,6 +243,9 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("non-panicking integer schedule builder"));
     assert!(json.contains("fixed_scl_path_buffer_schedule_domain_check"));
     assert!(json.contains("public path-buffer shape validator"));
+    assert!(json.contains("\"public_path_domain_failure_codes\""));
+    assert!(json.contains("\"repeated_child_capacity\""));
+    assert!(json.contains("\"top_l_width\""));
     assert!(json.contains("try_expand_then_compact_integer_round_schedule"));
     assert!(json.contains("non-panicking path-buffer schedule wrapper"));
     assert!(json.contains("expand_then_compact_integer_round_schedule"));
@@ -251,6 +256,50 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("\"compacted_slots_written\": 6"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
+}
+
+#[test]
+fn fixed_scl_path_domain_failure_labels_cover_public_codes() {
+    assert_eq!(
+        FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS,
+        [
+            FixedSclPathDomainFailureLabel {
+                code: FIXED_SCL_PATH_DOMAIN_OK,
+                name: "ok",
+                meaning: "valid public path-buffer schedule shape",
+            },
+            FixedSclPathDomainFailureLabel {
+                code: FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
+                name: "empty_schedule",
+                meaning: "round schedule must contain at least one public round",
+            },
+            FixedSclPathDomainFailureLabel {
+                code: FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
+                name: "first_child_capacity",
+                meaning: "first child buffer must hold two children per parent slot",
+            },
+            FixedSclPathDomainFailureLabel {
+                code: FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY,
+                name: "repeated_child_capacity",
+                meaning: "repeated child buffer must hold two children per compacted path",
+            },
+            FixedSclPathDomainFailureLabel {
+                code: FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH,
+                name: "top_l_width",
+                meaning: "list size must fit the parent and child selection widths",
+            },
+            FixedSclPathDomainFailureLabel {
+                code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
+                name: "bit_index",
+                meaning: "every public bit index must be inside the path bit width",
+            },
+        ]
+    );
+    assert_eq!(
+        fixed_scl_path_domain_failure_label(FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY),
+        "repeated_child_capacity"
+    );
+    assert_eq!(fixed_scl_path_domain_failure_label(255), "unknown");
 }
 
 #[test]

@@ -30,6 +30,14 @@
     "future active integer SCL rail requires fixed-width non-negative penalties before decoder wiring",
     "forbidden sentinel must remain terminal under parent-metric addition"
   ],
+  "public_path_domain_failure_codes": [
+    {"code": 0, "name": "ok", "meaning": "valid public path-buffer schedule shape"},
+    {"code": 1, "name": "empty_schedule", "meaning": "round schedule must contain at least one public round"},
+    {"code": 2, "name": "first_child_capacity", "meaning": "first child buffer must hold two children per parent slot"},
+    {"code": 3, "name": "repeated_child_capacity", "meaning": "repeated child buffer must hold two children per compacted path"},
+    {"code": 4, "name": "top_l_width", "meaning": "list size must fit the parent and child selection widths"},
+    {"code": 5, "name": "bit_index", "meaning": "every public bit index must be inside the path bit width"}
+  ],
   "prototype_building_blocks": [
     "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending",
     "FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending",
