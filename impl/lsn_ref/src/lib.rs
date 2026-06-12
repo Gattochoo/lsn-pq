@@ -84,6 +84,7 @@ pub struct ToyPublicPreflightScanReport {
 }
 
 pub const LSN_REF_MAX_FIXED_LAGRANGIAN_N: usize = 8;
+pub const LSN_REF_FIXED_LAGRANGIAN_WORDS: usize = 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FixedLagrangianError {
@@ -107,7 +108,7 @@ pub enum FixedLagrangianError {
 pub struct FixedLagrangian {
     n: usize,
     universe: usize,
-    words: Vec<u64>,
+    words: [u64; LSN_REF_FIXED_LAGRANGIAN_WORDS],
 }
 
 impl FixedLagrangian {
@@ -146,8 +147,9 @@ impl FixedLagrangian {
             }
         }
 
-        let mut words = vec![0u64; universe.div_ceil(64)];
-        for (word_index, word) in words.iter_mut().enumerate() {
+        let active_words = universe.div_ceil(64);
+        let mut words = [0u64; LSN_REF_FIXED_LAGRANGIAN_WORDS];
+        for (word_index, word) in words.iter_mut().take(active_words).enumerate() {
             let mut scanned_word = 0u64;
             for bit_index in 0..64 {
                 let absolute_index = (word_index << 6) | bit_index;
@@ -175,6 +177,10 @@ impl FixedLagrangian {
     }
 
     pub fn word_count(&self) -> usize {
+        self.universe.div_ceil(64)
+    }
+
+    pub fn storage_word_count(&self) -> usize {
         self.words.len()
     }
 
@@ -702,7 +708,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses scanned mask lookup for toy membership label generation, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses fixed max-word backing storage plus scanned mask lookup for toy membership label generation, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",

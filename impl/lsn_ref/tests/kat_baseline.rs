@@ -14,10 +14,11 @@
 // limitations under the License.
 
 use lsn_ref::{
-    FixedLagrangian, FixedLagrangianError, LSN_REF_MAX_FIXED_LAGRANGIAN_N, ToyKemParams,
-    diagnostic_honest_only_points, toy_divergent_wrong_secret_control,
-    toy_find_wrong_secret_control, toy_kat_vector, toy_wrong_secret_control,
-    toy_wrong_secret_control_to_json, toy_wrong_secret_control_to_json_with_diagnostics,
+    FixedLagrangian, FixedLagrangianError, LSN_REF_FIXED_LAGRANGIAN_WORDS,
+    LSN_REF_MAX_FIXED_LAGRANGIAN_N, ToyKemParams, diagnostic_honest_only_points,
+    toy_divergent_wrong_secret_control, toy_find_wrong_secret_control, toy_kat_vector,
+    toy_wrong_secret_control, toy_wrong_secret_control_to_json,
+    toy_wrong_secret_control_to_json_with_diagnostics,
 };
 
 #[test]
@@ -65,11 +66,30 @@ fn fixed_lagrangian_scanned_membership_matches_direct_membership() {
 }
 
 #[test]
+fn fixed_lagrangian_uses_fixed_max_word_storage() {
+    assert_eq!(LSN_REF_FIXED_LAGRANGIAN_WORDS, 1024);
+
+    let n2 = FixedLagrangian::from_points(2, &[0, 6, 9, 15]);
+    let n4 = FixedLagrangian::from_points(
+        4,
+        &[
+            0, 1, 2, 3, 63, 64, 65, 66, 127, 128, 129, 130, 191, 192, 193, 255,
+        ],
+    );
+
+    assert_eq!(n2.word_count(), 1);
+    assert_eq!(n4.word_count(), 4);
+    assert_eq!(n2.storage_word_count(), LSN_REF_FIXED_LAGRANGIAN_WORDS);
+    assert_eq!(n4.storage_word_count(), LSN_REF_FIXED_LAGRANGIAN_WORDS);
+}
+
+#[test]
 fn fixed_lagrangian_source_avoids_secret_dependent_word_indexing() {
     let source = include_str!("../src/lib.rs");
 
     assert!(!source.contains("self.words[index >> 6]"));
     assert!(!source.contains("words[index >> 6]"));
+    assert!(source.contains("words: [u64; LSN_REF_FIXED_LAGRANGIAN_WORDS]"));
     assert!(source.contains("contains_mask_scanned"));
     assert!(source.contains("PointCountMismatch"));
 }
