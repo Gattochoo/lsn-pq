@@ -30,6 +30,10 @@
     "future active integer SCL rail requires fixed-width non-negative penalties before decoder wiring",
     "forbidden sentinel must remain terminal under parent-metric addition"
   ],
+  "top_l_selection_domain_failure_codes": [
+    {"code": 0, "name": "ok", "meaning": "valid public top-L selection shape"},
+    {"code": 1, "name": "width", "meaning": "list size must be no larger than selection width"}
+  ],
   "public_path_domain_failure_codes": [
     {"code": 0, "name": "ok", "meaning": "valid public path-buffer schedule shape"},
     {"code": 1, "name": "empty_schedule", "meaning": "round schedule must contain at least one public round"},

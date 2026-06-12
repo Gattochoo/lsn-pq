@@ -102,6 +102,36 @@ pub const FIXED_TOP_L_SELECTION_DOMAIN_OK: u8 = 0;
 pub const FIXED_TOP_L_SELECTION_DOMAIN_WIDTH: u8 = 1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedScheduleTopLSelectionDomainFailureLabel {
+    pub code: u8,
+    pub name: &'static str,
+    pub meaning: &'static str,
+}
+
+pub const FIXED_TOP_L_SELECTION_DOMAIN_FAILURE_LABELS:
+    [FixedScheduleTopLSelectionDomainFailureLabel; 2] = [
+    FixedScheduleTopLSelectionDomainFailureLabel {
+        code: FIXED_TOP_L_SELECTION_DOMAIN_OK,
+        name: "ok",
+        meaning: "valid public top-L selection shape",
+    },
+    FixedScheduleTopLSelectionDomainFailureLabel {
+        code: FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
+        name: "width",
+        meaning: "list size must be no larger than selection width",
+    },
+];
+
+pub fn fixed_top_l_selection_domain_failure_label(code: u8) -> &'static str {
+    for label in FIXED_TOP_L_SELECTION_DOMAIN_FAILURE_LABELS {
+        if label.code == code {
+            return label.name;
+        }
+    }
+    "unknown"
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclIntegerScheduleDomainFailureLabel {
     pub code: u8,
     pub name: &'static str,
@@ -1340,6 +1370,10 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"negative metric deltas are diagnostic-only in source-level rail tests\",\n",
         "    \"future active integer SCL rail requires fixed-width non-negative penalties before decoder wiring\",\n",
         "    \"forbidden sentinel must remain terminal under parent-metric addition\"\n",
+        "  ],\n",
+        "  \"top_l_selection_domain_failure_codes\": [\n",
+        "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid public top-L selection shape\"},\n",
+        "    {\"code\": 1, \"name\": \"width\", \"meaning\": \"list size must be no larger than selection width\"}\n",
         "  ],\n",
         "  \"public_path_domain_failure_codes\": [\n",
         "    {\"code\": 0, \"name\": \"ok\", \"meaning\": \"valid public path-buffer schedule shape\"},\n",

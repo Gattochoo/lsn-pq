@@ -23,11 +23,13 @@ use polar_validation::{
     fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
     fixed_scl_path_domain_failure_label, fixed_scl_public_round_schedule_plan,
     fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
-    fixed_scl_round_schedule_plan, high_noise_control_configs, importance_results_to_json,
-    polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    fixed_scl_round_schedule_plan, fixed_top_l_selection_domain_failure_label,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
     simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    zero_error_upper_bound, FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
+    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
+    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
     FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
     FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
     FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
@@ -43,8 +45,8 @@ use polar_validation::{
     FIXED_SCL_PATH_DOMAIN_BIT_INDEX, FIXED_SCL_PATH_DOMAIN_EMPTY_SCHEDULE,
     FIXED_SCL_PATH_DOMAIN_FAILURE_LABELS, FIXED_SCL_PATH_DOMAIN_FIRST_CHILD_CAPACITY,
     FIXED_SCL_PATH_DOMAIN_OK, FIXED_SCL_PATH_DOMAIN_REPEATED_CHILD_CAPACITY,
-    FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH, FIXED_TOP_L_SELECTION_DOMAIN_OK,
-    FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
+    FIXED_SCL_PATH_DOMAIN_TOP_L_WIDTH, FIXED_TOP_L_SELECTION_DOMAIN_FAILURE_LABELS,
+    FIXED_TOP_L_SELECTION_DOMAIN_OK, FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
 };
 
 #[test]
@@ -215,6 +217,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("floating-point path metrics"));
     assert!(json.contains("fixed-schedule integer decoder plan required"));
     assert!(json.contains("\"metric_domain_assumptions\""));
+    assert!(json.contains("\"top_l_selection_domain_failure_codes\""));
+    assert!(json.contains("\"width\""));
     assert!(json.contains("negative metric deltas are diagnostic-only"));
     assert!(
         json.contains("future active integer SCL rail requires fixed-width non-negative penalties")
@@ -356,6 +360,30 @@ fn fixed_scl_path_domain_failure_labels_cover_public_codes() {
         "repeated_child_capacity"
     );
     assert_eq!(fixed_scl_path_domain_failure_label(255), "unknown");
+}
+
+#[test]
+fn fixed_top_l_selection_domain_failure_labels_cover_public_codes() {
+    assert_eq!(
+        FIXED_TOP_L_SELECTION_DOMAIN_FAILURE_LABELS,
+        [
+            FixedScheduleTopLSelectionDomainFailureLabel {
+                code: FIXED_TOP_L_SELECTION_DOMAIN_OK,
+                name: "ok",
+                meaning: "valid public top-L selection shape",
+            },
+            FixedScheduleTopLSelectionDomainFailureLabel {
+                code: FIXED_TOP_L_SELECTION_DOMAIN_WIDTH,
+                name: "width",
+                meaning: "list size must be no larger than selection width",
+            },
+        ]
+    );
+    assert_eq!(
+        fixed_top_l_selection_domain_failure_label(FIXED_TOP_L_SELECTION_DOMAIN_WIDTH),
+        "width"
+    );
+    assert_eq!(fixed_top_l_selection_domain_failure_label(255), "unknown");
 }
 
 #[test]
