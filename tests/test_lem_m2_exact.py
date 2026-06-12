@@ -161,3 +161,42 @@ def test_rank_conditioned_counts_matches_brute_force_m2():
             brute[i] += counts[i]
 
     assert red_counts == brute
+
+
+from experiments.lib.lem_m2_exact import bernoulli_rows_B_counts
+
+
+def test_bernoulli_rows_B_counts_matches_brute_force():
+    """For m=2, p=1/3, compare analytic helper with full B enumeration."""
+    from experiments.lib.lem_m2_exact import enumerate_lagrangian_bases, reduction_counts_for_B
+
+    m = 2
+    p = Fraction(1, 3)
+    bases = list(enumerate_lagrangian_bases())
+    red_counts, red_denom = bernoulli_rows_B_counts(m, p, bases)
+    assert sum(red_counts) == red_denom
+
+    # Brute-force weighted sum over all B.
+    num_B = 1 << (4 * m)
+    row_mask = (1 << 4) - 1
+    size = 1 << (3 * m)
+    brute = [0] * size
+    D = p.denominator ** (4 * m)
+    for bits in range(num_B):
+        rows = [((bits >> (j * 4)) & row_mask) for j in range(m)]
+        weight_num = 1
+        for r in rows:
+            w = r.bit_count()
+            weight_num *= (p.numerator ** w) * ((p.denominator - p.numerator) ** (4 - w))
+        B_cols = []
+        for j in range(4):
+            col_val = 0
+            for i, r in enumerate(rows):
+                if (r >> j) & 1:
+                    col_val |= 1 << i
+            B_cols.append(col_val)
+        counts = reduction_counts_for_B(B_cols, bases, m)
+        for i in range(size):
+            brute[i] += counts[i] * weight_num
+
+    assert red_counts == brute

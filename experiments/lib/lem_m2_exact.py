@@ -269,3 +269,93 @@ def rank_conditioned_counts(m: int, rank: int, bases=None) -> tuple[list[int], i
 
     denom = matched * 15360
     return counts, denom
+
+
+def bernoulli_rows_B_counts(m: int, p: Fraction, bases=None) -> tuple[list[int], int]:
+    """Exact counts for (C, y) when each row of B is i.i.d. Bernoulli(p)^4.
+
+    For each (A, x, e) triple we enumerate all assignments of m rows to the
+    eight possible output-bit patterns (s0, s1, s2) = (r·a0, r·a1, r·v).  The
+    per-row weight numerator is accumulated analytically, so we never iterate
+    over the full 2^{4m} matrix space.
+    """
+    if bases is None:
+        bases = enumerate_lagrangian_bases()
+    if not (0 <= p <= 1):
+        raise ValueError("p must be in [0, 1]")
+
+    size = 1 << (3 * m)
+    counts = [0] * size
+    num_row_patterns = 1 << 4
+
+    # Numerator of row-pattern weight, denominator is p.denominator^4.
+    pattern_weights = [0] * num_row_patterns
+    for r in range(num_row_patterns):
+        w = r.bit_count()
+        pattern_weights[r] = (
+            p.numerator ** w
+        ) * ((p.denominator - p.numerator) ** (4 - w))
+
+    # Bits of the 8 output patterns: t = (s0<<2) | (s1<<1) | s2.
+    t_bits = [((t >> 2) & 1, (t >> 1) & 1, t & 1) for t in range(8)]
+    num_assignments = 8 ** m
+
+    for a0, a1 in bases:
+        span_map = {0: (0, 0), a0: (1, 0), a1: (0, 1), a0 ^ a1: (1, 1)}
+        for x in range(1 << 2):
+            a = 0
+            if x & 1:
+                a ^= a0
+            if x & 2:
+                a ^= a1
+            for e in range(1 << 4):
+                w_e = 3 ** (4 - e.bit_count())
+                v = a ^ e
+
+                # W[t] = total row-pattern weight producing output pattern t.
+                W = [0] * 8
+                if v == 0:
+                    for r in range(num_row_patterns):
+                        s0 = (r & a0).bit_count() & 1
+                        s1 = (r & a1).bit_count() & 1
+                        t = (s0 << 2) | (s1 << 1)
+                        W[t] += pattern_weights[r]
+                elif v in span_map:
+                    alpha, beta = span_map[v]
+                    for r in range(num_row_patterns):
+                        s0 = (r & a0).bit_count() & 1
+                        s1 = (r & a1).bit_count() & 1
+                        s2 = ((alpha * s0) ^ (beta * s1)) & 1
+                        t = (s0 << 2) | (s1 << 1) | s2
+                        W[t] += pattern_weights[r]
+                else:
+                    for r in range(num_row_patterns):
+                        s0 = (r & a0).bit_count() & 1
+                        s1 = (r & a1).bit_count() & 1
+                        s2 = (r & v).bit_count() & 1
+                        t = (s0 << 2) | (s1 << 1) | s2
+                        W[t] += pattern_weights[r]
+
+                # Enumerate all row-to-output-pattern assignments.
+                for assignment in range(num_assignments):
+                    tmp = assignment
+                    c0 = 0
+                    c1 = 0
+                    y = 0
+                    prod = 1
+                    for i in range(m):
+                        t = tmp & 7
+                        tmp >>= 3
+                        prod *= W[t]
+                        s0, s1, s2 = t_bits[t]
+                        if s0:
+                            c0 |= 1 << i
+                        if s1:
+                            c1 |= 1 << i
+                        if s2:
+                            y |= 1 << i
+                    key = ((c0 << m) | c1) << m | y
+                    counts[key] += w_e * prod
+
+    red_denom = 15360 * (p.denominator ** (4 * m))
+    return counts, red_denom
