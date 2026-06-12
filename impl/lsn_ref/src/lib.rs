@@ -215,6 +215,13 @@ impl FixedLagrangian {
     pub fn contains_u8(&self, point: u32) -> u8 {
         (self.contains_mask(point) & 1) as u8
     }
+
+    pub fn membership_labels(&self, points: &[u32]) -> Vec<u8> {
+        points
+            .iter()
+            .map(|&point| self.contains_u8(point))
+            .collect()
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -281,10 +288,7 @@ pub fn toy_kat_vector(
 
     let public_majority_bits =
         block_majorities(&selected_indices, &public_labels, params.repetition);
-    let clean_membership_labels = public_points
-        .iter()
-        .map(|&point| fixed_secret.contains_u8(point))
-        .collect::<Vec<_>>();
+    let clean_membership_labels = fixed_secret.membership_labels(&public_points);
     let clean_majority_bits = block_majorities(
         &selected_indices,
         &clean_membership_labels,
@@ -341,11 +345,7 @@ pub fn toy_wrong_secret_control(
     let wrong_secret = random_lagrangian(params.n, 16 * params.n.max(1), &mut wrong_secret_rng);
     let fixed_wrong_secret = FixedLagrangian::from_lagrangian(params.n, &wrong_secret);
     let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
-    let wrong_secret_labels = honest
-        .public_points
-        .iter()
-        .map(|&point| fixed_wrong_secret.contains_u8(point))
-        .collect::<Vec<_>>();
+    let wrong_secret_labels = fixed_wrong_secret.membership_labels(&honest.public_points);
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
         &wrong_secret_labels,
@@ -425,11 +425,7 @@ pub fn toy_divergent_wrong_secret_control(
     );
 
     let wrong_secret_lagrangian_points = wrong_secret.iter().copied().collect::<Vec<_>>();
-    let wrong_secret_labels = honest
-        .public_points
-        .iter()
-        .map(|&point| fixed_wrong_secret.contains_u8(point))
-        .collect::<Vec<_>>();
+    let wrong_secret_labels = fixed_wrong_secret.membership_labels(&honest.public_points);
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
         &wrong_secret_labels,
@@ -562,10 +558,7 @@ fn toy_kat_from_parts(
     let codeword = encode(&code, &message_bits);
     let public_majority_bits =
         block_majorities(&selected_indices, &public_labels, params.repetition);
-    let clean_membership_labels = public_points
-        .iter()
-        .map(|&point| fixed_secret.contains_u8(point))
-        .collect::<Vec<_>>();
+    let clean_membership_labels = fixed_secret.membership_labels(&public_points);
     let clean_majority_bits = block_majorities(
         &selected_indices,
         &clean_membership_labels,
@@ -738,7 +731,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, centralizes toy label generation through membership_labels, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
@@ -1072,14 +1065,20 @@ fn public_samples(
     let mut sample_rng = XorShift64::new(sample_seed);
     let mut noise_rng = XorShift64::new(noise_seed);
     let mut points = Vec::with_capacity(params.sample_count);
-    let mut labels = Vec::with_capacity(params.sample_count);
+    let mut noise_bits = Vec::with_capacity(params.sample_count);
 
     for _ in 0..params.sample_count {
         let point = sample_rng.next_index(universe) as u32;
         let noisy = noise_rng.next_f64() < params.public_noise_rate;
         points.push(point);
-        labels.push(fixed_secret.contains_u8(point) ^ u8::from(noisy));
+        noise_bits.push(u8::from(noisy));
     }
+    let membership_labels = fixed_secret.membership_labels(&points);
+    let labels = membership_labels
+        .iter()
+        .zip(noise_bits.iter())
+        .map(|(&membership, &noise)| membership ^ noise)
+        .collect();
 
     (points, labels)
 }

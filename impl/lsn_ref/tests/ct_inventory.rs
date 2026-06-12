@@ -35,6 +35,7 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     assert!(json.contains(
         "routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary"
     ));
+    assert!(json.contains("centralizes toy label generation through membership_labels"));
     assert!(
         json.contains("derives toy membership labels through a single contains_mask lookup path")
     );

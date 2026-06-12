@@ -68,6 +68,17 @@ fn fixed_lagrangian_mask_membership_handles_word_boundaries() {
 }
 
 #[test]
+fn fixed_lagrangian_membership_labels_use_mask_path() {
+    let fixed = FixedLagrangian::from_points(2, &[0, 6, 9, 15]);
+    let query_points = [0, 1, 6, 8, 9, 15, 16];
+
+    assert_eq!(
+        fixed.membership_labels(&query_points),
+        vec![1, 0, 1, 0, 1, 1, 0]
+    );
+}
+
+#[test]
 fn fixed_lagrangian_uses_fixed_max_word_storage() {
     assert_eq!(LSN_REF_FIXED_LAGRANGIAN_WORDS, 1024);
 
