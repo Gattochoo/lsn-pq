@@ -189,7 +189,7 @@ We write $D_L$ for the LSN distribution with secret $L$ and noise rate $p$, and 
 LPN was introduced by Blum, Furst, Kearns, and Lipton \cite{BFKL94} as a foundation for cryptographic primitives. The dominant classical attack is BKW \cite{BKW03}, later optimized with fast Walsh--Hadamard transforms \cite{LF06}, covering codes \cite{GJL14}, and hybrid information-set-decoding techniques \cite{EKM17}. Lyubashevsky \cite{Lyu05} gave a polynomial-sample variant, and a comprehensive unified attack framework was developed by Esser, K{\"u}bler, and May \cite{EKM17}. Quantum speed-ups are limited to Grover \cite{Gro96} and quantum BKW \cite{Kir11}; no published exponential improvement is known.
 
 \paragraph{LPN variants.}
-Many structured variants have been proposed to improve efficiency: Ring-LPN \cite{HKL+12}, LPN with structured noise \cite{DP12}, and the Learning with Rounding (LWR) problem \cite{BPR12}. All of these retain a secret space of size $2^{O(n)}$. LSN differs fundamentally in that its secret space has size $2^{n^2/2 + O(n)}$ while remaining polynomial-time sampleable via symplectic linear algebra.
+Many structured variants have been proposed to improve efficiency: Ring-LPN \cite{HKL+12} and the Learning with Rounding (LWR) problem \cite{BPR12}. All of these retain a secret space of size $2^{O(n)}$. LSN differs fundamentally in that its secret space has size $2^{n^2/2 + O(n)}$ while remaining polynomial-time sampleable via symplectic linear algebra.
 
 \paragraph{Symplectic and quantum coding.}
 Stabilizer codes, the quantum analogue of classical linear codes, are naturally described by Lagrangian subspaces of $\F_2^{2n}$ \cite{Got97,CRSS98,NC00}. Quantum state tomography of stabilizer states under depolarizing noise is a closely related learning problem \cite{GL22}. The recent independent work of Khesin \etal\ \cite{KLP+25} proved that constant-rate LPN reduces to \emph{their} stabilizer-decoding LSN even for $k=1$ (the relation to our membership formulation is an open positioning item; \Cref{subsec:two-forms}), while Lu \etal\ \cite{LPQR26} proved that linear reductions cannot reduce sympLPN to LPN in the constant-rate sample regime $m=\Theta(n)$; for $m=\omega(n)$ their bound shows error weight $>1/2-\delta$, which they note is not sufficient to fully rule out decodability (though they expect the barrier to extend to all $m=\operatorname{poly}(n)$).
@@ -1292,11 +1292,6 @@ In \emph{FOCS}, pages 73--84. IEEE, 2017.
 N.~D\"ottling, J.~M\"uller-Quade, and A.~Nascimento.
 IND-CCA secure cryptography based on a variant of the LPN problem.
 In \emph{ASIACRYPT}, pages 485--508. Springer, 2014.
-
-\bibitem[DP12]{DP12}
-Y.~Dodis, K.~Pietrzak, and D.~Wichs.
-Key derivation without entropy waste.
-In \emph{EUROCRYPT}, pages 93--110. Springer, 2012.
 
 \bibitem[EKM17]{EKM17}
 A.~Esser, R.~K\"ubler, and A.~May.
