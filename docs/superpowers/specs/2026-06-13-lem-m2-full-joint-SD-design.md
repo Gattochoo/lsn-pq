@@ -123,11 +123,11 @@ JSON file per $m$:
   "p_prime": "1/4",
   "num_lagrangian": 15,
   "num_B": 4096,
-  "min_sd": "0",
-  "max_sd": "37/64",
-  "avg_sd": "...",
-  "best_B": [4, 2, 1, 0],
-  "worst_B": [...]
+  "min_sd": "49/64",
+  "max_sd": "4069/4096",
+  "avg_sd": "70093009/83886080",
+  "best_B": [4, 2, 1, 1],
+  "worst_B": [0, 0, 0, 0]
 }
 ```
 
