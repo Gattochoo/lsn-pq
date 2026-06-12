@@ -33,7 +33,6 @@ fn fixed_lagrangian_membership_matches_point_set_for_public_points() {
 
     for point in 0..16 {
         let expected = points.contains(&point);
-        assert_eq!(fixed.contains_u8(point), u8::from(expected));
         assert_eq!(
             fixed.contains_mask(point),
             if expected { u64::MAX } else { 0 }
@@ -41,7 +40,6 @@ fn fixed_lagrangian_membership_matches_point_set_for_public_points() {
     }
 
     assert_eq!(fixed.contains_mask(16), 0);
-    assert_eq!(fixed.contains_u8(16), 0);
 }
 
 #[test]
@@ -60,11 +58,9 @@ fn fixed_lagrangian_mask_membership_handles_word_boundaries() {
             fixed.contains_mask(point),
             if expected { u64::MAX } else { 0 }
         );
-        assert_eq!(fixed.contains_u8(point), u8::from(expected));
     }
 
     assert_eq!(fixed.contains_mask(256), 0);
-    assert_eq!(fixed.contains_u8(256), 0);
 }
 
 #[test]
@@ -98,6 +94,14 @@ fn fixed_lagrangian_source_avoids_allocating_membership_label_helper() {
 }
 
 #[test]
+fn fixed_lagrangian_source_exposes_mask_membership_only() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("pub fn contains_u8"));
+    assert!(source.contains("*label = (self.contains_mask(point) & 1) as u8;"));
+}
+
+#[test]
 fn fixed_lagrangian_uses_fixed_max_word_storage() {
     assert_eq!(LSN_REF_FIXED_LAGRANGIAN_WORDS, 1024);
 
@@ -126,7 +130,6 @@ fn fixed_lagrangian_source_avoids_secret_dependent_word_indexing() {
     ));
     assert!(source.contains("words: [u64; LSN_REF_FIXED_LAGRANGIAN_WORDS]"));
     assert!(!source.contains("contains_mask_scanned"));
-    assert!(!source.contains("contains_u8_scanned"));
     assert!(source.contains("PointCountMismatch"));
 }
 

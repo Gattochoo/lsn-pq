@@ -35,17 +35,16 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     assert!(json.contains(
         "routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary"
     ));
+    assert!(json.contains("exposes a mask-only membership API"));
     assert!(json.contains(
-        "removes the allocating membership_labels helper in favor of caller-owned label buffers"
+        "removes the contains_u8 and allocating membership_labels helpers in favor of caller-owned label buffers"
     ));
     assert!(json.contains("caller-owned label buffers via membership_labels_into"));
     assert!(json.contains("fills public-sample membership labels in-place before noise xor"));
     assert!(json.contains(
         "routes toy clean and wrong-secret label generation through caller-owned buffers"
     ));
-    assert!(
-        json.contains("derives toy membership labels through a single contains_mask lookup path")
-    );
+    assert!(json.contains("derives toy membership labels directly from contains_mask"));
     assert!(json.contains("bounded reference layout"));
     assert!(json.contains("LSN_REF_MAX_FIXED_LAGRANGIAN_N"));
     assert!(json.contains("polar SCL path pruning"));

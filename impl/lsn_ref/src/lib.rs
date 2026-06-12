@@ -212,10 +212,6 @@ impl FixedLagrangian {
         0u64.wrapping_sub(bit) & in_range_mask
     }
 
-    pub fn contains_u8(&self, point: u32) -> u8 {
-        (self.contains_mask(point) & 1) as u8
-    }
-
     pub fn membership_labels_into(&self, points: &[u32], labels: &mut [u8]) {
         assert_eq!(
             points.len(),
@@ -223,7 +219,7 @@ impl FixedLagrangian {
             "membership label output must match public point count"
         );
         for (label, &point) in labels.iter_mut().zip(points.iter()) {
-            *label = self.contains_u8(point);
+            *label = (self.contains_mask(point) & 1) as u8;
         }
     }
 }
@@ -739,7 +735,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, removes the allocating membership_labels helper in favor of caller-owned label buffers via membership_labels_into, fills public-sample membership labels in-place before noise xor, routes toy clean and wrong-secret label generation through caller-owned buffers, and derives toy membership labels through a single contains_mask lookup path, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, routes public-sample label generation and toy KAT part builders through a FixedLagrangian boundary, exposes a mask-only membership API, removes the contains_u8 and allocating membership_labels helpers in favor of caller-owned label buffers via membership_labels_into, fills public-sample membership labels in-place before noise xor, routes toy clean and wrong-secret label generation through caller-owned buffers, and derives toy membership labels directly from contains_mask, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
