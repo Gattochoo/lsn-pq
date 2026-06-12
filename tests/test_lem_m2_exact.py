@@ -232,3 +232,22 @@ def test_lpn_target_counts_n_normalized():
         for m in (2, 3):
             counts, denom = lpn_target_counts_n(m, n, Fraction(1, 4))
             assert sum(counts) == denom
+
+
+from experiments.lib.lem_m2_exact import randomized_uniform_B_counts_n
+
+
+def test_randomized_uniform_B_counts_n_matches_n2_helper():
+    for m in (2, 3):
+        bases_n2 = enumerate_lagrangian_bases()
+        counts_old, denom_old = randomized_uniform_B_counts(m, bases_n2)
+        counts_new, denom_new = randomized_uniform_B_counts_n(m, 2, bases_n2)
+        assert counts_old == counts_new
+        assert denom_old == denom_new
+
+
+def test_randomized_uniform_B_counts_n_normalized():
+    for n in (2, 3):
+        for m in (2, 3):
+            counts, denom = randomized_uniform_B_counts_n(m, n)
+            assert sum(counts) == denom

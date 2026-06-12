@@ -459,3 +459,80 @@ def lpn_target_counts_n(m: int, n: int, p: Fraction) -> tuple[list[int], int]:
                 key = (C_key << m) | y
                 counts[key] += num
     return counts, total_denom
+
+
+def randomized_uniform_B_counts_n(
+    m: int, n: int, bases: list[tuple[int, ...]] | None = None
+) -> tuple[list[int], int]:
+    r"""Exact counts for (C, y) when B ~ Unif(F_2^{m x 2n}) is drawn per A.
+
+    Generalizes randomized_uniform_B_counts to arbitrary n using the same
+    three-case decomposition:
+      * v = 0            -> uniform on {(C, 0)}, 2^{n m} matrices per point
+      * v in span(A)\{0} -> uniform on graph of linear map, 2^{n m} matrices/point
+      * v not in span(A) -> uniform on full (C, y) space, 2^{(n-1)m} matrices/point
+    """
+    if bases is None:
+        bases = enumerate_lagrangian_bases_n(n)
+
+    mask = (1 << m) - 1
+    num_C = 1 << (n * m)
+    size = 1 << ((n + 1) * m)
+    counts = [0] * size
+
+    # Precompute c_j for each C_key.
+    c_lists = [[0] * num_C for _ in range(n)]
+    for C_key in range(num_C):
+        tmp = C_key
+        for j in range(n):
+            c_lists[j][C_key] = tmp & mask
+            tmp >>= m
+
+    two_to_nm = 1 << (n * m)
+    two_to_nminus1_m = 1 << ((n - 1) * m)
+    case3_weight_sum = 0
+    total_error_weight = sum(3 ** (2 * n - e.bit_count()) for e in range(1 << (2 * n)))
+
+    for basis in bases:
+        # Build span_map: span vector -> coefficient tuple over the basis.
+        span_map = {0: tuple([0] * n)}
+        for s in range(1, 1 << n):
+            v = 0
+            coeffs = [0] * n
+            for j in range(n):
+                if (s >> j) & 1:
+                    v ^= basis[j]
+                    coeffs[j] = 1
+            span_map[v] = tuple(coeffs)
+
+        for x in range(1 << n):
+            a = 0
+            for j in range(n):
+                if (x >> j) & 1:
+                    a ^= basis[j]
+            for e in range(1 << (2 * n)):
+                w_e = 3 ** (2 * n - e.bit_count())
+                v = a ^ e
+
+                if v == 0:
+                    add = w_e * two_to_nm
+                    for C_key in range(num_C):
+                        counts[C_key << m] += add
+                elif v in span_map:
+                    coeffs = span_map[v]
+                    add = w_e * two_to_nm
+                    for C_key in range(num_C):
+                        y = 0
+                        for j in range(n):
+                            if coeffs[j]:
+                                y ^= c_lists[j][C_key]
+                        counts[(C_key << m) | y] += add
+                else:
+                    case3_weight_sum += w_e
+
+    case3_add = case3_weight_sum * two_to_nminus1_m
+    for key in range(size):
+        counts[key] += case3_add
+
+    red_denom = len(bases) * (1 << n) * total_error_weight * (1 << (2 * n * m))
+    return counts, red_denom
