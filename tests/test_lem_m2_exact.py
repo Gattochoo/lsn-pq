@@ -200,3 +200,17 @@ def test_bernoulli_rows_B_counts_matches_brute_force():
             brute[i] += counts[i] * weight_num
 
     assert red_counts == brute
+
+from experiments.lib.lem_m2_exact import symplectic_form_n, enumerate_lagrangian_bases_n
+
+
+def test_symplectic_form_n_matches_existing():
+    for u in range(1 << 4):
+        for v in range(1 << 4):
+            assert symplectic_form_n(u, v, 2) == symplectic_form(u, v)
+
+
+def test_enumerate_lagrangian_bases_n_counts():
+    assert len(enumerate_lagrangian_bases_n(1)) == 3
+    assert len(enumerate_lagrangian_bases_n(2)) == 15
+    assert len(enumerate_lagrangian_bases_n(3)) == 135

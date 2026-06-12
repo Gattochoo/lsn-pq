@@ -359,3 +359,71 @@ def bernoulli_rows_B_counts(m: int, p: Fraction, bases=None) -> tuple[list[int],
 
     red_denom = 15360 * (p.denominator ** (4 * m))
     return counts, red_denom
+
+
+def symplectic_form_n(u: int, v: int, n: int) -> int:
+    """Standard symplectic form on F_2^{2n}: omega(u, v)."""
+    res = 0
+    for i in range(n):
+        ui = (u >> i) & 1
+        vi = (v >> i) & 1
+        ui2 = (u >> (i + n)) & 1
+        vi2 = (v >> (i + n)) & 1
+        res ^= (ui * vi2) ^ (ui2 * vi)
+    return res & 1
+
+
+def enumerate_lagrangian_bases_n(n: int) -> list[tuple[int, ...]]:
+    """Return one ordered basis per Lagrangian subspace of F_2^{2n}.
+
+    For n=2 this returns the same 15 subspaces as enumerate_lagrangian_bases.
+    """
+    if n < 1:
+        raise ValueError("n must be >= 1")
+    dim = 2 * n
+    vectors = list(range(1, 1 << dim))
+    subspaces = {}
+
+    def is_isotropic(basis):
+        for i in range(len(basis)):
+            for j in range(i + 1, len(basis)):
+                if symplectic_form_n(basis[i], basis[j], n) != 0:
+                    return False
+        return True
+
+    def span_of(basis):
+        span = [0]
+        for v in basis:
+            span += [s ^ v for s in span]
+        return set(span)
+
+    def extend(basis, start):
+        if len(basis) == n:
+            if not is_isotropic(basis):
+                return
+            span = [0]
+            for v in basis:
+                span += [s ^ v for s in span]
+            span_set = frozenset(span)
+            canon = tuple(sorted(basis))
+            subspaces.setdefault(span_set, canon)
+            return
+        for idx in range(start, len(vectors)):
+            v = vectors[idx]
+            ok = True
+            for b in basis:
+                if symplectic_form_n(b, v, n) != 0:
+                    ok = False
+                    break
+            if not ok:
+                continue
+            for s in span_of(basis):
+                if s == v:
+                    ok = False
+                    break
+            if not ok:
+                continue
+            extend(basis + [v], idx + 1)
+
+    extend([], 0)
+    return [c for _, c in sorted(subspaces.items())]
