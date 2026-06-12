@@ -266,6 +266,12 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     ));
     assert!(json.contains("\"wrapper\": \"try_expand_then_compact_integer_round_schedule\""));
     assert!(json.contains("\"integer_status_family\": \"integer_schedule_domain_failure_codes\""));
+    assert!(json.contains(
+        "\"path_status_field\": \"FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code\""
+    ));
+    assert!(json.contains(
+        "\"integer_status_field\": \"FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code\""
+    ));
     assert!(json.contains("try_expand_then_compact_integer_round_schedule"));
     assert!(json.contains("non-panicking path-buffer schedule wrapper"));
     assert!(json.contains("expand_then_compact_integer_round_schedule"));
