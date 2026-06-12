@@ -1,0 +1,884 @@
+{
+  "experiment": "231-KIMI-trackJ-pencil-ratio-theorem",
+  "track": "J",
+  "claim_labels": "J1 EVIDENCE; J2 THEOREM; J3 COROLLARY/DRAFT; conj:pencil remains OPEN",
+  "interpretation_guard": {
+    "comparison_distribution": "raw integer intersections 2^{dim cap}; common normalising factor cancels in ratios",
+    "m_vs_n_scaling": "conj:pencil scale |Lagr(2n,F_2)|/2^{2n-c}; table records c=0 membership",
+    "noise_rate": "not applicable -- pure geometric statistic"
+  },
+  "standing_guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; rationals stored as strings",
+    "L2_duality_care": "quotient uses W^{perp_Omega}/W, the symplectic perpendicular (J-twisted Gram); no Euclidean dual confusion",
+    "L3_query_class_hygiene": "no SQ/Feldman claim is made; statements stay inside Lagrangian geometry"
+  },
+  "convention": "diagonal-inclusive average correlation (matches thm:distance and Track D)",
+  "theorem_statement": "For every n>=1 and every 1<=k<=n, the diagonal-inclusive average correlation of a k-pencil satisfies ratio(n,k) = (2^n+1)/(2^{n-k}+1).",
+  "n4_verification": {
+    "n": 4,
+    "C_n": "32/17",
+    "predictions_verified": true,
+    "rows": [
+      {
+        "k": 1,
+        "pencil_size": 135,
+        "avg_correlation": "32/9",
+        "avg_correlation_float": 3.5555555555555554,
+        "ratio": "17/9",
+        "ratio_float": 1.8888888888888888,
+        "predicted_ratio": "17/9",
+        "match": true
+      },
+      {
+        "k": 2,
+        "pencil_size": 15,
+        "avg_correlation": "32/5",
+        "avg_correlation_float": 6.4,
+        "ratio": "17/5",
+        "ratio_float": 3.4,
+        "predicted_ratio": "17/5",
+        "match": true
+      },
+      {
+        "k": 3,
+        "pencil_size": 3,
+        "avg_correlation": "32/3",
+        "avg_correlation_float": 10.666666666666666,
+        "ratio": "17/3",
+        "ratio_float": 5.666666666666667,
+        "predicted_ratio": "17/3",
+        "match": true
+      },
+      {
+        "k": 4,
+        "pencil_size": 1,
+        "avg_correlation": "16",
+        "avg_correlation_float": 16.0,
+        "ratio": "17/2",
+        "ratio_float": 8.5,
+        "predicted_ratio": "17/2",
+        "match": true
+      }
+    ]
+  },
+  "C_n_identity": {
+    "max_n": 8,
+    "rows": [
+      {
+        "n": 1,
+        "C_n_from_distance": "4/3",
+        "C_n_formula": "4/3",
+        "match": true,
+        "qbinomial_identity": true
+      },
+      {
+        "n": 2,
+        "C_n_from_distance": "8/5",
+        "C_n_formula": "8/5",
+        "match": true,
+        "qbinomial_identity": true
+      },
+      {
+        "n": 3,
+        "C_n_from_distance": "16/9",
+        "C_n_formula": "16/9",
+        "match": true,
+        "qbinomial_identity": true
+      },
+      {
+        "n": 4,
+        "C_n_from_distance": "32/17",
+        "C_n_formula": "32/17",
+        "match": true,
+        "qbinomial_identity": true
+      },
+      {
+        "n": 5,
+        "C_n_from_distance": "64/33",
+        "C_n_formula": "64/33",
+        "match": true,
+        "qbinomial_identity": true
+      },
+      {
+        "n": 6,
+        "C_n_from_distance": "128/65",
+        "C_n_formula": "128/65",
+        "match": true,
+        "qbinomial_identity": true
+      },
+      {
+        "n": 7,
+        "C_n_from_distance": "256/129",
+        "C_n_formula": "256/129",
+        "match": true,
+        "qbinomial_identity": true
+      },
+      {
+        "n": 8,
+        "C_n_from_distance": "512/257",
+        "C_n_formula": "512/257",
+        "match": true,
+        "qbinomial_identity": true
+      }
+    ]
+  },
+  "ratio_formula_check": {
+    "max_n": 5,
+    "all_match": true,
+    "rows": [
+      {
+        "n": 1,
+        "k": 1,
+        "pencil_size": 1,
+        "ratio": "3/2",
+        "predicted": "3/2",
+        "match": true
+      },
+      {
+        "n": 2,
+        "k": 1,
+        "pencil_size": 3,
+        "ratio": "5/3",
+        "predicted": "5/3",
+        "match": true
+      },
+      {
+        "n": 2,
+        "k": 2,
+        "pencil_size": 1,
+        "ratio": "5/2",
+        "predicted": "5/2",
+        "match": true
+      },
+      {
+        "n": 3,
+        "k": 1,
+        "pencil_size": 15,
+        "ratio": "9/5",
+        "predicted": "9/5",
+        "match": true
+      },
+      {
+        "n": 3,
+        "k": 2,
+        "pencil_size": 3,
+        "ratio": "3",
+        "predicted": "3",
+        "match": true
+      },
+      {
+        "n": 3,
+        "k": 3,
+        "pencil_size": 1,
+        "ratio": "9/2",
+        "predicted": "9/2",
+        "match": true
+      },
+      {
+        "n": 4,
+        "k": 1,
+        "pencil_size": 135,
+        "ratio": "17/9",
+        "predicted": "17/9",
+        "match": true
+      },
+      {
+        "n": 4,
+        "k": 2,
+        "pencil_size": 15,
+        "ratio": "17/5",
+        "predicted": "17/5",
+        "match": true
+      },
+      {
+        "n": 4,
+        "k": 3,
+        "pencil_size": 3,
+        "ratio": "17/3",
+        "predicted": "17/3",
+        "match": true
+      },
+      {
+        "n": 4,
+        "k": 4,
+        "pencil_size": 1,
+        "ratio": "17/2",
+        "predicted": "17/2",
+        "match": true
+      },
+      {
+        "n": 5,
+        "k": 1,
+        "pencil_size": 2295,
+        "ratio": "33/17",
+        "predicted": "33/17",
+        "match": true
+      },
+      {
+        "n": 5,
+        "k": 2,
+        "pencil_size": 135,
+        "ratio": "11/3",
+        "predicted": "11/3",
+        "match": true
+      },
+      {
+        "n": 5,
+        "k": 3,
+        "pencil_size": 15,
+        "ratio": "33/5",
+        "predicted": "33/5",
+        "match": true
+      },
+      {
+        "n": 5,
+        "k": 4,
+        "pencil_size": 3,
+        "ratio": "11",
+        "predicted": "11",
+        "match": true
+      },
+      {
+        "n": 5,
+        "k": 5,
+        "pencil_size": 1,
+        "ratio": "33/2",
+        "predicted": "33/2",
+        "match": true
+      }
+    ]
+  },
+  "threshold_table": {
+    "max_n": 12,
+    "table": [
+      {
+        "n": 2,
+        "scale_threshold": "15/16",
+        "scale_threshold_ceil": 1,
+        "C_n": "8/5",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 3,
+            "ratio": "5/3",
+            "ratio_float": 1.6666666666666667,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 1,
+            "ratio": "5/2",
+            "ratio_float": 2.5,
+            "at_c0_scale": true
+          }
+        ]
+      },
+      {
+        "n": 3,
+        "scale_threshold": "135/64",
+        "scale_threshold_ceil": 3,
+        "C_n": "16/9",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 15,
+            "ratio": "9/5",
+            "ratio_float": 1.8,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 3,
+            "ratio": "3",
+            "ratio_float": 3.0,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 1,
+            "ratio": "9/2",
+            "ratio_float": 4.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 4,
+        "scale_threshold": "2295/256",
+        "scale_threshold_ceil": 9,
+        "C_n": "32/17",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 135,
+            "ratio": "17/9",
+            "ratio_float": 1.8888888888888888,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 15,
+            "ratio": "17/5",
+            "ratio_float": 3.4,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 3,
+            "ratio": "17/3",
+            "ratio_float": 5.666666666666667,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 1,
+            "ratio": "17/2",
+            "ratio_float": 8.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 5,
+        "scale_threshold": "75735/1024",
+        "scale_threshold_ceil": 74,
+        "C_n": "64/33",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 2295,
+            "ratio": "33/17",
+            "ratio_float": 1.9411764705882353,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 135,
+            "ratio": "11/3",
+            "ratio_float": 3.6666666666666665,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 15,
+            "ratio": "33/5",
+            "ratio_float": 6.6,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 3,
+            "ratio": "11",
+            "ratio_float": 11.0,
+            "at_c0_scale": false
+          },
+          {
+            "k": 5,
+            "pencil_size": 1,
+            "ratio": "33/2",
+            "ratio_float": 16.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 6,
+        "scale_threshold": "4922775/4096",
+        "scale_threshold_ceil": 1202,
+        "C_n": "128/65",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 75735,
+            "ratio": "65/33",
+            "ratio_float": 1.9696969696969697,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 2295,
+            "ratio": "65/17",
+            "ratio_float": 3.823529411764706,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 135,
+            "ratio": "65/9",
+            "ratio_float": 7.222222222222222,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 15,
+            "ratio": "13",
+            "ratio_float": 13.0,
+            "at_c0_scale": false
+          },
+          {
+            "k": 5,
+            "pencil_size": 3,
+            "ratio": "65/3",
+            "ratio_float": 21.666666666666668,
+            "at_c0_scale": false
+          },
+          {
+            "k": 6,
+            "pencil_size": 1,
+            "ratio": "65/2",
+            "ratio_float": 32.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 7,
+        "scale_threshold": "635037975/16384",
+        "scale_threshold_ceil": 38760,
+        "C_n": "256/129",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 4922775,
+            "ratio": "129/65",
+            "ratio_float": 1.9846153846153847,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 75735,
+            "ratio": "43/11",
+            "ratio_float": 3.909090909090909,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 2295,
+            "ratio": "129/17",
+            "ratio_float": 7.588235294117647,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 135,
+            "ratio": "43/3",
+            "ratio_float": 14.333333333333334,
+            "at_c0_scale": false
+          },
+          {
+            "k": 5,
+            "pencil_size": 15,
+            "ratio": "129/5",
+            "ratio_float": 25.8,
+            "at_c0_scale": false
+          },
+          {
+            "k": 6,
+            "pencil_size": 3,
+            "ratio": "43",
+            "ratio_float": 43.0,
+            "at_c0_scale": false
+          },
+          {
+            "k": 7,
+            "pencil_size": 1,
+            "ratio": "129/2",
+            "ratio_float": 64.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 8,
+        "scale_threshold": "163204759575/65536",
+        "scale_threshold_ceil": 2490308,
+        "C_n": "512/257",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 635037975,
+            "ratio": "257/129",
+            "ratio_float": 1.9922480620155039,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 4922775,
+            "ratio": "257/65",
+            "ratio_float": 3.953846153846154,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 75735,
+            "ratio": "257/33",
+            "ratio_float": 7.787878787878788,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 2295,
+            "ratio": "257/17",
+            "ratio_float": 15.117647058823529,
+            "at_c0_scale": false
+          },
+          {
+            "k": 5,
+            "pencil_size": 135,
+            "ratio": "257/9",
+            "ratio_float": 28.555555555555557,
+            "at_c0_scale": false
+          },
+          {
+            "k": 6,
+            "pencil_size": 15,
+            "ratio": "257/5",
+            "ratio_float": 51.4,
+            "at_c0_scale": false
+          },
+          {
+            "k": 7,
+            "pencil_size": 3,
+            "ratio": "257/3",
+            "ratio_float": 85.66666666666667,
+            "at_c0_scale": false
+          },
+          {
+            "k": 8,
+            "pencil_size": 1,
+            "ratio": "257/2",
+            "ratio_float": 128.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 9,
+        "scale_threshold": "83724041661975/262144",
+        "scale_threshold_ceil": 319381873,
+        "C_n": "1024/513",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 163204759575,
+            "ratio": "513/257",
+            "ratio_float": 1.9961089494163424,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 635037975,
+            "ratio": "171/43",
+            "ratio_float": 3.9767441860465116,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 4922775,
+            "ratio": "513/65",
+            "ratio_float": 7.892307692307693,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 75735,
+            "ratio": "171/11",
+            "ratio_float": 15.545454545454545,
+            "at_c0_scale": false
+          },
+          {
+            "k": 5,
+            "pencil_size": 2295,
+            "ratio": "513/17",
+            "ratio_float": 30.176470588235293,
+            "at_c0_scale": false
+          },
+          {
+            "k": 6,
+            "pencil_size": 135,
+            "ratio": "57",
+            "ratio_float": 57.0,
+            "at_c0_scale": false
+          },
+          {
+            "k": 7,
+            "pencil_size": 15,
+            "ratio": "513/5",
+            "ratio_float": 102.6,
+            "at_c0_scale": false
+          },
+          {
+            "k": 8,
+            "pencil_size": 3,
+            "ratio": "171",
+            "ratio_float": 171.0,
+            "at_c0_scale": false
+          },
+          {
+            "k": 9,
+            "pencil_size": 1,
+            "ratio": "513/2",
+            "ratio_float": 256.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 10,
+        "scale_threshold": "85817142703524375/1048576",
+        "scale_threshold_ceil": 81841604904,
+        "C_n": "2048/1025",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 83724041661975,
+            "ratio": "1025/513",
+            "ratio_float": 1.9980506822612085,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 163204759575,
+            "ratio": "1025/257",
+            "ratio_float": 3.9883268482490273,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 635037975,
+            "ratio": "1025/129",
+            "ratio_float": 7.945736434108527,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 4922775,
+            "ratio": "205/13",
+            "ratio_float": 15.76923076923077,
+            "at_c0_scale": false
+          },
+          {
+            "k": 5,
+            "pencil_size": 75735,
+            "ratio": "1025/33",
+            "ratio_float": 31.060606060606062,
+            "at_c0_scale": false
+          },
+          {
+            "k": 6,
+            "pencil_size": 2295,
+            "ratio": "1025/17",
+            "ratio_float": 60.294117647058826,
+            "at_c0_scale": false
+          },
+          {
+            "k": 7,
+            "pencil_size": 135,
+            "ratio": "1025/9",
+            "ratio_float": 113.88888888888889,
+            "at_c0_scale": false
+          },
+          {
+            "k": 8,
+            "pencil_size": 15,
+            "ratio": "205",
+            "ratio_float": 205.0,
+            "at_c0_scale": false
+          },
+          {
+            "k": 9,
+            "pencil_size": 3,
+            "ratio": "1025/3",
+            "ratio_float": 341.6666666666667,
+            "at_c0_scale": false
+          },
+          {
+            "k": 10,
+            "pencil_size": 1,
+            "ratio": "1025/2",
+            "ratio_float": 512.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 11,
+        "scale_threshold": "175839325399521444375/4194304",
+        "scale_threshold_ceil": 41923362111932,
+        "C_n": "4096/2049",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 85817142703524375,
+            "ratio": "2049/1025",
+            "ratio_float": 1.9990243902439024,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 83724041661975,
+            "ratio": "683/171",
+            "ratio_float": 3.9941520467836256,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 163204759575,
+            "ratio": "2049/257",
+            "ratio_float": 7.972762645914397,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 635037975,
+            "ratio": "683/43",
+            "ratio_float": 15.883720930232558,
+            "at_c0_scale": false
+          },
+          {
+            "k": 5,
+            "pencil_size": 4922775,
+            "ratio": "2049/65",
+            "ratio_float": 31.523076923076925,
+            "at_c0_scale": false
+          },
+          {
+            "k": 6,
+            "pencil_size": 75735,
+            "ratio": "683/11",
+            "ratio_float": 62.09090909090909,
+            "at_c0_scale": false
+          },
+          {
+            "k": 7,
+            "pencil_size": 2295,
+            "ratio": "2049/17",
+            "ratio_float": 120.52941176470588,
+            "at_c0_scale": false
+          },
+          {
+            "k": 8,
+            "pencil_size": 135,
+            "ratio": "683/3",
+            "ratio_float": 227.66666666666666,
+            "at_c0_scale": false
+          },
+          {
+            "k": 9,
+            "pencil_size": 15,
+            "ratio": "2049/5",
+            "ratio_float": 409.8,
+            "at_c0_scale": false
+          },
+          {
+            "k": 10,
+            "pencil_size": 3,
+            "ratio": "683",
+            "ratio_float": 683.0,
+            "at_c0_scale": false
+          },
+          {
+            "k": 11,
+            "pencil_size": 1,
+            "ratio": "2049/2",
+            "ratio_float": 1024.5,
+            "at_c0_scale": false
+          }
+        ]
+      },
+      {
+        "n": 12,
+        "scale_threshold": "720413716161839357604375/16777216",
+        "scale_threshold_ceil": 42940003643145523,
+        "C_n": "8192/4097",
+        "k_pencils": [
+          {
+            "k": 1,
+            "pencil_size": 175839325399521444375,
+            "ratio": "4097/2049",
+            "ratio_float": 1.9995119570522206,
+            "at_c0_scale": true
+          },
+          {
+            "k": 2,
+            "pencil_size": 85817142703524375,
+            "ratio": "4097/1025",
+            "ratio_float": 3.9970731707317073,
+            "at_c0_scale": true
+          },
+          {
+            "k": 3,
+            "pencil_size": 83724041661975,
+            "ratio": "4097/513",
+            "ratio_float": 7.98635477582846,
+            "at_c0_scale": false
+          },
+          {
+            "k": 4,
+            "pencil_size": 163204759575,
+            "ratio": "4097/257",
+            "ratio_float": 15.941634241245136,
+            "at_c0_scale": false
+          },
+          {
+            "k": 5,
+            "pencil_size": 635037975,
+            "ratio": "4097/129",
+            "ratio_float": 31.75968992248062,
+            "at_c0_scale": false
+          },
+          {
+            "k": 6,
+            "pencil_size": 4922775,
+            "ratio": "4097/65",
+            "ratio_float": 63.03076923076923,
+            "at_c0_scale": false
+          },
+          {
+            "k": 7,
+            "pencil_size": 75735,
+            "ratio": "4097/33",
+            "ratio_float": 124.15151515151516,
+            "at_c0_scale": false
+          },
+          {
+            "k": 8,
+            "pencil_size": 2295,
+            "ratio": "241",
+            "ratio_float": 241.0,
+            "at_c0_scale": false
+          },
+          {
+            "k": 9,
+            "pencil_size": 135,
+            "ratio": "4097/9",
+            "ratio_float": 455.22222222222223,
+            "at_c0_scale": false
+          },
+          {
+            "k": 10,
+            "pencil_size": 15,
+            "ratio": "4097/5",
+            "ratio_float": 819.4,
+            "at_c0_scale": false
+          },
+          {
+            "k": 11,
+            "pencil_size": 3,
+            "ratio": "4097/3",
+            "ratio_float": 1365.6666666666667,
+            "at_c0_scale": false
+          },
+          {
+            "k": 12,
+            "pencil_size": 1,
+            "ratio": "4097/2",
+            "ratio_float": 2048.5,
+            "at_c0_scale": false
+          }
+        ]
+      }
+    ]
+  },
+  "draft_motivation_paragraph": "For a k-dimensional isotropic core W, the exact diagonal-inclusive average correlation of the pencil S_W is rho_bar(S_W) = 2^k C_{n-k}, where C_m = 2^{m+1}/(2^m+1) is the global diagonal-inclusive average over Lagr(2m,F_2).  Consequently the pencil ratio is ratio(n,k) = rho_bar(S_W)/rho_avg = (2^n+1)/(2^{n-k}+1).  In particular, the k=1 pencil ratio tends to 2 from below, while the k=2 pencil ratio tends to 4 from below; hence any threshold below 4 rho_avg is automatically safe from pencils.  For k>=3 the ratio tends to 2^k >= 8, but |S_W| = |Lagr(2(n-k),F_2)| falls below the conj:pencil scale |Lagr(2n,F_2)|/2^{2n} for every n>=3, so the only scale-relevant pencils are k=1 and k=2.  The conjectured 5 rho_avg bound therefore survives all pencils and is forced to be strictly larger than 4 rho_avg by the k=2 family."
+}
