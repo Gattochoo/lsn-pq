@@ -203,6 +203,31 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
             bit1,
         );
     }
+
+    pub fn expand_then_compact_one_bit<const CHILD_CAP: usize, const L: usize>(
+        &self,
+        bit_index: usize,
+        bit0_metric_delta: i64,
+        bit1_metric_delta: i64,
+    ) -> (FixedSclPathBuffer<CHILD_CAP, N>, [FixedTopLEntry; L]) {
+        assert!(
+            CAP.saturating_mul(2) <= CHILD_CAP,
+            "expand-then-compact child capacity requires two slots per parent"
+        );
+        let mut children = FixedSclPathBuffer::<CHILD_CAP, N>::new();
+        for parent_slot in 0..CAP {
+            children.write_binary_children_from(
+                self,
+                parent_slot,
+                parent_slot * 2,
+                bit_index,
+                bit0_metric_delta,
+                bit1_metric_delta,
+            );
+        }
+        let top = children.top_l_entries::<L>();
+        (children, top)
+    }
 }
 
 impl<const CAP: usize, const N: usize> Default for FixedSclPathBuffer<CAP, N> {
@@ -397,7 +422,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "  \"prototype_building_blocks\": [\n",
         "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\",\n",
-        "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"write_binary_children_from: integer child expansion into fixed slots only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"expand_then_compact_one_bit: one-bit expand then compact source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",
         "  \"adjudication\": \"engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN\"\n",

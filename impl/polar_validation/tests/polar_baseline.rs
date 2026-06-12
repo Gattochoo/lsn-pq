@@ -194,6 +194,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("FixedSclPathBuffer"));
     assert!(json.contains("write_binary_children_from"));
     assert!(json.contains("integer child expansion"));
+    assert!(json.contains("expand_then_compact_one_bit"));
+    assert!(json.contains("one-bit expand then compact"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
@@ -317,6 +319,45 @@ fn fixed_scl_path_buffer_rejects_child_slot_overflow() {
     let parents = FixedSclPathBuffer::<1, 4>::new();
     let mut children = FixedSclPathBuffer::<2, 4>::new();
     children.write_binary_children_from(&parents, 0, 1, 0, 0, 0);
+}
+
+#[test]
+fn fixed_scl_path_buffer_expands_then_compacts_one_bit() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let (children, top) = parents.expand_then_compact_one_bit::<4, 3>(2, 5, -1);
+
+    assert_eq!(children.active_count(), 4);
+    assert_eq!(children.bits(0), [0; 8]);
+    assert_eq!(children.bits(1), [0, 0, 1, 0, 0, 0, 0, 0]);
+    assert_eq!(children.bits(2), [1, 1, 0, 1, 1, 1, 1, 1]);
+    assert_eq!(children.bits(3), [1; 8]);
+    assert_eq!(
+        top,
+        [
+            FixedTopLEntry {
+                metric: 2,
+                index: 3,
+            },
+            FixedTopLEntry {
+                metric: 8,
+                index: 2,
+            },
+            FixedTopLEntry {
+                metric: 9,
+                index: 1,
+            },
+        ]
+    );
+}
+
+#[test]
+#[should_panic(expected = "expand-then-compact child capacity requires two slots per parent")]
+fn fixed_scl_path_buffer_expand_then_compact_rejects_small_child_buffer() {
+    let parents = FixedSclPathBuffer::<2, 4>::new();
+    let _ = parents.expand_then_compact_one_bit::<3, 2>(0, 0, 0);
 }
 
 #[test]
