@@ -55,7 +55,7 @@
     {"wrapper": "try_expand_then_compact_two_public_bits", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclPublicRoundScheduleRun.path_domain_check.failure_code"},
     {"wrapper": "try_expand_then_compact_public_rounds", "failure_family": "public_path_domain_failure_codes", "status_field": "FixedSclPublicRoundScheduleRun.path_domain_check.failure_code"},
     {"wrapper": "try_fixed_scl_integer_round_schedule", "failure_family": "integer_schedule_domain_failure_codes", "status_field": "FixedSclIntegerRoundScheduleBuild.domain_check.failure_code"},
-    {"wrapper": "try_expand_then_compact_integer_round_schedule", "failure_family": "public_path_domain_failure_codes", "path_status_field": "FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code", "integer_status_family": "integer_schedule_domain_failure_codes", "integer_status_field": "FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code"}
+    {"wrapper": "try_expand_then_compact_integer_round_schedule", "failure_family": "public_path_domain_failure_codes", "path_status_field": "FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code", "integer_status_family": "integer_schedule_domain_failure_codes", "integer_status_field": "FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code", "work_count_field": "FixedSclPathBufferIntegerScheduleRun.work_counts"}
   ],
   "prototype_building_blocks": [
     "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending",

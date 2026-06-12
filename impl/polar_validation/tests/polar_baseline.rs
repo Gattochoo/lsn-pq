@@ -31,8 +31,8 @@ use polar_validation::{
     FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
     FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
     FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
-    FixedSclPublicRoundScheduleRun, FixedSclRound, FixedTopLEntry, PolarCode,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FixedSclPublicRoundScheduleRun, FixedSclPublicRoundWorkCounts, FixedSclRound, FixedTopLEntry,
+    PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
     FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
@@ -273,6 +273,9 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains(
         "\"integer_status_field\": \"FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code\""
     ));
+    assert!(
+        json.contains("\"work_count_field\": \"FixedSclPathBufferIntegerScheduleRun.work_counts\"")
+    );
     assert!(json.contains("try_expand_then_compact_integer_round_schedule"));
     assert!(json.contains("non-panicking path-buffer schedule wrapper"));
     assert!(json.contains("expand_then_compact_integer_round_schedule"));
@@ -1150,6 +1153,16 @@ fn fixed_scl_path_buffer_try_integer_round_schedule_matches_valid_schedule() {
                 failure_code: FIXED_SCL_PATH_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 3,
+                top_l_compare_exchanges: 18,
+                child_slots_written: 12,
+                compacted_slots_written: 6,
+            },
             paths: {
                 let (paths, _) = parents.expand_then_compact_integer_round_schedule::<4, 4, 2, 3>(
                     [2, 4, 5],
@@ -1206,6 +1219,16 @@ fn fixed_scl_path_buffer_try_integer_round_schedule_reports_invalid_without_expa
                 failure_code: FIXED_SCL_PATH_DOMAIN_OK,
                 first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
             },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 0,
+                top_l_compare_exchanges: 0,
+                child_slots_written: 0,
+                compacted_slots_written: 0,
+            },
             paths: FixedSclPathBuffer::<2, 8>::new(),
             top: [
                 FixedTopLEntry {
@@ -1253,6 +1276,16 @@ fn fixed_scl_path_buffer_try_integer_round_schedule_reports_invalid_bit_index_wi
                 valid: false,
                 failure_code: FIXED_SCL_PATH_DOMAIN_BIT_INDEX,
                 first_invalid_round: 1,
+            },
+            work_counts: FixedSclPublicRoundWorkCounts {
+                parent_capacity: 2,
+                first_child_capacity: 4,
+                repeated_child_capacity: 4,
+                list_size: 2,
+                rounds: 0,
+                top_l_compare_exchanges: 0,
+                child_slots_written: 0,
+                compacted_slots_written: 0,
             },
             paths: FixedSclPathBuffer::<2, 8>::new(),
             top: [

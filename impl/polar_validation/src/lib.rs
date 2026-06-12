@@ -285,6 +285,7 @@ pub struct FixedSclPublicRoundScheduleRun<const L: usize, const N: usize> {
 pub struct FixedSclPathBufferIntegerScheduleRun<const L: usize, const N: usize> {
     pub domain_check: FixedSclIntegerScheduleDomainCheck,
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
+    pub work_counts: FixedSclPublicRoundWorkCounts,
     pub paths: FixedSclPathBuffer<L, N>,
     pub top: [FixedTopLEntry; L],
 }
@@ -730,6 +731,13 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
     ) -> FixedSclPathBufferIntegerScheduleRun<L, N> {
         let schedule =
             try_fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes);
+        let zero_work_counts = fixed_scl_public_round_work_counts_with_capacities(
+            CAP,
+            FIRST_CHILD_CAP,
+            CHILD_CAP,
+            L,
+            0,
+        );
         if !schedule.domain_check.valid {
             return FixedSclPathBufferIntegerScheduleRun {
                 domain_check: schedule.domain_check,
@@ -741,6 +749,7 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
                     L,
                     ROUNDS,
                 >(bit_indices),
+                work_counts: zero_work_counts,
                 paths: FixedSclPathBuffer::<L, N>::new(),
                 top: [FixedTopLEntry {
                     metric: i64::MAX,
@@ -756,6 +765,17 @@ impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
         FixedSclPathBufferIntegerScheduleRun {
             domain_check: schedule.domain_check,
             path_domain_check: run.path_domain_check,
+            work_counts: if run.path_domain_check.valid {
+                fixed_scl_public_round_work_counts_with_capacities(
+                    CAP,
+                    FIRST_CHILD_CAP,
+                    CHILD_CAP,
+                    L,
+                    ROUNDS,
+                )
+            } else {
+                zero_work_counts
+            },
             paths: run.paths,
             top: run.top,
         }
@@ -1231,7 +1251,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    {\"wrapper\": \"try_expand_then_compact_two_public_bits\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\"},\n",
         "    {\"wrapper\": \"try_expand_then_compact_public_rounds\", \"failure_family\": \"public_path_domain_failure_codes\", \"status_field\": \"FixedSclPublicRoundScheduleRun.path_domain_check.failure_code\"},\n",
         "    {\"wrapper\": \"try_fixed_scl_integer_round_schedule\", \"failure_family\": \"integer_schedule_domain_failure_codes\", \"status_field\": \"FixedSclIntegerRoundScheduleBuild.domain_check.failure_code\"},\n",
-        "    {\"wrapper\": \"try_expand_then_compact_integer_round_schedule\", \"failure_family\": \"public_path_domain_failure_codes\", \"path_status_field\": \"FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code\", \"integer_status_family\": \"integer_schedule_domain_failure_codes\", \"integer_status_field\": \"FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code\"}\n",
+        "    {\"wrapper\": \"try_expand_then_compact_integer_round_schedule\", \"failure_family\": \"public_path_domain_failure_codes\", \"path_status_field\": \"FixedSclPathBufferIntegerScheduleRun.path_domain_check.failure_code\", \"integer_status_family\": \"integer_schedule_domain_failure_codes\", \"integer_status_field\": \"FixedSclPathBufferIntegerScheduleRun.domain_check.failure_code\", \"work_count_field\": \"FixedSclPathBufferIntegerScheduleRun.work_counts\"}\n",
         "  ],\n",
         "  \"prototype_building_blocks\": [\n",
         "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",
