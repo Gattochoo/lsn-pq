@@ -291,6 +291,16 @@ fn high_noise_fixed_i64_scl_smoke_fails_when_channel_is_random() {
 }
 
 #[test]
+fn high_noise_fixed_i64_n2048_smoke_fails_when_channel_is_random() {
+    let result = simulate_bsc_scl_fixed_i64::<2048, 8, 16>(256, 0.5, 3, 0x2048_BAD5EED, 1024.0);
+    assert_eq!(result.trials, 3);
+    assert!(
+        result.errors >= 2,
+        "expected fixed-i64 N=2048 high-noise BLER near 1, got {result:?}"
+    );
+}
+
+#[test]
 fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     let json = scl_work_shape_audit_json();
 
