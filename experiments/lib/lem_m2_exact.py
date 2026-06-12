@@ -110,3 +110,13 @@ def exact_sd_counts(counts1: list[int], denom1: int, counts2: list[int], denom2:
     for c1, c2 in zip(counts1, counts2):
         num += abs(c1 * denom2 - c2 * denom1)
     return Fraction(num, 2 * denom1 * denom2)
+
+
+def num_lagrangian_subspaces(n: int) -> int:
+    """Number of Lagrangian subspaces of F_2^{2n}."""
+    if n < 1:
+        raise ValueError("n must be >= 1")
+    total = 1
+    for i in range(1, n + 1):
+        total *= (2 ** i + 1)
+    return total

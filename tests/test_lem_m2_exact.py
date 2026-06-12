@@ -63,3 +63,12 @@ def test_exact_sd_identical():
     denom = 3
     sd = exact_sd_counts(counts, denom, counts, denom)
     assert sd == Fraction(0)
+
+
+from experiments.lib.lem_m2_exact import num_lagrangian_subspaces
+
+
+def test_num_lagrangian_subspaces():
+    assert num_lagrangian_subspaces(1) == 3
+    assert num_lagrangian_subspaces(2) == 15
+    assert num_lagrangian_subspaces(3) == 135
