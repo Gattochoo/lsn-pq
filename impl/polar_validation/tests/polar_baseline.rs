@@ -16,16 +16,16 @@
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
     decode_scl_fast, decode_scl_fixed_i64, decode_successive_cancellation, encode,
-    fixed_schedule_top_l_compare_count, fixed_schedule_top_l_i64,
-    fixed_schedule_top_l_selection_plan, fixed_scl_binary_child_write_domain_check,
-    fixed_scl_child_write_domain_failure_label, fixed_scl_child_write_parity_check,
-    fixed_scl_integer_metric_deltas, fixed_scl_integer_metric_domain_check,
-    fixed_scl_integer_metric_domain_failure_label, fixed_scl_integer_round_build_certificate,
-    fixed_scl_integer_round_build_parity_check, fixed_scl_integer_round_run_plan_certificate,
-    fixed_scl_integer_round_run_shape_certificate, fixed_scl_integer_round_schedule,
-    fixed_scl_integer_round_schedule_build_plan, fixed_scl_integer_round_schedule_plan,
-    fixed_scl_integer_round_schedule_shape_plan, fixed_scl_integer_schedule_domain_check,
-    fixed_scl_integer_schedule_domain_failure_label,
+    fixed_i64_high_noise_control_configs, fixed_schedule_top_l_compare_count,
+    fixed_schedule_top_l_i64, fixed_schedule_top_l_selection_plan,
+    fixed_scl_binary_child_write_domain_check, fixed_scl_child_write_domain_failure_label,
+    fixed_scl_child_write_parity_check, fixed_scl_integer_metric_deltas,
+    fixed_scl_integer_metric_domain_check, fixed_scl_integer_metric_domain_failure_label,
+    fixed_scl_integer_round_build_certificate, fixed_scl_integer_round_build_parity_check,
+    fixed_scl_integer_round_run_plan_certificate, fixed_scl_integer_round_run_shape_certificate,
+    fixed_scl_integer_round_schedule, fixed_scl_integer_round_schedule_build_plan,
+    fixed_scl_integer_round_schedule_plan, fixed_scl_integer_round_schedule_shape_plan,
+    fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
     fixed_scl_integer_schedule_shape_failure_family,
     fixed_scl_integer_schedule_shape_failure_label, fixed_scl_integer_schedule_shape_parity_check,
     fixed_scl_integer_shape_parity_check, fixed_scl_one_bit_run_plan_certificate,
@@ -257,12 +257,36 @@ fn high_noise_control_configs_cover_failure_points() {
 }
 
 #[test]
+fn fixed_i64_high_noise_control_configs_cover_failure_points() {
+    let configs = fixed_i64_high_noise_control_configs(25, 0xF1E_D164);
+    let triples = configs
+        .iter()
+        .map(|cfg| (cfg.n, cfg.k, cfg.p))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        triples,
+        vec![(128, 16, 0.3), (128, 16, 0.4), (128, 16, 0.5)]
+    );
+    assert!(configs.iter().all(|cfg| cfg.trials == 25));
+}
+
+#[test]
 fn high_noise_fast_scl_smoke_fails_when_channel_is_random() {
     let result = simulate_bsc_scl_fast(128, 16, 0.5, 25, 0xBAD5EED, 8);
     assert_eq!(result.trials, 25);
     assert!(
         result.errors >= 20,
         "expected high-noise BLER near 1, got {result:?}"
+    );
+}
+
+#[test]
+fn high_noise_fixed_i64_scl_smoke_fails_when_channel_is_random() {
+    let result = simulate_bsc_scl_fixed_i64::<128, 8, 16>(16, 0.5, 25, 0xBAD5EED, 1024.0);
+    assert_eq!(result.trials, 25);
+    assert!(
+        result.errors >= 20,
+        "expected fixed-i64 high-noise BLER near 1, got {result:?}"
     );
 }
 

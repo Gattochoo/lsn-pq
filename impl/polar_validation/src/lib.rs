@@ -1150,6 +1150,20 @@ pub fn high_noise_control_configs(trials: usize, seed: u64) -> Vec<SimulationCon
         .collect()
 }
 
+pub fn fixed_i64_high_noise_control_configs(trials: usize, seed: u64) -> Vec<SimulationConfig> {
+    [(128, 16, 0.3), (128, 16, 0.4), (128, 16, 0.5)]
+        .into_iter()
+        .enumerate()
+        .map(|(i, (n, k, p))| SimulationConfig {
+            n,
+            k,
+            p,
+            trials,
+            seed: seed.wrapping_add((i as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15)),
+        })
+        .collect()
+}
+
 pub fn fixed_schedule_top_l_compare_count(width: usize) -> usize {
     width.saturating_mul(width.saturating_sub(1)) / 2
 }
