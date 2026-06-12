@@ -68,14 +68,14 @@ fn fixed_lagrangian_mask_membership_handles_word_boundaries() {
 }
 
 #[test]
-fn fixed_lagrangian_membership_labels_use_mask_path() {
+fn fixed_lagrangian_membership_labels_into_uses_mask_path() {
     let fixed = FixedLagrangian::from_points(2, &[0, 6, 9, 15]);
     let query_points = [0, 1, 6, 8, 9, 15, 16];
+    let mut labels = vec![9u8; query_points.len()];
 
-    assert_eq!(
-        fixed.membership_labels(&query_points),
-        vec![1, 0, 1, 0, 1, 1, 0]
-    );
+    fixed.membership_labels_into(&query_points, &mut labels);
+
+    assert_eq!(labels, vec![1, 0, 1, 0, 1, 1, 0]);
 }
 
 #[test]
@@ -87,6 +87,14 @@ fn fixed_lagrangian_membership_labels_into_fills_existing_buffer() {
     fixed.membership_labels_into(&query_points, &mut labels);
 
     assert_eq!(labels, [1, 0, 1, 1, 1]);
+}
+
+#[test]
+fn fixed_lagrangian_source_avoids_allocating_membership_label_helper() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("pub fn membership_labels(&self"));
+    assert!(!source.contains("let mut labels = vec![0u8; points.len()];\n        self.membership_labels_into(points, &mut labels);"));
 }
 
 #[test]
