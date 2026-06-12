@@ -1,0 +1,2289 @@
+{
+  "experiment": "230-KIMI-trackD-pencil-extremality",
+  "track": "D",
+  "claim_labels": "D1 THEOREM; D2 EVIDENCE; conj:pencil remains OPEN",
+  "interpretation_guard": {
+    "comparison_distribution": "raw integer intersections |L intersect L'| = 2^{dim cap}; common normalisation cancels in ratios",
+    "m_vs_n_scaling": "conj:pencil scale is |D'| >= |Lagr(2n)|/2^{2n-c}; checked at the c-scale threshold T_n = |Lagr|/2^{2n}",
+    "noise_rate": "not applicable -- this is a structural geometric statistic, not an output-noise-rate comparison"
+  },
+  "n2": {
+    "n": 2,
+    "lagrangian_count": 15,
+    "rho_avg": "8/5",
+    "rho_avg_float": 1.6,
+    "five_rho_avg": "8",
+    "five_rho_avg_float": 8.0,
+    "exhaustive_subsets_checked": 32768,
+    "elapsed_seconds": 0.022958040237426758,
+    "size_profile": [
+      {
+        "size": 1,
+        "max_avg": "4",
+        "max_avg_float": 4.0,
+        "ratio_to_rho_avg": "5/2",
+        "ratio_float": 2.5,
+        "extremal_mask": 1,
+        "extremal_indices": [
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 2,
+        "max_avg": "3",
+        "max_avg_float": 3.0,
+        "ratio_to_rho_avg": "15/8",
+        "ratio_float": 1.875,
+        "extremal_mask": 3,
+        "extremal_indices": [
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 3,
+        "max_avg": "8/3",
+        "max_avg_float": 2.6666666666666665,
+        "ratio_to_rho_avg": "5/3",
+        "ratio_float": 1.6666666666666667,
+        "extremal_mask": 7,
+        "extremal_indices": [
+          2,
+          1,
+          0
+        ],
+        "is_pencil": true,
+        "pencil_kind": "k=1_pencil(size=3)"
+      },
+      {
+        "size": 4,
+        "max_avg": "9/4",
+        "max_avg_float": 2.25,
+        "ratio_to_rho_avg": "45/32",
+        "ratio_float": 1.40625,
+        "extremal_mask": 15,
+        "extremal_indices": [
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 5,
+        "max_avg": "52/25",
+        "max_avg_float": 2.08,
+        "ratio_to_rho_avg": "13/10",
+        "ratio_float": 1.3,
+        "extremal_mask": 31,
+        "extremal_indices": [
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 6,
+        "max_avg": "2",
+        "max_avg_float": 2.0,
+        "ratio_to_rho_avg": "5/4",
+        "ratio_float": 1.25,
+        "extremal_mask": 399,
+        "extremal_indices": [
+          8,
+          7,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 7,
+        "max_avg": "92/49",
+        "max_avg_float": 1.8775510204081634,
+        "ratio_to_rho_avg": "115/98",
+        "ratio_float": 1.1734693877551021,
+        "extremal_mask": 415,
+        "extremal_indices": [
+          8,
+          7,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 8,
+        "max_avg": "29/16",
+        "max_avg_float": 1.8125,
+        "ratio_to_rho_avg": "145/128",
+        "ratio_float": 1.1328125,
+        "extremal_mask": 495,
+        "extremal_indices": [
+          8,
+          7,
+          6,
+          5,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 9,
+        "max_avg": "16/9",
+        "max_avg_float": 1.7777777777777777,
+        "ratio_to_rho_avg": "10/9",
+        "ratio_float": 1.1111111111111112,
+        "extremal_mask": 1951,
+        "extremal_indices": [
+          10,
+          9,
+          8,
+          7,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 10,
+        "max_avg": "43/25",
+        "max_avg_float": 1.72,
+        "ratio_to_rho_avg": "43/40",
+        "ratio_float": 1.075,
+        "extremal_mask": 1983,
+        "extremal_indices": [
+          10,
+          9,
+          8,
+          7,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 11,
+        "max_avg": "204/121",
+        "max_avg_float": 1.6859504132231404,
+        "ratio_to_rho_avg": "255/242",
+        "ratio_float": 1.0537190082644627,
+        "extremal_mask": 2047,
+        "extremal_indices": [
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 12,
+        "max_avg": "5/3",
+        "max_avg_float": 1.6666666666666667,
+        "ratio_to_rho_avg": "25/24",
+        "ratio_float": 1.0416666666666667,
+        "extremal_mask": 8175,
+        "extremal_indices": [
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 13,
+        "max_avg": "276/169",
+        "max_avg_float": 1.6331360946745561,
+        "ratio_to_rho_avg": "345/338",
+        "ratio_float": 1.0207100591715976,
+        "extremal_mask": 8191,
+        "extremal_indices": [
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 14,
+        "max_avg": "79/49",
+        "max_avg_float": 1.6122448979591837,
+        "ratio_to_rho_avg": "395/392",
+        "ratio_float": 1.0076530612244898,
+        "extremal_mask": 16383,
+        "extremal_indices": [
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      },
+      {
+        "size": 15,
+        "max_avg": "8/5",
+        "max_avg_float": 1.6,
+        "ratio_to_rho_avg": "1",
+        "ratio_float": 1.0,
+        "extremal_mask": 32767,
+        "extremal_indices": [
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "is_pencil": false,
+        "pencil_kind": null
+      }
+    ],
+    "any_subset_beats_5rho_avg": false,
+    "verdict": "THEOREM: n=2 max average correlation <= 5*rho_avg for every subset size"
+  },
+  "n3": {
+    "n": 3,
+    "lagrangian_count": 135,
+    "rho_avg": "16/9",
+    "rho_avg_float": 1.7777777777777777,
+    "five_rho_avg": "80/9",
+    "five_rho_avg_float": 8.88888888888889,
+    "threshold_T_n": "135/64",
+    "threshold_T_n_float": 2.109375,
+    "scale_threshold_size": 3,
+    "pencil_summary": {
+      "1": {
+        "count": 63,
+        "size_unique": [
+          15
+        ],
+        "avg_min": 3.2,
+        "avg_max": 3.2,
+        "ratio_max": 1.8
+      },
+      "2": {
+        "count": 315,
+        "size_unique": [
+          3
+        ],
+        "avg_min": 5.333333333333333,
+        "avg_max": 5.333333333333333,
+        "ratio_max": 3.0
+      },
+      "3": {
+        "count": 135,
+        "size_unique": [
+          1
+        ],
+        "avg_min": 8.0,
+        "avg_max": 8.0,
+        "ratio_max": 4.5
+      }
+    },
+    "overall_best": {
+      "avg": "8",
+      "avg_float": 8.0,
+      "ratio": "9/2",
+      "ratio_float": 4.5,
+      "size": 1,
+      "source": "pencil_k3",
+      "indices": [
+        0
+      ]
+    },
+    "overall_best_at_scale": {
+      "avg": "56/9",
+      "avg_float": 6.222222222222222,
+      "ratio": "7/2",
+      "ratio_float": 3.5,
+      "size": 3,
+      "source": "greedy",
+      "indices": [
+        0,
+        0,
+        1
+      ]
+    },
+    "best_by_size": [
+      {
+        "size": 1,
+        "best_avg": "8",
+        "best_avg_float": 8.0,
+        "best_ratio": "9/2",
+        "source": "pencil_k3"
+      },
+      {
+        "size": 3,
+        "best_avg": "56/9",
+        "best_avg_float": 6.222222222222222,
+        "best_ratio": "7/2",
+        "source": "greedy"
+      },
+      {
+        "size": 4,
+        "best_avg": "11/2",
+        "best_avg_float": 5.5,
+        "best_ratio": "99/32",
+        "source": "sunflower_core_k2_t1"
+      },
+      {
+        "size": 5,
+        "best_avg": "136/25",
+        "best_avg_float": 5.44,
+        "best_ratio": "153/50",
+        "source": "sunflower_core_k2_t2"
+      },
+      {
+        "size": 6,
+        "best_avg": "16/3",
+        "best_avg_float": 5.333333333333333,
+        "best_ratio": "3",
+        "source": "sunflower_core_k2_t3"
+      },
+      {
+        "size": 7,
+        "best_avg": "200/49",
+        "best_avg_float": 4.081632653061225,
+        "best_ratio": "225/98",
+        "source": "greedy"
+      },
+      {
+        "size": 8,
+        "best_avg": "31/8",
+        "best_avg_float": 3.875,
+        "best_ratio": "279/128",
+        "source": "greedy"
+      },
+      {
+        "size": 9,
+        "best_avg": "304/81",
+        "best_avg_float": 3.753086419753086,
+        "best_ratio": "19/9",
+        "source": "local_search_from_greedy"
+      },
+      {
+        "size": 10,
+        "best_avg": "18/5",
+        "best_avg_float": 3.6,
+        "best_ratio": "81/40",
+        "source": "greedy"
+      },
+      {
+        "size": 11,
+        "best_avg": "424/121",
+        "best_avg_float": 3.5041322314049586,
+        "best_ratio": "477/242",
+        "source": "greedy"
+      },
+      {
+        "size": 12,
+        "best_avg": "31/9",
+        "best_avg_float": 3.4444444444444446,
+        "best_ratio": "31/16",
+        "source": "greedy"
+      },
+      {
+        "size": 13,
+        "best_avg": "568/169",
+        "best_avg_float": 3.36094674556213,
+        "best_ratio": "639/338",
+        "source": "greedy"
+      },
+      {
+        "size": 14,
+        "best_avg": "162/49",
+        "best_avg_float": 3.306122448979592,
+        "best_ratio": "729/392",
+        "source": "greedy"
+      },
+      {
+        "size": 15,
+        "best_avg": "244/75",
+        "best_avg_float": 3.2533333333333334,
+        "best_ratio": "183/100",
+        "source": "greedy"
+      },
+      {
+        "size": 16,
+        "best_avg": "103/32",
+        "best_avg_float": 3.21875,
+        "best_ratio": "927/512",
+        "source": "sunflower_core_k1_t1"
+      },
+      {
+        "size": 17,
+        "best_avg": "932/289",
+        "best_avg_float": 3.2249134948096887,
+        "best_ratio": "2097/1156",
+        "source": "sunflower_core_k1_t2"
+      },
+      {
+        "size": 18,
+        "best_avg": "29/9",
+        "best_avg_float": 3.2222222222222223,
+        "best_ratio": "29/16",
+        "source": "sunflower_core_k1_t3"
+      },
+      {
+        "size": 19,
+        "best_avg": "1160/361",
+        "best_avg_float": 3.2132963988919667,
+        "best_ratio": "1305/722",
+        "source": "sunflower_core_k1_t4"
+      },
+      {
+        "size": 20,
+        "best_avg": "16/5",
+        "best_avg_float": 3.2,
+        "best_ratio": "9/5",
+        "source": "sunflower_core_k1_t5"
+      },
+      {
+        "size": 21,
+        "best_avg": "128/49",
+        "best_avg_float": 2.6122448979591835,
+        "best_ratio": "72/49",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 22,
+        "best_avg": "545/242",
+        "best_avg_float": 2.2520661157024793,
+        "best_ratio": "4905/3872",
+        "source": "random"
+      },
+      {
+        "size": 23,
+        "best_avg": "1328/529",
+        "best_avg_float": 2.510396975425331,
+        "best_ratio": "747/529",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 24,
+        "best_avg": "641/288",
+        "best_avg_float": 2.2256944444444446,
+        "best_ratio": "641/512",
+        "source": "random"
+      },
+      {
+        "size": 25,
+        "best_avg": "1544/625",
+        "best_avg_float": 2.4704,
+        "best_ratio": "1737/1250",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 26,
+        "best_avg": "404/169",
+        "best_avg_float": 2.3905325443786984,
+        "best_ratio": "909/676",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 27,
+        "best_avg": "592/243",
+        "best_avg_float": 2.4362139917695473,
+        "best_ratio": "37/27",
+        "source": "union_2_dim1_pencils"
+      },
+      {
+        "size": 28,
+        "best_avg": "237/98",
+        "best_avg_float": 2.4183673469387754,
+        "best_ratio": "2133/1568",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 29,
+        "best_avg": "1976/841",
+        "best_avg_float": 2.3495838287752675,
+        "best_ratio": "2223/1682",
+        "source": "union_3_mixed_sample"
+      },
+      {
+        "size": 30,
+        "best_avg": "12/5",
+        "best_avg_float": 2.4,
+        "best_ratio": "27/20",
+        "source": "union_2_dim1_pencils"
+      },
+      {
+        "size": 31,
+        "best_avg": "2264/961",
+        "best_avg_float": 2.355879292403746,
+        "best_ratio": "2547/1922",
+        "source": "union_3_mixed_sample"
+      },
+      {
+        "size": 32,
+        "best_avg": "297/128",
+        "best_avg_float": 2.3203125,
+        "best_ratio": "2673/2048",
+        "source": "union_3_mixed_sample"
+      },
+      {
+        "size": 33,
+        "best_avg": "832/363",
+        "best_avg_float": 2.2920110192837466,
+        "best_ratio": "156/121",
+        "source": "union_3_mixed_sample"
+      },
+      {
+        "size": 34,
+        "best_avg": "654/289",
+        "best_avg_float": 2.262975778546713,
+        "best_ratio": "2943/2312",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 35,
+        "best_avg": "2502/1225",
+        "best_avg_float": 2.042448979591837,
+        "best_ratio": "11259/9800",
+        "source": "random"
+      },
+      {
+        "size": 36,
+        "best_avg": "713/324",
+        "best_avg_float": 2.200617283950617,
+        "best_ratio": "713/576",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 37,
+        "best_avg": "2984/1369",
+        "best_avg_float": 2.1796932067202337,
+        "best_ratio": "3357/2738",
+        "source": "union_3_dim1_pencils"
+      },
+      {
+        "size": 38,
+        "best_avg": "790/361",
+        "best_avg_float": 2.188365650969529,
+        "best_ratio": "3555/2888",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 39,
+        "best_avg": "368/169",
+        "best_avg_float": 2.1775147928994083,
+        "best_ratio": "207/169",
+        "source": "union_3_dim1_pencils"
+      },
+      {
+        "size": 40,
+        "best_avg": "433/200",
+        "best_avg_float": 2.165,
+        "best_ratio": "3897/3200",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 41,
+        "best_avg": "3624/1681",
+        "best_avg_float": 2.1558596073765615,
+        "best_ratio": "4077/3362",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 42,
+        "best_avg": "316/147",
+        "best_avg_float": 2.1496598639455784,
+        "best_ratio": "237/196",
+        "source": "union_3_dim1_pencils"
+      },
+      {
+        "size": 43,
+        "best_avg": "3904/1849",
+        "best_avg_float": 2.1114115738236885,
+        "best_ratio": "2196/1849",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 44,
+        "best_avg": "507/242",
+        "best_avg_float": 2.0950413223140494,
+        "best_ratio": "4563/3872",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 45,
+        "best_avg": "32/15",
+        "best_avg_float": 2.1333333333333333,
+        "best_ratio": "6/5",
+        "source": "union_3_dim1_pencils"
+      },
+      {
+        "size": 46,
+        "best_avg": "2077/1058",
+        "best_avg_float": 1.9631379962192816,
+        "best_ratio": "18693/16928",
+        "source": "random"
+      },
+      {
+        "size": 47,
+        "best_avg": "4318/2209",
+        "best_avg_float": 1.954730647351743,
+        "best_ratio": "19431/17672",
+        "source": "random"
+      },
+      {
+        "size": 48,
+        "best_avg": "2245/1152",
+        "best_avg_float": 1.9487847222222223,
+        "best_ratio": "2245/2048",
+        "source": "random"
+      },
+      {
+        "size": 49,
+        "best_avg": "4968/2401",
+        "best_avg_float": 2.069137859225323,
+        "best_ratio": "5589/4802",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 50,
+        "best_avg": "1213/625",
+        "best_avg_float": 1.9408,
+        "best_ratio": "10917/10000",
+        "source": "random"
+      },
+      {
+        "size": 51,
+        "best_avg": "1682/867",
+        "best_avg_float": 1.9400230680507498,
+        "best_ratio": "2523/2312",
+        "source": "random"
+      },
+      {
+        "size": 52,
+        "best_avg": "53/26",
+        "best_avg_float": 2.0384615384615383,
+        "best_ratio": "477/416",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 53,
+        "best_avg": "5704/2809",
+        "best_avg_float": 2.0306158775364898,
+        "best_ratio": "6417/5618",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 54,
+        "best_avg": "155/81",
+        "best_avg_float": 1.9135802469135803,
+        "best_ratio": "155/144",
+        "source": "random"
+      },
+      {
+        "size": 55,
+        "best_avg": "6064/3025",
+        "best_avg_float": 2.0046280991735537,
+        "best_ratio": "3411/3025",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 56,
+        "best_avg": "789/392",
+        "best_avg_float": 2.0127551020408165,
+        "best_ratio": "7101/6272",
+        "source": "local_search_from_random"
+      },
+      {
+        "size": 57,
+        "best_avg": "6196/3249",
+        "best_avg_float": 1.907048322560788,
+        "best_ratio": "1549/1444",
+        "source": "random"
+      },
+      {
+        "size": 58,
+        "best_avg": "1597/841",
+        "best_avg_float": 1.8989298454221166,
+        "best_ratio": "14373/13456",
+        "source": "random"
+      },
+      {
+        "size": 59,
+        "best_avg": "6618/3481",
+        "best_avg_float": 1.901177822464809,
+        "best_ratio": "29781/27848",
+        "source": "random"
+      },
+      {
+        "size": 60,
+        "best_avg": "89/45",
+        "best_avg_float": 1.9777777777777779,
+        "best_ratio": "89/80",
+        "source": "greedy"
+      },
+      {
+        "size": 61,
+        "best_avg": "7054/3721",
+        "best_avg_float": 1.8957269551195914,
+        "best_ratio": "31743/29768",
+        "source": "random"
+      },
+      {
+        "size": 62,
+        "best_avg": "1806/961",
+        "best_avg_float": 1.8792924037460979,
+        "best_ratio": "8127/7688",
+        "source": "random"
+      },
+      {
+        "size": 63,
+        "best_avg": "2494/1323",
+        "best_avg_float": 1.8851095993953138,
+        "best_ratio": "1247/1176",
+        "source": "random"
+      },
+      {
+        "size": 64,
+        "best_avg": "3839/2048",
+        "best_avg_float": 1.87451171875,
+        "best_ratio": "34551/32768",
+        "source": "random"
+      },
+      {
+        "size": 65,
+        "best_avg": "1582/845",
+        "best_avg_float": 1.872189349112426,
+        "best_ratio": "7119/6760",
+        "source": "random"
+      },
+      {
+        "size": 66,
+        "best_avg": "2039/1089",
+        "best_avg_float": 1.8723599632690542,
+        "best_ratio": "2039/1936",
+        "source": "random"
+      },
+      {
+        "size": 67,
+        "best_avg": "8394/4489",
+        "best_avg_float": 1.8699042102918244,
+        "best_ratio": "37773/35912",
+        "source": "random"
+      },
+      {
+        "size": 68,
+        "best_avg": "4327/2312",
+        "best_avg_float": 1.8715397923875432,
+        "best_ratio": "38943/36992",
+        "source": "random"
+      },
+      {
+        "size": 69,
+        "best_avg": "984/529",
+        "best_avg_float": 1.8601134215500945,
+        "best_ratio": "1107/1058",
+        "source": "random"
+      },
+      {
+        "size": 70,
+        "best_avg": "2278/1225",
+        "best_avg_float": 1.859591836734694,
+        "best_ratio": "10251/9800",
+        "source": "random"
+      },
+      {
+        "size": 71,
+        "best_avg": "9380/5041",
+        "best_avg_float": 1.8607419162864511,
+        "best_ratio": "21105/20164",
+        "source": "random"
+      },
+      {
+        "size": 72,
+        "best_avg": "2407/1296",
+        "best_avg_float": 1.8572530864197532,
+        "best_ratio": "2407/2304",
+        "source": "random"
+      },
+      {
+        "size": 73,
+        "best_avg": "9896/5329",
+        "best_avg_float": 1.8570088196659786,
+        "best_ratio": "11133/10658",
+        "source": "random"
+      },
+      {
+        "size": 74,
+        "best_avg": "2537/1369",
+        "best_avg_float": 1.8531775018261505,
+        "best_ratio": "22833/21904",
+        "source": "random"
+      },
+      {
+        "size": 75,
+        "best_avg": "10406/5625",
+        "best_avg_float": 1.8499555555555556,
+        "best_ratio": "5203/5000",
+        "source": "random"
+      },
+      {
+        "size": 76,
+        "best_avg": "668/361",
+        "best_avg_float": 1.850415512465374,
+        "best_ratio": "1503/1444",
+        "source": "random"
+      },
+      {
+        "size": 77,
+        "best_avg": "10952/5929",
+        "best_avg_float": 1.8471917692696913,
+        "best_ratio": "12321/11858",
+        "source": "random"
+      },
+      {
+        "size": 78,
+        "best_avg": "5621/3042",
+        "best_avg_float": 1.8477975016436554,
+        "best_ratio": "5621/5408",
+        "source": "random"
+      },
+      {
+        "size": 79,
+        "best_avg": "11486/6241",
+        "best_avg_float": 1.8404101906745713,
+        "best_ratio": "51687/49928",
+        "source": "random"
+      },
+      {
+        "size": 80,
+        "best_avg": "5881/3200",
+        "best_avg_float": 1.8378125,
+        "best_ratio": "52929/51200",
+        "source": "random"
+      },
+      {
+        "size": 81,
+        "best_avg": "12052/6561",
+        "best_avg_float": 1.8369151044048164,
+        "best_ratio": "3013/2916",
+        "source": "random"
+      },
+      {
+        "size": 82,
+        "best_avg": "3087/1681",
+        "best_avg_float": 1.8364069006543724,
+        "best_ratio": "27783/26896",
+        "source": "random"
+      },
+      {
+        "size": 83,
+        "best_avg": "12640/6889",
+        "best_avg_float": 1.8348091159820004,
+        "best_ratio": "7110/6889",
+        "source": "random"
+      },
+      {
+        "size": 84,
+        "best_avg": "6463/3528",
+        "best_avg_float": 1.8319160997732427,
+        "best_ratio": "6463/6272",
+        "source": "random"
+      },
+      {
+        "size": 85,
+        "best_avg": "13236/7225",
+        "best_avg_float": 1.8319723183391003,
+        "best_ratio": "29781/28900",
+        "source": "random"
+      },
+      {
+        "size": 86,
+        "best_avg": "6761/3698",
+        "best_avg_float": 1.8282855597620336,
+        "best_ratio": "60849/59168",
+        "source": "random"
+      },
+      {
+        "size": 87,
+        "best_avg": "13858/7569",
+        "best_avg_float": 1.8308891531245872,
+        "best_ratio": "6929/6728",
+        "source": "random"
+      },
+      {
+        "size": 88,
+        "best_avg": "7065/3872",
+        "best_avg_float": 1.8246384297520661,
+        "best_ratio": "63585/61952",
+        "source": "random"
+      },
+      {
+        "size": 89,
+        "best_avg": "14434/7921",
+        "best_avg_float": 1.8222446660775156,
+        "best_ratio": "64953/63368",
+        "source": "random"
+      },
+      {
+        "size": 90,
+        "best_avg": "754/405",
+        "best_avg_float": 1.8617283950617285,
+        "best_ratio": "377/360",
+        "source": "greedy"
+      },
+      {
+        "size": 91,
+        "best_avg": "15100/8281",
+        "best_avg_float": 1.8234512740007245,
+        "best_ratio": "33975/33124",
+        "source": "random"
+      },
+      {
+        "size": 92,
+        "best_avg": "7691/4232",
+        "best_avg_float": 1.81734404536862,
+        "best_ratio": "69219/67712",
+        "source": "random"
+      },
+      {
+        "size": 93,
+        "best_avg": "15710/8649",
+        "best_avg_float": 1.8163949589547925,
+        "best_ratio": "7855/7688",
+        "source": "random"
+      },
+      {
+        "size": 94,
+        "best_avg": "4008/2209",
+        "best_avg_float": 1.8143956541421458,
+        "best_ratio": "4509/4418",
+        "source": "random"
+      },
+      {
+        "size": 95,
+        "best_avg": "16404/9025",
+        "best_avg_float": 1.817617728531856,
+        "best_ratio": "36909/36100",
+        "source": "random"
+      },
+      {
+        "size": 96,
+        "best_avg": "1045/576",
+        "best_avg_float": 1.8142361111111112,
+        "best_ratio": "1045/1024",
+        "source": "random"
+      },
+      {
+        "size": 97,
+        "best_avg": "17048/9409",
+        "best_avg_float": 1.8118822404081198,
+        "best_ratio": "19179/18818",
+        "source": "random"
+      },
+      {
+        "size": 98,
+        "best_avg": "4349/2401",
+        "best_avg_float": 1.8113286130778843,
+        "best_ratio": "39141/38416",
+        "source": "random"
+      },
+      {
+        "size": 99,
+        "best_avg": "17734/9801",
+        "best_avg_float": 1.8094072033465973,
+        "best_ratio": "8867/8712",
+        "source": "random"
+      },
+      {
+        "size": 100,
+        "best_avg": "1131/625",
+        "best_avg_float": 1.8096,
+        "best_ratio": "10179/10000",
+        "source": "random"
+      },
+      {
+        "size": 101,
+        "best_avg": "18430/10201",
+        "best_avg_float": 1.8066856190569551,
+        "best_ratio": "82935/81608",
+        "source": "random"
+      },
+      {
+        "size": 102,
+        "best_avg": "4700/2601",
+        "best_avg_float": 1.8069973087274125,
+        "best_ratio": "1175/1156",
+        "source": "random"
+      },
+      {
+        "size": 103,
+        "best_avg": "19174/10609",
+        "best_avg_float": 1.8073333961730607,
+        "best_ratio": "86283/84872",
+        "source": "random"
+      },
+      {
+        "size": 104,
+        "best_avg": "1219/676",
+        "best_avg_float": 1.8032544378698225,
+        "best_ratio": "10971/10816",
+        "source": "random"
+      },
+      {
+        "size": 105,
+        "best_avg": "19882/11025",
+        "best_avg_float": 1.8033560090702947,
+        "best_ratio": "9941/9800",
+        "source": "random"
+      },
+      {
+        "size": 106,
+        "best_avg": "10127/5618",
+        "best_avg_float": 1.8025987896048417,
+        "best_ratio": "91143/89888",
+        "source": "random"
+      },
+      {
+        "size": 107,
+        "best_avg": "20632/11449",
+        "best_avg_float": 1.8020787841732901,
+        "best_ratio": "23211/22898",
+        "source": "random"
+      },
+      {
+        "size": 108,
+        "best_avg": "10495/5832",
+        "best_avg_float": 1.799554183813443,
+        "best_ratio": "10495/10368",
+        "source": "random"
+      },
+      {
+        "size": 109,
+        "best_avg": "21368/11881",
+        "best_avg_float": 1.7985018096119856,
+        "best_ratio": "24039/23762",
+        "source": "random"
+      },
+      {
+        "size": 110,
+        "best_avg": "10873/6050",
+        "best_avg_float": 1.797190082644628,
+        "best_ratio": "97857/96800",
+        "source": "random"
+      },
+      {
+        "size": 111,
+        "best_avg": "7378/4107",
+        "best_avg_float": 1.796445093742391,
+        "best_ratio": "11067/10952",
+        "source": "random"
+      },
+      {
+        "size": 112,
+        "best_avg": "11265/6272",
+        "best_avg_float": 1.796077806122449,
+        "best_ratio": "101385/100352",
+        "source": "random"
+      },
+      {
+        "size": 113,
+        "best_avg": "22922/12769",
+        "best_avg_float": 1.795128827629415,
+        "best_ratio": "103149/102152",
+        "source": "random"
+      },
+      {
+        "size": 114,
+        "best_avg": "1943/1083",
+        "best_avg_float": 1.794090489381348,
+        "best_ratio": "5829/5776",
+        "source": "random"
+      },
+      {
+        "size": 115,
+        "best_avg": "4744/2645",
+        "best_avg_float": 1.7935727788279774,
+        "best_ratio": "5337/5290",
+        "source": "random"
+      },
+      {
+        "size": 116,
+        "best_avg": "3013/1682",
+        "best_avg_float": 1.791319857312723,
+        "best_ratio": "27117/26912",
+        "source": "random"
+      },
+      {
+        "size": 117,
+        "best_avg": "8176/4563",
+        "best_avg_float": 1.7918036379574842,
+        "best_ratio": "511/507",
+        "source": "random"
+      },
+      {
+        "size": 118,
+        "best_avg": "6235/3481",
+        "best_avg_float": 1.7911519678253376,
+        "best_ratio": "56115/55696",
+        "source": "random"
+      },
+      {
+        "size": 119,
+        "best_avg": "25350/14161",
+        "best_avg_float": 1.7901278158322151,
+        "best_ratio": "114075/113288",
+        "source": "random"
+      },
+      {
+        "size": 120,
+        "best_avg": "1289/720",
+        "best_avg_float": 1.7902777777777779,
+        "best_ratio": "1289/1280",
+        "source": "random"
+      },
+      {
+        "size": 121,
+        "best_avg": "26182/14641",
+        "best_avg_float": 1.788265828836828,
+        "best_ratio": "117819/117128",
+        "source": "random"
+      },
+      {
+        "size": 122,
+        "best_avg": "6651/3721",
+        "best_avg_float": 1.7874227358237034,
+        "best_ratio": "59859/59536",
+        "source": "random"
+      },
+      {
+        "size": 123,
+        "best_avg": "9010/5043",
+        "best_avg_float": 1.7866349395201269,
+        "best_ratio": "13515/13448",
+        "source": "random"
+      },
+      {
+        "size": 124,
+        "best_avg": "13735/7688",
+        "best_avg_float": 1.7865504682622269,
+        "best_ratio": "123615/123008",
+        "source": "random"
+      },
+      {
+        "size": 125,
+        "best_avg": "27894/15625",
+        "best_avg_float": 1.785216,
+        "best_ratio": "125523/125000",
+        "source": "random"
+      },
+      {
+        "size": 126,
+        "best_avg": "2360/1323",
+        "best_avg_float": 1.783824640967498,
+        "best_ratio": "295/294",
+        "source": "random"
+      },
+      {
+        "size": 127,
+        "best_avg": "28770/16129",
+        "best_avg_float": 1.783743567487135,
+        "best_ratio": "129465/129032",
+        "source": "random"
+      },
+      {
+        "size": 128,
+        "best_avg": "3651/2048",
+        "best_avg_float": 1.78271484375,
+        "best_ratio": "32859/32768",
+        "source": "random"
+      },
+      {
+        "size": 129,
+        "best_avg": "29654/16641",
+        "best_avg_float": 1.781984255753861,
+        "best_ratio": "14827/14792",
+        "source": "random"
+      },
+      {
+        "size": 130,
+        "best_avg": "7526/4225",
+        "best_avg_float": 1.781301775147929,
+        "best_ratio": "33867/33800",
+        "source": "random"
+      },
+      {
+        "size": 131,
+        "best_avg": "30552/17161",
+        "best_avg_float": 1.7803158324106987,
+        "best_ratio": "34371/34322",
+        "source": "random"
+      },
+      {
+        "size": 132,
+        "best_avg": "646/363",
+        "best_avg_float": 1.7796143250688705,
+        "best_ratio": "969/968",
+        "source": "random"
+      },
+      {
+        "size": 133,
+        "best_avg": "1656/931",
+        "best_avg_float": 1.7787325456498388,
+        "best_ratio": "1863/1862",
+        "source": "random"
+      },
+      {
+        "size": 134,
+        "best_avg": "7982/4489",
+        "best_avg_float": 1.778124303853865,
+        "best_ratio": "35919/35912",
+        "source": "random"
+      },
+      {
+        "size": 135,
+        "best_avg": "16/9",
+        "best_avg_float": 1.7777777777777777,
+        "best_ratio": "1",
+        "source": "random"
+      }
+    ],
+    "any_subset_beats_5rho_avg": false,
+    "random_subset_draws_total": 7300000,
+    "random_best_per_size": {
+      "3": {
+        "draws": 100000,
+        "best_avg": "16/3",
+        "best_avg_float": 5.333333333333333,
+        "best_ratio": "3"
+      },
+      "4": {
+        "draws": 100000,
+        "best_avg": "9/2",
+        "best_avg_float": 4.5,
+        "best_ratio": "81/32"
+      },
+      "5": {
+        "draws": 100000,
+        "best_avg": "104/25",
+        "best_avg_float": 4.16,
+        "best_ratio": "117/50"
+      },
+      "6": {
+        "draws": 100000,
+        "best_avg": "34/9",
+        "best_avg_float": 3.7777777777777777,
+        "best_ratio": "17/8"
+      },
+      "7": {
+        "draws": 100000,
+        "best_avg": "170/49",
+        "best_avg_float": 3.4693877551020407,
+        "best_ratio": "765/392"
+      },
+      "8": {
+        "draws": 100000,
+        "best_avg": "55/16",
+        "best_avg_float": 3.4375,
+        "best_ratio": "495/256"
+      },
+      "9": {
+        "draws": 100000,
+        "best_avg": "28/9",
+        "best_avg_float": 3.111111111111111,
+        "best_ratio": "7/4"
+      },
+      "10": {
+        "draws": 100000,
+        "best_avg": "74/25",
+        "best_avg_float": 2.96,
+        "best_ratio": "333/200"
+      },
+      "11": {
+        "draws": 100000,
+        "best_avg": "346/121",
+        "best_avg_float": 2.8595041322314048,
+        "best_ratio": "1557/968"
+      },
+      "12": {
+        "draws": 100000,
+        "best_avg": "197/72",
+        "best_avg_float": 2.736111111111111,
+        "best_ratio": "197/128"
+      },
+      "13": {
+        "draws": 100000,
+        "best_avg": "454/169",
+        "best_avg_float": 2.6863905325443787,
+        "best_ratio": "2043/1352"
+      },
+      "14": {
+        "draws": 100000,
+        "best_avg": "127/49",
+        "best_avg_float": 2.5918367346938775,
+        "best_ratio": "1143/784"
+      },
+      "15": {
+        "draws": 100000,
+        "best_avg": "578/225",
+        "best_avg_float": 2.568888888888889,
+        "best_ratio": "289/200"
+      },
+      "16": {
+        "draws": 100000,
+        "best_avg": "315/128",
+        "best_avg_float": 2.4609375,
+        "best_ratio": "2835/2048"
+      },
+      "17": {
+        "draws": 100000,
+        "best_avg": "698/289",
+        "best_avg_float": 2.41522491349481,
+        "best_ratio": "3141/2312"
+      },
+      "18": {
+        "draws": 100000,
+        "best_avg": "65/27",
+        "best_avg_float": 2.4074074074074074,
+        "best_ratio": "65/48"
+      },
+      "19": {
+        "draws": 100000,
+        "best_avg": "856/361",
+        "best_avg_float": 2.371191135734072,
+        "best_ratio": "963/722"
+      },
+      "20": {
+        "draws": 100000,
+        "best_avg": "463/200",
+        "best_avg_float": 2.315,
+        "best_ratio": "4167/3200"
+      },
+      "21": {
+        "draws": 100000,
+        "best_avg": "1000/441",
+        "best_avg_float": 2.2675736961451247,
+        "best_ratio": "125/98"
+      },
+      "22": {
+        "draws": 100000,
+        "best_avg": "545/242",
+        "best_avg_float": 2.2520661157024793,
+        "best_ratio": "4905/3872"
+      },
+      "23": {
+        "draws": 100000,
+        "best_avg": "1184/529",
+        "best_avg_float": 2.2381852551984878,
+        "best_ratio": "666/529"
+      },
+      "24": {
+        "draws": 100000,
+        "best_avg": "641/288",
+        "best_avg_float": 2.2256944444444446,
+        "best_ratio": "641/512"
+      },
+      "25": {
+        "draws": 100000,
+        "best_avg": "1368/625",
+        "best_avg_float": 2.1888,
+        "best_ratio": "1539/1250"
+      },
+      "26": {
+        "draws": 100000,
+        "best_avg": "735/338",
+        "best_avg_float": 2.1745562130177514,
+        "best_ratio": "6615/5408"
+      },
+      "27": {
+        "draws": 100000,
+        "best_avg": "1564/729",
+        "best_avg_float": 2.1454046639231823,
+        "best_ratio": "391/324"
+      },
+      "28": {
+        "draws": 100000,
+        "best_avg": "421/196",
+        "best_avg_float": 2.1479591836734695,
+        "best_ratio": "3789/3136"
+      },
+      "29": {
+        "draws": 100000,
+        "best_avg": "1784/841",
+        "best_avg_float": 2.1212841854934603,
+        "best_ratio": "2007/1682"
+      },
+      "30": {
+        "draws": 100000,
+        "best_avg": "943/450",
+        "best_avg_float": 2.0955555555555554,
+        "best_ratio": "943/800"
+      },
+      "31": {
+        "draws": 100000,
+        "best_avg": "2008/961",
+        "best_avg_float": 2.0894901144641,
+        "best_ratio": "2259/1922"
+      },
+      "32": {
+        "draws": 100000,
+        "best_avg": "1061/512",
+        "best_avg_float": 2.072265625,
+        "best_ratio": "9549/8192"
+      },
+      "33": {
+        "draws": 100000,
+        "best_avg": "2242/1089",
+        "best_avg_float": 2.0587695133149677,
+        "best_ratio": "1121/968"
+      },
+      "34": {
+        "draws": 100000,
+        "best_avg": "1185/578",
+        "best_avg_float": 2.050173010380623,
+        "best_ratio": "10665/9248"
+      },
+      "35": {
+        "draws": 100000,
+        "best_avg": "2502/1225",
+        "best_avg_float": 2.042448979591837,
+        "best_ratio": "11259/9800"
+      },
+      "36": {
+        "draws": 100000,
+        "best_avg": "1321/648",
+        "best_avg_float": 2.0385802469135803,
+        "best_ratio": "1321/1152"
+      },
+      "37": {
+        "draws": 100000,
+        "best_avg": "2762/1369",
+        "best_avg_float": 2.0175310445580714,
+        "best_ratio": "12429/10952"
+      },
+      "38": {
+        "draws": 100000,
+        "best_avg": "1457/722",
+        "best_avg_float": 2.018005540166205,
+        "best_ratio": "13113/11552"
+      },
+      "39": {
+        "draws": 100000,
+        "best_avg": "1012/507",
+        "best_avg_float": 1.9960552268244576,
+        "best_ratio": "759/676"
+      },
+      "40": {
+        "draws": 100000,
+        "best_avg": "1599/800",
+        "best_avg_float": 1.99875,
+        "best_ratio": "14391/12800"
+      },
+      "41": {
+        "draws": 100000,
+        "best_avg": "3342/1681",
+        "best_avg_float": 1.9881023200475907,
+        "best_ratio": "15039/13448"
+      },
+      "42": {
+        "draws": 100000,
+        "best_avg": "583/294",
+        "best_avg_float": 1.9829931972789117,
+        "best_ratio": "1749/1568"
+      },
+      "43": {
+        "draws": 100000,
+        "best_avg": "3644/1849",
+        "best_avg_float": 1.9707950243374797,
+        "best_ratio": "8199/7396"
+      },
+      "44": {
+        "draws": 100000,
+        "best_avg": "479/242",
+        "best_avg_float": 1.9793388429752066,
+        "best_ratio": "4311/3872"
+      },
+      "45": {
+        "draws": 100000,
+        "best_avg": "3982/2025",
+        "best_avg_float": 1.9664197530864198,
+        "best_ratio": "1991/1800"
+      },
+      "46": {
+        "draws": 100000,
+        "best_avg": "2077/1058",
+        "best_avg_float": 1.9631379962192816,
+        "best_ratio": "18693/16928"
+      },
+      "47": {
+        "draws": 100000,
+        "best_avg": "4318/2209",
+        "best_avg_float": 1.954730647351743,
+        "best_ratio": "19431/17672"
+      },
+      "48": {
+        "draws": 100000,
+        "best_avg": "2245/1152",
+        "best_avg_float": 1.9487847222222223,
+        "best_ratio": "2245/2048"
+      },
+      "49": {
+        "draws": 100000,
+        "best_avg": "4652/2401",
+        "best_avg_float": 1.9375260308204914,
+        "best_ratio": "10467/9604"
+      },
+      "50": {
+        "draws": 100000,
+        "best_avg": "1213/625",
+        "best_avg_float": 1.9408,
+        "best_ratio": "10917/10000"
+      },
+      "51": {
+        "draws": 100000,
+        "best_avg": "1682/867",
+        "best_avg_float": 1.9400230680507498,
+        "best_ratio": "2523/2312"
+      },
+      "52": {
+        "draws": 100000,
+        "best_avg": "2601/1352",
+        "best_avg_float": 1.9238165680473374,
+        "best_ratio": "23409/21632"
+      },
+      "53": {
+        "draws": 100000,
+        "best_avg": "5382/2809",
+        "best_avg_float": 1.9159843360626558,
+        "best_ratio": "24219/22472"
+      },
+      "54": {
+        "draws": 100000,
+        "best_avg": "155/81",
+        "best_avg_float": 1.9135802469135803,
+        "best_ratio": "155/144"
+      },
+      "55": {
+        "draws": 100000,
+        "best_avg": "5812/3025",
+        "best_avg_float": 1.9213223140495868,
+        "best_ratio": "13077/12100"
+      },
+      "56": {
+        "draws": 100000,
+        "best_avg": "1497/784",
+        "best_avg_float": 1.909438775510204,
+        "best_ratio": "13473/12544"
+      },
+      "57": {
+        "draws": 100000,
+        "best_avg": "6196/3249",
+        "best_avg_float": 1.907048322560788,
+        "best_ratio": "1549/1444"
+      },
+      "58": {
+        "draws": 100000,
+        "best_avg": "1597/841",
+        "best_avg_float": 1.8989298454221166,
+        "best_ratio": "14373/13456"
+      },
+      "59": {
+        "draws": 100000,
+        "best_avg": "6618/3481",
+        "best_avg_float": 1.901177822464809,
+        "best_ratio": "29781/27848"
+      },
+      "60": {
+        "draws": 100000,
+        "best_avg": "227/120",
+        "best_avg_float": 1.8916666666666666,
+        "best_ratio": "681/640"
+      },
+      "61": {
+        "draws": 20000,
+        "best_avg": "7054/3721",
+        "best_avg_float": 1.8957269551195914,
+        "best_ratio": "31743/29768"
+      },
+      "62": {
+        "draws": 20000,
+        "best_avg": "1806/961",
+        "best_avg_float": 1.8792924037460979,
+        "best_ratio": "8127/7688"
+      },
+      "63": {
+        "draws": 20000,
+        "best_avg": "2494/1323",
+        "best_avg_float": 1.8851095993953138,
+        "best_ratio": "1247/1176"
+      },
+      "64": {
+        "draws": 20000,
+        "best_avg": "3839/2048",
+        "best_avg_float": 1.87451171875,
+        "best_ratio": "34551/32768"
+      },
+      "65": {
+        "draws": 20000,
+        "best_avg": "1582/845",
+        "best_avg_float": 1.872189349112426,
+        "best_ratio": "7119/6760"
+      },
+      "66": {
+        "draws": 20000,
+        "best_avg": "2039/1089",
+        "best_avg_float": 1.8723599632690542,
+        "best_ratio": "2039/1936"
+      },
+      "67": {
+        "draws": 20000,
+        "best_avg": "8394/4489",
+        "best_avg_float": 1.8699042102918244,
+        "best_ratio": "37773/35912"
+      },
+      "68": {
+        "draws": 20000,
+        "best_avg": "4327/2312",
+        "best_avg_float": 1.8715397923875432,
+        "best_ratio": "38943/36992"
+      },
+      "69": {
+        "draws": 20000,
+        "best_avg": "984/529",
+        "best_avg_float": 1.8601134215500945,
+        "best_ratio": "1107/1058"
+      },
+      "70": {
+        "draws": 20000,
+        "best_avg": "2278/1225",
+        "best_avg_float": 1.859591836734694,
+        "best_ratio": "10251/9800"
+      },
+      "71": {
+        "draws": 20000,
+        "best_avg": "9380/5041",
+        "best_avg_float": 1.8607419162864511,
+        "best_ratio": "21105/20164"
+      },
+      "72": {
+        "draws": 20000,
+        "best_avg": "2407/1296",
+        "best_avg_float": 1.8572530864197532,
+        "best_ratio": "2407/2304"
+      },
+      "73": {
+        "draws": 20000,
+        "best_avg": "9896/5329",
+        "best_avg_float": 1.8570088196659786,
+        "best_ratio": "11133/10658"
+      },
+      "74": {
+        "draws": 20000,
+        "best_avg": "2537/1369",
+        "best_avg_float": 1.8531775018261505,
+        "best_ratio": "22833/21904"
+      },
+      "75": {
+        "draws": 20000,
+        "best_avg": "10406/5625",
+        "best_avg_float": 1.8499555555555556,
+        "best_ratio": "5203/5000"
+      },
+      "76": {
+        "draws": 20000,
+        "best_avg": "668/361",
+        "best_avg_float": 1.850415512465374,
+        "best_ratio": "1503/1444"
+      },
+      "77": {
+        "draws": 20000,
+        "best_avg": "10952/5929",
+        "best_avg_float": 1.8471917692696913,
+        "best_ratio": "12321/11858"
+      },
+      "78": {
+        "draws": 20000,
+        "best_avg": "5621/3042",
+        "best_avg_float": 1.8477975016436554,
+        "best_ratio": "5621/5408"
+      },
+      "79": {
+        "draws": 20000,
+        "best_avg": "11486/6241",
+        "best_avg_float": 1.8404101906745713,
+        "best_ratio": "51687/49928"
+      },
+      "80": {
+        "draws": 20000,
+        "best_avg": "5881/3200",
+        "best_avg_float": 1.8378125,
+        "best_ratio": "52929/51200"
+      },
+      "81": {
+        "draws": 20000,
+        "best_avg": "12052/6561",
+        "best_avg_float": 1.8369151044048164,
+        "best_ratio": "3013/2916"
+      },
+      "82": {
+        "draws": 20000,
+        "best_avg": "3087/1681",
+        "best_avg_float": 1.8364069006543724,
+        "best_ratio": "27783/26896"
+      },
+      "83": {
+        "draws": 20000,
+        "best_avg": "12640/6889",
+        "best_avg_float": 1.8348091159820004,
+        "best_ratio": "7110/6889"
+      },
+      "84": {
+        "draws": 20000,
+        "best_avg": "6463/3528",
+        "best_avg_float": 1.8319160997732427,
+        "best_ratio": "6463/6272"
+      },
+      "85": {
+        "draws": 20000,
+        "best_avg": "13236/7225",
+        "best_avg_float": 1.8319723183391003,
+        "best_ratio": "29781/28900"
+      },
+      "86": {
+        "draws": 20000,
+        "best_avg": "6761/3698",
+        "best_avg_float": 1.8282855597620336,
+        "best_ratio": "60849/59168"
+      },
+      "87": {
+        "draws": 20000,
+        "best_avg": "13858/7569",
+        "best_avg_float": 1.8308891531245872,
+        "best_ratio": "6929/6728"
+      },
+      "88": {
+        "draws": 20000,
+        "best_avg": "7065/3872",
+        "best_avg_float": 1.8246384297520661,
+        "best_ratio": "63585/61952"
+      },
+      "89": {
+        "draws": 20000,
+        "best_avg": "14434/7921",
+        "best_avg_float": 1.8222446660775156,
+        "best_ratio": "64953/63368"
+      },
+      "90": {
+        "draws": 20000,
+        "best_avg": "1477/810",
+        "best_avg_float": 1.8234567901234568,
+        "best_ratio": "1477/1440"
+      },
+      "91": {
+        "draws": 20000,
+        "best_avg": "15100/8281",
+        "best_avg_float": 1.8234512740007245,
+        "best_ratio": "33975/33124"
+      },
+      "92": {
+        "draws": 20000,
+        "best_avg": "7691/4232",
+        "best_avg_float": 1.81734404536862,
+        "best_ratio": "69219/67712"
+      },
+      "93": {
+        "draws": 20000,
+        "best_avg": "15710/8649",
+        "best_avg_float": 1.8163949589547925,
+        "best_ratio": "7855/7688"
+      },
+      "94": {
+        "draws": 20000,
+        "best_avg": "4008/2209",
+        "best_avg_float": 1.8143956541421458,
+        "best_ratio": "4509/4418"
+      },
+      "95": {
+        "draws": 20000,
+        "best_avg": "16404/9025",
+        "best_avg_float": 1.817617728531856,
+        "best_ratio": "36909/36100"
+      },
+      "96": {
+        "draws": 20000,
+        "best_avg": "1045/576",
+        "best_avg_float": 1.8142361111111112,
+        "best_ratio": "1045/1024"
+      },
+      "97": {
+        "draws": 20000,
+        "best_avg": "17048/9409",
+        "best_avg_float": 1.8118822404081198,
+        "best_ratio": "19179/18818"
+      },
+      "98": {
+        "draws": 20000,
+        "best_avg": "4349/2401",
+        "best_avg_float": 1.8113286130778843,
+        "best_ratio": "39141/38416"
+      },
+      "99": {
+        "draws": 20000,
+        "best_avg": "17734/9801",
+        "best_avg_float": 1.8094072033465973,
+        "best_ratio": "8867/8712"
+      },
+      "100": {
+        "draws": 20000,
+        "best_avg": "1131/625",
+        "best_avg_float": 1.8096,
+        "best_ratio": "10179/10000"
+      },
+      "101": {
+        "draws": 20000,
+        "best_avg": "18430/10201",
+        "best_avg_float": 1.8066856190569551,
+        "best_ratio": "82935/81608"
+      },
+      "102": {
+        "draws": 20000,
+        "best_avg": "4700/2601",
+        "best_avg_float": 1.8069973087274125,
+        "best_ratio": "1175/1156"
+      },
+      "103": {
+        "draws": 20000,
+        "best_avg": "19174/10609",
+        "best_avg_float": 1.8073333961730607,
+        "best_ratio": "86283/84872"
+      },
+      "104": {
+        "draws": 20000,
+        "best_avg": "1219/676",
+        "best_avg_float": 1.8032544378698225,
+        "best_ratio": "10971/10816"
+      },
+      "105": {
+        "draws": 20000,
+        "best_avg": "19882/11025",
+        "best_avg_float": 1.8033560090702947,
+        "best_ratio": "9941/9800"
+      },
+      "106": {
+        "draws": 20000,
+        "best_avg": "10127/5618",
+        "best_avg_float": 1.8025987896048417,
+        "best_ratio": "91143/89888"
+      },
+      "107": {
+        "draws": 20000,
+        "best_avg": "20632/11449",
+        "best_avg_float": 1.8020787841732901,
+        "best_ratio": "23211/22898"
+      },
+      "108": {
+        "draws": 20000,
+        "best_avg": "10495/5832",
+        "best_avg_float": 1.799554183813443,
+        "best_ratio": "10495/10368"
+      },
+      "109": {
+        "draws": 20000,
+        "best_avg": "21368/11881",
+        "best_avg_float": 1.7985018096119856,
+        "best_ratio": "24039/23762"
+      },
+      "110": {
+        "draws": 20000,
+        "best_avg": "10873/6050",
+        "best_avg_float": 1.797190082644628,
+        "best_ratio": "97857/96800"
+      },
+      "111": {
+        "draws": 20000,
+        "best_avg": "7378/4107",
+        "best_avg_float": 1.796445093742391,
+        "best_ratio": "11067/10952"
+      },
+      "112": {
+        "draws": 20000,
+        "best_avg": "11265/6272",
+        "best_avg_float": 1.796077806122449,
+        "best_ratio": "101385/100352"
+      },
+      "113": {
+        "draws": 20000,
+        "best_avg": "22922/12769",
+        "best_avg_float": 1.795128827629415,
+        "best_ratio": "103149/102152"
+      },
+      "114": {
+        "draws": 20000,
+        "best_avg": "1943/1083",
+        "best_avg_float": 1.794090489381348,
+        "best_ratio": "5829/5776"
+      },
+      "115": {
+        "draws": 20000,
+        "best_avg": "4744/2645",
+        "best_avg_float": 1.7935727788279774,
+        "best_ratio": "5337/5290"
+      },
+      "116": {
+        "draws": 20000,
+        "best_avg": "3013/1682",
+        "best_avg_float": 1.791319857312723,
+        "best_ratio": "27117/26912"
+      },
+      "117": {
+        "draws": 20000,
+        "best_avg": "8176/4563",
+        "best_avg_float": 1.7918036379574842,
+        "best_ratio": "511/507"
+      },
+      "118": {
+        "draws": 20000,
+        "best_avg": "6235/3481",
+        "best_avg_float": 1.7911519678253376,
+        "best_ratio": "56115/55696"
+      },
+      "119": {
+        "draws": 20000,
+        "best_avg": "25350/14161",
+        "best_avg_float": 1.7901278158322151,
+        "best_ratio": "114075/113288"
+      },
+      "120": {
+        "draws": 20000,
+        "best_avg": "1289/720",
+        "best_avg_float": 1.7902777777777779,
+        "best_ratio": "1289/1280"
+      },
+      "121": {
+        "draws": 20000,
+        "best_avg": "26182/14641",
+        "best_avg_float": 1.788265828836828,
+        "best_ratio": "117819/117128"
+      },
+      "122": {
+        "draws": 20000,
+        "best_avg": "6651/3721",
+        "best_avg_float": 1.7874227358237034,
+        "best_ratio": "59859/59536"
+      },
+      "123": {
+        "draws": 20000,
+        "best_avg": "9010/5043",
+        "best_avg_float": 1.7866349395201269,
+        "best_ratio": "13515/13448"
+      },
+      "124": {
+        "draws": 20000,
+        "best_avg": "13735/7688",
+        "best_avg_float": 1.7865504682622269,
+        "best_ratio": "123615/123008"
+      },
+      "125": {
+        "draws": 20000,
+        "best_avg": "27894/15625",
+        "best_avg_float": 1.785216,
+        "best_ratio": "125523/125000"
+      },
+      "126": {
+        "draws": 20000,
+        "best_avg": "2360/1323",
+        "best_avg_float": 1.783824640967498,
+        "best_ratio": "295/294"
+      },
+      "127": {
+        "draws": 20000,
+        "best_avg": "28770/16129",
+        "best_avg_float": 1.783743567487135,
+        "best_ratio": "129465/129032"
+      },
+      "128": {
+        "draws": 20000,
+        "best_avg": "3651/2048",
+        "best_avg_float": 1.78271484375,
+        "best_ratio": "32859/32768"
+      },
+      "129": {
+        "draws": 20000,
+        "best_avg": "29654/16641",
+        "best_avg_float": 1.781984255753861,
+        "best_ratio": "14827/14792"
+      },
+      "130": {
+        "draws": 20000,
+        "best_avg": "7526/4225",
+        "best_avg_float": 1.781301775147929,
+        "best_ratio": "33867/33800"
+      },
+      "131": {
+        "draws": 20000,
+        "best_avg": "30552/17161",
+        "best_avg_float": 1.7803158324106987,
+        "best_ratio": "34371/34322"
+      },
+      "132": {
+        "draws": 20000,
+        "best_avg": "646/363",
+        "best_avg_float": 1.7796143250688705,
+        "best_ratio": "969/968"
+      },
+      "133": {
+        "draws": 20000,
+        "best_avg": "1656/931",
+        "best_avg_float": 1.7787325456498388,
+        "best_ratio": "1863/1862"
+      },
+      "134": {
+        "draws": 20000,
+        "best_avg": "7982/4489",
+        "best_avg_float": 1.778124303853865,
+        "best_ratio": "35919/35912"
+      },
+      "135": {
+        "draws": 20000,
+        "best_avg": "16/9",
+        "best_avg_float": 1.7777777777777777,
+        "best_ratio": "1"
+      }
+    },
+    "greedy_results": [
+      {
+        "size": 3,
+        "greedy_avg": "56/9",
+        "greedy_avg_float": 6.222222222222222,
+        "local_avg": "56/9",
+        "local_avg_float": 6.222222222222222
+      },
+      {
+        "size": 4,
+        "greedy_avg": "11/2",
+        "greedy_avg_float": 5.5,
+        "local_avg": "11/2",
+        "local_avg_float": 5.5
+      },
+      {
+        "size": 5,
+        "greedy_avg": "24/5",
+        "greedy_avg_float": 4.8,
+        "local_avg": "24/5",
+        "local_avg_float": 4.8
+      },
+      {
+        "size": 6,
+        "greedy_avg": "40/9",
+        "greedy_avg_float": 4.444444444444445,
+        "local_avg": "40/9",
+        "local_avg_float": 4.444444444444445
+      },
+      {
+        "size": 7,
+        "greedy_avg": "200/49",
+        "greedy_avg_float": 4.081632653061225,
+        "local_avg": "200/49",
+        "local_avg_float": 4.081632653061225
+      },
+      {
+        "size": 8,
+        "greedy_avg": "31/8",
+        "greedy_avg_float": 3.875,
+        "local_avg": "31/8",
+        "local_avg_float": 3.875
+      },
+      {
+        "size": 9,
+        "greedy_avg": "100/27",
+        "greedy_avg_float": 3.7037037037037037,
+        "local_avg": "304/81",
+        "local_avg_float": 3.753086419753086
+      },
+      {
+        "size": 10,
+        "greedy_avg": "18/5",
+        "greedy_avg_float": 3.6,
+        "local_avg": "18/5",
+        "local_avg_float": 3.6
+      },
+      {
+        "size": 11,
+        "greedy_avg": "424/121",
+        "greedy_avg_float": 3.5041322314049586,
+        "local_avg": "424/121",
+        "local_avg_float": 3.5041322314049586
+      },
+      {
+        "size": 12,
+        "greedy_avg": "31/9",
+        "greedy_avg_float": 3.4444444444444446,
+        "local_avg": "31/9",
+        "local_avg_float": 3.4444444444444446
+      },
+      {
+        "size": 13,
+        "greedy_avg": "568/169",
+        "greedy_avg_float": 3.36094674556213,
+        "local_avg": "568/169",
+        "local_avg_float": 3.36094674556213
+      },
+      {
+        "size": 14,
+        "greedy_avg": "162/49",
+        "greedy_avg_float": 3.306122448979592,
+        "local_avg": "162/49",
+        "local_avg_float": 3.306122448979592
+      },
+      {
+        "size": 15,
+        "greedy_avg": "244/75",
+        "greedy_avg_float": 3.2533333333333334,
+        "local_avg": "244/75",
+        "local_avg_float": 3.2533333333333334
+      },
+      {
+        "size": 16,
+        "greedy_avg": "103/32",
+        "greedy_avg_float": 3.21875,
+        "local_avg": "103/32",
+        "local_avg_float": 3.21875
+      },
+      {
+        "size": 17,
+        "greedy_avg": "888/289",
+        "greedy_avg_float": 3.0726643598615917,
+        "local_avg": "888/289",
+        "local_avg_float": 3.0726643598615917
+      },
+      {
+        "size": 18,
+        "greedy_avg": "80/27",
+        "greedy_avg_float": 2.962962962962963,
+        "local_avg": "80/27",
+        "local_avg_float": 2.962962962962963
+      },
+      {
+        "size": 19,
+        "greedy_avg": "1032/361",
+        "greedy_avg_float": 2.858725761772853,
+        "local_avg": "1032/361",
+        "local_avg_float": 2.858725761772853
+      },
+      {
+        "size": 20,
+        "greedy_avg": "139/50",
+        "greedy_avg_float": 2.78,
+        "local_avg": "139/50",
+        "local_avg_float": 2.78
+      },
+      {
+        "size": 30,
+        "greedy_avg": "538/225",
+        "greedy_avg_float": 2.391111111111111,
+        "local_avg": "538/225",
+        "local_avg_float": 2.391111111111111
+      },
+      {
+        "size": 45,
+        "greedy_avg": "1424/675",
+        "greedy_avg_float": 2.1096296296296297,
+        "local_avg": "1424/675",
+        "local_avg_float": 2.1096296296296297
+      },
+      {
+        "size": 60,
+        "greedy_avg": "89/45",
+        "greedy_avg_float": 1.9777777777777779,
+        "local_avg": "89/45",
+        "local_avg_float": 1.9777777777777779
+      },
+      {
+        "size": 90,
+        "greedy_avg": "754/405",
+        "greedy_avg_float": 1.8617283950617285,
+        "local_avg": "754/405",
+        "local_avg_float": 1.8617283950617285
+      }
+    ],
+    "sunflower_count": 1620,
+    "near_pencil_count": 36000,
+    "verdict": "EVIDENCE: no search found a subset at scale beating 5*rho_avg"
+  }
+}
