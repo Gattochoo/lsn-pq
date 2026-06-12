@@ -1699,38 +1699,46 @@ pub fn fixed_scl_binary_child_write_domain_check<
     dst_start: usize,
     bit_index: usize,
 ) -> FixedSclBinaryChildWriteDomainCheck {
-    let mut check = FixedSclBinaryChildWriteDomainCheck {
+    let parent_invalid = u8::from(parent_slot >= SRC_CAP);
+    let dst_invalid = u8::from(dst_start >= CHILD_CAP || dst_start.saturating_add(1) >= CHILD_CAP);
+    let bit_invalid = u8::from(bit_index >= N);
+    let parent_valid = parent_invalid ^ 1;
+    let dst_valid = dst_invalid ^ 1;
+    let dst_selected = dst_invalid & parent_valid;
+    let bit_selected = bit_invalid & parent_valid & dst_valid;
+    let invalid = parent_invalid | dst_invalid | bit_invalid;
+    let parent_mask = 0u8.wrapping_sub(parent_invalid);
+    let dst_mask = 0u8.wrapping_sub(dst_selected);
+    let bit_mask = 0u8.wrapping_sub(bit_selected);
+    let valid_mask = 0usize.wrapping_sub(usize::from(invalid ^ 1));
+    let failure_after_bit = select_u8(
+        bit_mask,
+        FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
+        FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX,
+    );
+    let failure_after_dst = select_u8(
+        dst_mask,
+        failure_after_bit,
+        FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    );
+    let failure_code = select_u8(
+        parent_mask,
+        failure_after_dst,
+        FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+    );
+    let child_slots_written = select_usize(valid_mask, 0, 2);
+
+    FixedSclBinaryChildWriteDomainCheck {
         parent_capacity: SRC_CAP,
         child_capacity: CHILD_CAP,
         bit_width: N,
         parent_slot,
         dst_start,
         bit_index,
-        child_slots_written: 0,
-        valid: true,
-        failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
-    };
-
-    if parent_slot >= SRC_CAP {
-        check.valid = false;
-        check.failure_code = FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT;
-        return check;
+        child_slots_written,
+        valid: invalid == 0,
+        failure_code,
     }
-
-    if dst_start >= CHILD_CAP || dst_start.saturating_add(1) >= CHILD_CAP {
-        check.valid = false;
-        check.failure_code = FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY;
-        return check;
-    }
-
-    if bit_index >= N {
-        check.valid = false;
-        check.failure_code = FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX;
-        return check;
-    }
-
-    check.child_slots_written = 2;
-    check
 }
 
 pub fn fixed_scl_child_write_parity_check(

@@ -1091,6 +1091,63 @@ fn fixed_scl_binary_child_write_domain_check_rejects_bit_index() {
 }
 
 #[test]
+fn fixed_scl_binary_child_write_domain_check_prefers_parent_then_dst_then_bit_faults() {
+    assert_eq!(
+        fixed_scl_binary_child_write_domain_check::<2, 4, 8>(2, 4, 8),
+        FixedSclBinaryChildWriteDomainCheck {
+            parent_capacity: 2,
+            child_capacity: 4,
+            bit_width: 8,
+            parent_slot: 2,
+            dst_start: 4,
+            bit_index: 8,
+            child_slots_written: 0,
+            valid: false,
+            failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT,
+        }
+    );
+    assert_eq!(
+        fixed_scl_binary_child_write_domain_check::<2, 4, 8>(1, 4, 8),
+        FixedSclBinaryChildWriteDomainCheck {
+            parent_capacity: 2,
+            child_capacity: 4,
+            bit_width: 8,
+            parent_slot: 1,
+            dst_start: 4,
+            bit_index: 8,
+            child_slots_written: 0,
+            valid: false,
+            failure_code: FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_binary_child_write_domain_check_uses_status_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn fixed_scl_binary_child_write_domain_check")
+        .expect("fixed_scl_binary_child_write_domain_check source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_child_write_parity_check")
+        .map(|offset| helper_start + offset)
+        .expect("fixed_scl_child_write_parity_check should follow domain check");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("return check"));
+    assert!(!helper_source.contains("if parent_slot >= SRC_CAP"));
+    assert!(!helper_source.contains("if dst_start >= CHILD_CAP"));
+    assert!(!helper_source.contains("if bit_index >= N"));
+    assert!(helper_source.contains("let parent_invalid = u8::from(parent_slot >= SRC_CAP);"));
+    assert!(helper_source.contains("let dst_invalid = u8::from("));
+    assert!(helper_source.contains("let bit_invalid = u8::from(bit_index >= N);"));
+    assert!(helper_source.contains("let dst_selected = dst_invalid & parent_valid;"));
+    assert!(helper_source.contains("let bit_selected = bit_invalid & parent_valid & dst_valid;"));
+    assert!(helper_source.contains("select_u8("));
+    assert!(helper_source.contains("select_usize("));
+}
+
+#[test]
 fn fixed_scl_path_buffer_try_writes_binary_children_from_valid_parent() {
     let mut parents = FixedSclPathBuffer::<2, 8>::new();
     parents.set_candidate(0, 10, [1, 0, 0, 0, 0, 0, 0, 0]);
