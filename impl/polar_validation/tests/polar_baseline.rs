@@ -21,9 +21,10 @@ use polar_validation::{
     high_noise_control_configs, importance_results_to_json, polar_rate_row,
     polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound,
-    FixedSclIntegerScheduleDomainCheck, FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclRound,
-    FixedTopLEntry, PolarCode, FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
+    zero_error_upper_bound, FixedSclIntegerRoundScheduleBuild, FixedSclIntegerScheduleDomainCheck,
+    FixedSclMetricDeltas, FixedSclPathBuffer, FixedSclRound, FixedTopLEntry, PolarCode,
+    FIXED_SCL_FORBIDDEN_METRIC_DELTA, FIXED_SCL_NO_INVALID_ROUND,
 };
 
 #[test]
@@ -218,6 +219,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("public integer round schedule audit"));
     assert!(json.contains("fixed_scl_integer_schedule_domain_check"));
     assert!(json.contains("active integer schedule domain validator"));
+    assert!(json.contains("try_fixed_scl_integer_round_schedule"));
+    assert!(json.contains("non-panicking integer schedule builder"));
     assert!(json.contains("expand_then_compact_integer_round_schedule"));
     assert!(json.contains("integer schedule source-level loop"));
     assert!(json.contains("\"public_work_count_examples\""));
@@ -576,6 +579,39 @@ fn fixed_scl_integer_schedule_domain_check_rejects_non_bit_hard_decision() {
             rounds: 3,
             valid: false,
             first_invalid_round: 1,
+        }
+    );
+}
+
+#[test]
+fn try_fixed_scl_integer_round_schedule_builds_valid_rounds() {
+    assert_eq!(
+        try_fixed_scl_integer_round_schedule([0, 1], [false, true], [1, 1], [3, 5]),
+        FixedSclIntegerRoundScheduleBuild {
+            domain_check: FixedSclIntegerScheduleDomainCheck {
+                rounds: 2,
+                valid: true,
+                first_invalid_round: FIXED_SCL_NO_INVALID_ROUND,
+            },
+            rounds: [
+                FixedSclRound::new(0, 3, 0),
+                FixedSclRound::new(1, 5, FIXED_SCL_FORBIDDEN_METRIC_DELTA),
+            ],
+        }
+    );
+}
+
+#[test]
+fn try_fixed_scl_integer_round_schedule_reports_invalid_without_panicking() {
+    assert_eq!(
+        try_fixed_scl_integer_round_schedule([0, 1], [false, true], [1, 1], [3, -5]),
+        FixedSclIntegerRoundScheduleBuild {
+            domain_check: FixedSclIntegerScheduleDomainCheck {
+                rounds: 2,
+                valid: false,
+                first_invalid_round: 1,
+            },
+            rounds: [FixedSclRound::new(0, 0, 0), FixedSclRound::new(0, 0, 0)],
         }
     );
 }

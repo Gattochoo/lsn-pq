@@ -100,6 +100,12 @@ pub struct FixedSclIntegerScheduleDomainCheck {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerRoundScheduleBuild<const ROUNDS: usize> {
+    pub domain_check: FixedSclIntegerScheduleDomainCheck,
+    pub rounds: [FixedSclRound; ROUNDS],
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPublicRoundWorkCounts {
     pub parent_capacity: usize,
     pub first_child_capacity: usize,
@@ -568,6 +574,26 @@ pub fn fixed_scl_integer_round_schedule<const ROUNDS: usize>(
     rounds
 }
 
+pub fn try_fixed_scl_integer_round_schedule<const ROUNDS: usize>(
+    bit_indices: [usize; ROUNDS],
+    frozen_bits: [bool; ROUNDS],
+    hard_bits: [u8; ROUNDS],
+    magnitudes: [i64; ROUNDS],
+) -> FixedSclIntegerRoundScheduleBuild<ROUNDS> {
+    let domain_check = fixed_scl_integer_schedule_domain_check(hard_bits, magnitudes);
+    if !domain_check.valid {
+        return FixedSclIntegerRoundScheduleBuild {
+            domain_check,
+            rounds: [FixedSclRound::new(0, 0, 0); ROUNDS],
+        };
+    }
+
+    FixedSclIntegerRoundScheduleBuild {
+        domain_check,
+        rounds: fixed_scl_integer_round_schedule(bit_indices, frozen_bits, hard_bits, magnitudes),
+    }
+}
+
 pub fn fixed_schedule_top_l_i64<const WIDTH: usize, const L: usize>(
     metrics: [i64; WIDTH],
 ) -> [FixedTopLEntry; L] {
@@ -679,6 +705,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"try_fixed_scl_integer_round_schedule: non-panicking integer schedule builder that returns domain-check status before FixedSclRound arrays; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"expand_then_compact_integer_round_schedule: integer schedule source-level loop over fixed path buffers only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"public_work_count_examples\": [\n",
