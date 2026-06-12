@@ -64,8 +64,8 @@ def test_reduction_counts_zero_B():
     m = 3
     B_cols = [0, 0, 0, 0]
     counts = reduction_counts_for_B(B_cols, enumerate_lagrangian_bases(), m)
-    assert sum(counts) == 3840
-    assert counts[0] == 3840  # only C=0, y=0
+    assert sum(counts) == 15360
+    assert counts[0] == 15360  # only C=0, y=0
     assert all(c == 0 for c in counts[1:])
 
 
@@ -320,7 +320,7 @@ def check_zero_B_is_far():
     B_cols = [0, 0, 0, 0]
     red_counts = reduction_counts_for_B(B_cols, enumerate_lagrangian_bases(), m)
     lpn_counts, lpn_denom = lpn_target_counts(m, Fraction(1, 4))
-    sd = exact_sd_counts(red_counts, 3840, lpn_counts, lpn_denom)
+    sd = exact_sd_counts(red_counts, 15360, lpn_counts, lpn_denom)
     assert sd > Fraction(9, 10), f"zero-B SD unexpectedly small: {sd}"
     print(f"zero-B SD for m={m}: {sd} (OK)")
 
@@ -334,7 +334,7 @@ def check_bounds():
     for bits in range(1 << (4 * m)):
         B_cols = [((bits >> (j * m)) & mask) for j in range(4)]
         red_counts = reduction_counts_for_B(B_cols, enumerate_lagrangian_bases(), m)
-        sd = exact_sd_counts(red_counts, 3840, lpn_counts, lpn_denom)
+        sd = exact_sd_counts(red_counts, 15360, lpn_counts, lpn_denom)
         assert 0 <= sd <= 1
         if sd < best:
             best = sd
