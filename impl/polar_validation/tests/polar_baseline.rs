@@ -15,16 +15,17 @@
 
 use polar_validation::{
     baseline_reproduction_configs, bhattacharyya_reliabilities, build_frozen_natural, decode_scl,
-    decode_scl_fast, decode_successive_cancellation, encode, fixed_schedule_top_l_compare_count,
-    fixed_schedule_top_l_i64, fixed_schedule_top_l_selection_plan,
-    fixed_scl_binary_child_write_domain_check, fixed_scl_child_write_domain_failure_label,
-    fixed_scl_child_write_parity_check, fixed_scl_integer_metric_deltas,
-    fixed_scl_integer_metric_domain_check, fixed_scl_integer_metric_domain_failure_label,
-    fixed_scl_integer_round_build_certificate, fixed_scl_integer_round_build_parity_check,
-    fixed_scl_integer_round_run_plan_certificate, fixed_scl_integer_round_run_shape_certificate,
-    fixed_scl_integer_round_schedule, fixed_scl_integer_round_schedule_build_plan,
-    fixed_scl_integer_round_schedule_plan, fixed_scl_integer_round_schedule_shape_plan,
-    fixed_scl_integer_schedule_domain_check, fixed_scl_integer_schedule_domain_failure_label,
+    decode_scl_fast, decode_scl_fixed_i64, decode_successive_cancellation, encode,
+    fixed_schedule_top_l_compare_count, fixed_schedule_top_l_i64,
+    fixed_schedule_top_l_selection_plan, fixed_scl_binary_child_write_domain_check,
+    fixed_scl_child_write_domain_failure_label, fixed_scl_child_write_parity_check,
+    fixed_scl_integer_metric_deltas, fixed_scl_integer_metric_domain_check,
+    fixed_scl_integer_metric_domain_failure_label, fixed_scl_integer_round_build_certificate,
+    fixed_scl_integer_round_build_parity_check, fixed_scl_integer_round_run_plan_certificate,
+    fixed_scl_integer_round_run_shape_certificate, fixed_scl_integer_round_schedule,
+    fixed_scl_integer_round_schedule_build_plan, fixed_scl_integer_round_schedule_plan,
+    fixed_scl_integer_round_schedule_shape_plan, fixed_scl_integer_schedule_domain_check,
+    fixed_scl_integer_schedule_domain_failure_label,
     fixed_scl_integer_schedule_shape_failure_family,
     fixed_scl_integer_schedule_shape_failure_label, fixed_scl_integer_schedule_shape_parity_check,
     fixed_scl_integer_shape_parity_check, fixed_scl_one_bit_run_plan_certificate,
@@ -157,6 +158,20 @@ fn noiseless_fast_scl_roundtrip_recovers_info_bits() {
         .collect::<Vec<_>>();
 
     let decoded = decode_scl_fast(&code, &llr, 8);
+    assert_eq!(decoded, msg);
+}
+
+#[test]
+fn noiseless_fixed_i64_scl_roundtrip_recovers_info_bits() {
+    let code = PolarCode::new(16, 8, 0.0706);
+    let msg = vec![1, 0, 1, 1, 0, 0, 1, 0];
+    let x = encode(&code, &msg);
+    let llr = x
+        .iter()
+        .map(|&bit| if bit == 0 { 12.0 } else { -12.0 })
+        .collect::<Vec<_>>();
+
+    let decoded = decode_scl_fixed_i64::<16, 8, 16>(&code, &llr, 1024.0);
     assert_eq!(decoded, msg);
 }
 

@@ -2550,6 +2550,61 @@ pub fn decode_scl_fast(code: &PolarCode, llr: &[f64], list_size: usize) -> Vec<u
     code.info_set.iter().map(|&idx| best.bits[idx]).collect()
 }
 
+pub fn decode_scl_fixed_i64<const N: usize, const L: usize, const CHILD_CAP: usize>(
+    code: &PolarCode,
+    llr: &[f64],
+    metric_scale: f64,
+) -> Vec<u8> {
+    assert_eq!(code.n, N, "fixed SCL const N must match PolarCode N");
+    assert_eq!(llr.len(), N, "LLR length must equal fixed SCL N");
+    assert!(L > 0, "fixed SCL list size must be positive");
+    assert!(
+        CHILD_CAP >= L.saturating_mul(2),
+        "fixed SCL child capacity must hold two children per path"
+    );
+    assert!(
+        metric_scale.is_finite() && metric_scale > 0.0,
+        "fixed SCL metric scale must be positive and finite"
+    );
+
+    let mut paths = FixedSclPathBuffer::<L, N>::new();
+    paths.set_candidate(0, 0, [0; N]);
+
+    for phi in 0..N {
+        let mut children = FixedSclPathBuffer::<CHILD_CAP, N>::new();
+        for parent_slot in 0..L {
+            let bits = paths.bits(parent_slot);
+            let bit_llr = sc_bit_llr_minsum(llr, 0, phi, &bits);
+            let hard_bit = u8::from(bit_llr < 0.0);
+            let magnitude = llr_metric_magnitude_i64(bit_llr, metric_scale);
+            let deltas =
+                fixed_scl_integer_metric_deltas(code.frozen_mask[phi], hard_bit, magnitude);
+            children.write_binary_children_from(
+                &paths,
+                parent_slot,
+                parent_slot * 2,
+                phi,
+                deltas.bit0_metric_delta,
+                deltas.bit1_metric_delta,
+            );
+        }
+        let top = children.top_l_entries::<L>();
+        paths = FixedSclPathBuffer::<L, N>::from_top_entries(&children, top);
+    }
+
+    let best_bits = paths.bits(0);
+    code.info_set.iter().map(|&idx| best_bits[idx]).collect()
+}
+
+fn llr_metric_magnitude_i64(llr: f64, metric_scale: f64) -> i64 {
+    let scaled = (llr.abs() * metric_scale).round();
+    if !scaled.is_finite() || scaled >= (i64::MAX / 4) as f64 {
+        i64::MAX / 4
+    } else {
+        scaled as i64
+    }
+}
+
 pub fn simulate_bsc_sc(n: usize, k: usize, p: f64, trials: usize, seed: u64) -> SimulationResult {
     let code = PolarCode::new(n, k, p);
     let mut rng = Lcg64::new(seed);
