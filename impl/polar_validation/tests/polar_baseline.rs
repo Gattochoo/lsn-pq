@@ -847,6 +847,14 @@ fn fixed_scl_active_count_source_uses_masked_active_bits() {
 }
 
 #[test]
+fn fixed_i64_decoder_source_uses_integer_llr_recursion() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("let bit_llr = sc_bit_llr_minsum(llr, 0, phi, &bits);"));
+    assert!(source.contains("sc_bit_llr_minsum_i64(&quantized_llr, 0, phi, &bits);"));
+}
+
+#[test]
 fn fixed_scl_binary_child_write_domain_check_accepts_public_inputs() {
     assert_eq!(
         fixed_scl_binary_child_write_domain_check::<2, 4, 8>(0, 2, 3),
