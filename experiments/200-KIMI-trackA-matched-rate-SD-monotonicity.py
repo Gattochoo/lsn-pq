@@ -36,9 +36,12 @@ PRE-REGISTER interpretation guards:
 """
 import argparse
 import json
+import sys
 import time
 from fractions import Fraction
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from experiments.lib.lem_m2_exact import (
     enumerate_lagrangian_bases_n,
@@ -100,13 +103,16 @@ def exact_matched_sd_mixture(n: int, m: int) -> dict:
     num_C = 1 << (n * m)
     y_mask = (1 << m) - 1
 
-    full_count = (q_den - q_num) * (D // (q_den * size))
-    graph_base = [
-        q_num * (D // (q_den * num_C * (1 << r))) for r in range(n + 1)
-    ]
+    # Compute the integer difference against denominator D * q_den so that
+    # the division by q_den in q = q_num/q_den is exact.  For n=3,
+    # q_den = 4608 = 2^9 * 9 is not a divisor of D/size or D/(num_C*2^r),
+    # so the previous floor-division shortcut produced slightly wrong
+    # "exact" fractions.  See experiments/201-KIMI-trackA-mixture-exact-verification.py.
+    full_term = D * (q_den - q_num) // size
 
     ranks = [0] * num_C
     masks = [0] * num_C
+    graph_terms = [0] * num_C
     for C in range(num_C):
         cols = []
         tmp = C
@@ -115,19 +121,20 @@ def exact_matched_sd_mixture(n: int, m: int) -> dict:
             tmp >>= m
         ranks[C] = rank_f2_cols(cols, m)
         masks[C] = colspace_mask(cols, m)
+        graph_terms[C] = D * q_num // (num_C * (1 << ranks[C]))
 
     t0 = time.time()
-    diff = 0
+    diff_num = 0
     for key in range(size):
         y = key & y_mask
         C = key >> m
-        p_out = full_count
+        target = lpn_counts[key] * q_den - full_term
         if (masks[C] >> y) & 1:
-            p_out += graph_base[ranks[C]]
-        diff += abs(lpn_counts[key] - p_out)
+            target -= graph_terms[C]
+        diff_num += abs(target)
     t_out = time.time() - t0
 
-    sd = Fraction(diff, 2 * D)
+    sd = Fraction(diff_num, 2 * D * q_den)
     return {
         "n": n,
         "m": m,

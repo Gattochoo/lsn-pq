@@ -53,6 +53,23 @@ Averaging over $e$ gives $q(n)$.  When $v\in A$, write $v=A c$; the conditional 
 
 **Verification.** The script checks the mixture SD against the from-scratch integer-count enumeration in `experiments/lib/lem_m2_exact.py` for $n=2$, $m=2,3,4$; all three values match exactly.
 
+### 1.1 Correction (post-adjudication)
+
+The first version of `experiments/200-KIMI-trackA-matched-rate-SD-monotonicity.py`
+used an integer-scaling shortcut with floor division (`D // (q_den * size)`).
+For $n=3$, $q(3)=1241/4608$ has an odd factor $9$, which does **not** divide
+$D/\text{size}$ or $D/(\text{num}_C\cdot2^r)$; the resulting "exact" fractions
+were therefore truncated by at most one count per bucket.  The floats were
+correct to $\sim$21 digits at $m=6$ but the rational records were wrong.
+
+The script has been fixed to clear the denominator $q_{\rm den}$ exactly:
+all comparisons are carried out against denominator $D\cdot q_{\rm den}$,
+so no floor division occurs.  The corrected values were independently
+re-derived in `experiments/201-KIMI-trackA-mixture-exact-verification.py` and
+match Claude's adjudication fractions exactly.  The same fix was applied to
+`experiments/191-KIMI-lem-m2-uniform-B-matched-rate-m2n.py` and its
+$n=3,m=6$ output.
+
 ---
 
 ## 2. Task A1 — exact matched-rate SD at $n=3$, $m=2n=6$
@@ -61,7 +78,7 @@ Averaging over $e$ gives $q(n)$.  When $v\in A$, write $v=A c$; the conditional 
 |---|---|---:|
 | $p_{\rm eff}(3)$ | $3367/8192$ | $0.411011$ |
 | $q(3)$ | $1241/4608$ | $0.269314$ |
-| $\mathrm{SD}(P_{\rm out},\,\mathrm{LPN}_{p_{\rm eff}})$ | $274605773661408696847360184835/1267650600228229401496703205376$ | $0.216626$ |
+| $\mathrm{SD}(P_{\rm out},\,\mathrm{LPN}_{p_{\rm eff}})$ | $154465747684542391975435825813/713053462628379038341895553024$ | $0.216626$ |
 
 **Label:** EVIDENCE — exact finite computation at one $(n,m)$ point.  Does not prove a general lower bound.
 
@@ -85,11 +102,11 @@ Averaging over $e$ gives $q(n)$.  When $v\in A$, write $v=A c$; the conditional 
 
 | $m$ | $p_{\rm eff}$ | exact SD | decimal |
 |----:|--------------:|---------:|--------:|
-| 2 | $3367/8192$ | $213402213/8589934592$ | $0.024843$ |
-| 3 | $3367/8192$ | $73216440694171/1125899906842624$ | $0.065029$ |
-| 4 | $3367/8192$ | $37069529779670762521/295147905179352825856$ | $0.125596$ |
-| 5 | $3367/8192$ | $3463661197481711859149715/19342813113834066795298816$ | $0.179067$ |
-| 6 | $3367/8192$ | $274605773661408696847360184835/1267650600228229401496703205376$ | $0.216626$ |
+| 2 | $3367/8192$ | $60016775/2415919104$ | $0.024842$ |
+| 3 | $3367/8192$ | $27456165227309/422212465065984$ | $0.065029$ |
+| 4 | $3367/8192$ | $2606451312633458017/20752587082923245568$ | $0.125596$ |
+| 5 | $3367/8192$ | $1948309423583462892421105/10880332376531662572355584$ | $0.179067$ |
+| 6 | $3367/8192$ | $154465747684542391975435825813/713053462628379038341895553024$ | $0.216626$ |
 
 **Observation (EVIDENCE):** at fixed $n$, matched-rate SD is strictly increasing in $m$ across every point computed.  The increase is consistent with the intuition that more output rows give the adversary more independent looks at the same low-dimensional correlation.
 

@@ -17,9 +17,12 @@ Currently feasible for n <= 3 exactly; larger n uses sampling (see --sample).
 """
 import argparse
 import json
+import sys
 import time
 from fractions import Fraction
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from experiments.lib.lem_m2_exact import lpn_target_counts_n
 
@@ -78,16 +81,16 @@ def exact_matched_sd(n: int, m: int) -> tuple[Fraction, float]:
     num_C = 1 << (n * m)
     y_mask = (1 << m) - 1
 
-    # Scaled P_out counts relative to the same denominator D.
-    full_count = (q_den - q_num) * (D // (q_den * size))
-    graph_base = [
-        q_num * (D // (q_den * num_C * (1 << r)))
-        for r in range(n + 1)
-    ]
+    # Compute the SD against denominator D * q_den so that the rational factor
+    # q = q_num / q_den is handled exactly.  The previous floor-division shortcut
+    # (D // (q_den * size)) is wrong whenever q_den has an odd factor that does
+    # not divide D/size; this happens for n=3 (q_den = 4608 = 2^9 * 9).
+    full_term = D * (q_den - q_num) // size
 
-    # Precompute rank and column-space mask for every C.
+    # Precompute rank, column-space mask, and graph contribution for every C.
     ranks = [0] * num_C
     masks = [0] * num_C
+    graph_terms = [0] * num_C
     for C in range(num_C):
         cols = []
         tmp = C
@@ -96,19 +99,20 @@ def exact_matched_sd(n: int, m: int) -> tuple[Fraction, float]:
             tmp >>= m
         ranks[C] = rank_f2_cols(cols, m)
         masks[C] = colspace_mask(cols, m)
+        graph_terms[C] = D * q_num // (num_C * (1 << ranks[C]))
 
     t0 = time.time()
-    diff = 0
+    diff_num = 0
     for key in range(size):
         y = key & y_mask
         C = key >> m
-        p_out = full_count
+        target = lpn_counts[key] * q_den - full_term
         if (masks[C] >> y) & 1:
-            p_out += graph_base[ranks[C]]
-        diff += abs(lpn_counts[key] - p_out)
+            target -= graph_terms[C]
+        diff_num += abs(target)
     t_out = time.time() - t0
 
-    sd = Fraction(diff, 2 * D)
+    sd = Fraction(diff_num, 2 * D * q_den)
     return sd, t_lpn, t_out
 
 
