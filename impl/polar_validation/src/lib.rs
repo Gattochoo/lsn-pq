@@ -69,6 +69,105 @@ pub struct FixedTopLEntry {
     pub index: usize,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclCandidate<const N: usize> {
+    pub metric: i64,
+    pub bits: [u8; N],
+    pub active: u8,
+}
+
+impl<const N: usize> FixedSclCandidate<N> {
+    pub const EMPTY: Self = Self {
+        metric: i64::MAX,
+        bits: [0; N],
+        active: 0,
+    };
+
+    pub fn effective_metric(self) -> i64 {
+        if self.active == 0 {
+            i64::MAX
+        } else {
+            self.metric
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclPathBuffer<const CAP: usize, const N: usize> {
+    slots: [FixedSclCandidate<N>; CAP],
+}
+
+impl<const CAP: usize, const N: usize> FixedSclPathBuffer<CAP, N> {
+    pub fn new() -> Self {
+        Self {
+            slots: [FixedSclCandidate::EMPTY; CAP],
+        }
+    }
+
+    pub fn capacity(&self) -> usize {
+        CAP
+    }
+
+    pub fn bit_width(&self) -> usize {
+        N
+    }
+
+    pub fn active_count(&self) -> usize {
+        self.slots
+            .iter()
+            .map(|candidate| usize::from(candidate.active != 0))
+            .sum()
+    }
+
+    pub fn set_candidate(&mut self, slot: usize, metric: i64, bits: [u8; N]) {
+        assert!(slot < CAP, "SCL fixed path slot is outside capacity");
+        self.slots[slot] = FixedSclCandidate {
+            metric,
+            bits,
+            active: 1,
+        };
+    }
+
+    pub fn clear_slot(&mut self, slot: usize) {
+        assert!(slot < CAP, "SCL fixed path slot is outside capacity");
+        self.slots[slot] = FixedSclCandidate::EMPTY;
+    }
+
+    pub fn bits(&self, slot: usize) -> [u8; N] {
+        assert!(slot < CAP, "SCL fixed path slot is outside capacity");
+        self.slots[slot].bits
+    }
+
+    pub fn metric_entries(&self) -> [FixedTopLEntry; CAP] {
+        let mut entries = [FixedTopLEntry {
+            metric: i64::MAX,
+            index: usize::MAX,
+        }; CAP];
+        for (index, entry) in entries.iter_mut().enumerate() {
+            *entry = FixedTopLEntry {
+                metric: self.slots[index].effective_metric(),
+                index,
+            };
+        }
+        entries
+    }
+
+    pub fn top_l_entries<const L: usize>(&self) -> [FixedTopLEntry; L] {
+        let entries = self.metric_entries();
+        let mut metrics = [i64::MAX; CAP];
+        for (index, metric) in metrics.iter_mut().enumerate() {
+            *metric = entries[index].metric;
+        }
+        fixed_schedule_top_l_i64::<CAP, L>(metrics)
+    }
+}
+
+impl<const CAP: usize, const N: usize> Default for FixedSclPathBuffer<CAP, N> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SimulationConfig {
     pub n: usize,
@@ -253,7 +352,8 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"generated-code and timing/leakage audit before any production claim\"\n",
         "  ],\n",
         "  \"prototype_building_blocks\": [\n",
-        "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\"\n",
+        "    \"fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending\"\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",
         "  \"adjudication\": \"engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN\"\n",

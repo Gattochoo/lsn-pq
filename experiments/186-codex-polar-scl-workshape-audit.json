@@ -26,7 +26,8 @@
     "generated-code and timing/leakage audit before any production claim"
   ],
   "prototype_building_blocks": [
-    "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending"
+    "fixed_schedule_top_l_i64: source-level fixed schedule only; not wired into decode_scl; generated-code and timing audit pending",
+    "FixedSclPathBuffer: fixed-capacity source-level slot buffer only; not wired into decode_scl; generated-code and timing audit pending"
   ],
   "required_action": "fixed-schedule integer decoder plan required before replacing ct-003",
   "adjudication": "engineering audit artifact only; no production CT claim, no security claim, OPEN = LSN"

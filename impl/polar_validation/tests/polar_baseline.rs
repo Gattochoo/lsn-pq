@@ -19,8 +19,8 @@ use polar_validation::{
     fixed_schedule_top_l_i64, high_noise_control_configs, importance_results_to_json,
     polar_rate_row, polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
     scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound, FixedTopLEntry,
-    PolarCode,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, zero_error_upper_bound,
+    FixedSclPathBuffer, FixedTopLEntry, PolarCode,
 };
 
 #[test]
@@ -191,6 +191,7 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("floating-point path metrics"));
     assert!(json.contains("fixed-schedule integer decoder plan required"));
     assert!(json.contains("fixed_schedule_top_l_i64"));
+    assert!(json.contains("FixedSclPathBuffer"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
@@ -227,6 +228,59 @@ fn fixed_schedule_top_l_selects_lowest_metrics_with_stable_ties() {
 #[should_panic(expected = "top-L selector requires L <= WIDTH")]
 fn fixed_schedule_top_l_rejects_invalid_width() {
     let _ = fixed_schedule_top_l_i64::<2, 3>([0, 1]);
+}
+
+#[test]
+fn fixed_scl_path_buffer_uses_fixed_capacity_slots_and_top_l_view() {
+    let mut buffer = FixedSclPathBuffer::<4, 8>::new();
+
+    assert_eq!(buffer.capacity(), 4);
+    assert_eq!(buffer.bit_width(), 8);
+    assert_eq!(buffer.active_count(), 0);
+    assert_eq!(
+        buffer.metric_entries()[0],
+        FixedTopLEntry {
+            metric: i64::MAX,
+            index: 0
+        }
+    );
+
+    buffer.set_candidate(0, 42, [1, 0, 1, 0, 1, 0, 1, 0]);
+    buffer.set_candidate(1, -7, [0; 8]);
+    buffer.set_candidate(2, -7, [1; 8]);
+
+    assert_eq!(buffer.active_count(), 3);
+    assert_eq!(buffer.bits(2), [1; 8]);
+    assert_eq!(
+        buffer.top_l_entries::<2>(),
+        [
+            FixedTopLEntry {
+                metric: -7,
+                index: 1,
+            },
+            FixedTopLEntry {
+                metric: -7,
+                index: 2,
+            },
+        ]
+    );
+
+    buffer.clear_slot(1);
+
+    assert_eq!(buffer.active_count(), 2);
+    assert_eq!(
+        buffer.top_l_entries::<2>(),
+        [
+            FixedTopLEntry {
+                metric: -7,
+                index: 2,
+            },
+            FixedTopLEntry {
+                metric: 42,
+                index: 0,
+            },
+        ]
+    );
 }
 
 #[test]
