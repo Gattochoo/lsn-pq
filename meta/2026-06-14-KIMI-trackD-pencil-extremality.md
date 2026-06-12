@@ -41,9 +41,9 @@ Before interpreting the numbers as bearing on `conj:pencil`:
    - all `C(63,3)=39711` triples of `k=1` pencils;
    - `19,845` mixed-dimension pairs (`k=1` + `k=2`);
    - `200,000` mixed-dimension triples (`k=1` + `k=1` + `k=2`).
-3. **Sunflower / near-pencil families:** cores of dimension 1 and 2, with greedy transversal extensions and perturbations of `k=1` pencils by adding/removing up to 10 elements.
+3. **Sunflower / near-pencil families:** sunflower families with a fixed isotropic core `W` are exactly subfamilies of the pencil `S_W`, so they are covered by the pencil/unions enumeration. We additionally perturb `k=1` pencils by adding up to 10 random outsiders or removing up to 5 insiders.
 4. **Random subsets:** `100,000` draws for sizes `3..60`; `20,000` draws for sizes `61..135` (reduced for computational feasibility because correlation is diluted at large sizes). Total `7,300,000` random draws.
-5. **Greedy + local-search adversarial maximisation:** greedy construction from the best pair plus hill-climbing single-swap local search for sizes `3..20,30,45,60,90`, plus 50 random-start local searches and pencil-seeded local searches.
+5. **Greedy + local-search adversarial maximisation:** greedy construction from the best off-diagonal pair plus hill-climbing single-swap local search for sizes `3..20,30,45,60,90`, plus 50 random-start local searches and pencil-seeded local searches.
 
 All computations use exact `Fraction`s; ratios are to `ρ_avg = 16/9`.
 
@@ -55,11 +55,11 @@ All computations use exact `Fraction`s; ratios are to `ρ_avg = 16/9`.
   - `k=1` pencil (size 15): ratio `9/5 = 1.8`.
   - `k=2` pencil (size 3): ratio `3`.
   - `k=3` pencil (size 1): ratio `9/2 = 4.5`.
-- **Best-found subset at the conjectured scale** (`|𝒟'| ≥ 3`): average `56/9 ≈ 6.2222`, ratio `7/2 = 3.5`, size 3, found by greedy.
+- **Best-found subset at the conjectured scale** (`|𝒟'| ≥ 3`): average `16/3 ≈ 5.3333`, ratio `3`, size 3, a `k=2` pencil.
 - **Best-found singleton** (below scale): average `8`, ratio `4.5`.
-- **No search found any subset at scale with ratio > 3.5**, far below the `5` threshold.
+- **No search found any subset at scale with ratio > 3**, far below the `5` threshold.
 - Random best ratios decrease monotonically with size: `4.16` at size 5, `2.57` at size 15, `1.78` at size 135.
-- Greedy/local-search ratios also remain below `4` for all sizes `≥ 7`.
+- Greedy/local-search ratios remain below `3.5` for all sizes `≥ 4`.
 
 **Label:** EVIDENCE (search-based, not proof). `conj:pencil` remains OPEN for general `n`.
 
@@ -67,7 +67,7 @@ All computations use exact `Fraction`s; ratios are to `ρ_avg = 16/9`.
 
 ## D3 — Escalation check
 
-**Result: NO ESCALATION.** No subset at the conjectured scale beats `5·ρ_avg`. The largest ratio observed at scale is `3.5`, versus the `5` bound.
+**Result: NO ESCALATION.** No subset at the conjectured scale beats `5·ρ_avg`. The largest ratio observed at scale is `3`, versus the `5` bound.
 
 This does **not** prove `conj:pencil` for `n=3` (search spaces are vast), but it also provides **no counterexample**.
 

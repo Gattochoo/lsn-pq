@@ -15,7 +15,7 @@
     "five_rho_avg": "8",
     "five_rho_avg_float": 8.0,
     "exhaustive_subsets_checked": 32768,
-    "elapsed_seconds": 0.022958040237426758,
+    "elapsed_seconds": 0.0229489803314209,
     "size_profile": [
       {
         "size": 1,
@@ -372,16 +372,16 @@
       ]
     },
     "overall_best_at_scale": {
-      "avg": "56/9",
-      "avg_float": 6.222222222222222,
-      "ratio": "7/2",
-      "ratio_float": 3.5,
+      "avg": "16/3",
+      "avg_float": 5.333333333333333,
+      "ratio": "3",
+      "ratio_float": 3.0,
       "size": 3,
-      "source": "greedy",
+      "source": "pencil_k2",
       "indices": [
         0,
-        0,
-        1
+        1,
+        2
       ]
     },
     "best_by_size": [
@@ -394,129 +394,129 @@
       },
       {
         "size": 3,
-        "best_avg": "56/9",
-        "best_avg_float": 6.222222222222222,
-        "best_ratio": "7/2",
-        "source": "greedy"
-      },
-      {
-        "size": 4,
-        "best_avg": "11/2",
-        "best_avg_float": 5.5,
-        "best_ratio": "99/32",
-        "source": "sunflower_core_k2_t1"
-      },
-      {
-        "size": 5,
-        "best_avg": "136/25",
-        "best_avg_float": 5.44,
-        "best_ratio": "153/50",
-        "source": "sunflower_core_k2_t2"
-      },
-      {
-        "size": 6,
         "best_avg": "16/3",
         "best_avg_float": 5.333333333333333,
         "best_ratio": "3",
-        "source": "sunflower_core_k2_t3"
+        "source": "pencil_k2"
+      },
+      {
+        "size": 4,
+        "best_avg": "9/2",
+        "best_avg_float": 4.5,
+        "best_ratio": "81/32",
+        "source": "random"
+      },
+      {
+        "size": 5,
+        "best_avg": "104/25",
+        "best_avg_float": 4.16,
+        "best_ratio": "117/50",
+        "source": "random"
+      },
+      {
+        "size": 6,
+        "best_avg": "4",
+        "best_avg_float": 4.0,
+        "best_ratio": "9/4",
+        "source": "local_search_from_greedy"
       },
       {
         "size": 7,
-        "best_avg": "200/49",
-        "best_avg_float": 4.081632653061225,
-        "best_ratio": "225/98",
+        "best_avg": "184/49",
+        "best_avg_float": 3.7551020408163267,
+        "best_ratio": "207/98",
         "source": "greedy"
       },
       {
         "size": 8,
-        "best_avg": "31/8",
-        "best_avg_float": 3.875,
-        "best_ratio": "279/128",
+        "best_avg": "29/8",
+        "best_avg_float": 3.625,
+        "best_ratio": "261/128",
         "source": "greedy"
       },
       {
         "size": 9,
-        "best_avg": "304/81",
-        "best_avg_float": 3.753086419753086,
-        "best_ratio": "19/9",
-        "source": "local_search_from_greedy"
-      },
-      {
-        "size": 10,
-        "best_avg": "18/5",
-        "best_avg_float": 3.6,
-        "best_ratio": "81/40",
+        "best_avg": "32/9",
+        "best_avg_float": 3.5555555555555554,
+        "best_ratio": "2",
         "source": "greedy"
       },
       {
+        "size": 10,
+        "best_avg": "86/25",
+        "best_avg_float": 3.44,
+        "best_ratio": "387/200",
+        "source": "near_pencil_remove_5"
+      },
+      {
         "size": 11,
-        "best_avg": "424/121",
-        "best_avg_float": 3.5041322314049586,
-        "best_ratio": "477/242",
+        "best_avg": "408/121",
+        "best_avg_float": 3.371900826446281,
+        "best_ratio": "459/242",
         "source": "greedy"
       },
       {
         "size": 12,
-        "best_avg": "31/9",
-        "best_avg_float": 3.4444444444444446,
-        "best_ratio": "31/16",
-        "source": "greedy"
+        "best_avg": "10/3",
+        "best_avg_float": 3.3333333333333335,
+        "best_ratio": "15/8",
+        "source": "near_pencil_remove_3"
       },
       {
         "size": 13,
-        "best_avg": "568/169",
-        "best_avg_float": 3.36094674556213,
-        "best_ratio": "639/338",
-        "source": "greedy"
+        "best_avg": "552/169",
+        "best_avg_float": 3.2662721893491122,
+        "best_ratio": "621/338",
+        "source": "near_pencil_remove_2"
       },
       {
         "size": 14,
-        "best_avg": "162/49",
-        "best_avg_float": 3.306122448979592,
-        "best_ratio": "729/392",
-        "source": "greedy"
+        "best_avg": "158/49",
+        "best_avg_float": 3.2244897959183674,
+        "best_ratio": "711/392",
+        "source": "near_pencil_remove_1"
       },
       {
         "size": 15,
-        "best_avg": "244/75",
-        "best_avg_float": 3.2533333333333334,
-        "best_ratio": "183/100",
-        "source": "greedy"
-      },
-      {
-        "size": 16,
-        "best_avg": "103/32",
-        "best_avg_float": 3.21875,
-        "best_ratio": "927/512",
-        "source": "sunflower_core_k1_t1"
-      },
-      {
-        "size": 17,
-        "best_avg": "932/289",
-        "best_avg_float": 3.2249134948096887,
-        "best_ratio": "2097/1156",
-        "source": "sunflower_core_k1_t2"
-      },
-      {
-        "size": 18,
-        "best_avg": "29/9",
-        "best_avg_float": 3.2222222222222223,
-        "best_ratio": "29/16",
-        "source": "sunflower_core_k1_t3"
-      },
-      {
-        "size": 19,
-        "best_avg": "1160/361",
-        "best_avg_float": 3.2132963988919667,
-        "best_ratio": "1305/722",
-        "source": "sunflower_core_k1_t4"
-      },
-      {
-        "size": 20,
         "best_avg": "16/5",
         "best_avg_float": 3.2,
         "best_ratio": "9/5",
-        "source": "sunflower_core_k1_t5"
+        "source": "pencil_k1"
+      },
+      {
+        "size": 16,
+        "best_avg": "97/32",
+        "best_avg_float": 3.03125,
+        "best_ratio": "873/512",
+        "source": "near_pencil_add_1"
+      },
+      {
+        "size": 17,
+        "best_avg": "840/289",
+        "best_avg_float": 2.906574394463668,
+        "best_ratio": "945/578",
+        "source": "union_2_mixed_sample"
+      },
+      {
+        "size": 18,
+        "best_avg": "76/27",
+        "best_avg_float": 2.814814814814815,
+        "best_ratio": "19/12",
+        "source": "union_2_mixed_sample"
+      },
+      {
+        "size": 19,
+        "best_avg": "984/361",
+        "best_avg_float": 2.7257617728531858,
+        "best_ratio": "1107/722",
+        "source": "greedy"
+      },
+      {
+        "size": 20,
+        "best_avg": "133/50",
+        "best_avg_float": 2.66,
+        "best_ratio": "1197/800",
+        "source": "greedy"
       },
       {
         "size": 21,
@@ -793,10 +793,10 @@
       },
       {
         "size": 60,
-        "best_avg": "89/45",
-        "best_avg_float": 1.9777777777777779,
-        "best_ratio": "89/80",
-        "source": "greedy"
+        "best_avg": "148/75",
+        "best_avg_float": 1.9733333333333334,
+        "best_ratio": "111/100",
+        "source": "local_search_from_greedy"
       },
       {
         "size": 61,
@@ -1003,9 +1003,9 @@
       },
       {
         "size": 90,
-        "best_avg": "754/405",
-        "best_avg_float": 1.8617283950617285,
-        "best_ratio": "377/360",
+        "best_avg": "751/405",
+        "best_avg_float": 1.854320987654321,
+        "best_ratio": "751/720",
         "source": "greedy"
       },
       {
@@ -2129,160 +2129,160 @@
     "greedy_results": [
       {
         "size": 3,
-        "greedy_avg": "56/9",
-        "greedy_avg_float": 6.222222222222222,
-        "local_avg": "56/9",
-        "local_avg_float": 6.222222222222222
+        "greedy_avg": "16/3",
+        "greedy_avg_float": 5.333333333333333,
+        "local_avg": "16/3",
+        "local_avg_float": 5.333333333333333
       },
       {
         "size": 4,
-        "greedy_avg": "11/2",
-        "greedy_avg_float": 5.5,
-        "local_avg": "11/2",
-        "local_avg_float": 5.5
+        "greedy_avg": "9/2",
+        "greedy_avg_float": 4.5,
+        "local_avg": "9/2",
+        "local_avg_float": 4.5
       },
       {
         "size": 5,
-        "greedy_avg": "24/5",
-        "greedy_avg_float": 4.8,
-        "local_avg": "24/5",
-        "local_avg_float": 4.8
+        "greedy_avg": "104/25",
+        "greedy_avg_float": 4.16,
+        "local_avg": "104/25",
+        "local_avg_float": 4.16
       },
       {
         "size": 6,
-        "greedy_avg": "40/9",
-        "greedy_avg_float": 4.444444444444445,
-        "local_avg": "40/9",
-        "local_avg_float": 4.444444444444445
+        "greedy_avg": "35/9",
+        "greedy_avg_float": 3.888888888888889,
+        "local_avg": "4",
+        "local_avg_float": 4.0
       },
       {
         "size": 7,
-        "greedy_avg": "200/49",
-        "greedy_avg_float": 4.081632653061225,
-        "local_avg": "200/49",
-        "local_avg_float": 4.081632653061225
+        "greedy_avg": "184/49",
+        "greedy_avg_float": 3.7551020408163267,
+        "local_avg": "184/49",
+        "local_avg_float": 3.7551020408163267
       },
       {
         "size": 8,
-        "greedy_avg": "31/8",
-        "greedy_avg_float": 3.875,
-        "local_avg": "31/8",
-        "local_avg_float": 3.875
+        "greedy_avg": "29/8",
+        "greedy_avg_float": 3.625,
+        "local_avg": "29/8",
+        "local_avg_float": 3.625
       },
       {
         "size": 9,
-        "greedy_avg": "100/27",
-        "greedy_avg_float": 3.7037037037037037,
-        "local_avg": "304/81",
-        "local_avg_float": 3.753086419753086
+        "greedy_avg": "32/9",
+        "greedy_avg_float": 3.5555555555555554,
+        "local_avg": "32/9",
+        "local_avg_float": 3.5555555555555554
       },
       {
         "size": 10,
-        "greedy_avg": "18/5",
-        "greedy_avg_float": 3.6,
-        "local_avg": "18/5",
-        "local_avg_float": 3.6
+        "greedy_avg": "86/25",
+        "greedy_avg_float": 3.44,
+        "local_avg": "86/25",
+        "local_avg_float": 3.44
       },
       {
         "size": 11,
-        "greedy_avg": "424/121",
-        "greedy_avg_float": 3.5041322314049586,
-        "local_avg": "424/121",
-        "local_avg_float": 3.5041322314049586
+        "greedy_avg": "408/121",
+        "greedy_avg_float": 3.371900826446281,
+        "local_avg": "408/121",
+        "local_avg_float": 3.371900826446281
       },
       {
         "size": 12,
-        "greedy_avg": "31/9",
-        "greedy_avg_float": 3.4444444444444446,
-        "local_avg": "31/9",
-        "local_avg_float": 3.4444444444444446
+        "greedy_avg": "119/36",
+        "greedy_avg_float": 3.3055555555555554,
+        "local_avg": "10/3",
+        "local_avg_float": 3.3333333333333335
       },
       {
         "size": 13,
-        "greedy_avg": "568/169",
-        "greedy_avg_float": 3.36094674556213,
-        "local_avg": "568/169",
-        "local_avg_float": 3.36094674556213
+        "greedy_avg": "552/169",
+        "greedy_avg_float": 3.2662721893491122,
+        "local_avg": "552/169",
+        "local_avg_float": 3.2662721893491122
       },
       {
         "size": 14,
-        "greedy_avg": "162/49",
-        "greedy_avg_float": 3.306122448979592,
-        "local_avg": "162/49",
-        "local_avg_float": 3.306122448979592
+        "greedy_avg": "158/49",
+        "greedy_avg_float": 3.2244897959183674,
+        "local_avg": "158/49",
+        "local_avg_float": 3.2244897959183674
       },
       {
         "size": 15,
-        "greedy_avg": "244/75",
-        "greedy_avg_float": 3.2533333333333334,
-        "local_avg": "244/75",
-        "local_avg_float": 3.2533333333333334
+        "greedy_avg": "16/5",
+        "greedy_avg_float": 3.2,
+        "local_avg": "16/5",
+        "local_avg_float": 3.2
       },
       {
         "size": 16,
-        "greedy_avg": "103/32",
-        "greedy_avg_float": 3.21875,
-        "local_avg": "103/32",
-        "local_avg_float": 3.21875
+        "greedy_avg": "97/32",
+        "greedy_avg_float": 3.03125,
+        "local_avg": "97/32",
+        "local_avg_float": 3.03125
       },
       {
         "size": 17,
-        "greedy_avg": "888/289",
-        "greedy_avg_float": 3.0726643598615917,
-        "local_avg": "888/289",
-        "local_avg_float": 3.0726643598615917
+        "greedy_avg": "840/289",
+        "greedy_avg_float": 2.906574394463668,
+        "local_avg": "840/289",
+        "local_avg_float": 2.906574394463668
       },
       {
         "size": 18,
-        "greedy_avg": "80/27",
-        "greedy_avg_float": 2.962962962962963,
-        "local_avg": "80/27",
-        "local_avg_float": 2.962962962962963
+        "greedy_avg": "227/81",
+        "greedy_avg_float": 2.802469135802469,
+        "local_avg": "76/27",
+        "local_avg_float": 2.814814814814815
       },
       {
         "size": 19,
-        "greedy_avg": "1032/361",
-        "greedy_avg_float": 2.858725761772853,
-        "local_avg": "1032/361",
-        "local_avg_float": 2.858725761772853
+        "greedy_avg": "984/361",
+        "greedy_avg_float": 2.7257617728531858,
+        "local_avg": "984/361",
+        "local_avg_float": 2.7257617728531858
       },
       {
         "size": 20,
-        "greedy_avg": "139/50",
-        "greedy_avg_float": 2.78,
-        "local_avg": "139/50",
-        "local_avg_float": 2.78
+        "greedy_avg": "133/50",
+        "greedy_avg_float": 2.66,
+        "local_avg": "133/50",
+        "local_avg_float": 2.66
       },
       {
         "size": 30,
-        "greedy_avg": "538/225",
-        "greedy_avg_float": 2.391111111111111,
-        "local_avg": "538/225",
-        "local_avg_float": 2.391111111111111
+        "greedy_avg": "521/225",
+        "greedy_avg_float": 2.3155555555555556,
+        "local_avg": "521/225",
+        "local_avg_float": 2.3155555555555556
       },
       {
         "size": 45,
-        "greedy_avg": "1424/675",
-        "greedy_avg_float": 2.1096296296296297,
-        "local_avg": "1424/675",
-        "local_avg_float": 2.1096296296296297
+        "greedy_avg": "56/27",
+        "greedy_avg_float": 2.074074074074074,
+        "local_avg": "56/27",
+        "local_avg_float": 2.074074074074074
       },
       {
         "size": 60,
-        "greedy_avg": "89/45",
-        "greedy_avg_float": 1.9777777777777779,
-        "local_avg": "89/45",
-        "local_avg_float": 1.9777777777777779
+        "greedy_avg": "3527/1800",
+        "greedy_avg_float": 1.9594444444444445,
+        "local_avg": "148/75",
+        "local_avg_float": 1.9733333333333334
       },
       {
         "size": 90,
-        "greedy_avg": "754/405",
-        "greedy_avg_float": 1.8617283950617285,
-        "local_avg": "754/405",
-        "local_avg_float": 1.8617283950617285
+        "greedy_avg": "751/405",
+        "greedy_avg_float": 1.854320987654321,
+        "local_avg": "751/405",
+        "local_avg_float": 1.854320987654321
       }
     ],
-    "sunflower_count": 1620,
+    "sunflower_count": 0,
     "near_pencil_count": 36000,
     "verdict": "EVIDENCE: no search found a subset at scale beating 5*rho_avg"
   }

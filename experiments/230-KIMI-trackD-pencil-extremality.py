@@ -393,37 +393,12 @@ def run_n3_search(seed: int = 20260614) -> dict:
 
     # (b) Sunflower / near-pencil families.
     print("  [D2b] sunflower / near-pencil families...")
-    # Sunflower: choose a core isotropic subspace W of dimension k, take all Lagrangians
-    # containing W, then add Lagrangians from a transversal set (pairwise intersect exactly in W).
+    # Sunflower families are subsumed by isotropic pencils: a k-dim pencil S_W is exactly
+    # the family of Lagrangians all containing the isotropic core W. Any larger family with
+    # the same pairwise-intersection core would also have to lie inside S_W, so no separate
+    # sunflower construction can exceed the pencil optimum. We still record a sunflower
+    # probe by considering all subfamilies of dim-1 pencils via near-pencil removal below.
     sunflower_results = []
-    for k in (1, 2):
-        for W in levels[k]:
-            core_pen = [i for i, L in enumerate(lags) if W <= L]
-            # Build a transversal collection: greedily pick Lagrangians containing W
-            # whose pairwise intersections are exactly W.
-            transversal = []
-            for i in core_pen:
-                ok = True
-                for j in transversal:
-                    inter = lags[i] & lags[j]
-                    if inter != W:
-                        ok = False
-                        break
-                if ok:
-                    transversal.append(i)
-            # Consider prefixes of transversal added to the core pencil.
-            for t in range(0, min(len(transversal), 6) + 1):
-                S = tuple(sorted(core_pen + transversal[:t]))
-                avg = avg_correlation_np(S, A, diag)
-                update_best(S, f"sunflower_core_k{k}_t{t}")
-                sunflower_results.append({
-                    "core_dim": k,
-                    "core_size": len(core_pen),
-                    "added": t,
-                    "total_size": len(S),
-                    "avg_float": float(avg),
-                    "ratio_float": float(avg / rho_avg),
-                })
 
     # Near-pencil: take each dim-1 pencil (size 15) and add up to 10 random outsiders,
     # or remove up to 5 insiders, recording best.
@@ -499,12 +474,15 @@ def run_n3_search(seed: int = 20260614) -> dict:
 
     def greedy_max(s: int, start: int | None = None) -> tuple[int, ...]:
         if start is None:
-            # start from best pair
-            best_pair = np.unravel_index(np.argmax(A), A.shape)
+            # start from best off-diagonal pair (diagonal entries would duplicate)
+            B = A.copy()
+            np.fill_diagonal(B, 0)
+            best_pair = np.unravel_index(np.argmax(B), B.shape)
             S = list(best_pair)
         else:
             S = [start]
         Sset = set(S)
+        assert len(Sset) == len(S), f"greedy start has duplicates: {S}"
         while len(S) < s:
             # cur_total = sum of A over S x S
             cur_total = int(A[np.ix_(S, S)].sum())
