@@ -23,21 +23,22 @@ use polar_validation::{
     fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
     fixed_scl_path_domain_failure_label, fixed_scl_public_round_run_shape_certificate,
     fixed_scl_public_round_schedule_plan, fixed_scl_public_round_schedule_shape_plan,
-    fixed_scl_public_round_work_counts, fixed_scl_public_round_work_counts_with_capacities,
-    fixed_scl_public_round_work_shape_plan, fixed_scl_round_schedule_plan,
-    fixed_top_l_selection_domain_failure_label, high_noise_control_configs,
-    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
-    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
-    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
-    try_fixed_scl_integer_round_schedule, zero_error_upper_bound,
-    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
-    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
-    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundSchedulePlan,
-    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
-    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
-    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
-    FixedSclPathDomainFailureLabel, FixedSclPublicRoundSchedulePlan,
-    FixedSclPublicRoundScheduleRun, FixedSclPublicRoundScheduleShapePlan,
+    fixed_scl_public_round_shape_parity_check, fixed_scl_public_round_work_counts,
+    fixed_scl_public_round_work_counts_with_capacities, fixed_scl_public_round_work_shape_plan,
+    fixed_scl_round_schedule_plan, fixed_top_l_selection_domain_failure_label,
+    high_noise_control_configs, importance_results_to_json, polar_rate_row,
+    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
+    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
+    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
+    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
+    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
+    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
+    FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
+    FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
+    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
+    FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun,
+    FixedSclPublicRoundScheduleShapePlan, FixedSclPublicRoundShapeParityCheck,
     FixedSclPublicRoundWorkCounts, FixedSclPublicRoundWorkShapePlan, FixedSclRound, FixedTopLEntry,
     PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
@@ -255,6 +256,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("non-panicking multi-round public schedule wrapper"));
     assert!(json.contains("fixed_scl_public_round_run_shape_certificate"));
     assert!(json.contains("public run-shape certificate adapter"));
+    assert!(json.contains("fixed_scl_public_round_shape_parity_check"));
+    assert!(json.contains("public run/preflight shape parity record"));
     assert!(json.contains("fixed_scl_round_schedule_plan"));
     assert!(json.contains("execution-free FixedSclRound schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_schedule_plan"));
@@ -1204,6 +1207,44 @@ fn fixed_scl_path_buffer_try_public_round_schedule_rejects_invalid_bit_index() {
     assert_eq!(
         fixed_scl_public_round_run_shape_certificate(&run),
         fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 2>([2, 8])
+    );
+}
+
+#[test]
+fn fixed_scl_public_round_shape_parity_check_reports_match_and_mismatch() {
+    let mut parents = FixedSclPathBuffer::<2, 8>::new();
+    parents.set_candidate(0, 10, [0; 8]);
+    parents.set_candidate(1, 3, [1; 8]);
+
+    let rounds = [
+        FixedSclRound::new(2, 5, -1),
+        FixedSclRound::new(4, 7, 0),
+        FixedSclRound::new(5, 4, -2),
+    ];
+    let run = parents.try_expand_then_compact_public_rounds::<4, 4, 2, 3>(rounds);
+    let expected_shape_plan =
+        fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5]);
+
+    assert_eq!(
+        fixed_scl_public_round_shape_parity_check(&run, expected_shape_plan),
+        FixedSclPublicRoundShapeParityCheck {
+            matches: true,
+            run_shape_certificate: expected_shape_plan,
+            expected_shape_plan,
+        }
+    );
+
+    let mut altered_run = run;
+    altered_run.work_counts.rounds = 0;
+    let altered_certificate = fixed_scl_public_round_run_shape_certificate(&altered_run);
+
+    assert_eq!(
+        fixed_scl_public_round_shape_parity_check(&altered_run, expected_shape_plan),
+        FixedSclPublicRoundShapeParityCheck {
+            matches: false,
+            run_shape_certificate: altered_certificate,
+            expected_shape_plan,
+        }
     );
 }
 
