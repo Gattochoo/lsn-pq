@@ -30,26 +30,28 @@ use polar_validation::{
     fixed_scl_public_round_shape_parity_check, fixed_scl_public_round_work_counts,
     fixed_scl_public_round_work_counts_with_capacities, fixed_scl_public_round_work_shape_plan,
     fixed_scl_round_schedule_plan, fixed_scl_round_schedule_plan_certificate,
-    fixed_scl_round_schedule_plan_parity_check, fixed_top_l_selection_domain_failure_label,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
-    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    two_public_bits_run_shape_certificate, two_public_bits_shape_parity_check,
-    zero_error_upper_bound, FixedScheduleTopLSelectionDomainFailureLabel,
-    FixedScheduleTopLSelectionPlan, FixedSclBinaryChildWriteDomainCheck,
-    FixedSclChildWriteDomainFailureLabel, FixedSclChildWriteParityCheck,
-    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundScheduleBuildParityCheck,
-    FixedSclIntegerRoundScheduleBuildPlan, FixedSclIntegerRoundSchedulePlan,
-    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
-    FixedSclIntegerShapeParityCheck, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
-    FixedSclOneBitShapeParityCheck, FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    fixed_scl_round_schedule_plan_parity_check, fixed_scl_round_schedule_shape_parity_check,
+    fixed_scl_round_schedule_shape_plan, fixed_scl_round_schedule_shape_plan_certificate,
+    fixed_top_l_selection_domain_failure_label, high_noise_control_configs,
+    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
+    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
+    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
+    try_fixed_scl_integer_round_schedule, two_public_bits_run_shape_certificate,
+    two_public_bits_shape_parity_check, zero_error_upper_bound,
+    FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
+    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
+    FixedSclChildWriteParityCheck, FixedSclIntegerRoundScheduleBuild,
+    FixedSclIntegerRoundScheduleBuildParityCheck, FixedSclIntegerRoundScheduleBuildPlan,
+    FixedSclIntegerRoundSchedulePlan, FixedSclIntegerScheduleDomainCheck,
+    FixedSclIntegerScheduleDomainFailureLabel, FixedSclIntegerShapeParityCheck,
+    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclOneBitShapeParityCheck,
+    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
     FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
     FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun,
     FixedSclPublicRoundScheduleShapePlan, FixedSclPublicRoundShapeParityCheck,
     FixedSclPublicRoundWorkCounts, FixedSclPublicRoundWorkShapePlan, FixedSclRound,
-    FixedSclRoundSchedulePlanParityCheck, FixedTopLEntry, PolarCode,
-    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FixedSclRoundSchedulePlanParityCheck, FixedSclRoundScheduleShapeParityCheck, FixedTopLEntry,
+    PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
     FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
@@ -281,6 +283,8 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("execution-free FixedSclRound schedule preflight"));
     assert!(json.contains("fixed_scl_round_schedule_plan_parity_check"));
     assert!(json.contains("FixedSclRound schedule/public preflight parity record"));
+    assert!(json.contains("fixed_scl_round_schedule_shape_parity_check"));
+    assert!(json.contains("FixedSclRound schedule/public shape parity record"));
     assert!(json.contains("fixed_scl_public_round_schedule_plan"));
     assert!(json.contains("execution-free public schedule preflight"));
     assert!(json.contains("fixed_scl_public_round_schedule_shape_plan"));
@@ -1651,6 +1655,51 @@ fn fixed_scl_round_schedule_plan_parity_check_reports_match_and_mismatch() {
             matches: false,
             round_schedule_plan,
             expected_public_plan: altered_expected_public_plan,
+        }
+    );
+}
+
+#[test]
+fn fixed_scl_round_schedule_shape_parity_check_reports_match_and_mismatch() {
+    let rounds = [
+        FixedSclRound::new(2, 5, -1),
+        FixedSclRound::new(4, 7, 0),
+        FixedSclRound::new(5, 4, -2),
+    ];
+    let expected_shape_plan =
+        fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>([2, 4, 5]);
+
+    assert_eq!(
+        fixed_scl_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>(rounds),
+        expected_shape_plan,
+    );
+
+    assert_eq!(
+        fixed_scl_round_schedule_shape_parity_check::<2, 8, 4, 4, 2, 3>(
+            rounds,
+            expected_shape_plan,
+        ),
+        FixedSclRoundScheduleShapeParityCheck {
+            matches: true,
+            round_shape_plan: expected_shape_plan,
+            expected_shape_plan,
+        }
+    );
+
+    let altered_expected_shape_plan =
+        fixed_scl_public_round_schedule_shape_plan::<2, 8, 4, 4, 2, 3>([2, 8, 5]);
+    let round_shape_plan =
+        fixed_scl_round_schedule_shape_plan_certificate::<2, 8, 4, 4, 2, 3>(rounds);
+
+    assert_eq!(
+        fixed_scl_round_schedule_shape_parity_check::<2, 8, 4, 4, 2, 3>(
+            rounds,
+            altered_expected_shape_plan,
+        ),
+        FixedSclRoundScheduleShapeParityCheck {
+            matches: false,
+            round_shape_plan,
+            expected_shape_plan: altered_expected_shape_plan,
         }
     );
 }

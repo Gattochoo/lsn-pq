@@ -324,6 +324,13 @@ pub struct FixedSclRoundSchedulePlanParityCheck {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclRoundScheduleShapeParityCheck {
+    pub matches: bool,
+    pub round_shape_plan: FixedSclPublicRoundScheduleShapePlan,
+    pub expected_shape_plan: FixedSclPublicRoundScheduleShapePlan,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct FixedSclPublicRoundScheduleShapePlan {
     pub valid: bool,
     pub path_domain_check: FixedSclPathBufferScheduleDomainCheck,
@@ -1068,6 +1075,65 @@ pub fn fixed_scl_round_schedule_plan_parity_check<
     }
 }
 
+pub fn fixed_scl_round_schedule_shape_plan<
+    const CAP: usize,
+    const N: usize,
+    const FIRST_CHILD_CAP: usize,
+    const CHILD_CAP: usize,
+    const L: usize,
+    const ROUNDS: usize,
+>(
+    rounds: [FixedSclRound; ROUNDS],
+) -> FixedSclPublicRoundScheduleShapePlan {
+    let mut bit_indices = [0usize; ROUNDS];
+    for (index, round) in rounds.iter().enumerate() {
+        bit_indices[index] = round.bit_index;
+    }
+    fixed_scl_public_round_schedule_shape_plan::<CAP, N, FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(
+        bit_indices,
+    )
+}
+
+pub fn fixed_scl_round_schedule_shape_plan_certificate<
+    const CAP: usize,
+    const N: usize,
+    const FIRST_CHILD_CAP: usize,
+    const CHILD_CAP: usize,
+    const L: usize,
+    const ROUNDS: usize,
+>(
+    rounds: [FixedSclRound; ROUNDS],
+) -> FixedSclPublicRoundScheduleShapePlan {
+    fixed_scl_round_schedule_shape_plan::<CAP, N, FIRST_CHILD_CAP, CHILD_CAP, L, ROUNDS>(rounds)
+}
+
+pub fn fixed_scl_round_schedule_shape_parity_check<
+    const CAP: usize,
+    const N: usize,
+    const FIRST_CHILD_CAP: usize,
+    const CHILD_CAP: usize,
+    const L: usize,
+    const ROUNDS: usize,
+>(
+    rounds: [FixedSclRound; ROUNDS],
+    expected_shape_plan: FixedSclPublicRoundScheduleShapePlan,
+) -> FixedSclRoundScheduleShapeParityCheck {
+    let round_shape_plan = fixed_scl_round_schedule_shape_plan_certificate::<
+        CAP,
+        N,
+        FIRST_CHILD_CAP,
+        CHILD_CAP,
+        L,
+        ROUNDS,
+    >(rounds);
+
+    FixedSclRoundScheduleShapeParityCheck {
+        matches: round_shape_plan == expected_shape_plan,
+        round_shape_plan,
+        expected_shape_plan,
+    }
+}
+
 pub fn fixed_scl_public_round_work_counts(
     parent_capacity: usize,
     child_capacity: usize,
@@ -1735,6 +1801,9 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"fixed_scl_round_schedule_plan: execution-free FixedSclRound schedule preflight that extracts public bit indices and pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_round_schedule_plan_certificate: FixedSclRound schedule/public preflight certificate adapter that extracts public bit-index shape only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_round_schedule_plan_parity_check: FixedSclRound schedule/public preflight parity record that compares round-derived public shape with explicit public bit-index preflight only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_round_schedule_shape_plan: execution-free FixedSclRound schedule-shape preflight that extracts public bit indices and pairs path-domain status with top-L work-shape envelopes only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_round_schedule_shape_plan_certificate: FixedSclRound schedule/public shape certificate adapter that extracts public bit-index shape and top-L envelopes only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_round_schedule_shape_parity_check: FixedSclRound schedule/public shape parity record that compares round-derived public top-L envelopes with explicit public bit-index shape preflight only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_schedule_plan: execution-free public schedule preflight that pairs path-domain status with public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_schedule_shape_plan: execution-free public schedule shape certificate that pairs path-domain status with first/repeated top-L preflights and public work counts only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
