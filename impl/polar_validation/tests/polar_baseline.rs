@@ -21,17 +21,18 @@ use polar_validation::{
     fixed_scl_integer_round_schedule, fixed_scl_integer_schedule_domain_check,
     fixed_scl_integer_schedule_domain_failure_label, fixed_scl_path_buffer_schedule_domain_check,
     fixed_scl_path_domain_failure_label, fixed_scl_public_round_work_counts,
-    high_noise_control_configs, importance_results_to_json, polar_rate_row,
-    polar_rate_rows_to_json, results_to_json, results_to_json_with_decoder,
-    scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl, simulate_bsc_scl_fast,
-    simulate_bsc_scl_fast_importance, target_n2048_configs, try_fixed_scl_integer_round_schedule,
-    zero_error_upper_bound, FixedSclBinaryChildWriteDomainCheck,
-    FixedSclChildWriteDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
-    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
-    FixedSclMetricDeltas, FixedSclOneBitExpansionRun, FixedSclPathBuffer,
-    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
-    FixedSclPathDomainFailureLabel, FixedSclPublicRoundScheduleRun, FixedSclRound, FixedTopLEntry,
-    PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    fixed_scl_public_round_work_counts_with_capacities, high_noise_control_configs,
+    importance_results_to_json, polar_rate_row, polar_rate_rows_to_json, results_to_json,
+    results_to_json_with_decoder, scl_work_shape_audit_json, simulate_bsc_sc, simulate_bsc_scl,
+    simulate_bsc_scl_fast, simulate_bsc_scl_fast_importance, target_n2048_configs,
+    try_fixed_scl_integer_round_schedule, zero_error_upper_bound,
+    FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
+    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerScheduleDomainCheck,
+    FixedSclIntegerScheduleDomainFailureLabel, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
+    FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
+    FixedSclPublicRoundScheduleRun, FixedSclRound, FixedTopLEntry, PolarCode,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
     FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
@@ -280,6 +281,11 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("\"top_l_compare_exchanges\": 18"));
     assert!(json.contains("\"child_slots_written\": 12"));
     assert!(json.contains("\"compacted_slots_written\": 6"));
+    assert!(json.contains("fixed_scl_public_round_work_counts_with_capacities"));
+    assert!(json.contains("\"first_child_capacity\": 6"));
+    assert!(json.contains("\"repeated_child_capacity\": 4"));
+    assert!(json.contains("\"top_l_compare_exchanges\": 27"));
+    assert!(json.contains("\"child_slots_written\": 14"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
@@ -1271,6 +1277,17 @@ fn fixed_scl_public_round_work_counts_are_public_parameters() {
     assert_eq!(counts.top_l_compare_exchanges, 18);
     assert_eq!(counts.child_slots_written, 12);
     assert_eq!(counts.compacted_slots_written, 6);
+
+    let mixed_counts = fixed_scl_public_round_work_counts_with_capacities(3, 6, 4, 2, 3);
+
+    assert_eq!(mixed_counts.parent_capacity, 3);
+    assert_eq!(mixed_counts.rounds, 3);
+    assert_eq!(mixed_counts.first_child_capacity, 6);
+    assert_eq!(mixed_counts.repeated_child_capacity, 4);
+    assert_eq!(mixed_counts.list_size, 2);
+    assert_eq!(mixed_counts.top_l_compare_exchanges, 27);
+    assert_eq!(mixed_counts.child_slots_written, 14);
+    assert_eq!(mixed_counts.compacted_slots_written, 6);
 }
 
 #[test]

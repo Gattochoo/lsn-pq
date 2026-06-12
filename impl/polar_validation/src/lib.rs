@@ -870,16 +870,34 @@ pub fn fixed_scl_public_round_work_counts(
     list_size: usize,
     rounds: usize,
 ) -> FixedSclPublicRoundWorkCounts {
+    fixed_scl_public_round_work_counts_with_capacities(
+        parent_capacity,
+        child_capacity,
+        child_capacity,
+        list_size,
+        rounds,
+    )
+}
+
+pub fn fixed_scl_public_round_work_counts_with_capacities(
+    parent_capacity: usize,
+    first_child_capacity: usize,
+    repeated_child_capacity: usize,
+    list_size: usize,
+    rounds: usize,
+) -> FixedSclPublicRoundWorkCounts {
     let repeated_rounds = rounds.saturating_sub(1);
     FixedSclPublicRoundWorkCounts {
         parent_capacity,
-        first_child_capacity: child_capacity,
-        repeated_child_capacity: child_capacity,
+        first_child_capacity,
+        repeated_child_capacity,
         list_size,
         rounds,
-        top_l_compare_exchanges: fixed_schedule_top_l_compare_count(child_capacity).saturating_add(
-            repeated_rounds.saturating_mul(fixed_schedule_top_l_compare_count(child_capacity)),
-        ),
+        top_l_compare_exchanges: fixed_schedule_top_l_compare_count(first_child_capacity)
+            .saturating_add(
+                repeated_rounds
+                    .saturating_mul(fixed_schedule_top_l_compare_count(repeated_child_capacity)),
+            ),
         child_slots_written: parent_capacity
             .saturating_mul(2)
             .saturating_add(repeated_rounds.saturating_mul(list_size.saturating_mul(2))),
@@ -1225,6 +1243,7 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "    \"FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"try_expand_then_compact_public_rounds: non-panicking multi-round public schedule wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending\",\n",
+        "    \"fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending\",\n",
         "    \"fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending\",\n",
@@ -1244,6 +1263,18 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "      \"child_slots_written\": 12,\n",
         "      \"compacted_slots_written\": 6,\n",
         "      \"source\": \"fixed_scl_public_round_work_counts(2, 4, 2, 3)\"\n",
+        "    },\n",
+        "    {\n",
+        "      \"label\": \"parent_capacity_3_first_child_6_repeated_child_4_list_size_2_rounds_3\",\n",
+        "      \"parent_capacity\": 3,\n",
+        "      \"first_child_capacity\": 6,\n",
+        "      \"repeated_child_capacity\": 4,\n",
+        "      \"list_size\": 2,\n",
+        "      \"rounds\": 3,\n",
+        "      \"top_l_compare_exchanges\": 27,\n",
+        "      \"child_slots_written\": 14,\n",
+        "      \"compacted_slots_written\": 6,\n",
+        "      \"source\": \"fixed_scl_public_round_work_counts_with_capacities(3, 6, 4, 2, 3)\"\n",
         "    }\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",

@@ -70,6 +70,7 @@
     "FixedSclRound + expand_then_compact_public_rounds: public round schedule source-level prototype only; not wired into decode_scl; generated-code and timing audit pending",
     "try_expand_then_compact_public_rounds: non-panicking multi-round public schedule wrapper that returns public path-domain status; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_public_round_work_counts: public work-count audit for fixed SCL schedule parameters only; not wired into decode_scl; generated-code and timing audit pending",
+    "fixed_scl_public_round_work_counts_with_capacities: public work-count audit with separate first and repeated child capacities only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_integer_metric_deltas: integer metric delta audit for hard-bit penalties and frozen branch forbidding only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_integer_round_schedule: public integer round schedule audit from hard-bit penalties into FixedSclRound arrays only; not wired into decode_scl; generated-code and timing audit pending",
     "fixed_scl_integer_schedule_domain_check: active integer schedule domain validator for hard-bit and non-negative magnitude inputs only; not wired into decode_scl; generated-code and timing audit pending",
@@ -89,6 +90,18 @@
       "child_slots_written": 12,
       "compacted_slots_written": 6,
       "source": "fixed_scl_public_round_work_counts(2, 4, 2, 3)"
+    },
+    {
+      "label": "parent_capacity_3_first_child_6_repeated_child_4_list_size_2_rounds_3",
+      "parent_capacity": 3,
+      "first_child_capacity": 6,
+      "repeated_child_capacity": 4,
+      "list_size": 2,
+      "rounds": 3,
+      "top_l_compare_exchanges": 27,
+      "child_slots_written": 14,
+      "compacted_slots_written": 6,
+      "source": "fixed_scl_public_round_work_counts_with_capacities(3, 6, 4, 2, 3)"
     }
   ],
   "required_action": "fixed-schedule integer decoder plan required before replacing ct-003",
