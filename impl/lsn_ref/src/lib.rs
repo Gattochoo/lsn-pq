@@ -219,10 +219,6 @@ impl FixedLagrangian {
     pub fn contains_u8(&self, point: u32) -> u8 {
         (self.contains_mask(point) & 1) as u8
     }
-
-    pub fn contains_u8_scanned(&self, point: u32) -> u8 {
-        (self.contains_mask_scanned(point) & 1) as u8
-    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -290,7 +286,7 @@ pub fn toy_kat_vector(
         block_majorities(&selected_indices, &public_labels, params.repetition);
     let clean_membership_labels = public_points
         .iter()
-        .map(|&point| fixed_secret.contains_u8_scanned(point))
+        .map(|&point| fixed_secret.contains_u8(point))
         .collect::<Vec<_>>();
     let clean_majority_bits = block_majorities(
         &selected_indices,
@@ -351,7 +347,7 @@ pub fn toy_wrong_secret_control(
     let wrong_secret_labels = honest
         .public_points
         .iter()
-        .map(|&point| fixed_wrong_secret.contains_u8_scanned(point))
+        .map(|&point| fixed_wrong_secret.contains_u8(point))
         .collect::<Vec<_>>();
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
@@ -434,7 +430,7 @@ pub fn toy_divergent_wrong_secret_control(
     let wrong_secret_labels = honest
         .public_points
         .iter()
-        .map(|&point| fixed_wrong_secret.contains_u8_scanned(point))
+        .map(|&point| fixed_wrong_secret.contains_u8(point))
         .collect::<Vec<_>>();
     let wrong_secret_clean_majority_bits = block_majorities(
         &honest.selected_indices,
@@ -571,7 +567,7 @@ fn toy_kat_from_parts(
     let fixed_secret = FixedLagrangian::from_lagrangian(params.n, secret);
     let clean_membership_labels = public_points
         .iter()
-        .map(|&point| fixed_secret.contains_u8_scanned(point))
+        .map(|&point| fixed_secret.contains_u8(point))
         .collect::<Vec<_>>();
     let clean_majority_bits = block_majorities(
         &selected_indices,
@@ -745,7 +741,7 @@ pub fn constant_time_inventory_json() -> &'static str {
         "      \"id\": \"ct-001\",\n",
         "      \"surface\": \"Lagrangian membership representation\",\n",
         "      \"classification\": \"partial_fixed_layout_scaffold_not_production_ct\",\n",
-        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, and scanned mask lookup for toy membership label generation, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
+        "      \"issue\": \"FixedLagrangian bitset scaffold now enforces the exact public Lagrangian point count, uses full-slice masked range validation, fixed max-word backing storage, and derives toy membership labels through contains_mask plus scanned mask lookup, and has an explicit bounded reference layout via LSN_REF_MAX_FIXED_LAGRANGIAN_N, but diagnostic selectors, bounded toy sizing, and leakage audit remain non-production\",\n",
         "      \"required_action\": \"replace diagnostic membership, replace the bounded toy layout with a reviewed production-sized layout, check generated code for data-oblivious access, and run an independent timing/leakage audit before any production claim\"\n",
         "    },\n",
         "    {\n",
@@ -1086,7 +1082,7 @@ fn public_samples(
         let point = sample_rng.next_index(universe) as u32;
         let noisy = noise_rng.next_f64() < params.public_noise_rate;
         points.push(point);
-        labels.push(fixed_secret.contains_u8_scanned(point) ^ u8::from(noisy));
+        labels.push(fixed_secret.contains_u8(point) ^ u8::from(noisy));
     }
 
     (points, labels)

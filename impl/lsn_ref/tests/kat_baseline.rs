@@ -59,11 +59,14 @@ fn fixed_lagrangian_scanned_membership_matches_direct_membership() {
             fixed.contains_mask_scanned(point),
             fixed.contains_mask(point)
         );
-        assert_eq!(fixed.contains_u8_scanned(point), fixed.contains_u8(point));
+        assert_eq!(
+            (fixed.contains_mask_scanned(point) & 1) as u8,
+            fixed.contains_u8(point)
+        );
     }
 
     assert_eq!(fixed.contains_mask_scanned(256), 0);
-    assert_eq!(fixed.contains_u8_scanned(256), 0);
+    assert_eq!((fixed.contains_mask_scanned(256) & 1) as u8, 0);
 }
 
 #[test]
@@ -95,6 +98,7 @@ fn fixed_lagrangian_source_avoids_secret_dependent_word_indexing() {
     ));
     assert!(source.contains("words: [u64; LSN_REF_FIXED_LAGRANGIAN_WORDS]"));
     assert!(source.contains("contains_mask_scanned"));
+    assert!(!source.contains("contains_u8_scanned"));
     assert!(source.contains("PointCountMismatch"));
 }
 

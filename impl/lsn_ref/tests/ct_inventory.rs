@@ -32,6 +32,7 @@ fn ct_inventory_marks_current_reference_as_non_production() {
     assert!(json.contains("exact public Lagrangian point count"));
     assert!(json.contains("full-slice masked range validation"));
     assert!(json.contains("fixed max-word backing storage"));
+    assert!(json.contains("derives toy membership labels through contains_mask"));
     assert!(json.contains("scanned mask lookup"));
     assert!(json.contains("bounded reference layout"));
     assert!(json.contains("LSN_REF_MAX_FIXED_LAGRANGIAN_N"));
