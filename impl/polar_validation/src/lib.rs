@@ -886,6 +886,7 @@ pub fn fixed_scl_public_round_work_counts_with_capacities(
     list_size: usize,
     rounds: usize,
 ) -> FixedSclPublicRoundWorkCounts {
+    let first_rounds = usize::from(rounds > 0);
     let repeated_rounds = rounds.saturating_sub(1);
     FixedSclPublicRoundWorkCounts {
         parent_capacity,
@@ -893,12 +894,14 @@ pub fn fixed_scl_public_round_work_counts_with_capacities(
         repeated_child_capacity,
         list_size,
         rounds,
-        top_l_compare_exchanges: fixed_schedule_top_l_compare_count(first_child_capacity)
+        top_l_compare_exchanges: first_rounds
+            .saturating_mul(fixed_schedule_top_l_compare_count(first_child_capacity))
             .saturating_add(
                 repeated_rounds
                     .saturating_mul(fixed_schedule_top_l_compare_count(repeated_child_capacity)),
             ),
-        child_slots_written: parent_capacity
+        child_slots_written: first_rounds
+            .saturating_mul(parent_capacity)
             .saturating_mul(2)
             .saturating_add(repeated_rounds.saturating_mul(list_size.saturating_mul(2))),
         compacted_slots_written: rounds.saturating_mul(list_size),
@@ -1275,6 +1278,18 @@ pub fn scl_work_shape_audit_json() -> &'static str {
         "      \"child_slots_written\": 14,\n",
         "      \"compacted_slots_written\": 6,\n",
         "      \"source\": \"fixed_scl_public_round_work_counts_with_capacities(3, 6, 4, 2, 3)\"\n",
+        "    },\n",
+        "    {\n",
+        "      \"label\": \"zero_rounds_no_expansion_work\",\n",
+        "      \"parent_capacity\": 3,\n",
+        "      \"first_child_capacity\": 6,\n",
+        "      \"repeated_child_capacity\": 4,\n",
+        "      \"list_size\": 2,\n",
+        "      \"rounds\": 0,\n",
+        "      \"top_l_compare_exchanges\": 0,\n",
+        "      \"child_slots_written\": 0,\n",
+        "      \"compacted_slots_written\": 0,\n",
+        "      \"source\": \"fixed_scl_public_round_work_counts_with_capacities(3, 6, 4, 2, 0)\"\n",
         "    }\n",
         "  ],\n",
         "  \"required_action\": \"fixed-schedule integer decoder plan required before replacing ct-003\",\n",

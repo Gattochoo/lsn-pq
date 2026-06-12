@@ -286,6 +286,9 @@ fn scl_work_shape_audit_records_non_constant_time_surfaces() {
     assert!(json.contains("\"repeated_child_capacity\": 4"));
     assert!(json.contains("\"top_l_compare_exchanges\": 27"));
     assert!(json.contains("\"child_slots_written\": 14"));
+    assert!(json.contains("zero_rounds_no_expansion_work"));
+    assert!(json.contains("\"top_l_compare_exchanges\": 0"));
+    assert!(json.contains("\"child_slots_written\": 0"));
     assert!(json.contains("source-level fixed schedule only"));
     assert!(json.contains("not wired into decode_scl"));
 }
@@ -1288,6 +1291,17 @@ fn fixed_scl_public_round_work_counts_are_public_parameters() {
     assert_eq!(mixed_counts.top_l_compare_exchanges, 27);
     assert_eq!(mixed_counts.child_slots_written, 14);
     assert_eq!(mixed_counts.compacted_slots_written, 6);
+
+    let empty_counts = fixed_scl_public_round_work_counts_with_capacities(3, 6, 4, 2, 0);
+
+    assert_eq!(empty_counts.parent_capacity, 3);
+    assert_eq!(empty_counts.rounds, 0);
+    assert_eq!(empty_counts.first_child_capacity, 6);
+    assert_eq!(empty_counts.repeated_child_capacity, 4);
+    assert_eq!(empty_counts.list_size, 2);
+    assert_eq!(empty_counts.top_l_compare_exchanges, 0);
+    assert_eq!(empty_counts.child_slots_written, 0);
+    assert_eq!(empty_counts.compacted_slots_written, 0);
 }
 
 #[test]
