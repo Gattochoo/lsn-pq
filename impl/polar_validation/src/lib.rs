@@ -173,8 +173,39 @@ pub fn fixed_scl_integer_schedule_domain_failure_label(code: u8) -> &'static str
     "unknown"
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct FixedSclIntegerMetricDomainFailureLabel {
+    pub code: u8,
+    pub name: &'static str,
+    pub meaning: &'static str,
+}
+
+pub const FIXED_SCL_INTEGER_METRIC_DOMAIN_FAILURE_LABELS:
+    [FixedSclIntegerMetricDomainFailureLabel; 3] = [
+    FixedSclIntegerMetricDomainFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+        name: "ok",
+        meaning: "valid public integer metric inputs",
+    },
+    FixedSclIntegerMetricDomainFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+        name: "hard_bit",
+        meaning: "hard decisions must be public bits",
+    },
+    FixedSclIntegerMetricDomainFailureLabel {
+        code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+        name: "magnitude",
+        meaning: "integer metric magnitudes must be non-negative",
+    },
+];
+
 pub fn fixed_scl_integer_metric_domain_failure_label(code: u8) -> &'static str {
-    fixed_scl_integer_schedule_domain_failure_label(code)
+    for label in FIXED_SCL_INTEGER_METRIC_DOMAIN_FAILURE_LABELS {
+        if label.code == code {
+            return label.name;
+        }
+    }
+    "unknown"
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

@@ -47,21 +47,23 @@ use polar_validation::{
     FixedScheduleTopLSelectionDomainFailureLabel, FixedScheduleTopLSelectionPlan,
     FixedSclBinaryChildWriteDomainCheck, FixedSclChildWriteDomainFailureLabel,
     FixedSclChildWriteParityCheck, FixedSclIntegerMetricDeltaRun, FixedSclIntegerMetricDomainCheck,
-    FixedSclIntegerRoundScheduleBuild, FixedSclIntegerRoundScheduleBuildParityCheck,
-    FixedSclIntegerRoundScheduleBuildPlan, FixedSclIntegerRoundSchedulePlan,
-    FixedSclIntegerRoundScheduleShapePlan, FixedSclIntegerScheduleDomainCheck,
-    FixedSclIntegerScheduleDomainFailureLabel, FixedSclIntegerScheduleShapeFailureLabel,
-    FixedSclIntegerScheduleShapeParityCheck, FixedSclIntegerShapeParityCheck, FixedSclMetricDeltas,
-    FixedSclOneBitExpansionRun, FixedSclOneBitShapeParityCheck, FixedSclPathBuffer,
-    FixedSclPathBufferIntegerScheduleRun, FixedSclPathBufferScheduleDomainCheck,
-    FixedSclPathDomainFailureLabel, FixedSclPublicRoundSchedulePlan,
-    FixedSclPublicRoundScheduleRun, FixedSclPublicRoundScheduleShapeFailureLabel,
-    FixedSclPublicRoundScheduleShapePlan, FixedSclPublicRoundShapeParityCheck,
-    FixedSclPublicRoundWorkCounts, FixedSclPublicRoundWorkShapePlan, FixedSclRound,
-    FixedSclRoundSchedulePlanParityCheck, FixedSclRoundScheduleShapeParityCheck, FixedTopLEntry,
-    PolarCode, FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
+    FixedSclIntegerMetricDomainFailureLabel, FixedSclIntegerRoundScheduleBuild,
+    FixedSclIntegerRoundScheduleBuildParityCheck, FixedSclIntegerRoundScheduleBuildPlan,
+    FixedSclIntegerRoundSchedulePlan, FixedSclIntegerRoundScheduleShapePlan,
+    FixedSclIntegerScheduleDomainCheck, FixedSclIntegerScheduleDomainFailureLabel,
+    FixedSclIntegerScheduleShapeFailureLabel, FixedSclIntegerScheduleShapeParityCheck,
+    FixedSclIntegerShapeParityCheck, FixedSclMetricDeltas, FixedSclOneBitExpansionRun,
+    FixedSclOneBitShapeParityCheck, FixedSclPathBuffer, FixedSclPathBufferIntegerScheduleRun,
+    FixedSclPathBufferScheduleDomainCheck, FixedSclPathDomainFailureLabel,
+    FixedSclPublicRoundSchedulePlan, FixedSclPublicRoundScheduleRun,
+    FixedSclPublicRoundScheduleShapeFailureLabel, FixedSclPublicRoundScheduleShapePlan,
+    FixedSclPublicRoundShapeParityCheck, FixedSclPublicRoundWorkCounts,
+    FixedSclPublicRoundWorkShapePlan, FixedSclRound, FixedSclRoundSchedulePlanParityCheck,
+    FixedSclRoundScheduleShapeParityCheck, FixedTopLEntry, PolarCode,
+    FIXED_SCL_CHILD_WRITE_DOMAIN_BIT_INDEX, FIXED_SCL_CHILD_WRITE_DOMAIN_DST_CAPACITY,
     FIXED_SCL_CHILD_WRITE_DOMAIN_FAILURE_LABELS, FIXED_SCL_CHILD_WRITE_DOMAIN_OK,
     FIXED_SCL_CHILD_WRITE_DOMAIN_PARENT_SLOT, FIXED_SCL_FORBIDDEN_METRIC_DELTA,
+    FIXED_SCL_INTEGER_METRIC_DOMAIN_FAILURE_LABELS,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_FAILURE_LABELS, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
     FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE, FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
     FIXED_SCL_INTEGER_SCHEDULE_SHAPE_FAILURE_FAMILY_INTEGER_DOMAIN,
@@ -520,6 +522,38 @@ fn fixed_scl_integer_schedule_domain_failure_labels_cover_public_codes() {
     );
     assert_eq!(
         fixed_scl_integer_schedule_domain_failure_label(255),
+        "unknown"
+    );
+}
+
+#[test]
+fn fixed_scl_integer_metric_domain_failure_labels_cover_primitive_codes() {
+    assert_eq!(
+        FIXED_SCL_INTEGER_METRIC_DOMAIN_FAILURE_LABELS,
+        [
+            FixedSclIntegerMetricDomainFailureLabel {
+                code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_OK,
+                name: "ok",
+                meaning: "valid public integer metric inputs",
+            },
+            FixedSclIntegerMetricDomainFailureLabel {
+                code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_HARD_BIT,
+                name: "hard_bit",
+                meaning: "hard decisions must be public bits",
+            },
+            FixedSclIntegerMetricDomainFailureLabel {
+                code: FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE,
+                name: "magnitude",
+                meaning: "integer metric magnitudes must be non-negative",
+            },
+        ]
+    );
+    assert_eq!(
+        fixed_scl_integer_metric_domain_failure_label(FIXED_SCL_INTEGER_SCHEDULE_DOMAIN_MAGNITUDE),
+        "magnitude"
+    );
+    assert_eq!(
+        fixed_scl_integer_metric_domain_failure_label(255),
         "unknown"
     );
 }
