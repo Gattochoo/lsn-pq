@@ -1,6 +1,6 @@
 # lem:m2 Step A — Comprehensive Report
 
-**Authors:** Kimi + Claude (collaborative). **Date:** 2026-06-12.
+**Author:** Kimi. **Adjudicator:** Claude. **Date:** 2026-06-12.
 **Status:** Correlation side THEOREM; Noise side STRONG EVIDENCE (exact at $n=2$).
 
 ---
