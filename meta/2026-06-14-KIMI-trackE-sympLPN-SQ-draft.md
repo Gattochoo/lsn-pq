@@ -90,14 +90,21 @@ $$
 =\E_L\Bigl[\frac{1}{2^n-1}\sum_{v\in L\setminus\{0\}}(-1)^{\langle\mathbf{1}_S,v\rangle}\Bigr].
 $$
 
-For a fixed Lagrangian $L$,
+For a fixed Lagrangian $L$, let $J$ be the Gram matrix of the symplectic form
+$\Omega$ (so $J\mathbf{1}_S$ is $\mathbf{1}_S$ with coordinate-pairs swapped).
+Because the symplectic dual of $L$ is $L^{\perp_\Omega}=JL$ and $L$ is
+Lagrangian,
 
 $$
 \sum_{v\in L}(-1)^{\langle\mathbf{1}_S,v\rangle}
-=2^n\cdot\mathbf{1}_{\{\mathbf{1}_S\in L\}},
+=2^n\cdot\mathbf{1}_{\{J\mathbf{1}_S\in L\}}.
 $$
 
-because $L=L^{\perp_\Omega}$.  By $\Sp(2n,\F_2)$-transitivity on non-zero vectors, $\Pr_L[\mathbf{1}_S\in L]=1/(2^n+1)$ for any non-empty $S$.  Thus
+(The naive claim with $\mathbf{1}_S\in L$ instead of $J\mathbf{1}_S\in L$ is false;
+for example $L=\mathrm{span}\{e_1,e_2\}$ and $S=\{1\}$ gives sum $0$ while
+$\mathbf{1}_S\in L$.)  By $\Sp(2n,\F_2)$-transitivity on non-zero vectors,
+$\Pr_L[J\mathbf{1}_S\in L]=1/(2^n+1)$ for any non-empty $S$, and the same
+holds for $\mathbf{1}_S$ because $J$ is invertible.  Thus
 
 $$
 \frac{1}{2^n-1}\Bigl(2^n\cdot\frac{1}{2^n+1}-1\Bigr)
@@ -142,71 +149,75 @@ This is the sympLPN analogue of the membership-formulation exact correlation.  T
 
 ---
 
-## 6. SDA bound and Feldman query lower bound
+## 6. Corrected SDA/Feldman lower bound
+
+**Status of the first-draft §6.**  The original bundle-query application had
+three defects: (i) it used a restricted query class in the unrestricted SQ
+theorem of Feldman et al.; (ii) it ignored the singleton-diagonal correlation
+$\beta=(1+\tau)^{2n}-1$, which dominates any subset containing a single secret;
+(iii) it did not check that the resulting VSTAT parameter stays above $1$.
+The corrected bound below uses the full likelihood-ratio query class and an
+honest range check.
 
 We apply Feldman et al. as restated in the paper (`thm:feldman`):
 
 > If $\SDA(B(\mathcal{D},D_0),\gamma)=d$, any SQ algorithm distinguishing $\mathcal{D}$ from $D_0$ with success probability $\alpha>1/2$ requires $q\ge (2\alpha-1)d$ queries to $\VSTAT(1/(3\gamma))$.
 
-Take $\alpha=2/3$ as in the paper, so $q\ge d/3$.
+Take $\alpha=2/3$, so $q\ge d/3$.
 
-### 6.1 Using $k$-row bundle queries
+### 6.1 Full likelihood-ratio query class
 
-For fixed $k$, the worst-case subset of secrets of size $|S|$ has average absolute correlation
-
-$$
-\rho_{\mathrm{avg}}^{(k)}(S)
-\le \frac{(1-2p)^{2k}}{|S|}\Bigl(1+\frac{|S|-1}{2^{2n}-1}\Bigr)
-\le \frac{2(1-2p)^{2k}}{|S|}
-\quad\text{for }|S|\le 2^{2n}.
-$$
-
-Setting $|S|=2^{n-t}$ and $\gamma=2(1-2p)^{2k}/2^{n-t}$ gives
+With $\tau=(1-2p)^2$ and $\beta=(1+\tau)^{2n}-1$, the likelihood-ratio
+self-correlation is $\beta$ and the off-diagonal correlation has magnitude
+$\beta/(2^{2n}-1)$.  For any subset $\mathcal{S}$ of secrets with
+$|\mathcal{S}|\ge 2^{n-t}$, the average absolute correlation is at most
 
 $$
-\SDA\bigl(B(\{D_x\},D_0),\gamma\bigr)\ge 2^{n-t},
+\gamma_t
+\;:=\;
+\frac{2\beta}{2^{n-t}}.
 $$
 
-and hence
+Hence
 
 $$
-q\ge \frac{1}{3}\cdot 2^{n-t}
-\quad\text{queries to}\quad
-\VSTAT\!\left(\frac{2^{n-t}}{6(1-2p)^{2k}}\right).
-$$
-
-At $t=0$ (full secret space):
-
-$$
-\boxed{\;q\ge 2^{n-\log_2 3}\text{ queries to }\VSTAT\!\left(\frac{2^n}{6(1-2p)^{2k}}\right).\;}
-$$
-
-For constant $k$ and constant $p<1/2$, this is an exponential query lower bound with exponential VSTAT strength.
-
-### 6.2 Using full likelihood ratio
-
-With $\tau=(1-2p)^2$, the average absolute correlation over the full secret space is
-
-$$
-\bar\rho
-=\frac{(1+\tau)^{2n}}{2^n}\cdot\frac{2^{2n}+2^n-2}{2^{2n}-1}
-=\frac{(1+\tau)^{2n}}{2^n}\bigl(1+O(2^{-n})\bigr).
-$$
-
-Taking $\gamma=2\bar\rho$ gives the same order of bound:
-
-$$
-\SDA(B(\{D_x\},D_0),\gamma)\ge 2^n\bigl(1-O(2^{-n})\bigr),
+\SDA\bigl(B(\{D_x\},D_0),\gamma_t\bigr)\ge 2^t,
 \qquad
-q\ge 2^{n-O(1)}.
+q\ge \frac{2^t}{3}
+\quad\text{queries to}\quad
+\VSTAT\!\left(\frac{2^{n-t}}{6\beta}\right).
 $$
 
-The VSTAT parameter is
+The VSTAT parameter is meaningful only when it is at least $1$, i.e.
+$\gamma_t\le 1/3$.  This imposes
 
 $$
-\frac{1}{3\gamma}
-=\frac{2^{n-1}}{3(1+\tau)^{2n}\bigl(1+O(2^{-n})\bigr)}.
+2^{n-t}\ge 6\beta
+\;\Longleftrightarrow\;
+t\le c_p n - O(1),
+\qquad
+\boxed{\;c_p=1-2\log_2(1+\tau).\;}
 $$
+
+For the standard noise rate $p=1/4$ we have $\tau=1/4$ and
+$c_p\approx 0.356$.  Thus the honest headline is a
+**$2^{c_p n}$-query lower bound at exponential VSTAT strength**:
+
+$$
+\boxed{\;q\ge 2^{c_p n - O(1)}\text{ queries to }\VSTAT\!\left(2^{c_p n-O(1)}\right).\;}
+$$
+
+This is still exponential in $n$, but the exponent is $c_p n$, not $n-O(1)$.
+
+### 6.2 Constant-size bundle queries
+
+For a *restricted* query class that only sees $k$-row parities, the same
+character-sum argument gives average correlation $O((1-2p)^{2k}/|\mathcal{S}|)$,
+which would yield a stronger-looking $\Omega(2^n)$ bound.  However, applying the
+unrestricted SQ theorem of Feldman et al. to a restricted query class is not
+valid: a separate restricted-SQ dimension theorem would be needed.  We therefore
+state the unrestricted bound in §6.1 as the honest SQ lower bound and leave the
+restricted-class statement as an open direction.
 
 ---
 
@@ -258,21 +269,34 @@ $n=3$:
 
 ### 7.3 SDA / Feldman parameters (full likelihood ratio)
 
-$n=2$, full secret space ($t=0$): $\SDA(\gamma)\ge 4$ with $\gamma=1107/1280$, giving $q\ge 4/3$ and $1/(3\gamma)=1280/3321$.
+With $\beta=(1+\tau)^{2n}-1$ and $\gamma_t=2\beta/2^{n-t}$, the bound is
+meaningful only when $2^{n-t}\ge 6\beta$ (so that the VSTAT parameter is at
+least $1$).  At $p=1/4$:
 
-$n=3$, full secret space ($t=0$): $\SDA(\gamma)\ge 8$ with $\gamma=6405/8192$, giving $q\ge 8/3$ and $1/(3\gamma)=8192/19215$.
+| $n$ | $\beta$ | valid $t$ | max query lower bound $q\ge 2^t/3$ | VSTAT parameter $2^{n-t}/(6\beta)$ |
+|---:|---:|---:|---:|---:|
+| 2 | $369/256$ | none | — | $<1$ for every $t\ge0$ |
+| 3 | $11529/4096$ | none | — | $<1$ for every $t\ge0$ |
+| 10 | $\approx 8.57\times10^1$ | $t=0$ only | $q\ge 1/3$ | $\approx 1.99$ |
+| 20 | $\approx 7.52\times10^3$ | $t\le 4$ | $q\ge 16/3$ | $\approx 1.45$ |
+| 40 | $\approx 5.66\times10^7$ | $t\le 11$ | $q\ge 2048/3$ | $\approx 1.58$ |
 
-(The small constants are because $n=2,3$ are tiny; asymptotically $q\ge 2^{n-O(1)}$.)
+The tiny cases $n=2,3$ are below the asymptotic regime and give only trivial
+constants; the honest asymptotic statement is
+$q\ge 2^{c_p n-O(1)}$ with $c_p\approx 0.356$ at $p=1/4$.
 
 ---
 
 ## 8. Relation to OP1 and open items
 
-OP1 asks whether conditioning on $S_A=0$ reduces the statistical dimension of sympLPN below $2^{\Omega(n)}$.  The answer here is **negative for constant-size queries and for the full likelihood-ratio query class**, with exact rate quantified by the moment machinery.
+OP1 asks whether conditioning on $S_A=0$ reduces the statistical dimension of sympLPN below $2^{\Omega(n)}$.  The answer here is **negative at the correlation level and for the full likelihood-ratio query class**, with exact rate quantified by the moment machinery.  The honest SQ query lower bound is $q\ge 2^{c_p n-O(1)}$ with $c_p=1-2\log_2(1+\tau)>0$ for $p<1/2$ (about $0.356$ at $p=1/4$), not $2^{n-O(1)}$.
 
 **What remains OPEN:**
+* A matching lower bound for the *restricted* $k$-row bundle query class (the unrestricted Feldman theorem does not apply directly).
 * The $j=\Theta(n)$ growing-bundle regime for general statistics (only the variance summary $V_{2n}$ is closed by `prop:vmax`).
 * Adaptive query strategies that depend on $A$ in a non-bundle way.
 * The membership↔sympLPN bridge (the two formulations are not claimed equivalent).
+
+**Corrections relative to the first draft.**  The character-sum step in the proof of Theorem E.1 now uses the symplectic dual $L^{\perp_\Omega}=JL$ instead of the false untwisted identity $L=L^{\perp_\Omega}$; the final correlation values are unchanged.  The SDA/Feldman application in §6 has been replaced by the corrected corollary with the $c_p$ range check.
 
 **No closure; no break; no security claim.**  OPEN = LSN.
