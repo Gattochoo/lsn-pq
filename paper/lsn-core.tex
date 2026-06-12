@@ -65,7 +65,7 @@ We study the Lagrangian Subspace Noise (LSN) problem --- a variant of the Learni
 \subsection{Background}
 \label{subsec:background}
 
-The Learning Parity with Noise (LPN) problem, introduced by Blum \etal\ \cite{BFKL94}, asks to recover a secret linear function $s \in \F_2^k$ given noisy inner products $(a_i, \langle a_i, s \rangle \oplus e_i)$. Despite decades of cryptanalytic effort, no polynomial-time algorithm is known for LPN with constant noise rate. The best classical attacks run in sub-exponential time $2^{O(k / \log k)}$ using the Blum--Kalai--Wasserman (BKW) algorithm \cite{BKW03} and its modern refinements \cite{LF06,Lyu05,EKM17,GJL14,ZJW16}. Grover's algorithm reduces the naive key-search cost from $2^k$ to $2^{k/2}$ \cite{Gro96}, and quantum variants of BKW remain the dominant quantum threat; no published exponential quantum speed-up over the best classical methods is known \cite{Kir11}.
+The Learning Parity with Noise (LPN) problem, introduced by Blum \etal\ \cite{BFKL94}, asks to recover a secret linear function $s \in \F_2^k$ given noisy inner products $(a_i, \langle a_i, s \rangle \oplus e_i)$. Despite decades of cryptanalytic effort, no polynomial-time algorithm is known for LPN with constant noise rate. The best classical attacks run in sub-exponential time $2^{O(k / \log k)}$ using the Blum--Kalai--Wasserman (BKW) algorithm \cite{BKW03} and its modern refinements \cite{LF06,Lyu05,EKM17,GJL14}. Grover's algorithm reduces the naive key-search cost from $2^k$ to $2^{k/2}$ \cite{Gro96}, and quantum variants of BKW remain the dominant quantum threat; no published exponential quantum speed-up over the best classical methods is known \cite{Kir11}.
 
 LPN has been the foundation for a wide range of cryptographic primitives, including OWFs, PKE, OT, and MPC \cite{ABW10,Ale11,DGM14,BCGI18}. Its main theoretical limitation is the absence of a worst-case hardness reduction comparable to Regev's LWE reduction from lattice problems \cite{Reg05}. LPN hardness is therefore treated as a \emph{primitive assumption}, accepted on the basis of sustained cryptanalytic resistance rather than reducibility.
 
@@ -186,7 +186,7 @@ We write $D_L$ for the LSN distribution with secret $L$ and noise rate $p$, and 
 \label{sec:related}
 
 \paragraph{LPN foundations and cryptanalysis.}
-LPN was introduced by Blum, Furst, Kearns, and Lipton \cite{BFKL94} as a foundation for cryptographic primitives. The dominant classical attack is BKW \cite{BKW03}, later optimized with fast Walsh--Hadamard transforms \cite{LF06}, covering codes \cite{GJL14,ZJW16}, and hybrid information-set-decoding techniques \cite{EKM17}. Lyubashevsky \cite{Lyu05} gave a polynomial-sample variant, and a comprehensive unified attack framework was developed by Esser, K{\"u}bler, and May \cite{EKM17}. Quantum speed-ups are limited to Grover \cite{Gro96} and quantum BKW \cite{Kir11}; no published exponential improvement is known.
+LPN was introduced by Blum, Furst, Kearns, and Lipton \cite{BFKL94} as a foundation for cryptographic primitives. The dominant classical attack is BKW \cite{BKW03}, later optimized with fast Walsh--Hadamard transforms \cite{LF06}, covering codes \cite{GJL14}, and hybrid information-set-decoding techniques \cite{EKM17}. Lyubashevsky \cite{Lyu05} gave a polynomial-sample variant, and a comprehensive unified attack framework was developed by Esser, K{\"u}bler, and May \cite{EKM17}. Quantum speed-ups are limited to Grover \cite{Gro96} and quantum BKW \cite{Kir11}; no published exponential improvement is known.
 
 \paragraph{LPN variants.}
 Many structured variants have been proposed to improve efficiency: Ring-LPN \cite{HKL+12}, LPN with structured noise \cite{DP12}, and the Learning with Rounding (LWR) problem \cite{BPR12}. All of these retain a secret space of size $2^{O(n)}$. LSN differs fundamentally in that its secret space has size $2^{n^2/2 + O(n)}$ while remaining polynomial-time sampleable via symplectic linear algebra.
@@ -1234,7 +1234,7 @@ During the preparation of this work, the author used large language models (Clau
 \begin{thebibliography}{99}
 
 \bibitem[AAC+22]{AAC+22}
-C.~Adjiman, N.~Aragon, S.~Bettaieb, L.~Bidoux, O.~Blazy, J.-C.~Deneuville, P.~Gaborit, S.~Ghosh, A.~Hauteville, and G.~Zemor.
+C.~Aguilar~Melchor, N.~Aragon, S.~Bettaieb, L.~Bidoux, O.~Blazy, J.-C.~Deneuville, P.~Gaborit, E.~Persichetti, G.~Z\'emor, \etal\
 HQC.
 NIST PQC Round 4 Submission, 2022.
 
@@ -1259,7 +1259,7 @@ Weakly learning DNF and characterizing statistical query learning using Fourier 
 In \emph{STOC}, pages 253--262. ACM, 1994.
 
 \bibitem[BFKL94]{BFKL94}
-A.~Blum, A.~Furst, M.~Kearns, and R.~Lipton.
+A.~Blum, M.~Furst, M.~Kearns, and R.~Lipton.
 Cryptographic primitives based on hard learning problems.
 In \emph{CRYPTO}, pages 278--291. Springer, 1994.
 
@@ -1304,9 +1304,9 @@ LPN decoded.
 In \emph{CRYPTO}, pages 486--514. Springer, 2017.
 
 \bibitem[FGR+17]{FGR+17}
-V.~Feldman, E.~Grigorescu, L.~Reyzin, and S.~Vempala.
-Statistical query lower bounds for robust estimation of high-dimensional Gaussians and Gaussian mixtures.
-In \emph{FOCS}, pages 211--220. IEEE, 2017.
+V.~Feldman, E.~Grigorescu, L.~Reyzin, S.~S.~Vempala, and Y.~Xiao.
+Statistical algorithms and a lower bound for detecting planted cliques.
+\emph{Journal of the ACM}, 64(2):8:1--8:37, 2017.
 
 \bibitem[GJL14]{GJL14}
 Q.~Guo, T.~Johansson, and C.~L\"ondahl.
@@ -1314,9 +1314,9 @@ Solving LPN using covering codes.
 In \emph{ASIACRYPT}, pages 1--20. Springer, 2014.
 
 \bibitem[GL22]{GL22}
-S.~Gollakota and D.~Liang.
-PAC-learning noisy stabilizer states in the statistical query model.
-\emph{arXiv preprint}, 2022.
+A.~Gollakota and D.~Liang.
+On the hardness of PAC-learning stabilizer states with noise.
+\emph{arXiv:2102.13312}, 2022.
 
 \bibitem[Got97]{Got97}
 D.~Gottesman.
@@ -1366,7 +1366,7 @@ In \emph{APPROX-RANDOM}, pages 378--389. Springer, 2005.
 \bibitem[Mac71]{Mac71}
 I.~G.~Macdonald.
 Symmetric Functions and Hall Polynomials.
-Oxford University Press, 1971.
+Oxford University Press, 1979.
 
 \bibitem[McE78]{McE78}
 R.~J.~McEliece.
@@ -1397,11 +1397,6 @@ On lattices, learning with errors, random linear codes, and cryptography.
 P.~W.~Shor.
 Algorithms for quantum computation: Discrete logarithms and factoring.
 In \emph{FOCS}, pages 124--134. IEEE, 1994.
-
-\bibitem[ZJW16]{ZJW16}
-B.-Y.~Zhang, L.~Jia, and M.-W.~Wang.
-Security analysis of LPN under perfect code cover.
-\emph{IEEE Access}, 4:3979--3986, 2016.
 
 \end{thebibliography}
 
