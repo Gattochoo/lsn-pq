@@ -1,0 +1,173 @@
+{
+  "experiment": 200,
+  "track": "A",
+  "self_check": [
+    {
+      "n": 2,
+      "m": 2,
+      "sd_direct": "36575/524288",
+      "sd_mixture": "36575/524288",
+      "match": true,
+      "time_direct_sec": 0.000530242919921875
+    },
+    {
+      "n": 2,
+      "m": 3,
+      "sd_direct": "695896635/4294967296",
+      "sd_mixture": "695896635/4294967296",
+      "match": true,
+      "time_direct_sec": 0.0020852088928222656
+    },
+    {
+      "n": 2,
+      "m": 4,
+      "sd_direct": "277825754675/1099511627776",
+      "sd_mixture": "277825754675/1099511627776",
+      "match": true,
+      "time_direct_sec": 0.008898019790649414
+    }
+  ],
+  "task_A1": {
+    "n": 3,
+    "m": 6,
+    "p_eff": "3367/8192",
+    "q_graph": "1241/4608",
+    "sd": "274605773661408696847360184835/1267650600228229401496703205376",
+    "sd_float": 0.21662575918945515,
+    "time_lpn_counts_sec": 25.916743993759155,
+    "time_out_loop_sec": 1.8218979835510254
+  },
+  "task_A2_sweep": [
+    {
+      "n": 2,
+      "m": 2,
+      "p_eff": "175/512",
+      "q_graph": "29/64",
+      "sd": "36575/524288",
+      "sd_float": 0.06976127624511719,
+      "time_lpn_counts_sec": 7.104873657226562e-05,
+      "time_out_loop_sec": 6.9141387939453125e-06
+    },
+    {
+      "n": 2,
+      "m": 3,
+      "p_eff": "175/512",
+      "q_graph": "29/64",
+      "sd": "695896635/4294967296",
+      "sd_float": 0.16202606144361198,
+      "time_lpn_counts_sec": 0.0003781318664550781,
+      "time_out_loop_sec": 4.315376281738281e-05
+    },
+    {
+      "n": 2,
+      "m": 4,
+      "p_eff": "175/512",
+      "q_graph": "29/64",
+      "sd": "277825754675/1099511627776",
+      "sd_float": 0.25268105189297785,
+      "time_lpn_counts_sec": 0.0029611587524414062,
+      "time_out_loop_sec": 0.0004107952117919922
+    },
+    {
+      "n": 2,
+      "m": 5,
+      "p_eff": "175/512",
+      "q_graph": "29/64",
+      "sd": "11668368577886825/36028797018963968",
+      "sd_float": 0.32386228637456616,
+      "time_lpn_counts_sec": 0.024856090545654297,
+      "time_out_loop_sec": 0.003123044967651367
+    },
+    {
+      "n": 2,
+      "m": 6,
+      "p_eff": "175/512",
+      "q_graph": "29/64",
+      "sd": "27663233753869930405/73786976294838206464",
+      "sd_float": 0.37490672667400143,
+      "time_lpn_counts_sec": 0.19707202911376953,
+      "time_out_loop_sec": 0.027263879776000977
+    },
+    {
+      "n": 2,
+      "m": 7,
+      "p_eff": "175/512",
+      "q_graph": "29/64",
+      "sd": "62110524507069812281095/151115727451828646838272",
+      "sd_float": 0.41101297366198275,
+      "time_lpn_counts_sec": 1.612273931503296,
+      "time_out_loop_sec": 0.2127838134765625
+    },
+    {
+      "n": 2,
+      "m": 8,
+      "p_eff": "175/512",
+      "q_graph": "29/64",
+      "sd": "16905825785074125865887285/38685626227668133590597632",
+      "sd_float": 0.43700535401913704,
+      "time_lpn_counts_sec": 13.232317209243774,
+      "time_out_loop_sec": 1.6975910663604736
+    },
+    {
+      "n": 3,
+      "m": 2,
+      "p_eff": "3367/8192",
+      "q_graph": "1241/4608",
+      "sd": "213402213/8589934592",
+      "sd_float": 0.024843287304975092,
+      "time_lpn_counts_sec": 0.0004429817199707031,
+      "time_out_loop_sec": 2.384185791015625e-05
+    },
+    {
+      "n": 3,
+      "m": 3,
+      "p_eff": "3367/8192",
+      "q_graph": "1241/4608",
+      "sd": "73216440694171/1125899906842624",
+      "sd_float": 0.06502926259181674,
+      "time_lpn_counts_sec": 0.006188154220581055,
+      "time_out_loop_sec": 0.0004067420959472656
+    },
+    {
+      "n": 3,
+      "m": 4,
+      "p_eff": "3367/8192",
+      "q_graph": "1241/4608",
+      "sd": "37069529779670762521/295147905179352825856",
+      "sd_float": 0.12559645225042232,
+      "time_lpn_counts_sec": 0.09808897972106934,
+      "time_out_loop_sec": 0.006705284118652344
+    },
+    {
+      "n": 3,
+      "m": 5,
+      "p_eff": "3367/8192",
+      "q_graph": "1241/4608",
+      "sd": "3463661197481711859149715/19342813113834066795298816",
+      "sd_float": 0.17906708693806725,
+      "time_lpn_counts_sec": 1.5845670700073242,
+      "time_out_loop_sec": 0.10843586921691895
+    },
+    {
+      "n": 3,
+      "m": 6,
+      "p_eff": "3367/8192",
+      "q_graph": "1241/4608",
+      "sd": "274605773661408696847360184835/1267650600228229401496703205376",
+      "sd_float": 0.21662575918945515,
+      "time_lpn_counts_sec": 25.787817001342773,
+      "time_out_loop_sec": 1.9294500350952148
+    }
+  ],
+  "claim_labels": {
+    "mixture_decomposition": "THEOREM (verified by direct enumeration for n=2)",
+    "n3_m6_sd": "EVIDENCE (exact finite computation)",
+    "monotonicity_observation": "EVIDENCE (exact finite computation, no proof of general monotonicity)",
+    "lem_m2_status": "OPEN"
+  },
+  "interpretation_guards": {
+    "comparison_distribution": "LPN_{p_eff(n)}, matched rate",
+    "scaling_axis": "m grows at fixed n (no fixed-small-m claim)",
+    "p_eff_limit": "p_eff(n) -> 1/2 as n grows; SD measures correlation inside a vacuous LPN regime"
+  }
+}
