@@ -2669,15 +2669,24 @@ pub fn decode_scl_fixed_i64<const N: usize, const L: usize, const CHILD_CAP: usi
         "fixed SCL metric scale must be positive and finite"
     );
 
-    let quantized_llr = quantize_llrs_i64(llr, metric_scale);
+    let quantized_llr = quantize_llrs_i64::<N>(llr, metric_scale);
     let mut paths = FixedSclPathBuffer::<L, N>::new();
     paths.set_candidate(0, 0, [0; N]);
 
     for phi in 0..N {
         let mut children = FixedSclPathBuffer::<CHILD_CAP, N>::new();
+        let mut llr_scratch = [0i64; N];
+        let mut partial_scratch = [0u8; N];
         for parent_slot in 0..L {
             let bits = paths.bits(parent_slot);
-            let bit_llr = sc_bit_llr_minsum_i64(&quantized_llr, 0, phi, &bits);
+            let bit_llr = sc_bit_llr_minsum_i64(
+                &quantized_llr,
+                0,
+                phi,
+                &bits,
+                &mut llr_scratch,
+                &mut partial_scratch,
+            );
             let hard_bit = u8::from(bit_llr < 0);
             let magnitude = llr_i64_metric_magnitude(bit_llr);
             let deltas =
@@ -2718,11 +2727,13 @@ fn llr_metric_magnitude_i64(llr: f64, metric_scale: f64) -> i64 {
     }
 }
 
-fn quantize_llrs_i64(llr: &[f64], metric_scale: f64) -> Vec<i64> {
-    llr.iter()
-        .copied()
-        .map(|value| quantize_llr_i64(value, metric_scale))
-        .collect()
+fn quantize_llrs_i64<const N: usize>(llr: &[f64], metric_scale: f64) -> [i64; N] {
+    assert_eq!(llr.len(), N, "fixed SCL LLR length must equal N");
+    let mut quantized = [0i64; N];
+    for (dst, &value) in quantized.iter_mut().zip(llr.iter()) {
+        *dst = quantize_llr_i64(value, metric_scale);
+    }
+    quantized
 }
 
 fn quantize_llr_i64(llr: f64, metric_scale: f64) -> i64 {
@@ -3272,27 +3283,49 @@ fn sc_bit_llr_minsum(llr: &[f64], offset: usize, phi: usize, decisions: &[u8]) -
     }
 }
 
-fn sc_bit_llr_minsum_i64(llr: &[i64], offset: usize, phi: usize, decisions: &[u8]) -> i64 {
+fn sc_bit_llr_minsum_i64(
+    llr: &[i64],
+    offset: usize,
+    phi: usize,
+    decisions: &[u8],
+    llr_scratch: &mut [i64],
+    partial_scratch: &mut [u8],
+) -> i64 {
     if llr.len() == 1 {
         return llr[0];
     }
 
     let half = llr.len() / 2;
     if phi < offset + half {
-        let mut left_llr = vec![0i64; half];
+        let (left_llr, rest_llr_scratch) = llr_scratch.split_at_mut(half);
         for i in 0..half {
             left_llr[i] = f_llr_minsum_i64(llr[i], llr[half + i]);
         }
-        sc_bit_llr_minsum_i64(&left_llr, offset, phi, decisions)
+        sc_bit_llr_minsum_i64(
+            left_llr,
+            offset,
+            phi,
+            decisions,
+            rest_llr_scratch,
+            partial_scratch,
+        )
     } else {
-        let mut left_partial = decisions[offset..offset + half].to_vec();
-        polar_transform(&mut left_partial);
+        let (right_llr, rest_llr_scratch) = llr_scratch.split_at_mut(half);
+        let (left_partial, rest_partial_scratch) = partial_scratch.split_at_mut(half);
+        left_partial.copy_from_slice(&decisions[offset..offset + half]);
+        polar_transform(left_partial);
 
-        let mut right_llr = vec![0i64; half];
         for i in 0..half {
             right_llr[i] = g_llr_i64(llr[i], llr[half + i], left_partial[i]);
         }
-        sc_bit_llr_minsum_i64(&right_llr, offset + half, phi, decisions)
+        sc_bit_llr_minsum_i64(
+            right_llr,
+            offset + half,
+            phi,
+            decisions,
+            rest_llr_scratch,
+            rest_partial_scratch,
+        )
     }
 }
 
@@ -3311,7 +3344,7 @@ fn f_llr_minsum(a: f64, b: f64) -> f64 {
 fn f_llr_minsum_i64(a: i64, b: i64) -> i64 {
     let min_abs = i64_abs_saturating(a).min(i64_abs_saturating(b));
     if (a < 0) ^ (b < 0) {
-        -min_abs
+        min_abs.saturating_neg()
     } else {
         min_abs
     }

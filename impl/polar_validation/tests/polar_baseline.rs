@@ -851,7 +851,21 @@ fn fixed_i64_decoder_source_uses_integer_llr_recursion() {
     let source = include_str!("../src/lib.rs");
 
     assert!(!source.contains("let bit_llr = sc_bit_llr_minsum(llr, 0, phi, &bits);"));
-    assert!(source.contains("sc_bit_llr_minsum_i64(&quantized_llr, 0, phi, &bits);"));
+    assert!(source.contains("sc_bit_llr_minsum_i64("));
+    assert!(source.contains("&quantized_llr,"));
+}
+
+#[test]
+fn fixed_i64_integer_llr_recursion_uses_fixed_scratch_buffers() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("let mut left_llr = vec![0i64; half];"));
+    assert!(!source.contains("let mut right_llr = vec![0i64; half];"));
+    assert!(source.contains("let mut llr_scratch = [0i64; N];"));
+    assert!(source.contains("let mut partial_scratch = [0u8; N];"));
+    assert!(source.contains(
+        "let (left_partial, rest_partial_scratch) = partial_scratch.split_at_mut(half);"
+    ));
 }
 
 #[test]
