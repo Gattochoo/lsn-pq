@@ -2148,6 +2148,25 @@ fn fixed_scl_public_round_schedule_shape_failure_family_labels_status_sources() 
 }
 
 #[test]
+fn fixed_scl_public_round_schedule_shape_failure_family_uses_status_selection() {
+    let source = include_str!("../src/lib.rs");
+    let helper_start = source
+        .find("pub fn fixed_scl_public_round_schedule_shape_failure_family")
+        .expect("fixed_scl_public_round_schedule_shape_failure_family source should be present");
+    let helper_end = source[helper_start..]
+        .find("pub fn fixed_scl_binary_child_write_domain_check")
+        .map(|offset| helper_start + offset)
+        .expect("binary child-write domain check should follow public classifier");
+    let helper_source = &source[helper_start..helper_end];
+
+    assert!(!helper_source.contains("if !plan.path_domain_check.valid"));
+    assert!(!helper_source.contains("else if"));
+    assert!(helper_source.contains("let path_invalid = u8::from(!plan.path_domain_check.valid);"));
+    assert!(helper_source.contains("let work_selected = work_invalid & path_valid;"));
+    assert!(helper_source.contains("select_u8("));
+}
+
+#[test]
 fn fixed_scl_round_schedule_plan_reads_round_bit_indices_without_expansion() {
     let rounds = [
         FixedSclRound::new(2, 5, -1),

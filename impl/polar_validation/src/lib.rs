@@ -1698,13 +1698,23 @@ pub fn fixed_scl_integer_schedule_shape_failure_family(
 pub fn fixed_scl_public_round_schedule_shape_failure_family(
     plan: FixedSclPublicRoundScheduleShapePlan,
 ) -> u8 {
-    if !plan.path_domain_check.valid {
-        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN
-    } else if !plan.work_shape_plan.valid {
-        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE
-    } else {
-        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK
-    }
+    let path_invalid = u8::from(!plan.path_domain_check.valid);
+    let work_invalid = u8::from(!plan.work_shape_plan.valid);
+    let path_valid = path_invalid ^ 1;
+    let work_selected = work_invalid & path_valid;
+    let path_mask = 0u8.wrapping_sub(path_invalid);
+    let work_mask = 0u8.wrapping_sub(work_selected);
+    let failure_after_work = select_u8(
+        work_mask,
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_OK,
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_WORK_SHAPE,
+    );
+
+    select_u8(
+        path_mask,
+        failure_after_work,
+        FIXED_SCL_PUBLIC_ROUND_SCHEDULE_SHAPE_FAILURE_FAMILY_PATH_DOMAIN,
+    )
 }
 
 pub fn fixed_scl_binary_child_write_domain_check<
