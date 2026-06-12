@@ -28,3 +28,7 @@ impl/*/target/
 # IDE
 .vscode/
 .idea/
+
+# Korean reading edition — kept local only (author review), not part of the public archive
+paper/lsn-paper-ko.tex
+paper/lsn-paper-ko.pdf

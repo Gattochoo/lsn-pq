@@ -14,7 +14,7 @@ all verification experiments, and the complete research/adjudication record.
 - `lsn-core.pdf` — *The Lagrangian Subspace Noise Problem: Statistical-Query Lower Bounds and
   Barriers for Linear Reductions* (the core mathematical paper, 31 pp).
 - `lsn-paper.pdf` — companion technical report including cryptographic constructions
-  (KEM, succinct arguments); Korean reading edition: `lsn-paper-ko.pdf`.
+  (KEM, succinct arguments).
 
 **Cite this archive** (all versions, always resolves to the latest): DOI [10.5281/zenodo.20646796](https://doi.org/10.5281/zenodo.20646796).
 The current snapshot (v2.1, the submitted bibliography-audited paper) is DOI [10.5281/zenodo.20665389](https://doi.org/10.5281/zenodo.20665389).
@@ -33,17 +33,14 @@ Build with [Tectonic](https://tectonic-typesetting.github.io/):
 
 ```bash
 cd paper
-tectonic lsn-core.tex      # core paper (submitted to IACR ePrint)
-tectonic lsn-paper.tex     # companion technical report (constructions)
-tectonic lsn-paper-ko.tex  # Korean reading edition of the companion
+tectonic lsn-core.tex   # core paper (submitted to IACR ePrint)
+tectonic lsn-paper.tex  # companion technical report (constructions)
 ```
-
-The companion has a Korean reading edition (`lsn-paper-ko.pdf`, 저자 통독용; 불일치 시 영어판이 우선), which additionally requires the macOS system font "Apple SD Gothic Neo".
 
 ## Repository structure
 
 ```
-paper/           LaTeX sources and PDFs (EN canonical + KO reading edition)
+paper/           LaTeX sources and PDFs
 experiments/     Numbered Python verification scripts + result JSONs.
                  Every numerical claim in the paper has a reproducing script here.
 meta/            Research record: source-accuracy pins (verbatim quotes of cited
