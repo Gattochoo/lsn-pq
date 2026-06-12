@@ -1,0 +1,28 @@
+{
+ "experiment": "180-CLAUDE-noise-side-direction-check",
+ "regime": {
+  "n": 2,
+  "m": 5,
+  "m_gt_2n": true,
+  "2n": 4
+ },
+ "rank_B": 4,
+ "support_z_eq_colspaceB": 16,
+ "ambient_2^m": 32,
+ "support_confined": true,
+ "I(e';C)_bits_fixedB": 0.0,
+ "num_distinct_C": 90,
+ "logic_ruling": {
+  "lem_m2_states": "SD((C,z),LPN_{p'}) = 1-o(1)  (reduction output FAR from LPN)",
+  "disproof_requires": "exhibit g making output CLOSE to LPN; needs I(e';C)=0 as a NECESSARY ingredient",
+  "kimi_found": "cannot reach I=0 under marginal-uniform C (min ~0.99 n=2, ~1.72 n=3, growing)",
+  "correct_inference": "failing to reach the necessary ingredient SUPPORTS lem:m2 (output stays far from LPN); it does NOT disprove it",
+  "kimi_inference": "'if no g gives I=0 then lem:m2 false' -- SIGN INVERTED",
+  "n_growth": "leakage growing with n = output increasingly far from LPN = PRO-security (Kimi read it as anti)"
+ },
+ "quantity_ruling": {
+  "operative": "distinguishing advantage of an algorithm seeing only (C,z), with B=g(A) and x UNKNOWN, one fresh A per instance",
+  "I(e_prime;C)": "hands e' (hence ~B) to the adversary; over-strong, not the distinguisher's view",
+  "support_note": "z=By in colspace(B) (dim<=2n); but ONE z reveals no low-dim structure without B (paper's 'solver doesn't know B' obstruction) -> I>0 != distinguishing attack"
+ }
+}
