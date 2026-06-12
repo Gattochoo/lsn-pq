@@ -2012,7 +2012,7 @@ pub fn fixed_schedule_top_l_i64<const WIDTH: usize, const L: usize>(
 fn fixed_compare_exchange(entries: &mut [FixedTopLEntry], left: usize, right: usize) {
     let a = entries[left];
     let b = entries[right];
-    let take_b = usize::from(entry_less(b, a));
+    let take_b = entry_less_flag(b, a);
     let mask_usize = 0usize.wrapping_sub(take_b);
     let mask_i64 = 0i64.wrapping_sub(take_b as i64);
 
@@ -2026,8 +2026,12 @@ fn fixed_compare_exchange(entries: &mut [FixedTopLEntry], left: usize, right: us
     };
 }
 
-fn entry_less(a: FixedTopLEntry, b: FixedTopLEntry) -> bool {
-    a.metric < b.metric || (a.metric == b.metric && a.index < b.index)
+fn entry_less_flag(a: FixedTopLEntry, b: FixedTopLEntry) -> usize {
+    let metric_lt = usize::from(a.metric < b.metric);
+    let metric_eq = usize::from(a.metric == b.metric);
+    let index_lt = usize::from(a.index < b.index);
+
+    metric_lt | (metric_eq & index_lt)
 }
 
 fn select_i64(mask: i64, keep: i64, replace: i64) -> i64 {

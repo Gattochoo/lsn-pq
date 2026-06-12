@@ -705,6 +705,26 @@ fn fixed_schedule_top_l_selects_lowest_metrics_with_stable_ties() {
 }
 
 #[test]
+fn fixed_top_l_compare_exchange_source_uses_entry_less_flag() {
+    let source = include_str!("../src/lib.rs");
+
+    assert!(!source.contains("usize::from(entry_less(b, a))"));
+    assert!(source.contains("let take_b = entry_less_flag(b, a);"));
+
+    let flag_start = source
+        .find("fn entry_less_flag(")
+        .expect("entry_less_flag source should be present");
+    let flag_end = source[flag_start..]
+        .find("fn select_i64(")
+        .map(|offset| flag_start + offset)
+        .expect("select_i64 should follow entry_less_flag");
+    let flag_source = &source[flag_start..flag_end];
+
+    assert!(!flag_source.contains("||"));
+    assert!(flag_source.contains("metric_lt | (metric_eq & index_lt)"));
+}
+
+#[test]
 fn fixed_schedule_top_l_selection_plan_reports_public_shape_without_sorting() {
     assert_eq!(
         fixed_schedule_top_l_selection_plan(8, 4),
