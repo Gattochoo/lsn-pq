@@ -329,6 +329,8 @@ def simulated_annealing(state, max_iters, lam, T0, T_final, seed):
 
 
 def main():
+    import sys
+
     n = 2
     N = 2 * n
     e_probs = {
@@ -336,13 +338,23 @@ def main():
         for e in range(1 << N)
     }
 
+    # Optional command-line: m and SA iterations
+    if len(sys.argv) >= 2:
+        ms = [int(sys.argv[1])]
+    else:
+        ms = [2, 3, 4]
+    if len(sys.argv) >= 3:
+        sa_iters = int(sys.argv[2])
+    else:
+        sa_iters = 500_000
+
     print(f"n={n}: Enumerating A matrices...")
     A_list = enumerate_all_A(n)
     print(f"  |A| = {len(A_list)}")
 
     results = []
 
-    for m in [2, 3, 4]:
+    for m in ms:
         print(f"\n{'='*60}")
         print(f"m = {m} (hard window n <= m <= 2n)")
 
@@ -353,7 +365,7 @@ def main():
         print(f"  Random g: SD={sd_rand:.6f}, marg={state_rand.marginal_cost()}")
 
         # Constrained search: marginal-uniform g, minimize SD
-        print(f"\n  Constrained SA (lambda=10.0, marginal-uniform C)")
+        print(f"\n  Constrained SA (lambda=10.0, marginal-uniform C), iters={sa_iters}")
         state = State(n, m, A_list, e_probs)
         it_mu = search_marginal_uniform(state, max_iters=2_000_000, seed=42)
         print(
@@ -361,7 +373,7 @@ def main():
             f"SD={state.compute_SD():.6f}, marg={state.marginal_cost()}"
         )
         best_sd, best_marg, best_E = simulated_annealing(
-            state, 500_000, 10.0, 0.05, 1e-5, seed=100
+            state, sa_iters, 10.0, 0.05, 1e-5, seed=100
         )
         print(f"  SA result: SD={best_sd:.6f}, marg={best_marg}")
 
