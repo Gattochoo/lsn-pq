@@ -1,52 +1,44 @@
 #!/usr/bin/env python3
-"""211 (Track G): universal label-preserving obstruction and exact SD invariance.
+"""211 (Track G, corrected by Track K): label-preserving obstruction and exact SD.
 
 Track-G question: does the OP7 obstruction extend beyond the symplectic-orbit
 family to arbitrary public bijections that preserve the label bit?
 
-G1. THEOREM (closed-form marginal obstruction).
-    For the LSN noise rate p and a uniformly random Lagrangian secret L, let
+G1. THEOREM (closed-form marginal obstruction).  Still valid.
+    For the LSN noise rate p and a uniform Lagrangian secret L, let
     (u_1,b_1) and (u_2,b_2) be two independent fresh samples from D_L.  Then
 
-        mu_n := Pr[1_L(u)=1] = 2^n / 2^{2n} = 1/2^n,
-        q_n  := Pr[b=1]     = mu_n(1-p) + (1-mu_n)p
-                            = p + (1-2p)/2^n,
-        Pr_fresh[b_1 != b_2] = 2 q_n (1-q_n)
-                            = 2 (p + (1-2p)/2^n)(1-p - (1-2p)/2^n).
+        mu_n := Pr[1_L(u)=1] = 1/2^n,
+        q_n  := Pr[b=1]     = p + (1-2p)/2^n,
+        Pr_fresh[b_1 != b_2] = 2 q_n (1-q_n).
 
-    For any public bijections f_1,f_2 of F_2^{2n}, the split map
+    For any public bijections f_1,f_2 of F_2^{2n}, the label-preserving split
+    (x,b) |--> ((f_1(x),b),(f_2(x),b)) emits a pair whose (b_1,b_2)-marginal is
+    supported on {00,11}, whereas the fresh pair puts mass Pr_fresh[b_1!=b_2] on
+    {01,10}.  By data processing,
 
-        (x,b) |--> ((f_1(x),b), (f_2(x),b))
+        SD( split_{f1,f2}(D_L) , D_L x D_L )  >=  Pr_fresh[b_1 != b_2].
 
-    emits a pair whose (b_1,b_2)-marginal is supported on {00,11}, whereas the
-    fresh pair puts mass Pr_fresh[b_1!=b_2] on {01,10}.  By data processing,
+G3. CLAIM WITHDRAWN / CORRECTED (Track K, L4 repair).
+    The original G.3 asserted that the exact same-secret SD is the same for
+    every pair of public bijections.  That proof violated guard (L4): it applied
+    the verification bijections f_i^{-1} to the FRESH comparison pair too, which
+    is only sound if the fresh distribution is invariant under those bijections
+    -- it is not.  The corrected same-secret law is
 
-        SD( split_{f_1,f_2}(D_L) , D_L x D_L )  >=  Pr_fresh[b_1 != b_2].
+        SD = 1 - 4^{-n} [ 2 p(1-p) + (1-2p)^2 A ],
+        A  = Pr_{L,x}[ 1_L(f_1 x) = 1_L(f_2 x) ],
 
-    This lower bound is universal for the label-preserving family.
-
-G2. Scope definition of label-modifying maps (EVIDENCE/OPEN).
-
-G3. THEOREM (exact SD is independent of the bijections).
-    Under the natural same-secret comparison (both samples drawn from the same
-    uniform secret L), the exact SD for the label-preserving split is the same
-    for every pair of public bijections f_1,f_2:
-
-        SD = 1 - (p^2 + (1-p)^2) / 4^n
-           = 1 - 5/(8*4^n)            at p = 1/4.
-
-    Proof sketch: applying the bijections f_i^{-1} to the i-th x-coordinate is
-    a bijection on the joint sample space, so it preserves SD; it sends both
-    the transformed and the fresh pair to the distributions obtained for
-    f_1=f_2=id.  Hence the orbit-family value is universal for all label-
-    preserving public bijections.  This is verified computationally below for
-    identity, symplectic, affine, and random bijections at n=2.
+    and the orbit value 1 - (p^2+(1-p)^2)/4^n is the universal MINIMUM, with
+    equality iff f_1 = f_2 (i.e. A = 1).  See Track K experiments 212+ for the
+    label-flipping extension.
 
 Guards:
   L1 exact arithmetic: Fractions end-to-end; JSON stores string fractions.
   L2 duality care: not invoked (no character sums over Lagrangians).
-  L3 query-class hygiene: this is a total-variation/distinguishability result;
-       no Feldman/SQ theorem is used, so no query class is involved.
+  L3 query-class hygiene: total-variation/distinguishability only; no SQ claim.
+  L4 comparison distribution: the fresh pair (u_1,b_1,u_2,b_2) is NOT
+      transformed by f_1,f_2.  Any bijection is applied to the split side only.
 
 Discipline: Sound Verifier.  No closure; no break; no security claim.  OPEN = LSN.
 """
@@ -55,7 +47,6 @@ import json
 import random
 import sys
 from fractions import Fraction
-from itertools import combinations, product
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -134,19 +125,6 @@ def enumerate_sp4() -> list[tuple[int, ...]]:
     return out
 
 
-def random_symplectic_matrix(n: int, rng: random.Random, steps: int = 80) -> tuple[int, ...]:
-    """Generate a random element of Sp(2n,F_2) as a word of transvections."""
-    N = 2 * n
-    cols = [1 << i for i in range(N)]
-    for _ in range(steps):
-        u = rng.randint(1, (1 << N) - 1)
-        for i in range(N):
-            if symplectic_form_n(cols[i], u, n):
-                cols[i] ^= u
-    assert is_symplectic_matrix(tuple(cols), n)
-    return tuple(cols)
-
-
 def enumerate_gl(n: int) -> list[tuple[int, ...]]:
     """Enumerate all invertible n x n matrices over F_2 as column tuples."""
     N = n
@@ -171,79 +149,65 @@ def random_bijection(size: int, rng: random.Random) -> list[int]:
     return perm
 
 
+def random_symplectic_perm(n: int, rng: random.Random, steps: int = 80) -> list[int]:
+    """Generate a random element of Sp(2n,F_2) as a permutation of F_2^{2n}."""
+    size = 1 << (2 * n)
+    perm = list(range(size))
+    for _ in range(rng.randint(6, 14)):
+        v = rng.randrange(1, size)
+        perm = [perm[x] ^ (v if symplectic_form_n(perm[x], v, n) else 0)
+                for x in range(size)]
+    return perm
+
+
 def pr_b_neq_formula(n: int, p: Fraction = P_NOISE) -> Fraction:
     """Closed form Pr_fresh[b_1 != b_2] (THEOREM G.1)."""
     q = p + Fraction(1 - 2 * p, 2 ** n)
     return 2 * q * (1 - q)
 
 
-def orbit_sd_formula(n: int, p: Fraction = P_NOISE) -> Fraction:
-    """Closed-form exact SD for any label-preserving split (THEOREM G.3)."""
-    q = 1 - p
-    return Fraction(1) - (p * p + q * q) / (4 ** n)
+def agreement_A(n: int, lags: list[set[int]], f1: list[int], f2: list[int]) -> Fraction:
+    """A = Pr_{L,x}[ 1_L(f1 x) = 1_L(f2 x) ]."""
+    size = 1 << (2 * n)
+    total = 0
+    for x in range(size):
+        u, v = f1[x], f2[x]
+        total += sum(1 for L in lags if (u in L) == (v in L))
+    return Fraction(total, len(lags) * size)
 
 
-def pr_b_neq_by_enumeration(n: int, p: Fraction = P_NOISE) -> Fraction:
-    """Enumerate Pr_fresh[b_1 != b_2] directly (verification of G.1)."""
-    lags = all_lagrangians(n)
-    N = 2 * n
-    size = 1 << N
-    total = Fraction(0)
-    for L in lags:
-        mask = 0
-        for v in L:
-            mask |= 1 << v
-        for u1 in range(size):
-            c1 = (mask >> u1) & 1
-            for u2 in range(size):
-                c2 = (mask >> u2) & 1
-                # independent Bernoulli(p) noise bits e1,e2
-                for e1 in (0, 1):
-                    w1 = p if e1 else (1 - p)
-                    b1 = c1 ^ e1
-                    for e2 in (0, 1):
-                        w2 = p if e2 else (1 - p)
-                        b2 = c2 ^ e2
-                        if b1 != b2:
-                            total += w1 * w2
-    total /= len(lags) * size * size
-    return total
+def corrected_sd_formula(n: int, A: Fraction, p: Fraction = P_NOISE) -> Fraction:
+    """Corrected same-secret SD for a label-preserving split (Track K)."""
+    return Fraction(1) - Fraction(1, 4 ** n) * (
+        2 * p * (1 - p) + (1 - 2 * p) ** 2 * A
+    )
+
+
+def universal_minimum(n: int, p: Fraction = P_NOISE) -> Fraction:
+    """Orbit/minimum value 1 - (p^2+(1-p)^2)/4^n, attained iff f1=f2."""
+    return Fraction(1) - (p * p + (1 - p) * (1 - p)) / (4 ** n)
 
 
 def exact_sd_label_preserving(
     n: int,
-    f1: list[int] | None = None,
-    f2: list[int] | None = None,
+    lags: list[set[int]],
+    f1: list[int],
+    f2: list[int],
     p: Fraction = P_NOISE,
 ) -> Fraction:
-    """Exact SD between transformed split pair and fresh same-secret pair.
+    """Exact SD between transformed split pair and the UNTRANSFORMED fresh pair.
 
-    f1,f2 are permutations of F_2^{2n}; None means identity.  The output domain
-    is encoded as a single integer (x1,b1,x2,b2) with 4n+2 bits.
+    L4 guard: f1,f2 are applied only to the split-side sample (x,b);
+    the fresh comparison sample (u1,b1,u2,b2) is left in the natural domain.
     """
-    lags = all_lagrangians(n)
     N = 2 * n
     size = 1 << N
-    if f1 is None:
-        f1 = list(range(size))
-    if f2 is None:
-        f2 = list(range(size))
-
     pnum = p.numerator
     qnum = p.denominator - p.numerator
     denom = p.denominator
 
-    # We accumulate integer counts with common denominator denom^2 per (L,u,e) draw.
-    # Transformed: for each (L,u,e) weight qnum or pnum.
-    # Fresh: for each (L,u1,u2,e1,e2) weight qnum^{2-e1-e2} pnum^{e1+e2}.
-    # To compare directly, expand transformed to denominator denom^2:
-    #   transformed weight = qnum^{1-e} pnum^{e} * denom
-    #   fresh weight       = qnum^{2-e1-e2} pnum^{e1+e2}
-    # Common denominator per L draw for transformed: size * denom^2
-    # Common denominator per L draw for fresh: size^2 * denom^2
-    # Overall denominators:
-    D_P = len(lags) * size * denom * denom  # transformed
-    D_Q = len(lags) * size * size * denom * denom  # fresh
+    D_P = len(lags) * size * denom * denom
+    D_Q = len(lags) * size * size * denom * denom
 
     counts_P: dict[int, int] = {}
     counts_Q: dict[int, int] = {}
@@ -252,15 +216,15 @@ def exact_sd_label_preserving(
         mask = 0
         for v in L:
             mask |= 1 << v
-        # Transformed: (f1(u), b, f2(u), b)
-        for u in range(size):
-            c = (mask >> u) & 1
+        # Split side: (f1(x), b, f2(x), b)
+        for x in range(size):
+            c = (mask >> x) & 1
             for e in (0, 1):
                 b = c ^ e
-                key = (f1[u] << (N + 2)) | (b << (N + 1)) | (f2[u] << 1) | b
+                key = (f1[x] << (N + 2)) | (b << (N + 1)) | (f2[x] << 1) | b
                 w = (qnum if e == 0 else pnum) * denom
                 counts_P[key] = counts_P.get(key, 0) + w
-        # Fresh: (f1(u1), b1, f2(u2), b2)
+        # Fresh comparison side: (u1, b1, u2, b2), NOT transformed.
         for u1 in range(size):
             c1 = (mask >> u1) & 1
             for u2 in range(size):
@@ -271,7 +235,7 @@ def exact_sd_label_preserving(
                     for e2 in (0, 1):
                         b2 = c2 ^ e2
                         w2 = qnum if e2 == 0 else pnum
-                        key = (f1[u1] << (N + 2)) | (b1 << (N + 1)) | (f2[u2] << 1) | b2
+                        key = (u1 << (N + 2)) | (b1 << (N + 1)) | (u2 << 1) | b2
                         counts_Q[key] = counts_Q.get(key, 0) + w1 * w2
 
     num = 0
@@ -282,7 +246,7 @@ def exact_sd_label_preserving(
 
 
 def sample_bijection_pairs(n: int, rng: random.Random) -> dict[str, tuple[list[int], list[int]]]:
-    """Generate a dictionary of named bijection pairs for n=2 testing."""
+    """Generate the 12 named bijection pairs for n=2 testing."""
     N = 2 * n
     size = 1 << N
     pairs: dict[str, tuple[list[int], list[int]]] = {}
@@ -290,20 +254,20 @@ def sample_bijection_pairs(n: int, rng: random.Random) -> dict[str, tuple[list[i
     # identity / identity
     pairs["id_id"] = (list(range(size)), list(range(size)))
 
-    # symplectic orbit pairs
+    # five symplectic orbit pairs
     sp4 = enumerate_sp4()
-    for idx, T in enumerate(sp4[:3]):
+    for idx, T in enumerate(sp4[:5]):
         f2 = [apply_matrix_cols(T, x) for x in range(size)]
         pairs[f"symplectic_{idx}"] = (list(range(size)), f2)
 
-    # affine pairs: f(x) = A x + t for various A in GL(4,F_2) and t
+    # three affine pairs: f(x) = A x + t
     gl4 = enumerate_gl(4)
-    for idx, A in enumerate(gl4[:5]):
-        t = idx % size
+    for idx, A in enumerate(gl4[:3]):
+        t = rng.randrange(1, size)
         f = [(apply_matrix_cols(A, x) ^ t) for x in range(size)]
         pairs[f"affine_{idx}"] = (list(range(size)), f)
 
-    # random bijections
+    # three random bijections
     for idx in range(3):
         f2 = random_bijection(size, rng)
         pairs[f"random_{idx}"] = (list(range(size)), f2)
@@ -330,7 +294,27 @@ def main():
     enum_values = {}
     for n in (2, 3):
         formula = pr_b_neq_formula(n, p)
-        enum = pr_b_neq_by_enumeration(n, p)
+        # enumerate over all Lagrangians and (u1,u2,e1,e2)
+        lags = all_lagrangians(n)
+        size = 1 << (2 * n)
+        total = Fraction(0)
+        for L in lags:
+            mask = 0
+            for v in L:
+                mask |= 1 << v
+            for u1 in range(size):
+                c1 = (mask >> u1) & 1
+                for u2 in range(size):
+                    c2 = (mask >> u2) & 1
+                    for e1 in (0, 1):
+                        w1 = p if e1 else (1 - p)
+                        b1 = c1 ^ e1
+                        for e2 in (0, 1):
+                            w2 = p if e2 else (1 - p)
+                            b2 = c2 ^ e2
+                            if b1 != b2:
+                                total += w1 * w2
+        enum = total / (len(lags) * size * size)
         assert formula == enum, f"n={n}: formula {formula} != enum {enum}"
         formula_values[str(n)] = str(formula)
         enum_values[str(n)] = str(enum)
@@ -339,38 +323,63 @@ def main():
     print(f"  n=3: {formula_values['3']}")
 
     # ------------------------------------------------------------------
-    # G3: exact SD invariance under bijections at n=2
+    # K1: corrected same-secret SD law at n=2 (12 pairs)
     # ------------------------------------------------------------------
     n = 2
-    target = orbit_sd_formula(n, p)
-    print(f"\nG3: exact SD target for n={n} = {target}")
+    lags2 = all_lagrangians(n)
+    orbit_min = universal_minimum(n, p)
+    print(f"\nK1: corrected same-secret SD, n={n}; orbit minimum = {orbit_min}")
 
     pairs = sample_bijection_pairs(n, rng)
     sd_results = []
-    all_match = True
+    all_ok = True
+    any_strict = False
     for name, (f1, f2) in pairs.items():
-        sd = exact_sd_label_preserving(n, f1, f2, p)
-        match = (sd == target)
-        all_match &= match
+        A = agreement_A(n, lags2, f1, f2)
+        sd_formula = corrected_sd_formula(n, A, p)
+        sd_direct = exact_sd_label_preserving(n, lags2, f1, f2, p)
+        match = (sd_formula == sd_direct)
+        ge = (sd_direct >= orbit_min)
+        ident = (f1 == f2)
+        eq = (sd_direct == orbit_min)
+        all_ok &= match and ge and (eq == ident)
+        if not eq:
+            any_strict = True
         sd_results.append({
             "name": name,
-            "sd": str(sd),
-            "matches_target": match,
+            "sd": str(sd_direct),
+            "A": str(A),
+            "formula_matches_direct": match,
+            "meets_universal_bound": ge,
+            "equals_orbit_minimum": eq,
+            "is_literal_duplicate": ident,
         })
-        print(f"  {name}: SD = {sd}, matches = {match}")
-    assert all_match, "SD invariance failed"
+        print(f"  {name}: SD = {sd_direct}, A = {A}, formula_match={match}, "
+              f"ge_bound={ge}, eq_orbit={eq}")
+    assert all_ok, "corrected law verification failed"
+    assert any_strict, "expected at least one strictly-larger SD"
+    print("  => corrected law verified; orbit value is the universal MINIMUM")
 
-    # Also verify n=3 for identity (too many bijections to enumerate)
-    n3_target = orbit_sd_formula(3, p)
-    n3_id_sd = exact_sd_label_preserving(3, None, None, p)
-    assert n3_id_sd == n3_target
-    print(f"\nn=3 identity SD = {n3_id_sd} (target {n3_target})")
+    # ------------------------------------------------------------------
+    # K1: n=3 spot check
+    # ------------------------------------------------------------------
+    n3 = 3
+    lags3 = all_lagrangians(n3)
+    f1_n3 = list(range(1 << (2 * n3)))
+    f2_n3 = random_symplectic_perm(n3, rng)
+    A3 = agreement_A(n3, lags3, f1_n3, f2_n3)
+    sd_formula_n3 = corrected_sd_formula(n3, A3, p)
+    sd_direct_n3 = exact_sd_label_preserving(n3, lags3, f1_n3, f2_n3, p)
+    assert sd_formula_n3 == sd_direct_n3
+    orbit3 = universal_minimum(n3, p)
+    print(f"\nn=3 spot: SD = {sd_direct_n3} (formula OK; A = {A3}); "
+          f"orbit minimum = {orbit3}; strict = {sd_direct_n3 > orbit3}")
 
     # ------------------------------------------------------------------
     # Assemble output
     # ------------------------------------------------------------------
     result = {
-        "track": "G",
+        "track": "G-corrected-by-K",
         "experiment": 211,
         "noise_rate_p": str(p),
         "theorem_G1": {
@@ -382,41 +391,39 @@ def main():
             "label": "THEOREM",
         },
         "theorem_G1_lower_bound": {
-            "statement": "For every pair of public bijections f1,f2 of F_2^{2n}, the label-preserving split has SD >= Pr_fresh[b1 != b2]",
+            "statement": "For every pair of public bijections f1,f2 of F_2^{2n}, the label-preserving split has SD >= Pr_fresh[b1 != b_2]",
             "reason": "(b1,b2)-marginal of transformed pair is supported on {00,11}; fresh pair puts the stated mass on {01,10}; data processing for total variation",
             "family": "label-preserving public bijections f1,f2",
             "label": "THEOREM",
         },
-        "theorem_G3_invariance": {
-            "statement": "Under same-secret comparison, SD(split_{f1,f2}(D_L), D_L x D_L) = 1 - (p^2+(1-p)^2)/4^n, independent of f1,f2",
-            "closed_form_p_1_4": "1 - 5/(8*4^n)",
-            "n2_target": str(target),
-            "n3_target": str(n3_target),
-            "n3_identity_sd": str(n3_id_sd),
+        "old_G3_withdrawn": {
+            "original_claim": "Exact same-secret SD is independent of f1,f2 and equals 1 - (p^2+(1-p)^2)/4^n for all bijection pairs",
+            "flaw": "Applied the verification bijections f_i^{-1} to the FRESH comparison pair too, violating guard (L4); the fresh distribution is not invariant under arbitrary bijections",
+            "status": "WITHDRAWN / CORRECTED",
+            "label": "WITHDRAWN",
+        },
+        "corrected_same_secret_law": {
+            "statement": "SD(split_{f1,f2}(D_L), D_L x D_L) = 1 - 4^{-n}[2p(1-p) + (1-2p)^2 A], where A = Pr_{L,x}[1_L(f1 x) = 1_L(f2 x)]",
+            "closed_form_p_1_4": "1 - (3 + 2 A)/128",
+            "universal_minimum": str(orbit_min),
+            "equality_condition": "A = 1 iff f1 = f2 (literal duplicate); otherwise SD strictly larger",
+            "n2_target_minimum": str(orbit_min),
+            "n3_target_minimum": str(orbit3),
+            "n3_spot_sd": str(sd_direct_n3),
+            "n3_spot_A": str(A3),
             "tested_pairs_n2": sd_results,
             "label": "THEOREM",
-        },
-        "G2_label_modifying_family": {
-            "definition": "public bijections g_i: F_2^{2n} x F_2 -> F_2^{2n} x F_2; split (x,b) |-> (g_1(x,b), g_2(x,b))",
-            "correctness_constraint": "g_i maps D_L to D_{L'} for some Lagrangian L' (valid LSN sample -> valid LSN sample)",
-            "findings": (
-                "If g_i are valid, applying g_i^{-1} to the i-th output reduces to the "
-                "label-preserving case, so the same universal lower bound applies. "
-                "Fully general (invalid) label-modifying bijections produce outputs that are "
-                "not LSN samples; the appropriate comparison distribution is OPEN."
-            ),
-            "label": "EVIDENCE/OPEN",
         },
         "guards": {
             "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON stores string fractions",
             "L2_duality_care": "not invoked (no character sums over Lagrangians)",
-            "L3_query_class_hygiene": "distributional TV result; no SQ/query-class statement made",
+            "L3_query_class_hygiene": "distributional TV result; no Feldman/SQ/query-class statement made",
+            "L4_never_transform_comparison_distribution": "fresh pair (u1,b1,u2,b2) is compared in the natural domain; f1,f2 act only on the split side",
         },
         "interpretation_guard": {
-            "comparison_distribution": "two independent fresh samples from the SAME uniform secret L (natural LSN pair)",
-            "family_names": "label-preserving = split (x,b)|->((f1(x),b),(f2(x),b)); label-modifying = split with bijections g_i(x,b)",
-            "output_sd": "universal exact SD -> 1 as n grows; universal lower bound from duplicated label bit -> 2p(1-p) = 3/8 at p=1/4",
-            "PRE_REGISTERED": "hardness interpretation guarded: this is a structural distributional gap, not a lem:m2 rate or attack claim",
+            "comparison_distribution": "two independent fresh samples from the SAME uniform secret L (natural LSN pair), NOT pre-transformed by f1 or f2",
+            "family_names": "label-preserving = split (x,b)|->((f1(x),b),(f2(x),b)); label-flipping extension in Track K experiment 212",
+            "PRE_REGISTERED": "hardness interpretation guarded: structural distributional gap, not a lem:m2 rate or attack claim",
         },
     }
 
@@ -425,7 +432,6 @@ def main():
     with open(out_path, "w") as f:
         json.dump(result, f, indent=2)
     print(f"\nSaved: {out_path}")
-    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":

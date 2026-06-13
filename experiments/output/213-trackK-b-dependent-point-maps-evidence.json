@@ -1,0 +1,89 @@
+{
+  "track": "K",
+  "experiment": 213,
+  "noise_rate_p": "1/4",
+  "claim": {
+    "statement": "For b-dependent public bijections g_i(x,b) = (phi_{i,b}(x), b\u2295psi_i(x,b)), the universal minimum 1-(p^2+(1-p)^2)/4^n appears to remain a lower bound at n=2",
+    "status": "EVIDENCE / OPEN",
+    "label": "EVIDENCE"
+  },
+  "verification_n2": {
+    "num_instances": 10,
+    "instances": [
+      {
+        "name": "bdep_0",
+        "sd": "14887/15360",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_1",
+        "sd": "14843/15360",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_2",
+        "sd": "19807/20480",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_3",
+        "sd": "497/512",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_4",
+        "sd": "2481/2560",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_5",
+        "sd": "2969/3072",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_6",
+        "sd": "5951/6144",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_7",
+        "sd": "7433/7680",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_8",
+        "sd": "931/960",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "bdep_9",
+        "sd": "29797/30720",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      }
+    ],
+    "all_meet_bound": true,
+    "any_equal_to_minimum": false,
+    "label": "EVIDENCE"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction and integer counts; JSON stores string fractions",
+    "L2_duality_care": "not invoked",
+    "L3_query_class_hygiene": "TV-only; no Feldman/SQ inference",
+    "L4_never_transform_comparison_distribution": "fresh pair remains natural; g_i act only on split side"
+  },
+  "interpretation_guard": {
+    "comparison_distribution": "two independent fresh samples from the SAME uniform secret L",
+    "family": "b-dependent point-map split g_i(x,b) = (phi_{i,b}(x), b\u2295psi_i(x,b))",
+    "PRE_REGISTERED": "conjectural persistence of the universal minimum; not a theorem and not a rate/attack claim"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "track": "G",
+  "track": "G-corrected-by-K",
   "experiment": 211,
   "noise_rate_p": "1/4",
   "theorem_G1": {
@@ -17,96 +17,147 @@
     "label": "THEOREM"
   },
   "theorem_G1_lower_bound": {
-    "statement": "For every pair of public bijections f1,f2 of F_2^{2n}, the label-preserving split has SD >= Pr_fresh[b1 != b2]",
+    "statement": "For every pair of public bijections f1,f2 of F_2^{2n}, the label-preserving split has SD >= Pr_fresh[b1 != b_2]",
     "reason": "(b1,b2)-marginal of transformed pair is supported on {00,11}; fresh pair puts the stated mass on {01,10}; data processing for total variation",
     "family": "label-preserving public bijections f1,f2",
     "label": "THEOREM"
   },
-  "theorem_G3_invariance": {
-    "statement": "Under same-secret comparison, SD(split_{f1,f2}(D_L), D_L x D_L) = 1 - (p^2+(1-p)^2)/4^n, independent of f1,f2",
-    "closed_form_p_1_4": "1 - 5/(8*4^n)",
-    "n2_target": "123/128",
-    "n3_target": "507/512",
-    "n3_identity_sd": "507/512",
+  "old_G3_withdrawn": {
+    "original_claim": "Exact same-secret SD is independent of f1,f2 and equals 1 - (p^2+(1-p)^2)/4^n for all bijection pairs",
+    "flaw": "Applied the verification bijections f_i^{-1} to the FRESH comparison pair too, violating guard (L4); the fresh distribution is not invariant under arbitrary bijections",
+    "status": "WITHDRAWN / CORRECTED",
+    "label": "WITHDRAWN"
+  },
+  "corrected_same_secret_law": {
+    "statement": "SD(split_{f1,f2}(D_L), D_L x D_L) = 1 - 4^{-n}[2p(1-p) + (1-2p)^2 A], where A = Pr_{L,x}[1_L(f1 x) = 1_L(f2 x)]",
+    "closed_form_p_1_4": "1 - (3 + 2 A)/128",
+    "universal_minimum": "123/128",
+    "equality_condition": "A = 1 iff f1 = f2 (literal duplicate); otherwise SD strictly larger",
+    "n2_target_minimum": "123/128",
+    "n3_target_minimum": "507/512",
+    "n3_spot_sd": "9133/9216",
+    "n3_spot_A": "29/36",
     "tested_pairs_n2": [
       {
         "name": "id_id",
         "sd": "123/128",
-        "matches_target": true
+        "A": "1",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": true,
+        "is_literal_duplicate": true
       },
       {
         "name": "symplectic_0",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "617/640",
+        "A": "4/5",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       },
       {
         "name": "symplectic_1",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "1853/1920",
+        "A": "11/15",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       },
       {
         "name": "symplectic_2",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "1853/1920",
+        "A": "11/15",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "symplectic_3",
+        "sd": "309/320",
+        "A": "7/10",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "symplectic_4",
+        "sd": "309/320",
+        "A": "7/10",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       },
       {
         "name": "affine_0",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "619/640",
+        "A": "3/5",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       },
       {
         "name": "affine_1",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "619/640",
+        "A": "3/5",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       },
       {
         "name": "affine_2",
-        "sd": "123/128",
-        "matches_target": true
-      },
-      {
-        "name": "affine_3",
-        "sd": "123/128",
-        "matches_target": true
-      },
-      {
-        "name": "affine_4",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "619/640",
+        "A": "3/5",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       },
       {
         "name": "random_0",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "7421/7680",
+        "A": "79/120",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       },
       {
         "name": "random_1",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "495/512",
+        "A": "5/8",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       },
       {
         "name": "random_2",
-        "sd": "123/128",
-        "matches_target": true
+        "sd": "495/512",
+        "A": "5/8",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
       }
     ],
     "label": "THEOREM"
   },
-  "G2_label_modifying_family": {
-    "definition": "public bijections g_i: F_2^{2n} x F_2 -> F_2^{2n} x F_2; split (x,b) |-> (g_1(x,b), g_2(x,b))",
-    "correctness_constraint": "g_i maps D_L to D_{L'} for some Lagrangian L' (valid LSN sample -> valid LSN sample)",
-    "findings": "If g_i are valid, applying g_i^{-1} to the i-th output reduces to the label-preserving case, so the same universal lower bound applies. Fully general (invalid) label-modifying bijections produce outputs that are not LSN samples; the appropriate comparison distribution is OPEN.",
-    "label": "EVIDENCE/OPEN"
-  },
   "guards": {
     "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON stores string fractions",
     "L2_duality_care": "not invoked (no character sums over Lagrangians)",
-    "L3_query_class_hygiene": "distributional TV result; no SQ/query-class statement made"
+    "L3_query_class_hygiene": "distributional TV result; no Feldman/SQ/query-class statement made",
+    "L4_never_transform_comparison_distribution": "fresh pair (u1,b1,u2,b2) is compared in the natural domain; f1,f2 act only on the split side"
   },
   "interpretation_guard": {
-    "comparison_distribution": "two independent fresh samples from the SAME uniform secret L (natural LSN pair)",
-    "family_names": "label-preserving = split (x,b)|->((f1(x),b),(f2(x),b)); label-modifying = split with bijections g_i(x,b)",
-    "output_sd": "universal exact SD -> 1 as n grows; universal lower bound from duplicated label bit -> 2p(1-p) = 3/8 at p=1/4",
-    "PRE_REGISTERED": "hardness interpretation guarded: this is a structural distributional gap, not a lem:m2 rate or attack claim"
+    "comparison_distribution": "two independent fresh samples from the SAME uniform secret L (natural LSN pair), NOT pre-transformed by f1 or f2",
+    "family_names": "label-preserving = split (x,b)|->((f1(x),b),(f2(x),b)); label-flipping extension in Track K experiment 212",
+    "PRE_REGISTERED": "hardness interpretation guarded: structural distributional gap, not a lem:m2 rate or attack claim"
   }
 }

@@ -1,0 +1,136 @@
+{
+  "track": "K",
+  "experiment": 212,
+  "noise_rate_p": "1/4",
+  "theorem_K2": {
+    "statement": "SD(split_{f1,f2,h1,h2}(D_L), D_L x D_L) = 1 - 4^{-n}[2p(1-p) + (1-2p)^2 A'], where A' = Pr_{L,x}[1_L(f1x) \u2295 1_L(f2x) = h1(x) \u2295 h2(x)]",
+    "universal_minimum": "123/128",
+    "equality_condition": "A' = 1 iff f1 = f2 and h1 = h2 (literal duplicate); otherwise SD > minimum",
+    "label": "THEOREM"
+  },
+  "verification_n2": {
+    "num_cases": 12,
+    "cases": [
+      {
+        "name": "dup_id_00",
+        "sd": "123/128",
+        "Aprime": "1",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": true,
+        "is_literal_duplicate": true
+      },
+      {
+        "name": "dup_id_01",
+        "sd": "125/128",
+        "Aprime": "0",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "dup_id_rand",
+        "sd": "991/1024",
+        "Aprime": "9/16",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "dup_rand_00",
+        "sd": "123/128",
+        "Aprime": "1",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": true,
+        "is_literal_duplicate": true
+      },
+      {
+        "name": "dup_rand_01",
+        "sd": "495/512",
+        "Aprime": "5/8",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "sp_00",
+        "sd": "1853/1920",
+        "Aprime": "11/15",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "sp_h",
+        "sd": "14879/15360",
+        "Aprime": "121/240",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "aff_00",
+        "sd": "29/30",
+        "Aprime": "19/30",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "aff_h",
+        "sd": "745/768",
+        "Aprime": "5/12",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "rand_00",
+        "sd": "495/512",
+        "Aprime": "5/8",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "rand_hh",
+        "sd": "31/32",
+        "Aprime": "1/2",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "rand2_hh",
+        "sd": "14881/15360",
+        "Aprime": "119/240",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      }
+    ],
+    "label": "THEOREM"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON stores string fractions",
+    "L2_duality_care": "not invoked",
+    "L3_query_class_hygiene": "TV-only; no Feldman/SQ inference",
+    "L4_never_transform_comparison_distribution": "fresh pair remains in natural domain; f_i and h_i act only on the split side"
+  },
+  "interpretation_guard": {
+    "comparison_distribution": "two independent fresh samples from the SAME uniform secret L",
+    "family": "label-flipping split (x,b) |-> ((f1(x), b\u2295h1(x)), (f2(x), b\u2295h2(x)))",
+    "PRE_REGISTERED": "structural distributional gap; not a rate or attack claim"
+  }
+}

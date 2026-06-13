@@ -1,21 +1,26 @@
 # Track G: OP7 beyond the orbit family — universal label-preserving obstruction
 
 **Date:** 2026-06-14.  **Author:** Kimi (subagent).  **Experiment:** 211.  
-**Status:** Track-G milestone closed; claims labelled THEOREM/EVIDENCE/OPEN.  
+**Status:** Track-G milestone **corrected by Track K**; G.3 is WITHDRAWN.  
 **Discipline:** Sound Verifier.  No closure; no break; no security claim.  OPEN = LSN.
+
+> **Correction (Track K, 2026-06-14).**  The G.3 claim below — that the exact
+> same-secret SD is the same for every pair of public bijections — is **withdrawn**.
+> Its proof violated guard (L4) by applying the verification bijections to the
+> **fresh comparison distribution** too.  The corrected theorem is in
+> `meta/2026-06-14-KIMI-trackK-corrected-universal-bound.md` and
+> `experiments/211-KIMI-trackG-label-preserving-universal-bound.py`.  The orbit
+> value `1 - 5/(8·4^n)` is the universal **minimum**, attained iff `f₁ = f₂`.
 
 ## Summary
 
 Track G asked whether the OP7 symplectic-orbit analysis extends to arbitrary
-public bijections that preserve the label bit.  The answer is stronger than the
-original prompt anticipated:
+public bijections that preserve the label bit.
 
 * the **duplicated-label-bit obstruction is universal** for every label-preserving
-  split (Theorem G.1);
-* the **exact statistical distance itself is universal**: under the natural
-  same-secret comparison, every label-preserving bijection pair has the same SD
-  as the symplectic-orbit family, namely `1 - 5/(8·4^n)` at `p = 1/4` (Theorem
-  G.3);
+  split (Theorem G.1) — **still valid**;
+* the old claim that the **exact statistical distance itself is universal** is
+  **withdrawn** (see correction above);
 * label-modifying maps are scope-defined and remain **EVIDENCE/OPEN**: valid
   maps reduce to the label-preserving case, but fully general (not necessarily
   LSN-preserving) bijections need a comparison distribution that has not been
@@ -82,9 +87,18 @@ explicitly "label-preserving public bijections `f_1,f_2`".
 Lagrangians and all `(u_1,u_2,e_1,e_2)` and confirms the closed form matches the
 enumeration fraction-for-fraction.
 
-## G3. THEOREM — exact SD is independent of the bijections
+## G3. WITHDRAWN — exact SD is independent of the bijections
 
-**Statement.**  Under the natural same-secret comparison (both samples from the
+> **Withdrawn per Track K (2026-06-14).**  The statement below is false as a
+> universal claim.  Its proof applies `f_i^{-1}` to the fresh comparison pair,
+> violating guard (L4): the fresh distribution `D_L × D_L` is not invariant under
+> arbitrary public bijections.  The corrected law is
+> `SD = 1 − 4^{-n}[2p(1−p) + (1−2p)^2 A]` with
+> `A = Pr_{L,x}[1_L(f_1 x) = 1_L(f_2 x)]`; the orbit value is the universal
+> **minimum**, not the universal value.  See
+> `meta/2026-06-14-KIMI-trackK-corrected-universal-bound.md`.
+
+~~**Statement.**  Under the natural same-secret comparison (both samples from the
 same uniform random `L`),
 
 ```
@@ -93,17 +107,17 @@ SD( split_{f_1,f_2}(D_L) , D_L × D_L )
     = 1 - 5/(8·4^n)        at p = 1/4,
 ```
 
-for **every** pair of public bijections `f_1,f_2` of `F_2^{2n}`.
+for **every** pair of public bijections `f_1,f_2` of `F_2^{2n}`.~~
 
-**Proof.**  Applying `f_i^{-1}` to the `i`-th `x`-coordinate is a bijection on the
+~~**Proof.**  Applying `f_i^{-1}` to the `i`-th `x`-coordinate is a bijection on the
 joint sample space, so it preserves total variation.  It sends the transformed
 pair to the identity-split pair `(x,b,x,b)` and the fresh pair to two independent
 fresh samples `(x_1,b_1,x_2,b_2)`.  Neither reduced distribution depends on
 `f_1,f_2`, so the SD is the same for all bijections.  The value for the identity
 split is exactly the orbit-family value computed in Track B / experiment 210,
-now seen to be universal.
+now seen to be universal.~~
 
-**Verification.**  At `n = 2` experiment 211 computes the exact SD for:
+~~**Verification.**  At `n = 2` experiment 211 computes the exact SD for:
 
 * `id/id`,
 * three symplectic matrices `T ∈ Sp(4,F_2)`,
@@ -112,7 +126,7 @@ now seen to be universal.
 
 Every single pair returns `123/128`.  At `n = 3` the identity split returns
 `507/512`, matching the closed form.  Thus non-linear / non-symplectic bijections
-cannot do better or worse than the orbit family under the same-secret comparison.
+cannot do better or worse than the orbit family under the same-secret comparison.~~
 
 ## G2. EVIDENCE/OPEN — label-modifying maps
 
