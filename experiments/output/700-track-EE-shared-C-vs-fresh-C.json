@@ -1,0 +1,138 @@
+{
+  "track": "EE",
+  "experiment": 700,
+  "verbatim_definitions": {
+    "def:symplpn": {
+      "section": "3.1 Two Formulations",
+      "lines": "228-230",
+      "quote": "Let A in F_2^{2n x n} be a public matrix whose columns are isotropic: S_A := A^T Omega A = 0 (every pair of columns is orthogonal under the symplectic form). Let x in F_2^n be a secret vector, e ~ Bernoulli(p)^{2n} a noise vector, and y = Ax + e in F_2^{2n}. Given (A,y), recover x."
+    },
+    "lem:m2": {
+      "section": "9 Reduction Barriers",
+      "lines": "1166-1177",
+      "quote": "The obstacle is that the output noise components e'_i = <b_i,e> are m linear images of the fixed 2n-bit symplectic-LPN noise vector e; they therefore live in a subspace of dimension at most 2n and are heavily correlated when m = omega(n)."
+    },
+    "open:marginal-adaptive": {
+      "section": "10 Open Problems, item 8",
+      "lines": "1232-1238",
+      "quote": "In the isotropic-to-LPN reduction model, the distinguisher receives the public matrix C=BA and the noisy output y=Cx+e. ... rank(HY) <= 2n deterministically, for every B, because B in F_2^{m x 2n} confines the noise to a <=2n-dimensional space. Real LPN, whose noise is full-entropy ... has rank(HY) -> min(m-n, k); for m >= 4n and k > 2n this exceeds 2n with probability 1 - o(1), a detection advantage that does not vanish in n. Thus the shared-sample (fixed-B) case is closed asymptotically. The genuine residual is the fresh-B model, where each sample uses an independent basis A^{(i)} and matrix B^{(i)}, so the noises B^{(i)}e^{(i)} no longer share one <=2n-dimensional space and the stacked-rank invariant does not apply."
+    }
+  },
+  "ee1_ee3_single_block_shared_C_exact_SD_n2": [
+    {
+      "m": 3,
+      "sd": "3225/32768"
+    },
+    {
+      "m": 4,
+      "sd": "5903/32768"
+    },
+    {
+      "m": 5,
+      "sd": "556455/2097152"
+    },
+    {
+      "m": 6,
+      "sd": "2829099/8388608"
+    }
+  ],
+  "ee2_single_syndrome_subspace_evidence": {
+    "m": 7,
+    "n": 2,
+    "syndrome_support_size": 4,
+    "syndrome_ambient_size": 32,
+    "rank_HB": 2,
+    "sd_to_lpn_syndrome": "7/8"
+  },
+  "ee2_stacked_rank_shared_C_evidence": {
+    "n": 2,
+    "m": 7,
+    "r": 5,
+    "by_k": [
+      {
+        "k": 1,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 1,
+        "lpn_prob_rank_eq_min": "0",
+        "lpn_prob_rank_gt_2n": "0"
+      },
+      {
+        "k": 2,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 2,
+        "lpn_prob_rank_eq_min": "0",
+        "lpn_prob_rank_gt_2n": "0"
+      },
+      {
+        "k": 3,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 3,
+        "lpn_prob_rank_eq_min": "0",
+        "lpn_prob_rank_gt_2n": "0"
+      },
+      {
+        "k": 4,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 4,
+        "lpn_prob_rank_eq_min": "0",
+        "lpn_prob_rank_gt_2n": "0"
+      },
+      {
+        "k": 5,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 5,
+        "lpn_prob_rank_eq_min": "9765/32768",
+        "lpn_prob_rank_gt_2n": "9765/32768"
+      },
+      {
+        "k": 6,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 5,
+        "lpn_prob_rank_eq_min": "615195/1048576",
+        "lpn_prob_rank_gt_2n": "615195/1048576"
+      },
+      {
+        "k": 7,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 5,
+        "lpn_prob_rank_eq_min": "26043255/33554432",
+        "lpn_prob_rank_gt_2n": "26043255/33554432"
+      },
+      {
+        "k": 8,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 5,
+        "lpn_prob_rank_eq_min": "948718575/1073741824",
+        "lpn_prob_rank_gt_2n": "948718575/1073741824"
+      },
+      {
+        "k": 9,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 5,
+        "lpn_prob_rank_eq_min": "32319679455/34359738368",
+        "lpn_prob_rank_gt_2n": "32319679455/34359738368"
+      },
+      {
+        "k": 10,
+        "lsn_rank_cap": 4,
+        "lpn_rank": 5,
+        "lpn_prob_rank_eq_min": "1066549422015/1099511627776",
+        "lpn_prob_rank_gt_2n": "1066549422015/1099511627776"
+      }
+    ]
+  },
+  "interpretation": {
+    "lem_m2_model": "shared-C single block (one C=BA, one e)",
+    "single_block_rank_argument": "NO-GO for k=1: rank(HY) is rank of a single vector, so the stacked-rank invariant is trivial for one block.",
+    "single_block_other_signals": "EVIDENCE: exact SD grows toward 1 with m at fixed n via min-syndrome-weight / q_graph statistics, but this is fixed-n evidence; asymptotic rate in n remains OPEN (lem:m2).",
+    "multi_block_shared_C": "THEOREM: for k > 2n shared-C blocks with m >= 4n, rank(HY) <= 2n always while LPN has rank > 2n w.h.p., a non-vanishing distinguisher.",
+    "genuine_residual": "fresh-C / fresh-B multi-block model; stacked-rank does not apply."
+  },
+  "guards": {
+    "L1_exact_arithmetic": "All SDs and probabilities computed with fractions.Fraction; JSON stores string fractions.",
+    "L2_J_twist_duality": "Parity-check H is computed from C directly; no J-twist manipulation of comparison distribution.",
+    "L3_query_class_hygiene": "Distinguishers are either optimal SD over (C,y) or explicit linear-algebraic rank tests; no mixed query classes.",
+    "L4_never_transform_comparison": "LPN target distribution is generated by lpn_target_counts_n without transformation; reduction output is generated by randomized_uniform_B_counts_n.",
+    "PRE_REGISTER": "Conclusion registered before computation: lem:m2 as defined is shared-C single-block; fresh-C is the residual."
+  }
+}
