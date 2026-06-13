@@ -1,0 +1,121 @@
+{
+  "experiment": 300,
+  "track": "O",
+  "anchors": [
+    {
+      "m": 2,
+      "computed": "60016775/2415919104",
+      "expected": "60016775/2415919104",
+      "match": true
+    },
+    {
+      "m": 3,
+      "computed": "27456165227309/422212465065984",
+      "expected": "27456165227309/422212465065984",
+      "match": true
+    },
+    {
+      "m": 4,
+      "computed": "2606451312633458017/20752587082923245568",
+      "expected": "2606451312633458017/20752587082923245568",
+      "match": true
+    },
+    {
+      "m": 5,
+      "computed": "1948309423583462892421105/10880332376531662572355584",
+      "expected": "1948309423583462892421105/10880332376531662572355584",
+      "match": true
+    },
+    {
+      "m": 6,
+      "computed": "154465747684542391975435825813/713053462628379038341895553024",
+      "expected": "154465747684542391975435825813/713053462628379038341895553024",
+      "match": true
+    },
+    {
+      "m": 7,
+      "computed": "2809657129253759292702122144354957/11682667931703362164193616740745216",
+      "expected": "2809657129253759292702122144354957/11682667931703362164193616740745216",
+      "match": true
+    },
+    {
+      "m": 8,
+      "computed": "24416505111642318146403750884481306527/95704415696513942849074108340184809472",
+      "expected": "24416505111642318146403750884481306527/95704415696513942849074108340184809472",
+      "match": true
+    },
+    {
+      "m": 9,
+      "computed": "17669671061710790281877851091373705455665591/66902235595591869424607154817945084517941248",
+      "expected": "17669671061710790281877851091373705455665591/66902235595591869424607154817945084517941248",
+      "match": true
+    },
+    {
+      "m": 10,
+      "computed": "3549015358889387097348263044456131990477072740249/13153514735978126263833163494446547176903392886784",
+      "expected": "3549015358889387097348263044456131990477072740249/13153514735978126263833163494446547176903392886784",
+      "match": true
+    },
+    {
+      "m": 11,
+      "computed": "78638323439315817424880314129419993474254060155551655/287342913912354160942190067590682971928513585409425408",
+      "expected": "78638323439315817424880314129419993474254060155551655/287342913912354160942190067590682971928513585409425408",
+      "match": true
+    },
+    {
+      "m": 12,
+      "computed": "15622803180065708947771165899737395657837201712540918284829/56493915618480126874522104808868997744921199000176310616064",
+      "expected": "15622803180065708947771165899737395657837201712540918284829/56493915618480126874522104808868997744921199000176310616064",
+      "match": true
+    }
+  ],
+  "results": [
+    {
+      "n": 3,
+      "m": 24,
+      "p_eff": "3367/8192",
+      "q_graph": "1241/4608",
+      "sd": "106397724615480044212109000285864774888808285560814699506086670015282805483012767009383480326592264013663887961574725/354618055767550312910511360901292524245717653434189020011534640638211495943474895502728396293964240767259651912761344",
+      "sd_float": 0.30003470744090655,
+      "one_minus_sd": "248220331152070268698402360615427749356909367873374320505447970622928690460462128493344915967371976753595763951186619/354618055767550312910511360901292524245717653434189020011534640638211495943474895502728396293964240767259651912761344",
+      "one_minus_sd_float": 0.6999652925590935,
+      "time_sec": 266.13038396835327,
+      "leaves": 59463053,
+      "nodes": 131840237
+    }
+  ],
+  "cross_n_comparison": [
+    {
+      "ratio": 8,
+      "n2_m": 16,
+      "n2_one_minus_sd": "719997148880326871518962721698318123241139303350169/1496577676626844588240573268701473812127674924007424",
+      "n3_m": 24,
+      "n3_one_minus_sd": "248220331152070268698402360615427749356909367873374320505447970622928690460462128493344915967371976753595763951186619/354618055767550312910511360901292524245717653434189020011534640638211495943474895502728396293964240767259651912761344"
+    }
+  ],
+  "wall_report": {
+    "per_m_timeout_sec": 290,
+    "hit_wall_at_ms": [],
+    "status": "clean"
+  },
+  "claim_labels": {
+    "sufficient_statistic_reduction_n3": "THEOREM (proved; verified by direct enumeration for m<=12)",
+    "gl3_f2_orbit_canonicalisation": "THEOREM (recursive colour-class orbit enumeration; stabiliser gives exact orbit size 168/|Stab|)",
+    "s00_pure_shift_vectorisation": "THEOREM (closed-form s_00-sum via sign threshold; denominator divisibility proved)",
+    "n3_exact_sd_m_16": "EVIDENCE (exact finite computation)",
+    "n3_exact_sd_m_20": "EVIDENCE (exact finite computation)",
+    "n3_exact_sd_m_24": "EVIDENCE (exact finite computation)",
+    "cross_n_rate": "EVIDENCE (first matched-ratio 1-SD comparison across n=2,3)",
+    "lem_m2_status": "OPEN"
+  },
+  "interpretation_guards": {
+    "axis": "m grows at fixed n=3 (the correct m-axis)",
+    "comparison_distribution": "LPN_{p_eff(3)}, matched rate; never transformed",
+    "p_eff_caveat": "p_eff(3)=3367/8192 ~ 0.4109 is close to 1/2; SD measures correlation inside a vacuous LPN regime",
+    "practical_attack": "SD numbers do not imply a practical distinguisher",
+    "L1_exact_arithmetic": "integer counts over common denominator q_den*N*(2N)^m*D^m; q_graph(3) odd factor 9 preserved",
+    "L2_duality_care": "standard F_2 pairing only; no symplectic dual",
+    "L3_query_class_hygiene": "SQ statements, if any, name the query class explicitly; no unrestricted Feldman theorem",
+    "L4_comparison_distribution": "LPN target is the matched-rate product distribution, never post-processed"
+  }
+}
