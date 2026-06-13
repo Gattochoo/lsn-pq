@@ -1,0 +1,64 @@
+{
+  "track": "V",
+  "experiment": 430,
+  "noise_rate_p": "1/4",
+  "theorem_V1": {
+    "statement": "A bijective public map g is valid-output (g_*(D_L)=D_{L'} for every Lagrangian L) iff g(x,b)=(S(x),b) for some S in Sp(2n,F_2).  The induced secret is L'=S(L).",
+    "proof_sketch": "Valid-output forces g to map the high/low-probability graphs H_L and L_L to graphs of some Lagrangian; this preserves the label bit and forces a single body bijection preserving all Lagrangian subspaces, i.e. a symplectic matrix.",
+    "family_size_n2": 720,
+    "all_verified_valid_output": true,
+    "label": "THEOREM"
+  },
+  "negative_controls": {
+    "affine_translations_t_nonzero": {
+      "tested": 10800,
+      "failed_valid_output": 10800,
+      "label": "EVIDENCE"
+    },
+    "random_bijections": {
+      "tested": 200,
+      "satisfied_valid_output": 0,
+      "label": "EVIDENCE"
+    },
+    "b_dependent_body_maps": {
+      "tested": 200,
+      "satisfied_valid_output": 0,
+      "label": "EVIDENCE"
+    }
+  },
+  "theorem_V2_duplicate": {
+    "statement": "For any bijective valid-output map g, the literal duplicate split (g(x,b), g(x,b)) has SD = 1 - (p^2+(1-p)^2)/4^n by bijective invariance of TV applied to the split side.",
+    "universal_minimum": "123/128",
+    "verified_all_linear_symplectic": true,
+    "label": "THEOREM"
+  },
+  "no_go_reduction_breaks": {
+    "statement": "Reduction to label-flipping breaks for non-duplicate valid-output pairs: g_0^{-1} and g_1^{-1} differ, so no single public inverse recovers a common (x,b); the joint output has non-product structure and is compared against the original secret L.  Nevertheless, for the linear symplectic family the universal minimum persists.",
+    "evidence": {
+      "sampled_pairs": 200,
+      "all_meet_universal_bound": true,
+      "minimum_sampled_sd": "617/640",
+      "at_least_one_strict": true,
+      "fixed_L_joint_is_product": false
+    },
+    "label": "NO-GO"
+  },
+  "multi_user_hybrid": {
+    "statement": "Because valid-output maps are exactly secret rerandomizations, a multi-user hybrid argument that replaces real samples by g-transformed samples step-by-step loses at least the universal minimum per user.  A valid-output map breaking the minimum would create a tighter coupling and weaken the hybrid; n=2 evidence finds no such map.",
+    "label": "EVIDENCE"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON stores string fractions",
+    "L2_duality_care": "not invoked (no character sums over Lagrangians)",
+    "L3_query_class_hygiene": "distributional TV result; no Feldman/SQ/query-class statement made",
+    "L4_never_transform_comparison_distribution": "fresh pair (u1,b1,u2,b2) compared in natural domain; invariance arguments applied to split side only"
+  },
+  "interpretation_guard": {
+    "comparison_distribution": "two independent fresh samples from the SAME uniform secret L (natural LSN pair), NOT pre-transformed by g_0 or g_1",
+    "family_definitions": {
+      "valid_output_map": "public bijection g such that for every Lagrangian subspace L there exists a Lagrangian subspace L' with g_*(D_L)=D_{L'}",
+      "non_product_joint_structure": "split (g_0,g_1) whose diagonal push-forward is not a product distribution over a fixed secret"
+    },
+    "PRE_REGISTERED": "structural distributional gap for the correctness-constrained family; not a general lem:m2 rate or attack claim"
+  }
+}
