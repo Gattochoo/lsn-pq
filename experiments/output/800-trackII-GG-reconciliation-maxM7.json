@@ -1,0 +1,111 @@
+{
+  "track": "II",
+  "experiment": 800,
+  "quantity": "I(x;y|C) bits",
+  "standing_guards": [
+    "L1 exact arithmetic",
+    "L2 J-twist duality",
+    "L3 query-class hygiene",
+    "L4 never transform LPN"
+  ],
+  "modeling_choices": {
+    "A_ensemble": "uniform ordered basis of a uniform Lagrangian (paper/lsn-core.tex line 602)",
+    "B_per_row": "uniform over F_2^{2n}, independent per row and per A",
+    "log_base": 2,
+    "ambient_noise": "Bernoulli(1/4)^{2n}",
+    "mi_formula": "sum P(C,x,y) log2[P(C,x,y)P(C)/(P(C,x)P(C,y))]"
+  },
+  "n": 2,
+  "num_lagrangians": 15,
+  "num_ordered_bases": 90,
+  "num_canonical_bases": 15,
+  "comparisons": {
+    "kimi_720_table_m1_to_m5": [
+      0.0411,
+      0.0972,
+      0.1591,
+      0.2141,
+      0.2544
+    ],
+    "claude_646_table_m1_to_m5": [
+      0.0402,
+      0.0943,
+      0.1531,
+      0.204,
+      0.2404
+    ]
+  },
+  "rows": [
+    {
+      "m": 1,
+      "I_90_ordered_bases_bits": 0.040183461837335274,
+      "I_15_canonical_bases_bits": 0.04111626555942131,
+      "gap_bits": 0.0009328037220860327,
+      "gap_relative": 0.023213622705332615,
+      "time_90_s": 0.002,
+      "time_15_s": 0.0
+    },
+    {
+      "m": 2,
+      "I_90_ordered_bases_bits": 0.09430913881310514,
+      "I_15_canonical_bases_bits": 0.09716830570920533,
+      "gap_bits": 0.0028591668961001904,
+      "gap_relative": 0.030316965376666997,
+      "time_90_s": 0.004,
+      "time_15_s": 0.001
+    },
+    {
+      "m": 3,
+      "I_90_ordered_bases_bits": 0.15306351341276728,
+      "I_15_canonical_bases_bits": 0.15907199406042224,
+      "gap_bits": 0.006008480647654968,
+      "gap_relative": 0.039254819869787405,
+      "time_90_s": 0.016,
+      "time_15_s": 0.003
+    },
+    {
+      "m": 4,
+      "I_90_ordered_bases_bits": 0.20402879822732356,
+      "I_15_canonical_bases_bits": 0.21405908733895404,
+      "gap_bits": 0.01003028911163048,
+      "gap_relative": 0.049161143910944345,
+      "time_90_s": 0.075,
+      "time_15_s": 0.015
+    },
+    {
+      "m": 5,
+      "I_90_ordered_bases_bits": 0.24041015731502682,
+      "I_15_canonical_bases_bits": 0.2544402302196611,
+      "gap_bits": 0.014030072904634289,
+      "gap_relative": 0.05835890239133977,
+      "time_90_s": 0.489,
+      "time_15_s": 0.104
+    },
+    {
+      "m": 6,
+      "I_90_ordered_bases_bits": 0.2628840113199077,
+      "I_15_canonical_bases_bits": 0.28008448143430015,
+      "gap_bits": 0.017200470114392463,
+      "gap_relative": 0.06542988304245305,
+      "time_90_s": 3.555,
+      "time_15_s": 0.778
+    },
+    {
+      "m": 7,
+      "I_90_ordered_bases_bits": 0.27552192739941395,
+      "I_15_canonical_bases_bits": 0.29482490968906266,
+      "gap_bits": 0.019302982289648718,
+      "gap_relative": 0.07005969532750074,
+      "time_90_s": 28.567,
+      "time_15_s": 6.334
+    }
+  ],
+  "claim_labels": {
+    "paper_model_is_uniform_ordered_basis": "THEOREM (citation: paper/lsn-core.tex line 602)",
+    "90_bases_reproduces_646": "EVIDENCE (exact n=2, m<=7)",
+    "15_bases_reproduces_720": "EVIDENCE (exact n=2, m<=7)",
+    "gap_explained_by_A_measure": "THEOREM (model citation + exact reproduction)",
+    "canonical_table_is_90_basis": "THEOREM (under paper model)",
+    "asymptotic_sublinearity": "EVIDENCE/OPEN (finite n only)"
+  }
+}
