@@ -1,0 +1,233 @@
+{
+  "track": "P",
+  "experiment": 311,
+  "prefix": "track-P:",
+  "purpose": "all-ones k-fold quadrant count t_{1^k}: exact law and TV to binomial benchmarks",
+  "claims": {
+    "t_ones_exact_pgf": "COROLLARY (specialisation of the general-k composition GF)",
+    "t_ones_distribution": "THEOREM (coefficients of the exact PGF)",
+    "tv_to_bin_2_minus_k": "EVIDENCE (exact TV to the unconstrained Bin(2n, 2^{-k}) benchmark)",
+    "tv_to_bin_4_minus_k": "EVIDENCE (directive-requested TV to Bin(2n, 4^{-k}); note this is NOT the unconstrained benchmark for k>1)",
+    "enumeration_verification": "EVIDENCE (small-case exact match)"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON rationals stored as strings; counts stored as integers",
+    "L2_J_twist": "inherited from general-k GF; standard symplectic form",
+    "L3_query_class_hygiene": "structural one-variable marginal only; no unrestricted SQ / Feldman inference claim",
+    "L4_comparison_distribution": "comparison is the untransformed Bin(2n, 2^{-k}) benchmark (plus Bin(2n, 4^{-k}) as requested)"
+  },
+  "pre_register_interpretation": {
+    "scope": "exact one-variable marginal of the k-tuple composition GF",
+    "benchmark_note": "Bin(2n, 2^{-k}) is the unconstrained i.i.d. row law; Bin(2n, 4^{-k}) is included only because the directive requests it and is NOT the natural benchmark for k>1",
+    "hardness_implication": "small TV is structural-closeness EVIDENCE, not a hardness proof; multi-pair SQ implications remain OPEN"
+  },
+  "per_case": {
+    "n=2,k=2": {
+      "n": 2,
+      "k": 2,
+      "P_k": 90,
+      "pgf": {
+        "0": "11/45",
+        "1": "4/9",
+        "2": "14/45"
+      },
+      "distribution": {
+        "0": "11/45",
+        "1": "4/9",
+        "2": "14/45",
+        "3": "0",
+        "4": "0"
+      },
+      "coefficients_non_negative": true,
+      "sums_to_one": true,
+      "tv_to_Bin_2n_2_minus_k": "707/5760",
+      "tv_to_Bin_2n_4_minus_k": "779987/1474560",
+      "enumeration_count": {
+        "0": 22,
+        "1": 40,
+        "2": 28,
+        "3": 0,
+        "4": 0
+      },
+      "enumeration_matches_pgf": true,
+      "closed_form_time_sec": 0.0002391338348388672
+    },
+    "n=3,k=2": {
+      "n": 3,
+      "k": 2,
+      "P_k": 1890,
+      "pgf": {
+        "0": "10/63",
+        "1": "12/35",
+        "2": "22/63",
+        "3": "4/35",
+        "4": "11/315"
+      },
+      "distribution": {
+        "0": "10/63",
+        "1": "12/35",
+        "2": "22/63",
+        "3": "4/35",
+        "4": "11/315",
+        "5": "0",
+        "6": "0"
+      },
+      "coefficients_non_negative": true,
+      "sums_to_one": true,
+      "tv_to_Bin_2n_2_minus_k": "35183/645120",
+      "tv_to_Bin_2n_4_minus_k": "137460737/264241152",
+      "enumeration_count": {
+        "0": 300,
+        "1": 648,
+        "2": 660,
+        "3": 216,
+        "4": 66,
+        "5": 0,
+        "6": 0
+      },
+      "enumeration_matches_pgf": true,
+      "closed_form_time_sec": 0.00030112266540527344
+    },
+    "n=3,k=3": {
+      "n": 3,
+      "k": 3,
+      "P_k": 22680,
+      "pgf": {
+        "0": "398/945",
+        "1": "26/63",
+        "2": "47/315",
+        "3": "16/945"
+      },
+      "distribution": {
+        "0": "398/945",
+        "1": "26/63",
+        "2": "47/315",
+        "3": "16/945",
+        "4": "0",
+        "5": "0",
+        "6": "0"
+      },
+      "coefficients_non_negative": true,
+      "sums_to_one": true,
+      "tv_to_Bin_2n_2_minus_k": "1096511/27525120",
+      "tv_to_Bin_2n_4_minus_k": "31734414465307/64939905515520",
+      "enumeration_count": {
+        "0": 9552,
+        "1": 9360,
+        "2": 3384,
+        "3": 384,
+        "4": 0,
+        "5": 0,
+        "6": 0
+      },
+      "enumeration_matches_pgf": true,
+      "closed_form_time_sec": 0.003889799118041992
+    },
+    "n=4,k=2": {
+      "n": 4,
+      "k": 2,
+      "P_k": 32130,
+      "pgf": {
+        "0": "1541/16065",
+        "1": "824/3213",
+        "2": "596/1785",
+        "3": "3184/16065",
+        "4": "212/2295",
+        "5": "104/5355",
+        "6": "4/1071"
+      },
+      "distribution": {
+        "0": "1541/16065",
+        "1": "824/3213",
+        "2": "596/1785",
+        "3": "3184/16065",
+        "4": "212/2295",
+        "5": "104/5355",
+        "6": "4/1071",
+        "7": "0",
+        "8": "0"
+      },
+      "coefficients_non_negative": true,
+      "sums_to_one": true,
+      "tv_to_Bin_2n_2_minus_k": "14891599/526417920",
+      "tv_to_Bin_2n_4_minus_k": "126855806689/225485783040",
+      "enumeration_count": {
+        "0": 3082,
+        "1": 8240,
+        "2": 10728,
+        "3": 6368,
+        "4": 2968,
+        "5": 624,
+        "6": 120,
+        "7": 0,
+        "8": 0
+      },
+      "enumeration_matches_pgf": true,
+      "closed_form_time_sec": 0.0004360675811767578
+    },
+    "n=4,k=3": {
+      "n": 4,
+      "k": 3,
+      "P_k": 1927800,
+      "pgf": {
+        "0": "3833/11475",
+        "1": "32056/80325",
+        "2": "16652/80325",
+        "3": "3928/80325",
+        "4": "794/80325",
+        "5": "64/80325"
+      },
+      "distribution": {
+        "0": "3833/11475",
+        "1": "32056/80325",
+        "2": "16652/80325",
+        "3": "3928/80325",
+        "4": "794/80325",
+        "5": "64/80325",
+        "6": "0",
+        "7": "0",
+        "8": "0"
+      },
+      "coefficients_non_negative": true,
+      "sums_to_one": true,
+      "tv_to_Bin_2n_2_minus_k": "216403141/12478054400",
+      "tv_to_Bin_2n_4_minus_k": "884346997059446801/1614962678877388800",
+      "enumeration_count": null,
+      "enumeration_matches_pgf": null,
+      "closed_form_time_sec": 0.0052258968353271484
+    },
+    "n=4,k=4": {
+      "n": 4,
+      "k": 4,
+      "P_k": 46267200,
+      "pgf": {
+        "0": "1189/2025",
+        "1": "11464/34425",
+        "2": "164/2295",
+        "3": "256/34425",
+        "4": "32/34425"
+      },
+      "distribution": {
+        "0": "1189/2025",
+        "1": "11464/34425",
+        "2": "164/2295",
+        "3": "256/34425",
+        "4": "32/34425",
+        "5": "0",
+        "6": "0",
+        "7": "0",
+        "8": "0"
+      },
+      "coefficients_non_negative": true,
+      "sums_to_one": true,
+      "tv_to_Bin_2n_2_minus_k": "366379761011/24642374860800",
+      "tv_to_Bin_2n_4_minus_k": "7134990288782232809863/18677328374630921011200",
+      "enumeration_count": null,
+      "enumeration_matches_pgf": null,
+      "closed_form_time_sec": 0.2665562629699707
+    }
+  },
+  "verification": {
+    "all_checks_pass": true
+  }
+}

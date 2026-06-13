@@ -1,0 +1,185 @@
+{
+  "track": "P",
+  "experiment": 310,
+  "prefix": "track-P:",
+  "purpose": "general-k composition GF unifying k=2 and k=3; exact count law P_k(n); k=4 marginal consistency",
+  "claims": {
+    "P_k_count_law": "THEOREM (proved by inductive avoid-span intersect symplectic-perp count)",
+    "general_k_composition_GF": "THEOREM (Moebius inclusion-exclusion over F_2^k subspace lattice with character-sum G_L)",
+    "k2_unification": "THEOREM (general-k code with k=2 reproduces thm:joint-gf)",
+    "k3_unification": "THEOREM (general-k code with k=3 reproduces thm:triple-gf)",
+    "k4_pair_marginal_consistency": "THEOREM (pair-marginals of k=4 GF reproduce k=2 GF at n=4)",
+    "k4_triple_marginal_consistency": "THEOREM (triple-marginals of k=4 GF reproduce k=3 GF at n=4)",
+    "P_k_enumeration_verification": "EVIDENCE (direct count matches closed form for small n, k)"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON rationals stored as strings; counts stored as integers",
+    "L2_J_twist": "character sum uses (-1)^{Omega(c_i,c_j)} with standard symplectic form; per-symplectic-pair contraction avoids dual-space confusion",
+    "L3_query_class_hygiene": "structural k-secret composition result only; no unrestricted SQ / Feldman inference claim",
+    "L4_comparison_distribution": "not engaged (no comparison distribution is transformed in this counting theorem)"
+  },
+  "pre_register_interpretation": {
+    "scope": "exact composition GF for ordered isotropic independent k-tuples; multi-pair SQ-level implication remains OPEN",
+    "k4_verification": "k=4 consistency is verified on pair- and triple-marginals only; full 16-variable polynomial is not expanded",
+    "hardness_implication": "structural counting theorem; does not by itself imply SQ hardness for full learning tasks"
+  },
+  "P_k_verification": {
+    "statement": "P_k(n) = prod_{i=0}^{k-1}(2^{2n-i} - 2^i)",
+    "checks": [
+      {
+        "n": 2,
+        "k": 2,
+        "P_k_closed_form": 90,
+        "enumeration_count": 90,
+        "match": true
+      },
+      {
+        "n": 2,
+        "k": 3,
+        "P_k_closed_form": 0,
+        "enumeration_count": 0,
+        "match": true
+      },
+      {
+        "n": 3,
+        "k": 2,
+        "P_k_closed_form": 1890,
+        "enumeration_count": 1890,
+        "match": true
+      },
+      {
+        "n": 3,
+        "k": 3,
+        "P_k_closed_form": 22680,
+        "enumeration_count": 22680,
+        "match": true
+      }
+    ],
+    "all_match": true
+  },
+  "k2_unification": {
+    "statement": "general-k GF with k=2 reproduces thm:joint-gf",
+    "label": "THEOREM",
+    "checks": [
+      {
+        "n": 2,
+        "monomials": 15,
+        "matches_closed_form": true,
+        "non_negative": true,
+        "sums_to_one": true
+      },
+      {
+        "n": 3,
+        "monomials": 56,
+        "matches_closed_form": true,
+        "non_negative": true,
+        "sums_to_one": true
+      },
+      {
+        "n": 4,
+        "monomials": 128,
+        "matches_closed_form": true,
+        "non_negative": true,
+        "sums_to_one": true
+      }
+    ],
+    "all_match": true
+  },
+  "k3_unification": {
+    "statement": "general-k GF with k=3 reproduces thm:triple-gf",
+    "label": "THEOREM",
+    "checks": [
+      {
+        "n": 3,
+        "monomials": 539,
+        "matches_closed_form": true,
+        "non_negative": true,
+        "sums_to_one": true
+      },
+      {
+        "n": 4,
+        "monomials": 4012,
+        "matches_closed_form": true,
+        "non_negative": true,
+        "sums_to_one": true
+      }
+    ],
+    "all_match": true
+  },
+  "k4_marginal_consistency": {
+    "statement": "k=4 GF pair- and triple-marginals reproduce k=2/k=3 GFs at n=4",
+    "label": "THEOREM (algebraic marginal consistency; no full k=4 enumeration)",
+    "P_4(4)": 46267200,
+    "checks": {
+      "n": 4,
+      "k": 4,
+      "P_k": 46267200,
+      "pair_marginals": {
+        "pair_01": {
+          "coords": [
+            0,
+            1
+          ],
+          "monomials": 128,
+          "matches_k2_GF": true,
+          "sums_to_one": true
+        },
+        "pair_02": {
+          "coords": [
+            0,
+            2
+          ],
+          "monomials": 128,
+          "matches_k2_GF": true,
+          "sums_to_one": true
+        },
+        "pair_23": {
+          "coords": [
+            2,
+            3
+          ],
+          "monomials": 128,
+          "matches_k2_GF": true,
+          "sums_to_one": true
+        }
+      },
+      "triple_marginals": {
+        "triple_012": {
+          "coords": [
+            0,
+            1,
+            2
+          ],
+          "monomials": 4012,
+          "matches_k3_GF": true,
+          "sums_to_one": true
+        },
+        "triple_013": {
+          "coords": [
+            0,
+            1,
+            3
+          ],
+          "monomials": 4012,
+          "matches_k3_GF": true,
+          "sums_to_one": true
+        },
+        "triple_123": {
+          "coords": [
+            1,
+            2,
+            3
+          ],
+          "monomials": 4012,
+          "matches_k3_GF": true,
+          "sums_to_one": true
+        }
+      }
+    },
+    "all_pair_marginals_match": true,
+    "all_triple_marginals_match": true
+  },
+  "verification": {
+    "all_checks_pass": true
+  }
+}
