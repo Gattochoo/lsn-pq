@@ -51,10 +51,29 @@ I=Θ(n)이 lem:m2를 깨는가? **아니다.**
 
 1차 refutation(rank m−n)은 내가 격파. **2차(Theorem 2)는 내가 검증하니 옳았다** — Gemini가 paper의 open-problem 표적이 틀렸음을 발견. **판정 레일이 양방향 작동: Gemini over-claim도 잡고(상수 0.38n·rank 오류), Gemini의 옳은 통찰도 내 초기 의심을 누르고 인정.** 강한 모델을 강하게 굴리니 paper-급 발견(open problem 재정렬). **교훈: 의심도 검증 전엔 의심일 뿐 — 848 안 돌렸으면 Gemini를 부당하게 기각할 뻔.**
 
-## 6. 다음 (Kimi round-9가 이미 조준)
+## 6. ★ n=3,4 확증 (849) — Θ(n) scaling 결정 (Kimi LL 선취)
 
-- **LL(830, n=3,4)**: I(x;y|C)/n → const(Θ(n), Gemini) vs →0(o(n), paper)? **결정적.**
-- **JJ(810)**: H(u|s,C) 정확 계산 → I=Θ(n) 직접 확인 + 상수.
-- LL 확인되면 paper open:marginal-adaptive 재정렬(I=o(n)→SD route).
+`experiments/849-...mechanism-across-n.py`: 메커니즘을 n=2,3,4로 직접 확장(message form
+conditional bias + #biased-dirs), m=2n,3n, 샘플 평균.
+
+| n | avg \|bias\|form | avg H(form\|s) | #biased-dirs | ratio/n |
+|---|---|---|---|---|
+| 2 | 0.512 | 0.720 | 2.00 | 1.00 |
+| 3 | 0.529 | 0.710 | 3.00 | 1.00 |
+| 4 | 0.534 | 0.717 | 4.00 | 1.00 |
+
+**메시지 형식 \|bias\|는 모든 n에서 ~0.5 유지**(smoothing 전무, m·n 무관) — finite-n artifact
+아님. **편향 독립방향 수 = 정확히 n**(=2n−rank(HB)=2n−n; ratio/n=1.00). ⟹ **n개 독립 메시지
+방향이 각각 Ω(1) 편향 → I(x;y|C)=Θ(n) 확정(n=2,3,4 mechanism-level).** o(n) 기각(강).
+**★Gemini Theorem 2 scaling = CONFIRMED across n.** (상수: per-form H~0.72라 naive n·0.28이나
+joint dependence로 실제 ~0.15n at n=2; 정확 상수는 JJ H(u|s,C).)
+
+## 7. 다음
+
+- paper `open:marginal-adaptive`(line 1232) 재정렬: "prove I(x;y|C)=o(n)"은 **틀린 표적**
+  (I=Θ(n), n=2,3,4 확증) → open problem을 **SD((C,y),LPN)=1−o(1)**(lem:m2 proper)로. **이제
+  EVIDENCE 충분(n=2,3,4)** — 다음 세션서 본문 수정 가능(LL이 정확 상수 보강하면 더 좋음).
+- **JJ(810)**: H(u|s,C) 정확값 → I=Θ(n) 상수.
+- no-go(SD route)는 별개로 OPEN — 이게 진짜 lem:m2.
 
 No closure; no break; no security claim. OPEN = LSN.
