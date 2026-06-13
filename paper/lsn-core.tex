@@ -756,7 +756,30 @@ Write $\mathbf 1_{\Omega(c_1,c_2)=0} = \tfrac12\sum_{\lambda \in \F_2}(-1)^{\lam
 $\Pr[t_{10} + t_{01} = k] = \binom{2n}{k}/(2^{2n}-1)$ for $1 \le k \le 2n$ (and $0$ at $k=0$): equivalently, $c_1 + c_2$ is exactly uniform over the non-zero vectors. (Directly: for each $v \neq 0$ the count $\#\{c_1 : \Omega(c_1, v) = 0,\ c_1 \notin \{0, v\}\} = 2^{2n-1}-2$ is $v$-independent.)
 \end{corollary}
 
-What this does not close: the multi-secret-pair level. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
+The first object at the multi-secret level closes by the same method. For an ordered triple $(c_1,c_2,c_3)$ that is pairwise isotropic and linearly independent (the law of three columns of $A$, after the same transitivity argument), classify coordinates by $\tau \in \F_2^3$ and let $t_\tau$ be the category counts.
+
+\begin{theorem}[Triple composition generating function]
+\label{thm:triple-gf}
+For a subspace $L \subseteq \F_2^3$ put $T_L = \sum_{\tau \in L} x_\tau$,
+\[
+S_{\lambda, L} = \sum_{u, v \in L} (-1)^{\sum_{i<j} \lambda_{ij}(u_i v_j + u_j v_i)}\, x_u x_v \quad (\lambda \in \F_2^3),
+\qquad
+G_L = \tfrac18\Bigl(T_L^{2n} + \sum_{\lambda \neq 0} S_{\lambda, L}^{\,n}\Bigr).
+\]
+Then
+\[
+\E\Bigl[\prod_\tau x_\tau^{\,t_\tau}\Bigr]
+= \frac{1}{P_3}\Bigl(G_{\F_2^3} - \sum_{H \,\mathrm{hyperplane}} G_H + 2\sum_{\ell\,\mathrm{line}} G_\ell - 8\, G_{\{0\}}\Bigr),
+\qquad
+P_3 = (2^{2n}-1)(2^{2n-1}-2)(2^{2n-2}-4).
+\]
+\end{theorem}
+
+\begin{proof}
+The three pairwise-isotropy constraints are imposed by the character average $\tfrac18 \sum_{\lambda}(-1)^{\sum \lambda_{ij}\Omega(c_i,c_j)}$; the trivial character factorizes per coordinate ($T_L^{2n}$) and each non-trivial one per symplectic coordinate pair ($S_{\lambda,L}^n$). A triple fails linear independence exactly when its coordinate categories lie in a proper subspace $L \subset \F_2^3$ (each linear relation $\alpha \cdot (c_1,c_2,c_3) = 0$ confines the categories to $\alpha^{\perp}$), so M\"obius inversion over the subspace lattice of $\F_2^3$ --- with $\mu = (-1)^c 2^{\binom{c}{2}}$ at corank $c$, i.e.\ $(+1, -1, +2, -8)$ --- extracts the independent triples. Verified coefficient-by-coefficient against direct enumeration at $n = 3$ ($22{,}680$ triples) and $n = 4$ ($1{,}927{,}800$); every pair-marginal reproduces \Cref{thm:joint-gf}. (The ensemble is empty at $n = 2$: $P_3 = 0$, as no isotropic $3$-space exists in $\F_2^4$.)
+\end{proof}
+
+What this does not close: the multi-secret level beyond triples, and any SQ statement built on these joint laws. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
 
 \section{Quantum Analysis}
 \label{sec:quantum}
@@ -1178,7 +1201,7 @@ i.e.\ $123/128$ at $n=2$, $507/512$ at $n=3$, tending to $1$. The proof has two 
 \mathrm{SD} = 1 - \frac{2p(1-p) + (1-2p)^2\,A(f_1,f_2)}{4^{n}},
 \qquad A = \Pr_{L,x}\bigl[\mathbf 1_L(f_1 x) = \mathbf 1_L(f_2 x)\bigr] \le 1,
 \]
-so every label-preserving split has $\mathrm{SD} \ge 1 - (p^2 + (1-p)^2)/4^n$, with equality iff $f_1 = f_2$: the duplicated noise bit cannot be removed by any public relabeling of the sample points (verified by exact enumeration over symplectic, affine, and random bijections at $n = 2, 3$). What remains open is whether any public transformation that \emph{modifies the labels} (or outputs non-product structures) yields fresh samples; a positive answer would give tight multi-user security bounds for LSN-based constructions, while a fully general negative answer would explain why hybrid arguments lose a factor of the number of users.
+so every label-preserving split has $\mathrm{SD} \ge 1 - (p^2 + (1-p)^2)/4^n$, with equality iff $f_1 = f_2$: the duplicated noise bit cannot be removed by any public relabeling of the sample points (verified by exact enumeration over symplectic, affine, and random bijections at $n = 2, 3$). The same law extends verbatim to \emph{label-flipping} splits $(x,b) \mapsto ((f_1 x,\, b \oplus h_1(x)), (f_2 x,\, b \oplus h_2(x)))$ for arbitrary public $h_i : \F_2^{2n} \to \F_2$, with $A$ replaced by $A' = \Pr_{L,x}[\mathbf 1_L(f_1 x) \oplus \mathbf 1_L(f_2 x) = h_1(x) \oplus h_2(x)]$; since for $f_1 x \neq f_2 x$ the membership XOR is non-constant over $L$ (and equals $0$ when $f_1 x = f_2 x$), $A' = 1$ forces $f_1 = f_2$ and $h_1 = h_2$ --- the universal lower bound covers the whole family, with equality only for the literal duplicate. What remains open is whether any public transformation with \emph{$b$-dependent point maps} (or non-product output structure) yields fresh samples; a positive answer would give tight multi-user security bounds for LSN-based constructions, while a fully general negative answer would explain why hybrid arguments lose a factor of the number of users.
 
 \item \textbf{Membership-LSN $\leftrightarrow$ stabilizer-decoding LSN bridge.} Relate our membership formulation (\Cref{def:lsn}; secret Lagrangian, no public matrix) to the LSN of \cite{KLP+25,LPQR26} (public stabilizer matrix $[A \mid B]$ with a Lagrangian $A$-block, noisy-codeword samples, secret logical string). A reduction in either direction would let the external hardness results (constant-rate LPN $\le$ their LSN; Theorem~6.6 of \cite{KLP+25} attaches this hardness already to the \emph{single-sample} Search variant) and our SQ lower bounds support a \emph{single} object; absent a bridge, the two hardness cases remain parallel rather than cumulative. A reduction THEIR $\le$ OUR must embed the $k$-bit logical secret into our $\Theta(n^2)$-bit Lagrangian secret without the junk register that \cite{KLP+25} (Lemma~6.5) exploits to bypass the analogous dimension mismatch: from the single-sample hardness carrier it meets an information-budget obstruction shared with \Cref{open:marginal-adaptive} (one noisy codeword carries $O(n)$ secret-correlated bits, while membership recovery needs $\Omega(n^2)$ labels); the multi-sample variant instead meets a frame-alignment obstruction (the secret arrives in a fresh public frame per sample, whereas ours is one fixed Lagrangian). The reverse direction is blocked by code visibility (a public $[A \mid B]$ would encode our secret $L$). None of these is an impossibility result; each blocks only the natural maps.
 
@@ -1199,7 +1222,7 @@ We state explicitly the gaps a reader should weigh against the results above.
 
 \item \textbf{Two results are conditional.} The $2^{2n-O(1)}$ SQ bound depends on the pencil-extremality conjecture (\Cref{conj:pencil}), and the marginal-adaptive barrier (\Cref{thm:marginal-adaptive}) depends on \Cref{lem:m2}, which remains unproven; both dependencies are stated where they occur.
 
-\item \textbf{Moment results close the pairwise level; the multi-pair level is open.} The closed forms of \Cref{sec:moments} are exact for every order $j$, \Cref{prop:vmax} controls the variance multiplier at the maximal block, \Cref{prop:tdist} recovers the full exact law of the quadrant count (with the proven TV rate $2^{-(n+1)}$), and \Cref{thm:joint-gf} closes the entire joint four-category composition. What remains open is the multi-secret-pair joint level.
+\item \textbf{Moment results close the pairwise level and the first triple object; the general multi-secret level is open.} The closed forms of \Cref{sec:moments} are exact for every order $j$, \Cref{prop:vmax} controls the variance multiplier at the maximal block, \Cref{prop:tdist} recovers the full exact law of the quadrant count (with the proven TV rate $2^{-(n+1)}$), \Cref{thm:joint-gf} closes the joint four-category composition, and \Cref{thm:triple-gf} closes the triple composition. What remains open is the multi-secret level beyond triples and the SQ statements built on these joint laws.
 
 \item \textbf{Quantum hardness is conjectural.} We rule out the natural quantum attack families (\Cref{sec:quantum}) but prove no quantum query lower bound; \Cref{conj:quantum} has the same epistemic status as the corresponding conjectures for LPN and LWE.
 \end{enumerate}

@@ -27,6 +27,11 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 | S10 | **★joint 4-카테고리 GF**(Track I, thm:joint-gf): $G_n=[\tfrac12(T^{2n}{+}S^n)-A^{2n}-B^{2n}-C^{2n}+2x_{00}^{2n}]/P$ — **pairwise 수준 완전 종결**; cor:disagree($c_1{+}c_2$ 비영 균등) | 6e3d55f + round2 commit | thm:joint-gf+cor:disagree 신설; Honest-Lim "multi-pair만 open"으로 | exp/**258**: 계수사전 동일(n=2,3,4)·특수화 재생(n≤6)·한줄 v-불변 증명 확인 |
 | S11 | **★pencil-ratio 정리**(Track J): ratio$(n,k)=(2^n{+}1)/(2^{n-k}{+}1)$ 전 (n,k) + $C_n=2^{n+1}/(2^n{+}1)$ 정확폐형 — k=2가 $4\rho_{\rm avg}$를 아래서 강제(추측 상수의 근거) | f904dec + round2 commit | lem:avg-corr $C_n$ 폐형; conj:pencil 동기 단락 정리 격상(k≥3 scale-미달 포함) | exp/**259**: thm:distance 합·q-이항(n≤10)·n=4 몫-리프트 독자 구현 17/9·17/5·17/3·17/2 일치 |
 | S12 | **OP7 보편 label-preserving 하한**(Track G 정정판): same-secret에서 SD$=1-4^{-n}[2p(1{-}p)+(1{-}2p)^2A]$, $A\le1$ ⟹ SD$\ge1-(p^2{+}(1{-}p)^2)/4^n$, 등호 iff $f_1{=}f_2$ — **Kimi G.3(모든 쌍 등식)은 순환실험으로 기각, 정정판만 수록** | 0eb7126 + round2 commit | OP7 항목에 보편 하한·열린 질문을 label-modifying으로 재정밀화 | exp/**256**: 공식==열거(n=2 12쌍·n=3 1쌍), 등호-iff 확인, G.1 폐형·흡수 확인; 192 버그값과의 일치(루프 폐쇄) |
+| S13 | **label-flipping 확장**(Track K): 보편 하한이 $(f_i, b\oplus h_i(x))$ 전 family로 — $A'=\Pr[\mathbf 1_L(f_1x)\oplus\mathbf 1_L(f_2x)=h_1\oplus h_2(x)]$, 등호 iff literal duplicate | 0b7b5df + round3 commit | OP7 항목 확장(비상수성 논증 채용 — Kimi 분리문구의 0-벡터 갭 회피); 열린 질문 = b-dependent point maps | exp/**261**: 7-케이스(0-벡터 경계 포함) 정확, sharp 값 125/128, K1 표 일관 |
+| S14 | **★삼중 조성 GF**(Track M, thm:triple-gf): 부분공간격자 Möbius((+1,−1,+2,−8)) × character 폐형 — **multi-secret 첫 객체 폐쇄**; $P_3=(2^{2n}{-}1)(2^{2n-1}{-}2)(2^{2n-2}{-}4)$, $P_3(2)=0$ 퇴화 | 5732176 + round3 commit | thm:triple-gf 신설; Honest-Lim "pairwise+triple 닫힘, 너머 open" | exp/**263**: μ 재유도·n=3/4 전수 계수 동일·pair-marginal==thm:joint-gf·t₁₁₁/agreement 일치; 지시서 카운트 오류(56→60) Kimi 정정 확증 |
+
+(참고: Track L(m=80 도달·SD=0.8084, 262로 m=48/64/80 분수 일치)·Track N(단조성 정리)은 lem:m2
+meta-기록 — 본문 델타 없음.)
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
