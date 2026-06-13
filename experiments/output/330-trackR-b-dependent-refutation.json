@@ -1,0 +1,137 @@
+{
+  "track": "R",
+  "experiment": 330,
+  "noise_rate_p": "1/4",
+  "theorem_refutation": {
+    "statement": "The label-flipping universal minimum 1-(p^2+(1-p)^2)/4^n is NOT a lower bound for the full b-dependent point-map family",
+    "label": "THEOREM",
+    "proof_method": "Explicit counterexample with exact rational SD below the minimum",
+    "counterexample_sd": "1229/1280",
+    "universal_minimum": "123/128"
+  },
+  "verification_k3": {
+    "seed": 20260614,
+    "num_instances": 10,
+    "instances": [
+      {
+        "name": "k3_0",
+        "sd": "14887/15360",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_1",
+        "sd": "14843/15360",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_2",
+        "sd": "19807/20480",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_3",
+        "sd": "497/512",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_4",
+        "sd": "2481/2560",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_5",
+        "sd": "2969/3072",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_6",
+        "sd": "5951/6144",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_7",
+        "sd": "7433/7680",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_8",
+        "sd": "931/960",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      },
+      {
+        "name": "k3_9",
+        "sd": "29797/30720",
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false
+      }
+    ],
+    "all_meet_bound": true,
+    "any_equal_to_minimum": false,
+    "label": "EVIDENCE / THEOREM"
+  },
+  "structured_cases": {
+    "cases": [
+      {
+        "name": "duplicate",
+        "description": "g_0 = g_1 = id, psi_i = 0; attains the universal minimum",
+        "sd": "123/128",
+        "expected_sd": "123/128",
+        "sd_matches_expected": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": true,
+        "strictly_beats_universal_minimum": false
+      },
+      {
+        "name": "transposition_only",
+        "description": "phi_{1,1} = (0 1), all other maps identity, psi_i = 0",
+        "sd": "1231/1280",
+        "expected_sd": "1231/1280",
+        "sd_matches_expected": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "strictly_beats_universal_minimum": false
+      },
+      {
+        "name": "counterexample",
+        "description": "phi_{1,1} = (0 1), psi_0 = 0, psi_1(x,0)=0, psi_1(x,1)=1",
+        "sd": "1229/1280",
+        "expected_sd": "1229/1280",
+        "sd_matches_expected": true,
+        "meets_universal_bound": false,
+        "equals_orbit_minimum": false,
+        "strictly_beats_universal_minimum": true
+      },
+      {
+        "name": "random_best_seed124",
+        "description": "Random instance from exploratory search; EVIDENCE, not theorem",
+        "sd": "1843/1920",
+        "expected_sd": "1843/1920",
+        "sd_matches_expected": true,
+        "meets_universal_bound": false,
+        "equals_orbit_minimum": false,
+        "strictly_beats_universal_minimum": true
+      }
+    ],
+    "label": "THEOREM"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction and integer counts; JSON stores string fractions",
+    "L2_duality_care": "not invoked",
+    "L3_query_class_hygiene": "TV-only; no Feldman/SQ inference",
+    "L4_never_transform_comparison_distribution": "fresh pair remains natural; g_i act only on split side"
+  },
+  "interpretation_guard": {
+    "comparison_distribution": "two independent fresh samples from the SAME uniform secret L",
+    "family": "b-dependent point-map split g_i(x,b) = (phi_{i,b}(x), b \\oplus psi_i(x,b))",
+    "PRE_REGISTERED": "The Track K2 minimum is proven only for label-flipping (b-independent) maps; b-dependence can strictly improve closeness to the fresh pair. Exact infimum over all b-dependent maps remains OPEN."
+  }
+}
