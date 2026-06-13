@@ -48,9 +48,14 @@ n=2: f(0)=0인 Lagrangian-보존 permutation = 정확히 720개(전부 linear+sy
 - **의미**: n=2에서 **모든**(비선형 포함) valid-output bijection = Sp rerandomization. 본문 OP7의
   "linear" qualifier 제거 가능(n=2).
 
-## 4. Track Y — [TBD]
+## 4. Track Y — NO-GO/WALL (정직 모범) (anchor 독립재현)
 
-n=4 cross-n 셋째 점. [도착 시 작성. T의 GL(4) 버그 수정 or 무축소 m=8.]
+n=4 cross-n 셋째 점 재시도. **둘째 GL(4) orbit 시도도 NO-GO**(m=2: orbit 0.0511 vs anchor
+0.0076, Kimi 자기 anchor와 대조해 발견); m=8은 **30분 WALL**(무축소 충분통계량 한계). m=7 새
+anchor 추가(THEOREM-grade, 이전 T는 m≤6). **내 검증**: 무축소 260 계산기로 n=4 m≤5 정확 재현
+(라운드5 m≤4 + 이번 m=5=0.080990 일치); m=6,7은 단조 체인(1−SD: 0.890→0.871, SD 증가) 정합.
+cross-n 셋째 점은 **데이터 부족으로 OPEN**(qualitatively decay가 n으로 느려짐만). 라운드5 T에
+이은 정직 NO-GO 모범 — 가짜 데이터 대신 벽 보고. 본문 델타 없음(meta).
 
 ## 5. 본문 반영
 
