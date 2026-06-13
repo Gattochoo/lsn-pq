@@ -38,6 +38,8 @@ meta-기록 — 본문 델타 없음.)
 | S16 | **OP7 valid-output 선형 특성화 + b-dependent 하한**(Track V/U): 선형 valid-output 공개 bijection = 정확히 Sp(2n,F₂)(secret rerandomization, GL(4,2) 전수 증명); label-preserving b-dependent도 SD≥min(등호 iff g₀=g₁) | 0089ad2/636188c + round5 commit | OP7 항목에 2 refinement 추가(valid-output=Sp 선형·b-dependent 하한); 열린 영역을 비선형 valid-output·비곱구조로 정밀화 | exp/**441**(GL(4,2) 20160 전수→Sp 720 정확·forward·negative controls)·**440**(b-dep 정리 공식==열거·1500 검색) |
 
 (참고: Track S(lem:m2 본체)=syndrome-weight가 q-cap 넘어 full SD 99.9% 포착[exp/442]·극한=1은 uniform-B 한정·entropy proof 결함[H공식 오류]→two-component 메커니즘으로 정정·본문 미반영; Track T(cross-n n=4)=GL(4) orbit 버그로 NO-GO·anchor m≤6만[exp/443 m≤4 독립재현]. 둘 다 lem:m2 OPEN 유지.)
+| S17 | **★uniform-B-per-A 극한 정리 + syndrome-weight**(Track W/S): lim_{m→∞} SD=1 (고정 n), explicit rate $1-C(n)\rho(n)^m$, $\rho(n)<1$; 최적 scalar test = min syndrome weight | fbcb43b + round6 commit | open:marginal-adaptive에 2 strategy 추가(uniform-B 극한 정리·상관-B는 wrong way[rank-collapse]) | exp/**542**(ρ 2방법 일치·W-c bound가 F/L 실제 1-SD upper bound·Hellinger sanity)·**541**(λ-coupled, λ=0 baseline 일치·monotone·rank-collapse) |
+| S18 | **★OP7 valid-output = Sp(모든 bijection)**(Track Z): 비선형 converse n=2 전수(Lagrangian-보존 permutation=Sp(4,2) 720); general n=polar automorphism 인용 | 028525b + round6 commit | OP7 valid-output 문장의 "linear" qualifier 제거(비선형 포함 모든 valid-output=Sp rerandomization) | exp/**540** 독립 backtracking: f(0)=0 Lagrangian-보존 720개 전부 linear+symplectic=Sp(4,2) |
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
