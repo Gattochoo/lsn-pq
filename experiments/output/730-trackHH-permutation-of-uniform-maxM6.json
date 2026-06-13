@@ -1,0 +1,136 @@
+{
+  "experiment": 730,
+  "track": "HH",
+  "family": "permutation-of-uniform-distinct-rows",
+  "n": 2,
+  "max_m": 6,
+  "p_eff_n2": "175/512",
+  "q_graph_n2": "29/64",
+  "num_lagrangian_bases": 15,
+  "results": [
+    {
+      "m": 2,
+      "permutation_of_uniform": {
+        "sd_to_matched_lpn": "4337041/62914560",
+        "sd_float": 0.06893541018168131,
+        "tv_w_law": "768971/12582912",
+        "tv_w_law_float": 0.0611123243967692,
+        "denom": "3686400"
+      },
+      "uniform_b_per_a_baseline": {
+        "sd_to_matched_lpn": "36575/524288",
+        "sd_float": 0.06976127624511719,
+        "tv_w_law": "36575/524288",
+        "tv_w_law_float": 0.06976127624511719,
+        "denom": "3932160"
+      },
+      "delta_sd_vs_baseline": "-51959/62914560",
+      "delta_sd_float": -0.0008258660634358724,
+      "threat_detected": true,
+      "brute_force_sanity_m4": null
+    },
+    {
+      "m": 3,
+      "permutation_of_uniform": {
+        "sd_to_matched_lpn": "10318442307/75161927680",
+        "sd_float": 0.13728283221966453,
+        "tv_w_law": "1105735045/8589934592",
+        "tv_w_law_float": 0.12872450111899525,
+        "denom": "51609600"
+      },
+      "uniform_b_per_a_baseline": {
+        "sd_to_matched_lpn": "695896635/4294967296",
+        "sd_float": 0.16202606144361198,
+        "tv_w_law": "683881275/4294967296",
+        "tv_w_law_float": 0.15922851744107902,
+        "denom": "62914560"
+      },
+      "delta_sd_vs_baseline": "-3719497611/150323855360",
+      "delta_sd_float": -0.02474322922394744,
+      "threat_detected": true,
+      "brute_force_sanity_m4": null
+    },
+    {
+      "m": 4,
+      "permutation_of_uniform": {
+        "sd_to_matched_lpn": "472863750601247/2001111162552320",
+        "sd_float": 0.23630059111665355,
+        "tv_w_law": "47579175342157/228698418577408",
+        "tv_w_law_float": 0.20804330715585068,
+        "denom": "670924800"
+      },
+      "uniform_b_per_a_baseline": {
+        "sd_to_matched_lpn": "277825754675/1099511627776",
+        "sd_float": 0.25268105189297785,
+        "tv_w_law": "1097731733525/4398046511104",
+        "tv_w_law_float": 0.24959529890224985,
+        "denom": "1006632960"
+      },
+      "delta_sd_vs_baseline": "-32779122907253/2001111162552320",
+      "delta_sd_float": -0.0163804607763243,
+      "threat_detected": true,
+      "brute_force_sanity_m4": {
+        "count_vector_sd": "472863750601247/2001111162552320",
+        "brute_force_full_sd": "472863750601247/2001111162552320",
+        "agreement": true
+      }
+    },
+    {
+      "m": 5,
+      "permutation_of_uniform": {
+        "sd_to_matched_lpn": "835546163109796735/2458965396544290816",
+        "sd_float": 0.3397958199346897,
+        "tv_w_law": "395030242279602895/1405123083739594752",
+        "tv_w_law_float": 0.28113568615517254,
+        "denom": "8051097600"
+      },
+      "uniform_b_per_a_baseline": {
+        "sd_to_matched_lpn": "11668368577886825/36028797018963968",
+        "sd_float": 0.32386228637456616,
+        "tv_w_law": "11620604147576025/36028797018963968",
+        "tv_w_law_float": 0.3225365571173373,
+        "denom": "16106127360"
+      },
+      "delta_sd_vs_baseline": "156720030676083715/9835861586177163264",
+      "delta_sd_float": 0.015933533560123534,
+      "threat_detected": false,
+      "brute_force_sanity_m4": null
+    },
+    {
+      "m": 6,
+      "permutation_of_uniform": {
+        "sd_to_matched_lpn": "15888358814435365434175/36930381635566522335232",
+        "sd_float": 0.4302246039920089,
+        "tv_w_law": "3881716221014127467155/10551537610161863524352",
+        "tv_w_law_float": 0.367881569912215,
+        "denom": "88562073600"
+      },
+      "uniform_b_per_a_baseline": {
+        "sd_to_matched_lpn": "27663233753869930405/73786976294838206464",
+        "sd_float": 0.37490672667400143,
+        "tv_w_law": "27288213635546260005/73786976294838206464",
+        "tv_w_law_float": 0.36982425633634775,
+        "denom": "257698037760"
+      },
+      "delta_sd_vs_baseline": "4085820641246930532945/73860763271133044670464",
+      "delta_sd_float": 0.055317877318007476,
+      "threat_detected": false,
+      "brute_force_sanity_m4": null
+    }
+  ],
+  "claim_labels": {
+    "marginal_uniformity": "THEOREM (each row is uniform over F_2^4 by symmetry of random injection)",
+    "fresh_B_model": "EVIDENCE (one independent B per sample; matches the residual model in open:marginal-adaptive)",
+    "exact_sd_finite": "EVIDENCE (exact integer enumeration on count-vectors for n=2, m<=6)",
+    "sd_below_baseline_m234": "ESCALATE (SD is below uniform-B-per-A baseline at m=2,3,4; first observed reducing direction)",
+    "sd_not_below_baseline_m56": "NO-GO (SD exceeds baseline at m=5,6; no monotonic reduction)",
+    "asymptotic_lem_m2": "OPEN (fixed-n crossing does not give a non-vanishing asymptotic rate)"
+  },
+  "interpretation_guards": {
+    "L1_exact_arithmetic": "all SDs are Fractions; JSON stores string fractions",
+    "L2_J_twist_duality": "count-vector aggregation in (C,y) pattern space; no dual rewriting",
+    "L3_query_class": "unrestricted exact total variation on exchangeable count-vectors (equivalent to full (C,y) SD)",
+    "L4_comparison_distribution": "LPN_{175/512} untransformed",
+    "CLOSURE_GRADE": "fixed-n exact; asymptotic conclusions are OPEN/NO-GO only"
+  }
+}
