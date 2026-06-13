@@ -1,0 +1,160 @@
+{
+  "track": "Q",
+  "experiment": 320,
+  "prefix": "track-Q:",
+  "purpose": "exact 3-wise correlation of restricted 3-local parity queries in sympLPN",
+  "p": "1/4",
+  "k_local": 3,
+  "theorem": {
+    "statement": "For a fixed non-empty S with |S|=k and secrets x,x',x'', E_A[g_x g_{x'} g_{x''}] = (1-2p)^{3k} if x+x'+x''=0, else -(1-2p)^{3k}/(2^{2n}-1).",
+    "label": "THEOREM"
+  },
+  "claims": {
+    "exact_triple_correlation": "THEOREM",
+    "enumeration_verification_n3": "EVIDENCE",
+    "enumeration_verification_n4": "EVIDENCE",
+    "triple_gf_consistency": "EVIDENCE",
+    "restricted_sq_implication": "OPEN (needs a cited restricted-SQ theorem for k-local parities)",
+    "no_unrestricted_feldman": "GUARD (L3)"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON rationals stored as strings",
+    "L2_J_twist": "sign uses standard dot product; Lagrangian character sum / symplectic form handled by Track M triple-GF",
+    "L3_query_class_hygiene": "results stated only for the restricted 3-local-parity query class; they do NOT plug into cor:symplpn-sq's unrestricted Feldman bound",
+    "L4_comparison_distribution": "not engaged (no comparison distribution transformed)"
+  },
+  "pre_register_interpretation": {
+    "scope": "exact correlation for 3-local parity queries on one sympLPN block",
+    "benchmark": "unconstrained LPN gives 0 off-diagonal 3-wise correlation; isotropic ensemble gives -d/(2^{2n}-1)",
+    "hardness_implication": "EVIDENCE that isotropic conditioning does not help a 3-local-parity distinguisher; any SQ lower bound for this restricted class is OPEN"
+  },
+  "per_n": {
+    "3": {
+      "N": 6,
+      "s_local_mask": 7,
+      "s_all_mask": 63,
+      "closed_form": {
+        "d_local": "1/512",
+        "correlation_sumzero": "1/512",
+        "correlation_nonsum": "-1/32256",
+        "sign_expectation_sumzero": "1",
+        "sign_expectation_nonsum": "-1/63"
+      },
+      "enumeration": {
+        "bases_time_sec": 0.021944046020507812,
+        "independent_time_sec": 0.007650136947631836,
+        "sumzero_time_sec": 0.0014238357543945312,
+        "checks": {
+          "independent_sum_local": {
+            "description": "secrets e1, e2, e3 (sum != 0), 3-local parity",
+            "enum_avg_sign": "-1/63",
+            "formula_avg_sign": "-1/63",
+            "enum_correlation": "-1/32256",
+            "formula_correlation": "-1/32256",
+            "match": true
+          },
+          "independent_sum_all": {
+            "description": "secrets e1, e2, e3 (sum != 0), full-block parity",
+            "enum_avg_sign": "-1/63",
+            "formula_avg_sign": "-1/63",
+            "enum_correlation": "-1/32256",
+            "formula_correlation": "-1/32256",
+            "match": true
+          },
+          "sum_zero_local": {
+            "description": "secrets e1, e2, e1+e2 (sum = 0), 3-local parity",
+            "enum_avg_sign": "1",
+            "formula_avg_sign": "1",
+            "enum_correlation": "1/512",
+            "formula_correlation": "1/512",
+            "match": true
+          },
+          "sum_zero_all": {
+            "description": "secrets e1, e2, e1+e2 (sum = 0), full-block parity",
+            "enum_avg_sign": "1",
+            "formula_avg_sign": "1",
+            "enum_correlation": "1/512",
+            "formula_correlation": "1/512",
+            "match": true
+          }
+        }
+      },
+      "triple_gf": {
+        "specialization": "x_tau = (-1)^{tau_1+tau_2+tau_3}",
+        "gf_sign_expectation": "-1/63",
+        "formula_sign_expectation": "-1/63",
+        "match": true,
+        "time_sec": 0.0026330947875976562
+      },
+      "average_abs_triple_correlation": {
+        "value": "5/18432",
+        "note": "average over all (x,x',x'') in (F_2^n)^3 of |E_A[g_x g_{x'} g_{x''}]|"
+      }
+    },
+    "4": {
+      "N": 8,
+      "s_local_mask": 7,
+      "s_all_mask": 255,
+      "closed_form": {
+        "d_local": "1/512",
+        "correlation_sumzero": "1/512",
+        "correlation_nonsum": "-1/130560",
+        "sign_expectation_sumzero": "1",
+        "sign_expectation_nonsum": "-1/255"
+      },
+      "enumeration": {
+        "bases_time_sec": 28.10396909713745,
+        "independent_time_sec": 1.6214210987091064,
+        "sumzero_time_sec": 0.10700082778930664,
+        "checks": {
+          "independent_sum_local": {
+            "description": "secrets e1, e2, e3 (sum != 0), 3-local parity",
+            "enum_avg_sign": "-1/255",
+            "formula_avg_sign": "-1/255",
+            "enum_correlation": "-1/130560",
+            "formula_correlation": "-1/130560",
+            "match": true
+          },
+          "independent_sum_all": {
+            "description": "secrets e1, e2, e3 (sum != 0), full-block parity",
+            "enum_avg_sign": "-1/255",
+            "formula_avg_sign": "-1/255",
+            "enum_correlation": "-1/130560",
+            "formula_correlation": "-1/130560",
+            "match": true
+          },
+          "sum_zero_local": {
+            "description": "secrets e1, e2, e1+e2 (sum = 0), 3-local parity",
+            "enum_avg_sign": "1",
+            "formula_avg_sign": "1",
+            "enum_correlation": "1/512",
+            "formula_correlation": "1/512",
+            "match": true
+          },
+          "sum_zero_all": {
+            "description": "secrets e1, e2, e1+e2 (sum = 0), full-block parity",
+            "enum_avg_sign": "1",
+            "formula_avg_sign": "1",
+            "enum_correlation": "1/512",
+            "formula_correlation": "1/512",
+            "match": true
+          }
+        }
+      },
+      "triple_gf": {
+        "specialization": "x_tau = (-1)^{tau_1+tau_2+tau_3}",
+        "gf_sign_expectation": "-1/255",
+        "formula_sign_expectation": "-1/255",
+        "match": true,
+        "time_sec": 0.014890909194946289
+      },
+      "average_abs_triple_correlation": {
+        "value": "9/69632",
+        "note": "average over all (x,x',x'') in (F_2^n)^3 of |E_A[g_x g_{x'} g_{x''}]|"
+      }
+    }
+  },
+  "verification": {
+    "all_checks_pass": true
+  }
+}
