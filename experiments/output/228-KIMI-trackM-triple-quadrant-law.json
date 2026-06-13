@@ -1,0 +1,93 @@
+{
+  "track": "M",
+  "experiment": 228,
+  "prefix": "track-M:",
+  "purpose": "triple-quadrant count law for t_{111}",
+  "claims": {
+    "triple_quadrant_count_law": "THEOREM (specialisation of the verified triple GF)",
+    "enumeration_cross_check": "EVIDENCE (exact table match by direct enumeration)"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction; JSON rationals as strings; counts as integers",
+    "L2_J_twist": "inherited from the triple GF character sum",
+    "L3_query_class_hygiene": "structural tabulation only; no SQ hardness inference",
+    "L4_comparison_distribution": "not engaged"
+  },
+  "per_n": {
+    "3": {
+      "N": 6,
+      "P3": 22680,
+      "enumeration_total": 22680,
+      "enumeration_counts": [
+        9552,
+        9360,
+        3384,
+        384,
+        0,
+        0,
+        0
+      ],
+      "pmf_from_gf": [
+        "398/945",
+        "26/63",
+        "47/315",
+        "16/945",
+        "0",
+        "0",
+        "0"
+      ],
+      "pmf_from_enumeration": [
+        "398/945",
+        "26/63",
+        "47/315",
+        "16/945",
+        "0",
+        "0",
+        "0"
+      ],
+      "distributions_match": true
+    },
+    "4": {
+      "N": 8,
+      "P3": 1927800,
+      "enumeration_total": 1927800,
+      "enumeration_counts": [
+        643944,
+        769344,
+        399648,
+        94272,
+        19056,
+        1536,
+        0,
+        0,
+        0
+      ],
+      "pmf_from_gf": [
+        "3833/11475",
+        "32056/80325",
+        "16652/80325",
+        "3928/80325",
+        "794/80325",
+        "64/80325",
+        "0",
+        "0",
+        "0"
+      ],
+      "pmf_from_enumeration": [
+        "3833/11475",
+        "32056/80325",
+        "16652/80325",
+        "3928/80325",
+        "794/80325",
+        "64/80325",
+        "0",
+        "0",
+        "0"
+      ],
+      "distributions_match": true
+    }
+  },
+  "verification": {
+    "all_checks_pass": true
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "track": "M",
+  "experiment": 229,
+  "prefix": "track-M:",
+  "purpose": "tabulate the triple agreement count a = t000 + t111",
+  "statistic": {
+    "name": "triple agreement count",
+    "definition": "a = t_{000} + t_{111} = #{i : (c1_i, c2_i, c3_i) in {(0,0,0),(1,1,1)}}"
+  },
+  "claims": {
+    "agreement_count_distribution": "THEOREM (specialisation/grouping of the verified triple GF)",
+    "n3_enumeration_check": "EVIDENCE (direct enumeration match at n=3)"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction; JSON rationals as strings; counts as integers",
+    "L2_J_twist": "inherited from the triple GF character sum",
+    "L3_query_class_hygiene": "structural tabulation only; no SQ hardness inference",
+    "L4_comparison_distribution": "not engaged"
+  },
+  "per_n": {
+    "3": {
+      "N": 6,
+      "P3": 22680,
+      "pmf": [
+        "58/315",
+        "44/105",
+        "23/105",
+        "44/315",
+        "4/105",
+        "0",
+        "0"
+      ],
+      "enumeration_total": 22680,
+      "enumeration_pmf": [
+        "58/315",
+        "44/105",
+        "23/105",
+        "44/315",
+        "4/105",
+        "0",
+        "0"
+      ],
+      "enumeration_match": true
+    },
+    "4": {
+      "N": 8,
+      "P3": 1927800,
+      "pmf": [
+        "79/765",
+        "40/153",
+        "368/1071",
+        "944/5355",
+        "26/315",
+        "152/5355",
+        "8/1785",
+        "0",
+        "0"
+      ],
+      "enumeration_total": null,
+      "enumeration_pmf": null,
+      "enumeration_match": null
+    }
+  },
+  "verification": {
+    "all_checks_pass": true
+  }
+}

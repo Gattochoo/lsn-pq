@@ -1,0 +1,67 @@
+{
+  "track": "M",
+  "experiment": 227,
+  "prefix": "track-M:",
+  "purpose": "verify that each pair-marginal of the triple GF reproduces thm:joint-gf",
+  "claims": {
+    "pair_marginals_reproduce_joint_gf": "THEOREM (specialization/marginalization of the triple GF)",
+    "enumeration_independence_check": "EVIDENCE (marginalization of the verified n=3,4 triple polynomials)"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON rationals as strings",
+    "L2_J_twist": "inherited from the triple GF character sum; marginalization does not alter the symplectic form",
+    "L3_query_class_hygiene": "pairwise-level structural consistency check only",
+    "L4_comparison_distribution": "not engaged"
+  },
+  "per_n": {
+    "3": {
+      "N": 6,
+      "P3": 22680,
+      "pair_G_n_monomials": 56,
+      "marginal_checks": {
+        "pair_12": {
+          "match": true,
+          "num_monomials": 56,
+          "sums_to_one": true
+        },
+        "pair_13": {
+          "match": true,
+          "num_monomials": 56,
+          "sums_to_one": true
+        },
+        "pair_23": {
+          "match": true,
+          "num_monomials": 56,
+          "sums_to_one": true
+        }
+      },
+      "all_pair_marginals_match": true
+    },
+    "4": {
+      "N": 8,
+      "P3": 1927800,
+      "pair_G_n_monomials": 128,
+      "marginal_checks": {
+        "pair_12": {
+          "match": true,
+          "num_monomials": 128,
+          "sums_to_one": true
+        },
+        "pair_13": {
+          "match": true,
+          "num_monomials": 128,
+          "sums_to_one": true
+        },
+        "pair_23": {
+          "match": true,
+          "num_monomials": 128,
+          "sums_to_one": true
+        }
+      },
+      "all_pair_marginals_match": true
+    }
+  },
+  "verification": {
+    "all_checks_pass": true
+  }
+}
