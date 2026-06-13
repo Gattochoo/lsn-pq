@@ -1,0 +1,100 @@
+{
+  "experiment": 410,
+  "track": "T",
+  "anchors": [
+    {
+      "n": 4,
+      "m": 2,
+      "p_eff": "58975/131072",
+      "q_graph": "10657/69632",
+      "sd": "17689728175/2336462209024",
+      "sd_float": 0.007571159553395666,
+      "one_minus_sd": "2318772480849/2336462209024",
+      "one_minus_sd_float": 0.9924288404466043,
+      "time_sec": 0.015753984451293945
+    },
+    {
+      "n": 4,
+      "m": 3,
+      "p_eff": "58975/131072",
+      "q_graph": "10657/69632",
+      "sd": "97436762324938575/4611686018427387904",
+      "sd_float": 0.02112822987853043,
+      "one_minus_sd": "4514249256102449329/4611686018427387904",
+      "one_minus_sd_float": 0.9788717701214695,
+      "time_sec": 0.17045283317565918
+    },
+    {
+      "n": 4,
+      "m": 4,
+      "p_eff": "58975/131072",
+      "q_graph": "10657/69632",
+      "sd": "1892585145691481970358175/41103477866897391940009984",
+      "sd_float": 0.04604440412123062,
+      "one_minus_sd": "39210892721205909969651809/41103477866897391940009984",
+      "one_minus_sd_float": 0.9539555958787693,
+      "time_sec": 1.437241792678833
+    },
+    {
+      "n": 4,
+      "m": 5,
+      "p_eff": "58975/131072",
+      "q_graph": "10657/69632",
+      "sd": "55850882624077460792628520620625/689601926524156794414206543724544",
+      "sd_float": 0.08099003276511438,
+      "one_minus_sd": "633751043900079333621578023103919/689601926524156794414206543724544",
+      "one_minus_sd_float": 0.9190099672348856,
+      "time_sec": 9.975930213928223
+    },
+    {
+      "n": 4,
+      "m": 6,
+      "p_eff": "58975/131072",
+      "q_graph": "10657/69632",
+      "sd": "159047686779761934951609812861936446925/1446200059413988469719342081585014898688",
+      "sd_float": 0.10997626901233104,
+      "one_minus_sd": "1287152372634226534767732268723078451763/1446200059413988469719342081585014898688",
+      "one_minus_sd_float": 0.890023730987669,
+      "time_sec": 60.49428200721741
+    }
+  ],
+  "gl_vs_ss_checks": [
+    {
+      "m": 2,
+      "sd_gl": "10167249838025/149533581377536",
+      "sd_ss": "17689728175/2336462209024",
+      "match": false,
+      "leaves": 103,
+      "nodes": 196780
+    }
+  ],
+  "results": [],
+  "cross_n_comparison": [],
+  "n_monotonicity_confirmed": null,
+  "wall_report": {
+    "per_m_timeout_sec": 290,
+    "hit_wall_at_ms": [],
+    "status": "clean"
+  },
+  "claim_labels": {
+    "sufficient_statistic_reduction_n4": "THEOREM (proved; verified by direct enumeration for m <= 6)",
+    "gl4_f2_orbit_canonicalisation": "NO-GO (recursive orbit enumeration disagrees with sufficient-statistic SD already at m=2)",
+    "s00_pure_shift_vectorisation": "THEOREM (closed-form s_00-sum via sign threshold; denominator divisibility preserved)",
+    "n4_exact_sd_m_8": "NO-GO (GL reduction unsound; larger-m exact SD not delivered)",
+    "n4_exact_sd_m_12": "NO-GO (GL reduction unsound; larger-m exact SD not delivered)",
+    "cross_n_rate_n2_n3_n4": "NO-GO (insufficient n=4 data; only anchors m<=6 available)",
+    "n_monotonicity": "OPEN (no reliable n=4 data above m=6)",
+    "lem_m2_status": "OPEN"
+  },
+  "interpretation_guards": {
+    "axis": "m grows at fixed n=4 (the correct m-axis)",
+    "comparison_distribution": "LPN_{p_eff(4)}, matched rate; never transformed",
+    "p_eff_caveat": "p_eff(4)=58975/131072 ~ 0.44995 is closer to 1/2 than p_eff(2),p_eff(3); the LPN target is in a high-noise regime and SD measures only residual correlation",
+    "scope": "uniform-B-per-A reduction strategy only; not general marginal-adaptive lem:m2",
+    "practical_attack": "SD numbers do not imply a practical distinguisher",
+    "L1_exact_arithmetic": "integer counts over common denominator q_den*N*(2N)^m*D^m; q_graph(4) exact",
+    "L2_duality_care": "standard F_2 pairing <w,tau> only; no symplectic dual",
+    "L3_query_class_hygiene": "SQ statements, if any, name the query class explicitly; no unrestricted Feldman theorem",
+    "L4_comparison_distribution": "LPN target is the matched-rate product distribution, never post-processed"
+  }
+}
