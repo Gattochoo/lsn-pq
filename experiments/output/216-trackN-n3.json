@@ -1,0 +1,178 @@
+{
+  "experiment": 216,
+  "track": "N",
+  "self_checks": {
+    "2": [
+      {
+        "n": 2,
+        "m": 2,
+        "sd_direct": "36575/524288",
+        "sd_sufficient_statistic": "36575/524288",
+        "match": true
+      },
+      {
+        "n": 2,
+        "m": 3,
+        "sd_direct": "695896635/4294967296",
+        "sd_sufficient_statistic": "695896635/4294967296",
+        "match": true
+      },
+      {
+        "n": 2,
+        "m": 4,
+        "sd_direct": "277825754675/1099511627776",
+        "sd_sufficient_statistic": "277825754675/1099511627776",
+        "match": true
+      }
+    ],
+    "3": [
+      {
+        "n": 3,
+        "m": 3,
+        "sd_direct": "27456165227309/422212465065984",
+        "sd_sufficient_statistic": "27456165227309/422212465065984",
+        "match": true
+      },
+      {
+        "n": 3,
+        "m": 4,
+        "sd_direct": "2606451312633458017/20752587082923245568",
+        "sd_sufficient_statistic": "2606451312633458017/20752587082923245568",
+        "match": true
+      }
+    ]
+  },
+  "exact_table": [
+    {
+      "n": 2,
+      "m": 2,
+      "sd": "36575/524288",
+      "source": "existing"
+    },
+    {
+      "n": 3,
+      "m": 2,
+      "sd": "60016775/2415919104",
+      "source": "existing"
+    },
+    {
+      "n": 3,
+      "m": 3,
+      "sd": "27456165227309/422212465065984",
+      "source": "existing"
+    },
+    {
+      "n": 3,
+      "m": 4,
+      "sd": "2606451312633458017/20752587082923245568",
+      "source": "existing"
+    },
+    {
+      "n": 3,
+      "m": 5,
+      "sd": "1948309423583462892421105/10880332376531662572355584",
+      "source": "existing"
+    },
+    {
+      "n": 3,
+      "m": 6,
+      "sd": "154465747684542391975435825813/713053462628379038341895553024",
+      "source": "existing"
+    },
+    {
+      "n": 3,
+      "m": 7,
+      "sd": "2809657129253759292702122144354957/11682667931703362164193616740745216",
+      "source": "computed"
+    },
+    {
+      "n": 3,
+      "m": 8,
+      "sd": "24416505111642318146403750884481306527/95704415696513942849074108340184809472",
+      "source": "computed"
+    },
+    {
+      "n": 3,
+      "m": 9,
+      "sd": "17669671061710790281877851091373705455665591/66902235595591869424607154817945084517941248",
+      "source": "computed"
+    },
+    {
+      "n": 3,
+      "m": 10,
+      "sd": "3549015358889387097348263044456131990477072740249/13153514735978126263833163494446547176903392886784",
+      "source": "computed"
+    },
+    {
+      "n": 3,
+      "m": 11,
+      "sd": "78638323439315817424880314129419993474254060155551655/287342913912354160942190067590682971928513585409425408",
+      "source": "computed"
+    },
+    {
+      "n": 3,
+      "m": 12,
+      "sd": "15622803180065708947771165899737395657837201712540918284829/56493915618480126874522104808868997744921199000176310616064",
+      "source": "computed"
+    }
+  ],
+  "monotonicity_check": {
+    "2": {
+      "m_range": [
+        2,
+        2
+      ],
+      "num_points": 1,
+      "monotone": true,
+      "strict": true,
+      "violations": [],
+      "first_sd": "36575/524288",
+      "last_sd": "36575/524288"
+    },
+    "3": {
+      "m_range": [
+        2,
+        12
+      ],
+      "num_points": 11,
+      "monotone": true,
+      "strict": true,
+      "violations": [],
+      "first_sd": "60016775/2415919104",
+      "last_sd": "15622803180065708947771165899737395657837201712540918284829/56493915618480126874522104808868997744921199000176310616064"
+    }
+  },
+  "limit_corollary": {
+    "existence": "THEOREM (bounded monotone sequence of real numbers has a limit)",
+    "limit_value_claim": "EVIDENCE/OPEN (entropy heuristic suggests 1; not proved)",
+    "limit_evidence": {
+      "3": {
+        "m_last": 12,
+        "m_prev": 11,
+        "sd_last": "15622803180065708947771165899737395657837201712540918284829/56493915618480126874522104808868997744921199000176310616064",
+        "one_minus_sd_last": "40871112438414417926750938909131602087083997287635392331235/56493915618480126874522104808868997744921199000176310616064",
+        "sd_prev": "78638323439315817424880314129419993474254060155551655/287342913912354160942190067590682971928513585409425408",
+        "one_minus_sd_prev": "208704590473038343517309753461262978454259525253873753/287342913912354160942190067590682971928513585409425408"
+      }
+    }
+  },
+  "claim_labels": {
+    "projection_lemma": "THEOREM (row-i.i.d. coupling; proved in script header and meta note)",
+    "monotonicity_theorem": "THEOREM (data processing under row-dropping channel)",
+    "monotone_exact_table": "EVIDENCE (exact finite computation; strictness observed but not proven in general)",
+    "limit_exists": "THEOREM",
+    "limit_equals_one": "EVIDENCE / OPEN",
+    "lem_m2_status": "OPEN"
+  },
+  "standing_guards": {
+    "L1_exact_arithmetic": "Fractions and integer common denominator q_den*N*(2N)^m*D^m",
+    "L2_J_twist_duality": "standard F_2 pairing; no dual-space twist",
+    "L3_query_class_hygiene": "statistical-distance claims only; no Feldman inference",
+    "L4_comparison_distribution": "projection channel applied to both P_out and P_lpn; no one-sided bijection"
+  },
+  "interpretation_guards": {
+    "comparison_distribution": "LPN_{p_eff(n)}, matched rate",
+    "scaling_axis": "m grows at fixed n",
+    "p_eff_limit": "p_eff(n) -> 1/2 as n grows; SD measures correlation inside a vacuous LPN regime"
+  }
+}
