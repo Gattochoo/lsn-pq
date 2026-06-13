@@ -15,11 +15,16 @@
 
 name: LaTeX
 
+# NOTE (2026-06-13): GitHub Actions usage exhausted until 2026-06-26; CI builds
+# fail with "All jobs have failed". Disabled push/PR triggers until then to stop
+# failure emails — the paper is built locally with tectonic and the PDF is
+# committed, so CI is redundant in the meantime. RESTORE push/pull_request
+# triggers after 2026-06-26 (uncomment the two blocks below).
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
   workflow_dispatch:
 
 jobs:
