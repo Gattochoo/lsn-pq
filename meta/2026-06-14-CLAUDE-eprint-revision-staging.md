@@ -32,6 +32,9 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 
 (참고: Track L(m=80 도달·SD=0.8084, 262로 m=48/64/80 분수 일치)·Track N(단조성 정리)은 lem:m2
 meta-기록 — 본문 델타 없음.)
+| S15 | **★일반-k 조성 GF**(Track P, thm:kfold-gf): $P_k(n)=\prod_{i=0}^{k-1}(2^{2n-i}-2^i)$ + 부분공간격자 Möbius 폐형 — **모든 고정 k(≤n) multi-secret 조성 폐쇄**; joint/triple-gf를 k=2,3 특수화로 흡수 | 2715452 + round4 commit | §Moments thm:kfold-gf 신설; Honest-Lim "모든 고정 k 폐쇄, k=Θ(n)·SQ만 open" | exp/**344**: P_k 열거 일치·Möbius(μ₄=64)·t_{1^k} TV(707/5760 등) 직접열거 일치; k=2,3=258/263(통합됨); k=4 marginal=Kimi 310 재현 |
+
+(참고: Track O(n=3 m=16/20/24·첫 cross-n)=lem:m2 meta-기록; Track Q(3-wise 상관 Q.1, exp/340)=제한클래스 DRAFT·L3로 본문 미반영; Track R(b-dependent)=반박 무효 판정[비-전단사], 본문 OP7 불변.)
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
@@ -109,7 +112,11 @@ meta-기록 — 본문 델타 없음.)
 > (12) Universal label-preserving freshness obstruction: for arbitrary public bijections,
 > the same-secret SD is exactly 1 - 4^{-n}[2p(1-p) + (1-2p)^2 A] >= 1 - (p^2+(1-p)^2)/4^n
 > with equality iff f_1 = f_2; the open problem is narrowed to label-modifying
-> transformations. [+ 이후 항목 추가]
+> transformations. (13) Generalized the multi-secret composition to all fixed orders: the
+> ordered pairwise-isotropic independent k-tuple count is prod_{i<k}(2^{2n-i}-2^i) and its
+> joint 2^k-category composition has a closed generating function (subspace-lattice Mobius
+> over the per-pair character sum); the pair (k=2) and triple (k=3) GFs are special cases.
+> [+ 이후 항목 추가]
 
 ## 6. 비고
 - lsn-core 소스 ≠ 제출 PDF는 **의도된 상태**(staging). 혼동 금지 — 제출본은 v2.1 PDF, 소스는 앞섬.
