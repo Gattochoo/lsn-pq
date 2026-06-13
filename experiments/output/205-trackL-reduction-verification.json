@@ -1,0 +1,161 @@
+{
+  "experiment": 205,
+  "track": "L",
+  "checks": {
+    "s3_orbit_counting": [
+      {
+        "m": 1,
+        "canonical_states": 3,
+        "weighted_orbit_count": 7,
+        "expected_ordered_states": 7,
+        "match": true
+      },
+      {
+        "m": 2,
+        "canonical_states": 9,
+        "weighted_orbit_count": 28,
+        "expected_ordered_states": 28,
+        "match": true
+      },
+      {
+        "m": 3,
+        "canonical_states": 23,
+        "weighted_orbit_count": 84,
+        "expected_ordered_states": 84,
+        "match": true
+      },
+      {
+        "m": 4,
+        "canonical_states": 51,
+        "weighted_orbit_count": 210,
+        "expected_ordered_states": 210,
+        "match": true
+      },
+      {
+        "m": 5,
+        "canonical_states": 103,
+        "weighted_orbit_count": 462,
+        "expected_ordered_states": 462,
+        "match": true
+      },
+      {
+        "m": 6,
+        "canonical_states": 196,
+        "weighted_orbit_count": 924,
+        "expected_ordered_states": 924,
+        "match": true
+      },
+      {
+        "m": 7,
+        "canonical_states": 348,
+        "weighted_orbit_count": 1716,
+        "expected_ordered_states": 1716,
+        "match": true
+      },
+      {
+        "m": 8,
+        "canonical_states": 590,
+        "weighted_orbit_count": 3003,
+        "expected_ordered_states": 3003,
+        "match": true
+      },
+      {
+        "m": 9,
+        "canonical_states": 960,
+        "weighted_orbit_count": 5005,
+        "expected_ordered_states": 5005,
+        "match": true
+      },
+      {
+        "m": 10,
+        "canonical_states": 1506,
+        "weighted_orbit_count": 8008,
+        "expected_ordered_states": 8008,
+        "match": true
+      },
+      {
+        "m": 11,
+        "canonical_states": 2290,
+        "weighted_orbit_count": 12376,
+        "expected_ordered_states": 12376,
+        "match": true
+      },
+      {
+        "m": 12,
+        "canonical_states": 3393,
+        "weighted_orbit_count": 18564,
+        "expected_ordered_states": 18564,
+        "match": true
+      }
+    ],
+    "s3_invariance": [
+      {
+        "m": 2,
+        "direct": "36575/524288",
+        "reduced": "36575/524288",
+        "match": true
+      },
+      {
+        "m": 3,
+        "direct": "695896635/4294967296",
+        "reduced": "695896635/4294967296",
+        "match": true
+      },
+      {
+        "m": 4,
+        "direct": "277825754675/1099511627776",
+        "reduced": "277825754675/1099511627776",
+        "match": true
+      },
+      {
+        "m": 5,
+        "direct": "11668368577886825/36028797018963968",
+        "reduced": "11668368577886825/36028797018963968",
+        "match": true
+      },
+      {
+        "m": 6,
+        "direct": "27663233753869930405/73786976294838206464",
+        "reduced": "27663233753869930405/73786976294838206464",
+        "match": true
+      }
+    ],
+    "s00_pure_shift": {
+      "trials": 200,
+      "all_ok": true
+    },
+    "anchors": [
+      {
+        "m": 24,
+        "anchor": "16832756036765379095034202127924274618943844971887062499211392003318774009896365/29642774844752946028434172162224104410437116074403984394101141506025761187823616",
+        "reduced": "16832756036765379095034202127924274618943844971887062499211392003318774009896365/29642774844752946028434172162224104410437116074403984394101141506025761187823616",
+        "match": true
+      },
+      {
+        "m": 32,
+        "anchor": "175842639268182236234225149971230384237897459955496283666363584364067225210764143038987088768788053693215/286687326998758938951352611912760867599570623646035140467198604923365359511060601008752319138765710819328",
+        "reduced": "175842639268182236234225149971230384237897459955496283666363584364067225210764143038987088768788053693215/286687326998758938951352611912760867599570623646035140467198604923365359511060601008752319138765710819328",
+        "match": true
+      },
+      {
+        "m": 48,
+        "anchor": "607477461132137352864009669432561278876547085540963876824000902259324180705585729760268074621527447131000809903636388269236874471512931193096020288141170484925/878694100496718043517683302282418331810487718418343092402491322775749527474899974671687634004666183037093927858109549828751614463963730408009475621262727315456",
+        "reduced": "607477461132137352864009669432561278876547085540963876824000902259324180705585729760268074621527447131000809903636388269236874471512931193096020288141170484925/878694100496718043517683302282418331810487718418343092402491322775749527474899974671687634004666183037093927858109549828751614463963730408009475621262727315456",
+        "match": true
+      }
+    ]
+  },
+  "claim_labels": {
+    "s3_orbit_counting": "THEOREM (verified computationally for m<=12)",
+    "s3_invariance": "THEOREM (verified against direct enumeration for m<=6)",
+    "s00_pure_shift": "THEOREM (verified numerically on random residuals)",
+    "anchor_m_24_32_48": "EVIDENCE (exact fraction match)"
+  },
+  "interpretation_guards": {
+    "L1_exact_arithmetic": "all cross-checks use integer arithmetic; Fractions stored as strings",
+    "L2_duality_care": "standard F_2 pairing only",
+    "L3_query_class_hygiene": "no Feldman theorem used",
+    "L4_comparison_distribution": "LPN target is the matched-rate product distribution"
+  },
+  "time_sec": 7.522410869598389
+}
