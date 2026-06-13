@@ -35,6 +35,9 @@ meta-기록 — 본문 델타 없음.)
 | S15 | **★일반-k 조성 GF**(Track P, thm:kfold-gf): $P_k(n)=\prod_{i=0}^{k-1}(2^{2n-i}-2^i)$ + 부분공간격자 Möbius 폐형 — **모든 고정 k(≤n) multi-secret 조성 폐쇄**; joint/triple-gf를 k=2,3 특수화로 흡수 | 2715452 + round4 commit | §Moments thm:kfold-gf 신설; Honest-Lim "모든 고정 k 폐쇄, k=Θ(n)·SQ만 open" | exp/**344**: P_k 열거 일치·Möbius(μ₄=64)·t_{1^k} TV(707/5760 등) 직접열거 일치; k=2,3=258/263(통합됨); k=4 marginal=Kimi 310 재현 |
 
 (참고: Track O(n=3 m=16/20/24·첫 cross-n)=lem:m2 meta-기록; Track Q(3-wise 상관 Q.1, exp/340)=제한클래스 DRAFT·L3로 본문 미반영; Track R(b-dependent)=반박 무효 판정[비-전단사], 본문 OP7 불변.)
+| S16 | **OP7 valid-output 선형 특성화 + b-dependent 하한**(Track V/U): 선형 valid-output 공개 bijection = 정확히 Sp(2n,F₂)(secret rerandomization, GL(4,2) 전수 증명); label-preserving b-dependent도 SD≥min(등호 iff g₀=g₁) | 0089ad2/636188c + round5 commit | OP7 항목에 2 refinement 추가(valid-output=Sp 선형·b-dependent 하한); 열린 영역을 비선형 valid-output·비곱구조로 정밀화 | exp/**441**(GL(4,2) 20160 전수→Sp 720 정확·forward·negative controls)·**440**(b-dep 정리 공식==열거·1500 검색) |
+
+(참고: Track S(lem:m2 본체)=syndrome-weight가 q-cap 넘어 full SD 99.9% 포착[exp/442]·극한=1은 uniform-B 한정·entropy proof 결함[H공식 오류]→two-component 메커니즘으로 정정·본문 미반영; Track T(cross-n n=4)=GL(4) orbit 버그로 NO-GO·anchor m≤6만[exp/443 m≤4 독립재현]. 둘 다 lem:m2 OPEN 유지.)
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
