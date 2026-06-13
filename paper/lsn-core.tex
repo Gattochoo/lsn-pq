@@ -444,11 +444,15 @@ Multiplying yields \Cref{eq:exact-corr}. For $p=1/4$ the coefficient is exactly 
 Taking expectation over $j$ gives the average pairwise correlation.
 
 \begin{lemma}[Average correlation]
-Let $C_n = \E[2^j]$ computed from \Cref{thm:distance}. Then $C_n \to 2$ and
+\label{lem:avg-corr}
+Let $C_n = \E[2^j]$ computed from \Cref{thm:distance} (diagonal-inclusive). Then exactly
 \[
+C_n = \frac{2^{n+1}}{2^n+1} \;\nearrow\; 2,
+\qquad
 \rho_{\mathrm{avg}}
 = \frac{(1-2p)^2}{p(1-p)} \cdot C_n \cdot 2^{-2n}.
 \]
+(The closed form follows from \Cref{thm:distance} by the $q$-binomial theorem: $\sum_{\ell} {n \brack \ell}_2 2^{\ell(\ell-1)/2} = \prod_{i=0}^{n-1}(1+2^i)$, so $C_n = 2^n \cdot 2\prod_{i=1}^{n-1}(2^i+1) / \prod_{i=1}^{n}(2^i+1) = 2^{n+1}/(2^n+1)$.)
 \end{lemma}
 
 \subsection{SDA Concentration}
@@ -511,7 +515,12 @@ The stronger $2^{2n}$-scale bound rests on a structural conjecture about extrema
 There is an absolute constant $c$ such that every subset $\mathcal{D}' \subseteq \{D_L\}$ of size $|\mathcal{D}'| \geq |\Lagr(2n,\F_2)| / 2^{2n-c}$ has average correlation at most $5\rho_{\mathrm{avg}}$.
 \end{conjecture}
 
-Motivation: $k=2$ isotropic pencils force any threshold above $4\rho_{\mathrm{avg}}$ (their expected $2^{\dim(L\cap L')}$ ratio tends to $4$ from below), while $k \geq 3$ pencils fall below the size threshold $|\Lagr|/2^{2n}$ for $n \geq 4$, and mixtures of pencils with random fill dilute quadratically. A proof would require classifying near-extremal subsets. Exact small-case verification (evidence, not proof) supports the conjecture: at $n=2$, exhaustive enumeration of all $2^{15}$ subsets gives maximum ratio $5/2 < 5$ (attained only by singletons; the size-$3$ maximisers are exactly the $k=1$ pencils); at $n=3$, the exact maxima over all subsets of sizes $3$ and $4$ are $3$ and $81/32$ (attained by $k=2$ pencils), and pre-registered random/greedy search over larger sizes found nothing above ratio $3$.
+The pencil side of the picture is now exact. For a $k$-dimensional isotropic core $W$, the pencil $S_W = \{L : W \subseteq L\}$ is in bijection with $\Lagr(W^{\perp_\Omega}/W) \cong \Lagr(2(n-k),\F_2)$, and $\dim(L \cap L') = k + \dim(\bar L \cap \bar L')$ inside it; combining with the exact $C_m = 2^{m+1}/(2^m+1)$ of \Cref{lem:avg-corr} gives the exact pencil ratio
+\[
+\frac{\bar\rho(S_W)}{\rho_{\mathrm{avg}}} = \frac{2^k\,C_{n-k}}{C_n} = \frac{2^n+1}{2^{n-k}+1}
+\qquad (1 \le k \le n),
+\]
+diagonal-inclusive, for every $n$. In particular the $k=1$ ratio tends to $2$ from below and the $k=2$ ratio equals $4 - 3/(2^{n-2}+1)$, tending to $4$ from below --- so any threshold below $4\rho_{\mathrm{avg}}$ is ruled out by $k=2$ pencils, exactly as the conjecture's constant anticipates. For $k \ge 3$ the ratio tends to $2^k \ge 8$, but $|S_W| = |\Lagr(2(n-k),\F_2)|$ falls below the conjectured scale $|\Lagr(2n,\F_2)|/2^{2n}$ for every $n \ge 3$, so only $k = 1, 2$ pencils are scale-relevant. A proof of the conjecture itself would require classifying near-extremal subsets beyond pencils. Exact small-case verification (evidence, not proof) supports it: at $n=2$, exhaustive enumeration of all $2^{15}$ subsets gives maximum ratio $5/2 < 5$ (attained only by singletons; the size-$3$ maximisers are exactly the $k=1$ pencils); at $n=3$, the exact maxima over all subsets of sizes $3$ and $4$ are $3$ and $81/32$ (attained by $k=2$ pencils), and pre-registered random/greedy search over larger sizes found nothing above ratio $3$.
 
 \begin{theorem}[Conditional main SQ lower bound]
 \label{thm:main-sq-cond}
@@ -712,14 +721,42 @@ For every $n \ge 1$ and $0 \le \ell \le 2n$,
 \Pr[t = \ell] \;=\; \sum_{j \ge \ell} (-1)^{j-\ell} \binom{j}{\ell} B_j,
 \qquad B_j = \binom{2n}{j} m_j,
 \]
-with $m_j$ from \Cref{thm:mj-general} --- an exact rational expression for every $n$ (e.g.\ $(11/45,\,4/9,\,14/45,\,0,\,0)$ at $n=2$). Consequently \emph{every} statistic of the pair-level quadrant count --- all moments, all cumulants, $V_k$ for every $k$ --- is exactly computable. The exact total-variation distance to the unconstrained law $\mathrm{Bin}(2n,1/4)$ is $707/5760 \approx 0.1227$ at $n=2$ and decays empirically like $2^{-(n+1)}$ ($2^n \cdot \mathrm{TV} = 0.491, \dots, 0.498$ for $n \le 10$; the rate is evidence, not a proven limit).
+with $m_j$ from \Cref{thm:mj-general} --- an exact rational expression for every $n$ (e.g.\ $(11/45,\,4/9,\,14/45,\,0,\,0)$ at $n=2$). Consequently \emph{every} statistic of the pair-level quadrant count --- all moments, all cumulants, $V_k$ for every $k$ --- is exactly computable. Moreover the total-variation distance to the unconstrained law $\mathrm{Bin}(2n,1/4)$ decays at the exact rate $2^{-(n+1)}$:
+\[
+2^n \cdot \mathrm{TV}\bigl(\Pr[t = \cdot],\, \mathrm{Bin}(2n,\tfrac14)\bigr) \;=\; \tfrac12 + O(2^{-n}).
+\]
 \end{proposition}
 
 \begin{proof}
-$B_j = \E[\binom{t}{j}]$, so the formula is the standard binomial (inclusion--exclusion) inversion; it is exact because \Cref{thm:mj-general} is. The resulting laws were checked against direct enumeration of the isotropic-pair ensemble at $n = 2, 3, 4$ (identical rationals), and structurally for $n \le 10$: they sum to one, are non-negative, vanish for $\ell \ge 2n-1$, and re-contract to every $B_j$.
+$B_j = \E[\binom{t}{j}]$, so the inversion formula is the standard binomial (inclusion--exclusion) transform; it is exact because \Cref{thm:mj-general} is. For the rate: splitting $\delta_j := B_j - \binom{2n}{j}4^{-j}$ along the three terms of \Cref{thm:mj-general} and inverting each piece gives, with $X = 4^n$ and $C = 1/((X-1)(X-4))$,
+\[
+\Delta_\ell = (X^2C - 1)\,\beta_\ell - 2XC\,q_\ell + (-1)^\ell XC\,r_\ell - \mathbf 1_{[\ell=0]}\tfrac{4}{X-4},
+\]
+where $\beta_\ell, q_\ell$ are the $\mathrm{Bin}(2n,\tfrac14), \mathrm{Bin}(2n,\tfrac12)$ laws and $r_\ell = [z^\ell]\,\bigl(\tfrac{5+2z+z^2}{4}\bigr)^n$. All $r_\ell$ are positive with $\sum_\ell r_\ell = 2^n$, so the alternating piece contributes exactly $XC \cdot 2^n = 2^{-n}(1+O(4^{-n}))$ to $\sum_\ell|\Delta_\ell|$, while the remaining pieces have total mass $\le |X^2C-1| + 2XC + \tfrac{4}{X-4} = O(4^{-n})$. Hence $\sum_\ell |\Delta_\ell| = 2^{-n} + O(4^{-n})$ and the claim follows. The laws and the decomposition were checked against direct enumeration at $n = 2, 3, 4$ and exactly for $n \le 10$ ($2^n\,\mathrm{TV} = 0.491, \dots, 0.498$): they sum to one, are non-negative, vanish for $\ell \ge 2n-1$, and re-contract to every $B_j$.
 \end{proof}
 
-What this does not close: the joint four-category row composition beyond $t$ (the counts $t_{10}, t_{01}, t_{00}$ jointly with $t$), and the multi-secret-pair level. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
+The joint four-category composition closes as well, completing the pairwise level.
+
+\begin{theorem}[Joint composition generating function]
+\label{thm:joint-gf}
+Let $t_{ab}$ ($a,b \in \{0,1\}$) count the coordinates of the ordered isotropic pair $(c_1, c_2)$ with $((c_1)_i, (c_2)_i) = (a,b)$. Then
+\[
+\E\Bigl[\prod_{ab} x_{ab}^{\,t_{ab}}\Bigr]
+= \frac{1}{P}\Bigl[\tfrac12\bigl(T^{2n} + S^{\,n}\bigr) - A^{2n} - B^{2n} - C^{2n} + 2x_{00}^{2n}\Bigr],
+\]
+where $T = x_{11}+x_{10}+x_{01}+x_{00}$, $S = T^2 - 4(x_{10}x_{01} + x_{10}x_{11} + x_{01}x_{11})$, $A = x_{00}+x_{01}$, $B = x_{00}+x_{10}$, $C = x_{00}+x_{11}$, and $P = (2^{2n}-1)(2^{2n-1}-2)$. Every pairwise statistic of the isotropic pair is therefore exactly computable; \Cref{thm:mj-general} and \Cref{prop:tdist} are the specializations $x_{11} \mapsto 1+x$ (resp.\ $x$) with the other variables set to $1$.
+\end{theorem}
+
+\begin{proof}
+Write $\mathbf 1_{\Omega(c_1,c_2)=0} = \tfrac12\sum_{\lambda \in \F_2}(-1)^{\lambda\,\Omega(c_1,c_2)}$ and sum over all $(c_1, c_2) \in V \times V$. The trivial character factorizes per coordinate and gives $T^{2n}$; the non-trivial character factorizes per symplectic coordinate pair, where the $4\times4$ sign matrix $(-1)^{a d + b c}$ contracts the per-pair sum to exactly $S$, giving $S^n$. Subtracting the excluded loci $c_1 = 0$, $c_2 = 0$, $c_1 = c_2$ (which contribute $A^{2n}, B^{2n}, C^{2n}$, all isotropic) and adding back their common intersection $\{(0,0)\}$ twice (inclusion--exclusion: the three pairwise intersections coincide) yields the formula. Verified coefficient-by-coefficient against direct enumeration at $n = 2, 3, 4$.
+\end{proof}
+
+\begin{corollary}[Disagreement count]
+\label{cor:disagree}
+$\Pr[t_{10} + t_{01} = k] = \binom{2n}{k}/(2^{2n}-1)$ for $1 \le k \le 2n$ (and $0$ at $k=0$): equivalently, $c_1 + c_2$ is exactly uniform over the non-zero vectors. (Directly: for each $v \neq 0$ the count $\#\{c_1 : \Omega(c_1, v) = 0,\ c_1 \notin \{0, v\}\} = 2^{2n-1}-2$ is $v$-independent.)
+\end{corollary}
+
+What this does not close: the multi-secret-pair level. Reproducible enumeration code and exact-fraction data for all claims in this section are included with the code repository.
 
 \section{Quantum Analysis}
 \label{sec:quantum}
@@ -1136,7 +1173,12 @@ We state precisely the problems whose resolution would close the standard-model 
 \[
 1 - \frac{p^2 + (1-p)^2}{4^{n}} \;=\; 1 - \frac{5}{8\cdot 4^{n}} \quad (p = \tfrac14),
 \]
-i.e.\ $123/128$ at $n=2$, $507/512$ at $n=3$, tending to $1$. The proof has two steps: a relabeling bijection $(u,b_1,z,b_2) \mapsto (u,b_1,Tz,b_2)$ reduces every pair $(S_1,S_2)$ to $(I, I)$, where the transformed distribution is supported on duplicated samples and the fresh distribution places exactly $(p^2+(1-p)^2)/4^n$ mass on that diagonal (the shared noise bit is preserved by any symplectic map, so the orbit family cannot manufacture independence). Verified by exact enumeration at $n=2$ (all $720$ maps) and $n=3$. What remains open is whether any public transformation \emph{outside} the symplectic-orbit family yields fresh samples; a positive answer would give tight multi-user security bounds for LSN-based constructions, while a fully general negative answer would explain why hybrid arguments lose a factor of the number of users.
+i.e.\ $123/128$ at $n=2$, $507/512$ at $n=3$, tending to $1$. The proof has two steps: a relabeling bijection $(u,b_1,z,b_2) \mapsto (u,b_1,Tz,b_2)$ reduces every pair $(S_1,S_2)$ to $(I, I)$, where the transformed distribution is supported on duplicated samples and the fresh distribution places exactly $(p^2+(1-p)^2)/4^n$ mass on that diagonal (the shared noise bit is preserved by any symplectic map, so the orbit family cannot manufacture independence). Verified by exact enumeration at $n=2$ (all $720$ maps) and $n=3$. The obstruction is in fact universal for \emph{label-preserving} splits: for arbitrary public bijections $f_1, f_2$ of $\F_2^{2n}$ (not necessarily linear), comparing $(x,b) \mapsto ((f_1 x, b), (f_2 x, b))$ against two fresh same-secret samples gives exactly
+\[
+\mathrm{SD} = 1 - \frac{2p(1-p) + (1-2p)^2\,A(f_1,f_2)}{4^{n}},
+\qquad A = \Pr_{L,x}\bigl[\mathbf 1_L(f_1 x) = \mathbf 1_L(f_2 x)\bigr] \le 1,
+\]
+so every label-preserving split has $\mathrm{SD} \ge 1 - (p^2 + (1-p)^2)/4^n$, with equality iff $f_1 = f_2$: the duplicated noise bit cannot be removed by any public relabeling of the sample points (verified by exact enumeration over symplectic, affine, and random bijections at $n = 2, 3$). What remains open is whether any public transformation that \emph{modifies the labels} (or outputs non-product structures) yields fresh samples; a positive answer would give tight multi-user security bounds for LSN-based constructions, while a fully general negative answer would explain why hybrid arguments lose a factor of the number of users.
 
 \item \textbf{Membership-LSN $\leftrightarrow$ stabilizer-decoding LSN bridge.} Relate our membership formulation (\Cref{def:lsn}; secret Lagrangian, no public matrix) to the LSN of \cite{KLP+25,LPQR26} (public stabilizer matrix $[A \mid B]$ with a Lagrangian $A$-block, noisy-codeword samples, secret logical string). A reduction in either direction would let the external hardness results (constant-rate LPN $\le$ their LSN; Theorem~6.6 of \cite{KLP+25} attaches this hardness already to the \emph{single-sample} Search variant) and our SQ lower bounds support a \emph{single} object; absent a bridge, the two hardness cases remain parallel rather than cumulative. A reduction THEIR $\le$ OUR must embed the $k$-bit logical secret into our $\Theta(n^2)$-bit Lagrangian secret without the junk register that \cite{KLP+25} (Lemma~6.5) exploits to bypass the analogous dimension mismatch: from the single-sample hardness carrier it meets an information-budget obstruction shared with \Cref{open:marginal-adaptive} (one noisy codeword carries $O(n)$ secret-correlated bits, while membership recovery needs $\Omega(n^2)$ labels); the multi-sample variant instead meets a frame-alignment obstruction (the secret arrives in a fresh public frame per sample, whereas ours is one fixed Lagrangian). The reverse direction is blocked by code visibility (a public $[A \mid B]$ would encode our secret $L$). None of these is an impossibility result; each blocks only the natural maps.
 
@@ -1157,7 +1199,7 @@ We state explicitly the gaps a reader should weigh against the results above.
 
 \item \textbf{Two results are conditional.} The $2^{2n-O(1)}$ SQ bound depends on the pencil-extremality conjecture (\Cref{conj:pencil}), and the marginal-adaptive barrier (\Cref{thm:marginal-adaptive}) depends on \Cref{lem:m2}, which remains unproven; both dependencies are stated where they occur.
 
-\item \textbf{Moment results close the pair-level quadrant count; the joint composition is open.} The closed forms of \Cref{sec:moments} are exact for every order $j$, \Cref{prop:vmax} controls the variance multiplier at the maximal block, and \Cref{prop:tdist} recovers the full exact law of the pair-level quadrant count $t$ (hence every statistic that factors through $t$). What remains open at the pairwise level is the joint four-category row composition beyond $t$, and beyond that the multi-secret-pair joint level; the conjectured TV rate $2^{-(n+1)}$ to the unconstrained law is evidence, not proof.
+\item \textbf{Moment results close the pairwise level; the multi-pair level is open.} The closed forms of \Cref{sec:moments} are exact for every order $j$, \Cref{prop:vmax} controls the variance multiplier at the maximal block, \Cref{prop:tdist} recovers the full exact law of the quadrant count (with the proven TV rate $2^{-(n+1)}$), and \Cref{thm:joint-gf} closes the entire joint four-category composition. What remains open is the multi-secret-pair joint level.
 
 \item \textbf{Quantum hardness is conjectural.} We rule out the natural quantum attack families (\Cref{sec:quantum}) but prove no quantum query lower bound; \Cref{conj:quantum} has the same epistemic status as the corresponding conjectures for LPN and LWE.
 \end{enumerate}

@@ -23,6 +23,10 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 | S6 | **★sympLPN 정확 상관 + SQ 하한**(Track E, 정정 통합): likelihood-ratio diag $(1+\tau)^{2n}{-}1$·off $-\,$diag$/(2^{2n}{-}1)$ (unconstrained=0과 대조, OP1 상관-수준 답) + $2^{c_pn}$-쿼리 SQ 하한($c_p{=}1{-}2\log_2(1{+}\tau)\approx0.356$@p=1/4) | aa02290 + sympLPN-integrate commit | §4 끝 subsec:symplpn-sq 신설(thm:symplpn-corr + cor:symplpn-sq, σ-twist 수정 증명); abstract·기여 bullet 갱신. **Kimi §6 SDA 적용은 3중 결함으로 기각·정정본만 수록**(인덱싱 스왑/singleton 대각/지수 대각 VSTAT 잠식) | exp/**253** 전 앙상블 전수(90·22680행렬): character 평균 전 S×w, n=2 (A,y) 완전직접+주변화 항등식, σ-twist 반례 자동발견 |
 | S7 | **conj:pencil 소규모 정확 검증**(Track D, evidence): n=2 전수(2^15, max ratio 5/2, singleton만; size-3 최대=k=1 pencils) + n=3 size-3/4 **전수 정확 최대** 3·81/32(k=2 pencil 달성) + 대형 크기 탐색 ratio>3 없음 | trackD commits + pencil-evidence commit | conj:pencil 동기 단락에 evidence 한 문장(명시적 "evidence, not proof") — conjecture 지위 불변 | exp/**254** from-scratch: 관행 검증(선형성·대각포함=thm:distance), n=2 전수 재현, n=3 size-3(398K)·size-4(13.2M) 전수 정확화 |
 | S8 | **★t의 정확 법칙**(Track C, prop:tdist): $\Pr[t{=}\ell]=\sum_j(-1)^{j-\ell}\binom{j}{\ell}B_j$ — t를 통과하는 모든 통계(전 moment·cumulant·$V_k$) 정확 계산 가능; TV(dist(t), Bin(2n,1/4)) 정확표 n≤10, rate $2^{-(n+1)}$ evidence | a517440 + tdist-integrate commit | §Moments prop:tdist 신설 + remarks 정합 + Honest-Lim 재정밀화(남은 것 = 4-카테고리 결합 조성·다중쌍 수준·rate 증명) | exp/**255** from-scratch: pmf 3중 동일(직접열거==Kimi==역변환, n=2,3,4), TV 분수 9개 전부 일치, 구조 sanity(B_j 재수축 등) |
+| S9 | **★TV rate 정리**(Track H): $2^n\mathrm{TV}=\tfrac12+O(2^{-n})$ — 3항 분해·$r_\ell$ GF $((5{+}2z{+}z^2)/4)^n$·$\sum r_\ell=2^n$ | 0c064c2 + round2 commit | prop:tdist의 rate 문장을 증명 포함 정리로 승격 | exp/**257**: 분해==역변환(n=2..10 전 ℓ)·잔차 유계·스퓨리어스 j=0 보정 확인 |
+| S10 | **★joint 4-카테고리 GF**(Track I, thm:joint-gf): $G_n=[\tfrac12(T^{2n}{+}S^n)-A^{2n}-B^{2n}-C^{2n}+2x_{00}^{2n}]/P$ — **pairwise 수준 완전 종결**; cor:disagree($c_1{+}c_2$ 비영 균등) | 6e3d55f + round2 commit | thm:joint-gf+cor:disagree 신설; Honest-Lim "multi-pair만 open"으로 | exp/**258**: 계수사전 동일(n=2,3,4)·특수화 재생(n≤6)·한줄 v-불변 증명 확인 |
+| S11 | **★pencil-ratio 정리**(Track J): ratio$(n,k)=(2^n{+}1)/(2^{n-k}{+}1)$ 전 (n,k) + $C_n=2^{n+1}/(2^n{+}1)$ 정확폐형 — k=2가 $4\rho_{\rm avg}$를 아래서 강제(추측 상수의 근거) | f904dec + round2 commit | lem:avg-corr $C_n$ 폐형; conj:pencil 동기 단락 정리 격상(k≥3 scale-미달 포함) | exp/**259**: thm:distance 합·q-이항(n≤10)·n=4 몫-리프트 독자 구현 17/9·17/5·17/3·17/2 일치 |
+| S12 | **OP7 보편 label-preserving 하한**(Track G 정정판): same-secret에서 SD$=1-4^{-n}[2p(1{-}p)+(1{-}2p)^2A]$, $A\le1$ ⟹ SD$\ge1-(p^2{+}(1{-}p)^2)/4^n$, 등호 iff $f_1{=}f_2$ — **Kimi G.3(모든 쌍 등식)은 순환실험으로 기각, 정정판만 수록** | 0eb7126 + round2 commit | OP7 항목에 보편 하한·열린 질문을 label-modifying으로 재정밀화 | exp/**256**: 공식==열거(n=2 12쌍·n=3 1쌍), 등호-iff 확인, G.1 폐형·흡수 확인; 192 버그값과의 일치(루프 폐쇄) |
 
 (새 결과 통합 시 이 표에 한 줄씩 추가할 것.)
 
@@ -38,8 +42,12 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
   정리) + S6(sympLPN 상관+SQ) = **5건** → #3의 글자상 조건 충족. (S2는 evidence-sharpen이라
   정리 카운트 제외; S5 도착으로 S2는 S5에 흡수됨.) S-표가 충분히 두꺼워져 사용자가 원하면 지금
   묶어도 자연스러운 분량이나, posture 변화(lem:m2/L2)는 여전히 없음 → 기본 권고는 대기 유지.
-  (참고: lem:m2 트랙은 meta-수준 진전만 — mixture 정리·m-단조성·coarse 하한·n=3 분수 정정 —
-  본문 델타 없음이라 S-표 비등재; 기록은 트랙A 판정문 2건.)
+  (참고: lem:m2 트랙은 meta-수준 진전만 — mixture 정리·m-단조성·coarse 하한·n=3 분수 정정·
+  충분통계량 환원으로 m≤48 frontier — 본문 델타 없음이라 S-표 비등재.)
+- **라운드 2 갱신(2026-06-14)**: S9–S12 추가로 누적 정리 **10건**(S1·S3·S4·S5·S6·S8·S9·S10·
+  S11·S12). §Moments(pairwise 완전 종결)·§SQ(sympLPN+pencil 정리)·OP7(보편 하한)이 대폭
+  강화됨 — posture는 여전히 불변(lem:m2/L2 미동)이나 **분량상 사용자가 원하면 1회 revision으로
+  묶는 것이 자연스러운 시점**. 기본 권고는 여전히 대기(posture 사건 대기).
 - **그럼에도 대기 권고.** 근거: S1·S3 둘 다 **posture-불변 보조정리 강화**(SQ-하한 기계·barrier
   landscape를 sharpen할 뿐, 헤드라인은 여전히 "3.5 of 4 cells"·OPEN·lem:m2 무진전·L2 미닫힘).
   revision의 실효 사건은 **posture를 바꾸는 것**(lem:m2 증명→"all four cells", 또는 L2 닫힘→
@@ -86,7 +94,17 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 > statistic that factors through t exactly computable, with exact total-variation distances
 > to the unconstrained Bin(2n,1/4) law for n <= 10 (empirical rate 2^{-(n+1)}, labeled
 > evidence); the honest-limitations item is narrowed to the joint four-category composition
-> and the multi-pair level. [+ 이후 항목 추가]
+> and the multi-pair level. (9) Proved the TV rate: 2^n TV -> 1/2 with remainder O(2^{-n})
+> (three-term decomposition; r_ell generating function ((5+2z+z^2)/4)^n). (10) Closed the
+> entire pairwise level: exact joint generating function for the four-category row
+> composition of the isotropic pair, with the disagreement-count corollary (c_1+c_2 is
+> exactly uniform over non-zero vectors). (11) Exact pencil ratios for all (n,k):
+> ratio = (2^n+1)/(2^{n-k}+1), via the exact C_n = 2^{n+1}/(2^n+1); the k=2 family forces
+> any pencil-extremality threshold above 4 rho_avg, matching the conjectured constant.
+> (12) Universal label-preserving freshness obstruction: for arbitrary public bijections,
+> the same-secret SD is exactly 1 - 4^{-n}[2p(1-p) + (1-2p)^2 A] >= 1 - (p^2+(1-p)^2)/4^n
+> with equality iff f_1 = f_2; the open problem is narrowed to label-modifying
+> transformations. [+ 이후 항목 추가]
 
 ## 6. 비고
 - lsn-core 소스 ≠ 제출 PDF는 **의도된 상태**(staging). 혼동 금지 — 제출본은 v2.1 PDF, 소스는 앞섬.
