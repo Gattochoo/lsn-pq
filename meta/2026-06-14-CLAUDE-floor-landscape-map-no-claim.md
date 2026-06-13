@@ -43,3 +43,23 @@ Discipline: Sound Verifier. No closure; no break; no security claim. OPEN = LSN.
 - consolidate(round-9 LL + I=Θ(n) 본문) 먼저(사용자 합의), 그다음 이 thread.
 
 No closure; no break; no security claim. OPEN = LSN.
+
+---
+
+## 5. 외부 검증 (WebFetch, over-claim 없이) — live thread는 실재하나 정밀 적용은 open bridge
+
+**2603.19110 (LPQR26, Lu-Poremba-Quek-Ramkumar) 정독:**
+- p6: "sympLPN... introduced as a **technical tool to reduce LPN to average-case quantum stabilizer decoding in the high-noise regime** [KLP+25]." ⟹ **LPN ≤ sympLPN 실재**(외부, KLP+25 도구).
+- p6: "asymmetric crypto based on LPN relies critically on the **uniformly random encoding matrix**... breaks down [for sympLPN]. **Serious technical barrier.**" ⟹ 내 worst-to-avg/decisional-floor 실패의 바로 그 이유(등방 제약)를 외부도 명시.
+- p4: "LSN appears **incomparable to LPN**... likely a **genuinely new and distinct** assumption" (win-win-win, equival는 OPEN). ⟹ 외부 전문가도 (d-지위) 핵심(LSN⊀LPN=novelty)을 OPEN으로 두고 novelty 유력시 — 우리 no-go가 그 논거에 기여.
+
+**2410.18953 (KLP 원본 LSN) 정독:**
+- **LPN ≤ LSN 확립** ("LSN includes LPN as special case"; §5.2 quantum reduction). **단 search variant·p sufficiently small constant·n=poly(k)(k=n 명시 안 됨).** sympLPN은 이 논문에 없음(KLP+25서 도입).
+
+**판정(EVIDENCE, 외부):**
+- ★floor thread `LPN ≤ sympLPN/LSN` = **실재**(search, constant-rate). 내 zero-padding(853/854)은 이 외부 floor의 약한 재발명 — 외부가 진짜.
+- ★단 **우리 정확 객체**(membership/sympLPN **k=n, p=1/4, decisional**)로의 적용 = **알려진 open bridge**(우리 논문 line 238도 "외부 결과를 우리 formulation에 주장 안 함"). search≠decisional·regime·k=n 미정합.
+- ★정밀 regime(우리 p=1/4·k=n)은 KLP+25(2509.20697) 정리 필요(메모리에 §3.9로 일부 분석됨: LSN⊇LPN superset Thm1.6·worst→avg quantum barrier Thm1.9).
+- **메타: 우리 작업이 외부 frontier와 정렬.** LPQR26도 (i) sympLPN 등방벽으로 LPN-crypto 적응 난항(우리와 동일), (ii) LSN-vs-LPN incomparability OPEN(우리 no-go가 기여). **7th 자격=incomparability=외부도 OPEN·novelty 유력.**
+
+No closure; no break; no security claim. OPEN = LSN.
