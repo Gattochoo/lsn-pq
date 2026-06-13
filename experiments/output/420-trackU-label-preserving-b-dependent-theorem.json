@@ -1,0 +1,203 @@
+{
+  "track": "U",
+  "experiment": 420,
+  "noise_rate_p": "1/4",
+  "theorem_U1": {
+    "statement": "For label-preserving b-dependent bijections g_i(x,b) = (phi_{i,b}(x), b), the exact same-secret SD is 1 - (p^2+(1-p)^2)/4^n + (1-2p)^2/(2*4^n)*(2 - A_0 - A_1), where A_beta = Pr_{L,x}[1_L(phi_{0,beta} x) = 1_L(phi_{1,beta} x)]",
+    "universal_minimum": "123/128",
+    "lower_bound_statement": "SD >= 1 - (p^2+(1-p)^2)/4^n, with equality iff phi_{0,beta} = phi_{1,beta} for both beta (i.e. g_0 = g_1, the literal duplicate)",
+    "equality_condition": "A_beta = 1 iff phi_{0,beta} = phi_{1,beta}",
+    "closed_form_p_1_4": "123/128 + (2 - A_0 - A_1)/128  at n=2",
+    "label": "THEOREM"
+  },
+  "verification_n2": {
+    "named_cases": [
+      {
+        "name": "duplicate",
+        "sd": "123/128",
+        "sd_theorem": "123/128",
+        "A0": "1",
+        "A1": "1",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": true,
+        "is_literal_duplicate": true
+      },
+      {
+        "name": "transposition_only",
+        "sd": "1231/1280",
+        "sd_theorem": "1231/1280",
+        "A0": "1",
+        "A1": "9/10",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "symplectic_same_b",
+        "sd": "1853/1920",
+        "sd_theorem": "1853/1920",
+        "A0": "11/15",
+        "A1": "11/15",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "symplectic_b_dependent",
+        "sd": "309/320",
+        "sd_theorem": "309/320",
+        "A0": "11/15",
+        "A1": "2/3",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "affine_b_dependent",
+        "sd": "617/640",
+        "sd_theorem": "617/640",
+        "A0": "3/5",
+        "A1": "1",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "random_b_dependent",
+        "sd": "14851/15360",
+        "sd_theorem": "14851/15360",
+        "A0": "73/120",
+        "A1": "19/30",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      },
+      {
+        "name": "random_all_branches",
+        "sd": "1237/1280",
+        "sd_theorem": "1237/1280",
+        "A0": "83/120",
+        "A1": "73/120",
+        "formula_matches_direct": true,
+        "meets_universal_bound": true,
+        "equals_orbit_minimum": false,
+        "is_literal_duplicate": false
+      }
+    ],
+    "search": {
+      "num_sampled": 3000,
+      "instances_below_minimum": 0,
+      "minimum_sd": "4941/5120",
+      "minimum_sd_instance": {
+        "index": 143,
+        "A0": "11/15",
+        "A1": "89/120",
+        "sd": "4941/5120"
+      },
+      "first_ten_instances": [
+        {
+          "index": 0,
+          "sd": "14857/15360",
+          "A0": "3/5",
+          "A1": "71/120",
+          "meets_bound": true
+        },
+        {
+          "index": 1,
+          "sd": "4951/5120",
+          "A0": "37/60",
+          "A1": "73/120",
+          "meets_bound": true
+        },
+        {
+          "index": 2,
+          "sd": "7427/7680",
+          "A0": "37/60",
+          "A1": "3/5",
+          "meets_bound": true
+        },
+        {
+          "index": 3,
+          "sd": "2971/3072",
+          "A0": "71/120",
+          "A1": "37/60",
+          "meets_bound": true
+        },
+        {
+          "index": 4,
+          "sd": "7423/7680",
+          "A0": "37/60",
+          "A1": "2/3",
+          "meets_bound": true
+        },
+        {
+          "index": 5,
+          "sd": "14851/15360",
+          "A0": "3/5",
+          "A1": "77/120",
+          "meets_bound": true
+        },
+        {
+          "index": 6,
+          "sd": "4951/5120",
+          "A0": "37/60",
+          "A1": "73/120",
+          "meets_bound": true
+        },
+        {
+          "index": 7,
+          "sd": "4949/5120",
+          "A0": "37/60",
+          "A1": "79/120",
+          "meets_bound": true
+        },
+        {
+          "index": 8,
+          "sd": "4949/5120",
+          "A0": "5/8",
+          "A1": "13/20",
+          "meets_bound": true
+        },
+        {
+          "index": 9,
+          "sd": "14843/15360",
+          "A0": "2/3",
+          "A1": "77/120",
+          "meets_bound": true
+        }
+      ]
+    },
+    "label": "THEOREM"
+  },
+  "verification_n3_spot": {
+    "sd": "91331/92160",
+    "sd_theorem": "91331/92160",
+    "A0": "4/5",
+    "A1": "29/36",
+    "orbit_minimum": "507/512",
+    "strictly_above_minimum": true,
+    "label": "THEOREM"
+  },
+  "exp341_consistency": {
+    "note": "The transposition_only case reproduces exp/341 value 1231/1280 exactly; the closed form gives A_0=1, A_1=9/10, hence SD = 123/128 + (1/10)/128 = 1231/1280",
+    "label": "THEOREM"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "fractions.Fraction end-to-end; JSON stores string fractions",
+    "L2_duality_care": "not invoked (no character sums over Lagrangians)",
+    "L3_query_class_hygiene": "exact TV statements only; no Feldman/SQ/query-class inference",
+    "L4_never_transform_comparison_distribution": "fresh pair (u1,b1,u2,b2) remains in natural domain; public maps act only on split side"
+  },
+  "interpretation_guard": {
+    "comparison_distribution": "two independent fresh samples from the SAME uniform secret L",
+    "family": "label-preserving b-dependent point maps g_i(x,b) = (phi_{i,b}(x), b) with each phi_{i,b} a bijection",
+    "bijectivity_assertion": "every tested phi_{i,b} is explicitly asserted to be a permutation of F_2^{2n}",
+    "PRE_REGISTERED": "structural distributional theorem for this restricted bijective family; does not extend to non-bijective or label-modifying maps; not a lem:m2 rate or attack claim"
+  }
+}
