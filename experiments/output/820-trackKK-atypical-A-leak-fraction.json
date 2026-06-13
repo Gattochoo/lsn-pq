@@ -1,0 +1,106 @@
+{
+  "track": "KK",
+  "experiment": 820,
+  "quantity": "atypical-A leak fraction for rank-n B = C\u00b7A_L",
+  "standing_guards": [
+    "L1 exact arithmetic",
+    "L2 J-twist duality",
+    "L3 query-class hygiene",
+    "L4 never transform LPN"
+  ],
+  "modeling_choices": {
+    "A_ensemble": "uniform ordered basis of a uniform Lagrangian",
+    "B_construction": "B = C\u00b7A_L, rank n, full-rank C",
+    "left_inverse": "minimum Hamming weight row-wise",
+    "ambient_noise": "e ~ Bernoulli(1/4)^{2n}",
+    "identity_used": "I(x;y|C) = n - H(A_L\u00b7e) for full-rank C (THEOREM)"
+  },
+  "rows": [
+    {
+      "n": 2,
+      "dim": 4,
+      "num_lagrangian_subspaces": 15,
+      "num_ordered_bases": 90,
+      "row_weight_distribution": {
+        "1": 145,
+        "2": 35
+      },
+      "max_row_weight_distribution": {
+        "1": 55,
+        "2": 35
+      },
+      "per_coordinate_bias_by_row_weight": {
+        "1": 0.5,
+        "2": 0.25
+      },
+      "threshold_analysis": [
+        {
+          "threshold_max_row_weight": 1,
+          "leaky_count": 55,
+          "leaky_fraction": 0.6111111111111112,
+          "avg_leak_among_leaky_bits": 0.3774437510817341,
+          "contribution_to_avg_leak_bits": 0.23066007010550418
+        },
+        {
+          "threshold_max_row_weight": 2,
+          "leaky_count": 90,
+          "leaky_fraction": 1.0,
+          "avg_leak_among_leaky_bits": 0.3774437510817341,
+          "contribution_to_avg_leak_bits": 0.3774437510817341
+        }
+      ],
+      "average_leak_bits": 0.3774437510817341,
+      "min_leak_bits": 0.3774437510817341,
+      "max_leak_bits": 0.3774437510817341,
+      "elapsed_seconds": 0.0021970272064208984
+    },
+    {
+      "n": 3,
+      "dim": 6,
+      "num_lagrangian_subspaces": 135,
+      "num_ordered_bases": 22680,
+      "row_weight_distribution": {
+        "1": 40303,
+        "2": 25572,
+        "3": 2165
+      },
+      "max_row_weight_distribution": {
+        "1": 3582,
+        "2": 16933,
+        "3": 2165
+      },
+      "per_coordinate_bias_by_row_weight": {
+        "1": 0.5,
+        "2": 0.25,
+        "3": 0.125
+      },
+      "threshold_analysis": [
+        {
+          "threshold_max_row_weight": 1,
+          "leaky_count": 3582,
+          "leaky_fraction": 0.15793650793650793,
+          "avg_leak_among_leaky_bits": 0.5661656266226007,
+          "contribution_to_avg_leak_bits": 0.08941822198245837
+        },
+        {
+          "threshold_max_row_weight": 2,
+          "leaky_count": 20515,
+          "leaky_fraction": 0.9045414462081128,
+          "avg_leak_among_leaky_bits": 0.5410424295894366,
+          "contribution_to_avg_leak_bits": 0.48939530172078005
+        },
+        {
+          "threshold_max_row_weight": 3,
+          "leaky_count": 22680,
+          "leaky_fraction": 1.0,
+          "avg_leak_among_leaky_bits": 0.5434406536448511,
+          "contribution_to_avg_leak_bits": 0.5434406536448511
+        }
+      ],
+      "average_leak_bits": 0.5434406536448511,
+      "min_leak_bits": 0.21610189816246095,
+      "max_leak_bits": 0.5661656266226007,
+      "elapsed_seconds": 0.9616031646728516
+    }
+  ]
+}
