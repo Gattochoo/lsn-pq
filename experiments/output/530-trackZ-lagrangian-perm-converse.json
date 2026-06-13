@@ -1,0 +1,52 @@
+{
+  "track": "Z",
+  "experiment": 530,
+  "n": 2,
+  "geometry": {
+    "space": "F_2^{2n}",
+    "num_points": 16,
+    "num_lagrangians": 15,
+    "intersection_of_all_lagrangians": [
+      0
+    ],
+    "nonzero_point_star_size": 3
+  },
+  "n2_theorem": {
+    "statement": "Every permutation of F_2^4 that maps every Lagrangian subspace to a Lagrangian subspace fixes 0, maps 1-dimensional subspaces to 1-dimensional subspaces, and is F_2-linear; its linear part lies in Sp(4,2).",
+    "proof_method": "structural reduction + exhaustive backtracking over all 16! candidates with f(0)=0",
+    "lagrangian_preserving_permutations": 720,
+    "all_additive": true,
+    "all_symplectic": true,
+    "sp4_order": 720,
+    "families_match": true,
+    "backtrack_calls": 8116,
+    "elapsed_seconds": 0.05399608612060547,
+    "label": "THEOREM"
+  },
+  "general_n": {
+    "statement": "For every n >= 1, any permutation of F_2^{2n} that maps every maximal totally isotropic (Lagrangian) subspace to a maximal totally isotropic subspace is an automorphism of the symplectic polar space W(2n-1,2); by the fundamental theorem/classification of automorphisms of finite classical polar spaces, such an automorphism is induced by a semilinear symplectic similitude. Over F_2 the only field automorphism and the only scalar are trivial, so the permutation is linear and lies in Sp(2n,2).",
+    "citations": [
+      "S. E. Payne and J. A. Thas, Finite Generalized Quadrangles, 2nd ed., EMS 2009 (automorphism group of W(q) is P\\Gamma Sp(4,q))",
+      "A. E. Brouwer, A. M. Cohen and A. Neumaier, Distance-Regular Graphs, Springer 1989, Theorem 9.4.3 and Ch. 10 (automorphism group of a dual polar graph coincides with that of the polar space)",
+      "M. De Boeck, J. Bamberg and F. Romaniello, Cameron-Liebler sets of generators in finite classical polar spaces, arXiv:1712.06176, Theorem 2.17 (autom. group of a finite classical polar space = autom. group of its dual polar graph, except Q^+(3,q))",
+      "Z. Tang, Symplectic graphs and their automorphisms, J. Combin. Theory A 2012, Proposition 3.3 (Aut(Sp(2\\nu,2)) ~= Sp(2\\nu,F_2))"
+    ],
+    "label": "THEOREM-with-citation"
+  },
+  "negative_control": {
+    "statement": "Affine translations x -> S(x)+t with t != 0 do NOT preserve the family of all Lagrangians, because they send subspaces to proper cosets.",
+    "nonzero_translations_preserving_all_lagrangians": 0,
+    "label": "EVIDENCE"
+  },
+  "guards": {
+    "L1_exact_arithmetic": "integer/exact set operations only; counts are exact integers",
+    "L2_duality_care": "not invoked (no character sums or J-twist Fourier arguments)",
+    "L3_query_class_hygiene": "pure finite-geometry structural result; no statistical query / Feldman inference",
+    "L4_never_transform_comparison_distribution": "not applicable: this track is about the geometry of valid-output maps, not about LPN distributions"
+  },
+  "interpretation_guard": {
+    "PRE_REGISTERED": "The claim is about permutations preserving the SET of Lagrangian subspaces of F_2^{2n} with the standard symplectic form; it does not assert anything about arbitrary public maps that merely preserve the output distribution D_L for each secret individually.",
+    "scope": "n=2 proved rigorously by exhaustive search; general n reduced to the cited automorphism theorem for symplectic polar spaces.",
+    "affine_caveat": "Non-linear affine maps and arbitrary bijections are permitted as permutations a priori; the theorem rules out non-linear Lagrangian-preserving ones."
+  }
+}
