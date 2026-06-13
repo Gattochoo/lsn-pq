@@ -1,0 +1,173 @@
+{
+  "track": "JJ",
+  "experiment": 810,
+  "quantity": "H(C_L\u00b7Be | HBe, C) bits (full-rank C)",
+  "standing_guards": [
+    "L1 exact arithmetic",
+    "L2 J-twist duality",
+    "L3 query-class hygiene",
+    "L4 never transform LPN"
+  ],
+  "modeling_choices": {
+    "A_ensemble": "uniform ordered basis of a uniform Lagrangian (90 ordered bases for n=2)",
+    "rank_condition": "conditioned on C full column rank",
+    "ambient_noise": "Bernoulli(1/4)^{2n}",
+    "identity_used": "H(C_L\u00b7Be|HBe,C) = H(x|y,C) for full-rank C (THEOREM)"
+  },
+  "n": 2,
+  "num_ordered_bases": 90,
+  "rows": [
+    {
+      "m": 2,
+      "uniform_B_per_A": {
+        "I_xy_given_C_fullrank_bits": 0.1395729207270769,
+        "H_x_given_y_C_fullrank_bits": 1.8604270792729232,
+        "H_equiv_C_L_Be_given_H_Be_C_fullrank_bits": 1.8604270792729232,
+        "rank_full": 8847360,
+        "rank_deficient": 14745600,
+        "P_fullrank": 0.375
+      },
+      "lambda_coupled_rows": [
+        {
+          "lambda": "0",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.8604270792729232,
+          "I_xy_given_C_fullrank_bits": 0.1395729207270769,
+          "P_fullrank": 0.375
+        },
+        {
+          "lambda": "1/4",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.8604270792729232,
+          "I_xy_given_C_fullrank_bits": 0.13957292072707683,
+          "P_fullrank": 0.05921052631578947
+        },
+        {
+          "lambda": "1/2",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.8604270792729232,
+          "I_xy_given_C_fullrank_bits": 0.1395729207270769,
+          "P_fullrank": 0.022058823529411766
+        },
+        {
+          "lambda": "3/4",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.8604270792729232,
+          "I_xy_given_C_fullrank_bits": 0.1395729207270769,
+          "P_fullrank": 0.007653061224489796
+        },
+        {
+          "lambda": "1",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": null,
+          "I_xy_given_C_fullrank_bits": null,
+          "P_fullrank": 0.0
+        }
+      ],
+      "lambda_column_pair_coupled": [
+        {
+          "lambda": "0",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.8604270792729232,
+          "I_xy_given_C_fullrank_bits": 0.1395729207270769,
+          "P_fullrank": 0.375
+        },
+        {
+          "lambda": "1/4",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.914903775161216,
+          "I_xy_given_C_fullrank_bits": 0.085096224838784,
+          "P_fullrank": 0.22763157894736843
+        },
+        {
+          "lambda": "1/2",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.924723246123457,
+          "I_xy_given_C_fullrank_bits": 0.07527675387654319,
+          "P_fullrank": 0.21029411764705883
+        },
+        {
+          "lambda": "3/4",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.9288048305236343,
+          "I_xy_given_C_fullrank_bits": 0.07119516947636577,
+          "P_fullrank": 0.20357142857142857
+        },
+        {
+          "lambda": "1",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.9310382226270202,
+          "I_xy_given_C_fullrank_bits": 0.06896177737297979,
+          "P_fullrank": 0.2
+        }
+      ],
+      "elapsed_seconds": 0.018181800842285156
+    },
+    {
+      "m": 3,
+      "uniform_B_per_A": {
+        "I_xy_given_C_fullrank_bits": 0.1866614016507299,
+        "H_x_given_y_C_fullrank_bits": 1.81333859834927,
+        "H_equiv_C_L_Be_given_H_Be_C_fullrank_bits": 1.81333859834927,
+        "rank_full": 247726080,
+        "rank_deficient": 129761280,
+        "P_fullrank": 0.65625
+      },
+      "lambda_coupled_rows": [
+        {
+          "lambda": "0",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.81333859834927,
+          "I_xy_given_C_fullrank_bits": 0.1866614016507299,
+          "P_fullrank": 0.65625
+        },
+        {
+          "lambda": "1/4",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.81333859834927,
+          "I_xy_given_C_fullrank_bits": 0.1866614016507299,
+          "P_fullrank": 0.10361842105263158
+        },
+        {
+          "lambda": "1/2",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.81333859834927,
+          "I_xy_given_C_fullrank_bits": 0.1866614016507299,
+          "P_fullrank": 0.03860294117647059
+        },
+        {
+          "lambda": "3/4",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.81333859834927,
+          "I_xy_given_C_fullrank_bits": 0.1866614016507299,
+          "P_fullrank": 0.013392857142857142
+        },
+        {
+          "lambda": "1",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": null,
+          "I_xy_given_C_fullrank_bits": null,
+          "P_fullrank": 0.0
+        }
+      ],
+      "lambda_column_pair_coupled": [
+        {
+          "lambda": "0",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.81333859834927,
+          "I_xy_given_C_fullrank_bits": 0.1866614016507299,
+          "P_fullrank": 0.65625
+        },
+        {
+          "lambda": "1/4",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.9089381668592025,
+          "I_xy_given_C_fullrank_bits": 0.09106183314079742,
+          "P_fullrank": 0.3983552631578947
+        },
+        {
+          "lambda": "1/2",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.9226772857282923,
+          "I_xy_given_C_fullrank_bits": 0.07732271427170768,
+          "P_fullrank": 0.36801470588235297
+        },
+        {
+          "lambda": "3/4",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.9281226239403164,
+          "I_xy_given_C_fullrank_bits": 0.07187737605968353,
+          "P_fullrank": 0.35625
+        },
+        {
+          "lambda": "1",
+          "H_C_L_Be_given_H_Be_C_fullrank_bits": 1.9310382226270206,
+          "I_xy_given_C_fullrank_bits": 0.0689617773729793,
+          "P_fullrank": 0.35
+        }
+      ],
+      "elapsed_seconds": 0.06841015815734863
+    }
+  ]
+}
