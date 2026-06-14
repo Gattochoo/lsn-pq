@@ -1,0 +1,368 @@
+{
+  "audit": "AUD3",
+  "description": "distance distribution, dilution, q_graph, p_eff, I(x;y|C)",
+  "status": "MISMATCH_FOUND",
+  "findings": [
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=0] n=2",
+      "paper_value": "8/15",
+      "our_value": "8/15",
+      "status": "MATCH",
+      "note": "E[j]=8/15"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=1] n=2",
+      "paper_value": "2/5",
+      "our_value": "2/5",
+      "status": "MATCH",
+      "note": "E[j]=8/15"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=2] n=2",
+      "paper_value": "1/15",
+      "our_value": "1/15",
+      "status": "MATCH",
+      "note": "E[j]=8/15"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=0] n=3",
+      "paper_value": "64/135",
+      "our_value": "64/135",
+      "status": "MATCH",
+      "note": "E[j]=29/45"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=1] n=3",
+      "paper_value": "56/135",
+      "our_value": "56/135",
+      "status": "MATCH",
+      "note": "E[j]=29/45"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=2] n=3",
+      "paper_value": "14/135",
+      "our_value": "14/135",
+      "status": "MATCH",
+      "note": "E[j]=29/45"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=3] n=3",
+      "paper_value": "1/135",
+      "our_value": "1/135",
+      "status": "MATCH",
+      "note": "E[j]=29/45"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=0] n=4",
+      "paper_value": "1024/2295",
+      "our_value": "1024/2295",
+      "status": "MATCH",
+      "note": "E[j]=538/765"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=1] n=4",
+      "paper_value": "64/153",
+      "our_value": "64/153",
+      "status": "MATCH",
+      "note": "E[j]=538/765"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=2] n=4",
+      "paper_value": "56/459",
+      "our_value": "56/459",
+      "status": "MATCH",
+      "note": "E[j]=538/765"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=3] n=4",
+      "paper_value": "2/153",
+      "our_value": "2/153",
+      "status": "MATCH",
+      "note": "E[j]=538/765"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=4] n=4",
+      "paper_value": "1/2295",
+      "our_value": "1/2295",
+      "status": "MATCH",
+      "note": "E[j]=538/765"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=0] n=5",
+      "paper_value": "32768/75735",
+      "our_value": "32768/75735",
+      "status": "MATCH",
+      "note": "E[j]=6173/8415"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=1] n=5",
+      "paper_value": "31744/75735",
+      "our_value": "31744/75735",
+      "status": "MATCH",
+      "note": "E[j]=6173/8415"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=2] n=5",
+      "paper_value": "1984/15147",
+      "our_value": "1984/15147",
+      "status": "MATCH",
+      "note": "E[j]=6173/8415"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=3] n=5",
+      "paper_value": "248/15147",
+      "our_value": "248/15147",
+      "status": "MATCH",
+      "note": "E[j]=6173/8415"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=4] n=5",
+      "paper_value": "62/75735",
+      "our_value": "62/75735",
+      "status": "MATCH",
+      "note": "E[j]=6173/8415"
+    },
+    {
+      "paper_line": 284,
+      "claim": "Pr[j=5] n=5",
+      "paper_value": "1/75735",
+      "our_value": "1/75735",
+      "status": "MATCH",
+      "note": "E[j]=6173/8415"
+    },
+    {
+      "paper_line": 300,
+      "claim": "Pr[a in L | b=1] n=2",
+      "paper_value": "1/2",
+      "our_value": "1/2",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 300,
+      "claim": "Pr[a in L | b=1] n=3",
+      "paper_value": "3/10",
+      "our_value": "3/10",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 300,
+      "claim": "Pr[a in L | b=1] n=4",
+      "paper_value": "1/6",
+      "our_value": "1/6",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 300,
+      "claim": "Pr[a in L | b=1] n=5",
+      "paper_value": "3/34",
+      "our_value": "3/34",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 300,
+      "claim": "Pr[a in L | b=1] n=10",
+      "paper_value": "1/342",
+      "our_value": "1/342",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 300,
+      "claim": "Pr[a in L | b=1] n=20",
+      "paper_value": "1/349526",
+      "our_value": "1/349526",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 302,
+      "claim": "dilution n=3 exact",
+      "paper_value": "3/10",
+      "our_value": "3/10",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 264,
+      "claim": "chi^2(D_L||D_0) n=2",
+      "paper_value": "1/3",
+      "our_value": "1/3",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 264,
+      "claim": "chi^2(D_L||D_0) n=3",
+      "paper_value": "1/6",
+      "our_value": "1/6",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 264,
+      "claim": "chi^2(D_L||D_0) n=4",
+      "paper_value": "1/12",
+      "our_value": "1/12",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 264,
+      "claim": "chi^2(D_L||D_0) n=5",
+      "paper_value": "1/24",
+      "our_value": "1/24",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 264,
+      "claim": "chi^2(D_L||D_0) n=10",
+      "paper_value": "1/768",
+      "our_value": "1/768",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_graph(n) n=2",
+      "paper_value": "29/64",
+      "our_value": "29/64",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "p_eff(n) n=2",
+      "paper_value": "175/512",
+      "our_value": "175/512",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_graph(n) n=3",
+      "paper_value": "1241/4608",
+      "our_value": "1241/4608",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "p_eff(n) n=3",
+      "paper_value": "3367/8192",
+      "our_value": "3367/8192",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_graph(n) n=4",
+      "paper_value": "10657/69632",
+      "our_value": "10657/69632",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "p_eff(n) n=4",
+      "paper_value": "58975/131072",
+      "our_value": "58975/131072",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_graph(n) n=5",
+      "paper_value": "8347/98304",
+      "our_value": "8347/98304",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "p_eff(n) n=5",
+      "paper_value": "989527/2097152",
+      "our_value": "989527/2097152",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_graph(2)=29/64",
+      "paper_value": "29/64",
+      "our_value": "29/64",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "p_eff(2)=175/512",
+      "paper_value": "175/512",
+      "our_value": "175/512",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "p_eff(3)=3367/8192",
+      "paper_value": "3367/8192",
+      "our_value": "3367/8192",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 1234,
+      "claim": "I(x;y|C) n=2, m=4 direct enumeration",
+      "paper_value": "0.21405908733895404",
+      "our_value": "0.21405908733895404",
+      "status": "MATCH",
+      "note": "LL formula=0.204029"
+    },
+    {
+      "paper_line": 1234,
+      "claim": "I(x;y|C)/n n=2, m=4 (paper table)",
+      "paper_value": "0.102",
+      "our_value": "0.102",
+      "status": "MATCH",
+      "note": "I bits=0.204029"
+    },
+    {
+      "paper_line": 1234,
+      "claim": "I(x;y|C)/n n=3, m=6 (paper table)",
+      "paper_value": "0.077",
+      "our_value": "0.077",
+      "status": "MATCH",
+      "note": "I bits=0.231950"
+    },
+    {
+      "paper_line": 1234,
+      "claim": "I(x;y|C)/n n=4, m=8 (paper table)",
+      "paper_value": "0.054",
+      "our_value": "0.053",
+      "status": "MISMATCH",
+      "note": "I bits=0.213935"
+    }
+  ],
+  "mismatches": 1
+}
