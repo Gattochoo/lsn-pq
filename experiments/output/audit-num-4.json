@@ -1,0 +1,288 @@
+{
+  "audit": "AUD4",
+  "description": "generating functions + composition laws",
+  "status": "OK",
+  "findings": [
+    {
+      "paper_line": 744,
+      "claim": "joint GF coefficient count n=2",
+      "paper_value": "15",
+      "our_value": "15",
+      "status": "MATCH",
+      "note": "0 mismatches out of 15 coefficients"
+    },
+    {
+      "paper_line": 744,
+      "claim": "joint GF coefficient count n=3",
+      "paper_value": "56",
+      "our_value": "56",
+      "status": "MATCH",
+      "note": "0 mismatches out of 56 coefficients"
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=0] n=2",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=1] n=2",
+      "paper_value": "4/15",
+      "our_value": "4/15",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=2] n=2",
+      "paper_value": "2/5",
+      "our_value": "2/5",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=3] n=2",
+      "paper_value": "4/15",
+      "our_value": "4/15",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=4] n=2",
+      "paper_value": "1/15",
+      "our_value": "1/15",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=0] n=3",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=1] n=3",
+      "paper_value": "2/21",
+      "our_value": "2/21",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=2] n=3",
+      "paper_value": "5/21",
+      "our_value": "5/21",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=3] n=3",
+      "paper_value": "20/63",
+      "our_value": "20/63",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=4] n=3",
+      "paper_value": "5/21",
+      "our_value": "5/21",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=5] n=3",
+      "paper_value": "2/21",
+      "our_value": "2/21",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=6] n=3",
+      "paper_value": "1/63",
+      "our_value": "1/63",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=0] n=4",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=1] n=4",
+      "paper_value": "8/255",
+      "our_value": "8/255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=2] n=4",
+      "paper_value": "28/255",
+      "our_value": "28/255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=3] n=4",
+      "paper_value": "56/255",
+      "our_value": "56/255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=4] n=4",
+      "paper_value": "14/51",
+      "our_value": "14/51",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=5] n=4",
+      "paper_value": "56/255",
+      "our_value": "56/255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=6] n=4",
+      "paper_value": "28/255",
+      "our_value": "28/255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=7] n=4",
+      "paper_value": "8/255",
+      "our_value": "8/255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 756,
+      "claim": "Pr[t10+t01=8] n=4",
+      "paper_value": "1/255",
+      "our_value": "1/255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 771,
+      "claim": "triple GF pair-marginal count n=3",
+      "paper_value": "168",
+      "our_value": "168",
+      "status": "MATCH",
+      "note": "0 mismatches out of 168 pair-marginal compositions"
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=2, k=1",
+      "paper_value": "15",
+      "our_value": "15",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=2, k=2",
+      "paper_value": "90",
+      "our_value": "90",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=3, k=1",
+      "paper_value": "63",
+      "our_value": "63",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=3, k=2",
+      "paper_value": "1890",
+      "our_value": "1890",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=3, k=3",
+      "paper_value": "22680",
+      "our_value": "22680",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=4, k=1",
+      "paper_value": "255",
+      "our_value": "255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=4, k=2",
+      "paper_value": "32130",
+      "our_value": "32130",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=4, k=3",
+      "paper_value": "1927800",
+      "our_value": "1927800",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 788,
+      "claim": "P_k(n) n=4, k=4",
+      "paper_value": "46267200",
+      "our_value": "46267200",
+      "status": "MATCH",
+      "note": "EVIDENCE: Lagrangian count * ordered bases per Lagrangian"
+    },
+    {
+      "paper_line": 804,
+      "claim": "TV(all-ones count, Bin(4,1/4)) (n=2,k=2)",
+      "paper_value": "paper gives Theta(2^{-(n+1)})",
+      "our_value": "707/5760",
+      "status": "EVIDENCE",
+      "note": "exact TV fraction = 707/5760; float approx 0.1227430556"
+    },
+    {
+      "paper_line": 804,
+      "claim": "TV(all-ones count, Bin(6,1/8)) (n=3,k=3)",
+      "paper_value": "paper gives Theta(2^{-(n+1)})",
+      "our_value": "1096511/27525120",
+      "status": "EVIDENCE",
+      "note": "exact TV fraction = 1096511/27525120; float approx 0.0398367382"
+    }
+  ],
+  "mismatches": 0
+}
