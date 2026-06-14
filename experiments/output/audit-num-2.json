@@ -1,0 +1,232 @@
+{
+  "audit": "AUD2",
+  "description": "sympLPN correlations + SQ bounds",
+  "status": "OK",
+  "findings": [
+    {
+      "paper_line": 547,
+      "claim": "max F_2-linear advantage n=2",
+      "paper_value": "1/8",
+      "our_value": "1/8",
+      "status": "MATCH",
+      "note": "best query w=0, c=1"
+    },
+    {
+      "paper_line": 547,
+      "claim": "max F_2-linear advantage n=3",
+      "paper_value": "1/16",
+      "our_value": "1/16",
+      "status": "MATCH",
+      "note": "best query w=0, c=1"
+    },
+    {
+      "paper_line": 547,
+      "claim": "max F_2-linear advantage n=4",
+      "paper_value": "1/32",
+      "our_value": "1/32",
+      "status": "MATCH",
+      "note": "best query w=0, c=1"
+    },
+    {
+      "paper_line": 567,
+      "claim": "sympLPN diagonal correlation n=2",
+      "paper_value": "369/256",
+      "our_value": "369/256",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 568,
+      "claim": "sympLPN off-diagonal correlation n=2",
+      "paper_value": "-123/1280",
+      "our_value": "-123/1280",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x^2] n=2, |S|=1",
+      "paper_value": "1/4",
+      "our_value": "1/4",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x g_{x'}] n=2, |S|=1",
+      "paper_value": "-1/60",
+      "our_value": "-1/60",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x^2] n=2, |S|=2",
+      "paper_value": "1/16",
+      "our_value": "1/16",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x g_{x'}] n=2, |S|=2",
+      "paper_value": "-1/240",
+      "our_value": "-1/240",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x^2] n=2, |S|=3",
+      "paper_value": "1/64",
+      "our_value": "1/64",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x g_{x'}] n=2, |S|=3",
+      "paper_value": "-1/960",
+      "our_value": "-1/960",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 567,
+      "claim": "sympLPN diagonal correlation n=3",
+      "paper_value": "11529/4096",
+      "our_value": "11529/4096",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 568,
+      "claim": "sympLPN off-diagonal correlation n=3",
+      "paper_value": "-183/4096",
+      "our_value": "-183/4096",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x^2] n=3, |S|=1",
+      "paper_value": "1/4",
+      "our_value": "1/4",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x g_{x'}] n=3, |S|=1",
+      "paper_value": "-1/252",
+      "our_value": "-1/252",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x^2] n=3, |S|=2",
+      "paper_value": "1/16",
+      "our_value": "1/16",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x g_{x'}] n=3, |S|=2",
+      "paper_value": "-1/1008",
+      "our_value": "-1/1008",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x^2] n=3, |S|=3",
+      "paper_value": "1/64",
+      "our_value": "1/64",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 570,
+      "claim": "bundle-parity E[g_x g_{x'}] n=3, |S|=3",
+      "paper_value": "-1/4032",
+      "our_value": "-1/4032",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 589,
+      "claim": "sympLPN exponent c_p at p=1/4",
+      "paper_value": "0.356144",
+      "our_value": "0.356144",
+      "status": "MATCH",
+      "note": "exact algebra: c_p = 5 - 2*log2(5) = 0.3561438102"
+    },
+    {
+      "paper_line": 589,
+      "claim": "sympLPN non-trivial VSTAT t_max n=2",
+      "paper_value": "-1",
+      "our_value": "-1",
+      "status": "MATCH",
+      "note": "c_p approx 0.356144; beta=369/256"
+    },
+    {
+      "paper_line": 589,
+      "claim": "sympLPN non-trivial VSTAT t_max n=3",
+      "paper_value": "-1",
+      "our_value": "-1",
+      "status": "MATCH",
+      "note": "c_p approx 0.356144; beta=11529/4096"
+    },
+    {
+      "paper_line": 488,
+      "claim": "unconditional spread SDA q >= 2^1 n=2",
+      "paper_value": "2",
+      "our_value": "2",
+      "status": "MATCH",
+      "note": "Omega(2^n) query lower bound"
+    },
+    {
+      "paper_line": 488,
+      "claim": "unconditional spread SDA q >= 2^2 n=3",
+      "paper_value": "4",
+      "our_value": "4",
+      "status": "MATCH",
+      "note": "Omega(2^n) query lower bound"
+    },
+    {
+      "paper_line": 488,
+      "claim": "unconditional spread SDA q >= 2^3 n=4",
+      "paper_value": "8",
+      "our_value": "8",
+      "status": "MATCH",
+      "note": "Omega(2^n) query lower bound"
+    },
+    {
+      "paper_line": 526,
+      "claim": "conditional SDA q >= (1/3)2^{2n} n=2",
+      "paper_value": "16/3",
+      "our_value": "16/3",
+      "status": "MATCH",
+      "note": "log2 q = 2.4150"
+    },
+    {
+      "paper_line": 526,
+      "claim": "conditional SDA q >= (1/3)2^{2n} n=3",
+      "paper_value": "64/3",
+      "our_value": "64/3",
+      "status": "MATCH",
+      "note": "log2 q = 4.4150"
+    },
+    {
+      "paper_line": 526,
+      "claim": "conditional SDA q >= (1/3)2^{2n} n=4",
+      "paper_value": "256/3",
+      "our_value": "256/3",
+      "status": "MATCH",
+      "note": "log2 q = 6.4150"
+    }
+  ],
+  "mismatches": 0
+}
