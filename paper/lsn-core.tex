@@ -73,7 +73,7 @@ The Learning Parity with Noise (LPN) problem, introduced by Blum \etal\ \cite{BF
 
 LPN has been the foundation for a wide range of cryptographic primitives, including OWFs, PKE, OT, and MPC \cite{ABW10,Ale11,DGM14,BCGI18}. Its main theoretical limitation is the absence of a worst-case hardness reduction comparable to Regev's LWE reduction from lattice problems \cite{Reg05}. LPN hardness is therefore treated as a \emph{primitive assumption}, accepted on the basis of sustained cryptanalytic resistance rather than reducibility.
 
-Post-quantum cryptography currently rests on a handful of established hardness families: lattices (LWE/SIS), error-correcting codes (LPN/syndrome decoding), multivariate quadratic equations (MQ), hash functions, and isogenies, with tensor and group-action problems emerging as further candidates. Shor's algorithm \cite{Sho94} breaks the integer-factoring and discrete-logarithm assumptions underlying classical public-key cryptography, motivating the search for quantum-resistant alternatives. A genuinely new family --- structurally distinct and not reducible to the existing ones --- has been sought since the inception of the field. LSN is a recent candidate proposed in this spirit; this paper studies its hardness landscape rather than asserting its standing relative to the established families.
+Post-quantum cryptography currently rests on a handful of established hardness families: lattices (LWE/SIS), error-correcting codes (LPN/syndrome decoding), multivariate quadratic equations (MQ), hash functions, and isogenies, with tensor and group-action problems emerging as further candidates. Shor's algorithm \cite{Sho94} breaks the integer-factoring and discrete-logarithm assumptions underlying classical public-key cryptography, motivating the search for quantum-resistant alternatives. A genuinely new family --- structurally distinct and not reducible to the existing ones --- has long been sought. LSN is a recent candidate in this spirit; this paper studies its hardness landscape without asserting its standing among the established families.
 
 \subsection{The LSN Problem}
 \label{subsec:lsn}
@@ -87,9 +87,9 @@ with $a_i \sim \F_2^{2n}$ uniform, $e_i \sim \operatorname{Bernoulli}(p)$, and $
 \label{eq:lagr-count}
 |\Lagr(2n, \F_2)| = \prod_{i=1}^n (2^i + 1) = 2^{n(n+1)/2 + O(1)}.
 \end{equation}
-This is exponentially larger than LPN's $2^n$ secrets, yet it is not an unstructured space: every secret satisfies the strong isotropy constraint $L = L^{\perp_\Omega}$. It is exactly this tension --- exponential size versus rigid structure --- that creates both the hardness and the technical difficulty of LSN.
+This is exponentially larger than LPN's $2^n$ secrets, yet it is not an unstructured space: every secret satisfies the strong isotropy constraint $L = L^{\perp_\Omega}$. It is exactly this tension --- exponential size versus rigid structure --- that makes LSN both attractive as a hardness candidate and technically difficult to analyze.
 
-Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that \emph{their} stabilizer-decoding LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN (for linear reductions, proven in the constant-rate sample regime $m=\Theta(n)$; see \Cref{sec:barriers}). The precise relation between their LSN and our membership formulation is stated as an open positioning item in \Cref{subsec:two-forms}. These results motivate the study of LSN as a possible new post-quantum hardness source; whether it is genuinely independent of the established families remains open, and we make no such claim here.
+Recent independent work by Khesin \etal\ \cite{KLP+25}, Poremba--Quek--Shor \cite{PQS26}, and Lu \etal\ \cite{LPQR26} has shown that \emph{their} stabilizer-decoding LSN is at least as hard as constant-rate LPN even for a single logical qubit, and has established strong barriers against reducing symplectic LPN to standard LPN (for linear reductions, proven in the constant-rate sample regime $m=\Theta(n)$; see \Cref{sec:barriers}). The precise relation between their LSN and our membership formulation, and the broader question of LSN's independence from the established families, are stated as explicit open positioning items in \Cref{subsec:two-forms}. These results motivate the present study of its statistical and reduction structure.
 
 \subsection{Contributions}
 \label{subsec:contributions}
@@ -116,7 +116,7 @@ Our central technical tool is a character-sum method that renders the symplectic
     \]
     and in general $|m_j - (1/4)^j| = \Theta(4^{-n})$ for each fixed $j$. Consequently every fixed-size bundle of rows of the isotropic ensemble converges to the unconstrained LPN ensemble at rate $O(4^{-n})$: conditioning on the symplectic relation $S_A=0$ does not help a constant-size statistical test.
 
-    \item \textbf{Explicit claim classification (\Cref{sec:open}).} Every claim is classified as theorem, evidence, or conjecture. We state explicitly the standard-model gap --- the absence of a non-vacuous LPN(low-noise) $\to$ LSN or LWE $\to$ LSN reduction --- that remains open.
+    \item \textbf{The standard-model gap, explicitly delineated (\Cref{sec:open}).} We isolate precisely what a hardness proof would still require --- a non-vacuous LPN(low-noise) $\to$ LSN or LWE $\to$ LSN reduction --- and classify every claim in the paper as theorem, evidence, or conjecture.
 \end{enumerate}
 
 \paragraph{Applications.} Cryptographic constructions built on LSN (a key-encapsulation mechanism and a succinct argument system) are developed in separate companion work and are not treated here; the present paper concerns only the hardness landscape of the problem itself.
