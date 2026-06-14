@@ -1,0 +1,150 @@
+{
+  "audit": "AUD5",
+  "description": "barriers numerics + worst-to-average Sp(4,2)",
+  "status": "OK",
+  "findings": [
+    {
+      "paper_line": 1130,
+      "claim": "lem:m1 constant 16 = ceil((3/2)/0.094)",
+      "paper_value": "16",
+      "our_value": "16",
+      "status": "MATCH",
+      "note": "(3/2)/0.094 = 15.9574"
+    },
+    {
+      "paper_line": 1130,
+      "claim": "lem:m1 constant 11 = ceil(1/0.094)",
+      "paper_value": "11",
+      "our_value": "11",
+      "status": "MATCH",
+      "note": "1/0.094 = 10.6383"
+    },
+    {
+      "paper_line": 1126,
+      "claim": "floor(0.19n)+1 >= 0.19n for n=10",
+      "paper_value": "True",
+      "our_value": "True",
+      "status": "MATCH",
+      "note": "w=1, bias_bound=2^-2"
+    },
+    {
+      "paper_line": 1126,
+      "claim": "floor(0.19n)+1 >= 0.19n for n=20",
+      "paper_value": "True",
+      "our_value": "True",
+      "status": "MATCH",
+      "note": "w=3, bias_bound=2^-4"
+    },
+    {
+      "paper_line": 1126,
+      "claim": "floor(0.19n)+1 >= 0.19n for n=41",
+      "paper_value": "True",
+      "our_value": "True",
+      "status": "MATCH",
+      "note": "w=7, bias_bound=2^-8"
+    },
+    {
+      "paper_line": 1126,
+      "claim": "floor(0.19n)+1 >= 0.19n for n=100",
+      "paper_value": "True",
+      "our_value": "True",
+      "status": "MATCH",
+      "note": "w=19, bias_bound=2^-20"
+    },
+    {
+      "paper_line": 946,
+      "claim": "Fannes distance lower bound d at n=41, m=82",
+      "paper_value": "10/41",
+      "our_value": "10/41",
+      "status": "MATCH",
+      "note": "paper: d = 1/4 - 1/(4n); float d_exact = 0.2439024390"
+    },
+    {
+      "paper_line": 946,
+      "claim": "SD >= d - 1/(mn) at n=41, m=82",
+      "paper_value": ">= 0.24",
+      "our_value": "819/3362",
+      "status": "EVIDENCE",
+      "note": "Fannes-Csiszar gives SD >= 819/3362 = 0.243605, so >= 0.24"
+    },
+    {
+      "paper_line": 1232,
+      "claim": "|Sp(4,F_2)|",
+      "paper_value": "720",
+      "our_value": "720",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 1232,
+      "claim": "number of Lagrangians in F_2^4",
+      "paper_value": "15",
+      "our_value": "15",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 1232,
+      "claim": "Lagrangians reachable with W<=2 (worst-case L0)",
+      "paper_value": "10",
+      "our_value": "10",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 1232,
+      "claim": "Lagrangians reachable with W<=3 (worst-case L0)",
+      "paper_value": "15",
+      "our_value": "15",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 1232,
+      "claim": "Lagrangians requiring W=3 (worst-case L0)",
+      "paper_value": "5",
+      "our_value": "5",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 1232,
+      "claim": "Lagrangians reachable with W<=2 only (worst-case L0)",
+      "paper_value": "10",
+      "our_value": "10",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 1232,
+      "claim": "corrected p' for W=3 at p=1/4",
+      "paper_value": "7/16",
+      "our_value": "7/16",
+      "status": "MATCH",
+      "note": "1-2p' = 1/8 = (1-2p)^3 = 1/8"
+    },
+    {
+      "paper_line": 1232,
+      "claim": "Walsh bound violations among g with W<=max-needed-W",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": "max W needed to cover Lagrangians = 3"
+    },
+    {
+      "paper_line": 1232,
+      "claim": "Walsh bound violations among all g with W<=3",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    }
+  ],
+  "W_distribution": {
+    "1.0": 8,
+    "2.0": 96,
+    "3.0": 424,
+    "4.0": 192
+  },
+  "mismatches": 0
+}
