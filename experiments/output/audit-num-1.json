@@ -1,0 +1,744 @@
+{
+  "audit": "AUD1",
+  "description": "core correlation + moments",
+  "status": "OK",
+  "findings": [
+    {
+      "paper_line": 438,
+      "claim": "correlation coefficient at p=1/4",
+      "paper_value": "4/3",
+      "our_value": "4/3",
+      "status": "MATCH",
+      "note": "lem:exact-corr, eq. after line 438"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=2, j=0",
+      "paper_value": "1/12",
+      "our_value": "1/12",
+      "status": "MATCH",
+      "note": "count=120 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=2, j=1",
+      "paper_value": "1/6",
+      "our_value": "1/6",
+      "status": "MATCH",
+      "note": "count=90 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=2, j=2",
+      "paper_value": "1/3",
+      "our_value": "1/3",
+      "status": "MATCH",
+      "note": "count=15 pairs"
+    },
+    {
+      "paper_line": 450,
+      "claim": "C_n average correlation n=2",
+      "paper_value": "8/5",
+      "our_value": "8/5",
+      "status": "MATCH",
+      "note": "15 Lagrangians"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=3, j=0",
+      "paper_value": "1/48",
+      "our_value": "1/48",
+      "status": "MATCH",
+      "note": "count=8640 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=3, j=1",
+      "paper_value": "1/24",
+      "our_value": "1/24",
+      "status": "MATCH",
+      "note": "count=7560 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=3, j=2",
+      "paper_value": "1/12",
+      "our_value": "1/12",
+      "status": "MATCH",
+      "note": "count=1890 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=3, j=3",
+      "paper_value": "1/6",
+      "our_value": "1/6",
+      "status": "MATCH",
+      "note": "count=135 pairs"
+    },
+    {
+      "paper_line": 450,
+      "claim": "C_n average correlation n=3",
+      "paper_value": "16/9",
+      "our_value": "16/9",
+      "status": "MATCH",
+      "note": "135 Lagrangians"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=4, j=0",
+      "paper_value": "1/192",
+      "our_value": "1/192",
+      "status": "MATCH",
+      "note": "count=2350080 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=4, j=1",
+      "paper_value": "1/96",
+      "our_value": "1/96",
+      "status": "MATCH",
+      "note": "count=2203200 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=4, j=2",
+      "paper_value": "1/48",
+      "our_value": "1/48",
+      "status": "MATCH",
+      "note": "count=642600 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=4, j=3",
+      "paper_value": "1/24",
+      "our_value": "1/24",
+      "status": "MATCH",
+      "note": "count=68850 pairs"
+    },
+    {
+      "paper_line": 421,
+      "claim": "<D_L,D_{L'}> n=4, j=4",
+      "paper_value": "1/12",
+      "our_value": "1/12",
+      "status": "MATCH",
+      "note": "count=2295 pairs"
+    },
+    {
+      "paper_line": 450,
+      "claim": "C_n average correlation n=4",
+      "paper_value": "32/17",
+      "our_value": "32/17",
+      "status": "MATCH",
+      "note": "2295 Lagrangians"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 closed form n=2",
+      "paper_value": "7/135",
+      "our_value": "7/135",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 enumeration n=2",
+      "paper_value": "7/135",
+      "our_value": "7/135",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 closed form n=2",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 enumeration n=2",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 closed form n=3",
+      "paper_value": "284/4725",
+      "our_value": "284/4725",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 enumeration n=3",
+      "paper_value": "284/4725",
+      "our_value": "284/4725",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 closed form n=3",
+      "paper_value": "4/315",
+      "our_value": "4/315",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 enumeration n=3",
+      "paper_value": "4/315",
+      "our_value": "4/315",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 closed form n=4",
+      "paper_value": "464/7497",
+      "our_value": "464/7497",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 enumeration n=4",
+      "paper_value": "464/7497",
+      "our_value": "464/7497",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 closed form n=4",
+      "paper_value": "16/1071",
+      "our_value": "16/1071",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 enumeration n=4",
+      "paper_value": "16/1071",
+      "our_value": "16/1071",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 closed form n=5",
+      "paper_value": "146368/2347785",
+      "our_value": "146368/2347785",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 enumeration n=5",
+      "paper_value": "146368/2347785",
+      "our_value": "146368/2347785",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 closed form n=5",
+      "paper_value": "448/28985",
+      "our_value": "448/28985",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 enumeration n=5",
+      "paper_value": "448/28985",
+      "our_value": "448/28985",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 closed form n=6",
+      "paper_value": "2878208/46081035",
+      "our_value": "2878208/46081035",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 654,
+      "claim": "m_2 enumeration n=6",
+      "paper_value": "2878208/46081035",
+      "our_value": "2878208/46081035",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 closed form n=6",
+      "paper_value": "4352/279279",
+      "our_value": "4352/279279",
+      "status": "MATCH",
+      "note": "orbit-decomposition re-derivation"
+    },
+    {
+      "paper_line": 655,
+      "claim": "m_3 enumeration n=6",
+      "paper_value": "4352/279279",
+      "our_value": "4352/279279",
+      "status": "MATCH",
+      "note": "direct enumeration of ordered isotropic pairs"
+    },
+    {
+      "paper_line": 681,
+      "claim": "m_2 blind n=7 (closed-form consistency)",
+      "paper_value": "18166784/290716335",
+      "our_value": "18166784/290716335",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 681,
+      "claim": "m_3 blind n=7 (closed-form consistency)",
+      "paper_value": "349184/22362795",
+      "our_value": "349184/22362795",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_sym2 orbit count n=2",
+      "paper_value": "6",
+      "our_value": "6",
+      "status": "MATCH",
+      "note": "fixed symplectic pair S={0,2}"
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_gen2 orbit count n=2",
+      "paper_value": "4",
+      "our_value": "4",
+      "status": "MATCH",
+      "note": "fixed generic pair S={0,1}"
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_3 orbit count n=2",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": "fixed generic triple S={0,1,2}"
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_sym2 orbit count n=3",
+      "paper_value": "120",
+      "our_value": "120",
+      "status": "MATCH",
+      "note": "fixed symplectic pair S={0,3}"
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_gen2 orbit count n=3",
+      "paper_value": "112",
+      "our_value": "112",
+      "status": "MATCH",
+      "note": "fixed generic pair S={0,1}"
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_3 orbit count n=3",
+      "paper_value": "24",
+      "our_value": "24",
+      "status": "MATCH",
+      "note": "fixed generic triple S={0,1,2}"
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_sym2 orbit count n=4",
+      "paper_value": "2016",
+      "our_value": "2016",
+      "status": "MATCH",
+      "note": "fixed symplectic pair S={0,4}"
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_gen2 orbit count n=4",
+      "paper_value": "1984",
+      "our_value": "1984",
+      "status": "MATCH",
+      "note": "fixed generic pair S={0,1}"
+    },
+    {
+      "paper_line": -1,
+      "claim": "q_3 orbit count n=4",
+      "paper_value": "480",
+      "our_value": "480",
+      "status": "MATCH",
+      "note": "fixed generic triple S={0,1,2}"
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=2, j=1",
+      "paper_value": "4/15",
+      "our_value": "4/15",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=2, j=2",
+      "paper_value": "7/135",
+      "our_value": "7/135",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=2, j=3",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=2, j=4",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=3, j=1",
+      "paper_value": "16/63",
+      "our_value": "16/63",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=3, j=2",
+      "paper_value": "284/4725",
+      "our_value": "284/4725",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=3, j=3",
+      "paper_value": "4/315",
+      "our_value": "4/315",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=3, j=4",
+      "paper_value": "11/4725",
+      "our_value": "11/4725",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=3, j=5",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=3, j=6",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=4, j=1",
+      "paper_value": "64/255",
+      "our_value": "64/255",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=4, j=2",
+      "paper_value": "464/7497",
+      "our_value": "464/7497",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=4, j=3",
+      "paper_value": "16/1071",
+      "our_value": "16/1071",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=4, j=4",
+      "paper_value": "116/33075",
+      "our_value": "116/33075",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=4, j=5",
+      "paper_value": "4/5355",
+      "our_value": "4/5355",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=4, j=6",
+      "paper_value": "1/7497",
+      "our_value": "1/7497",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=4, j=7",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 671,
+      "claim": "m_j general n=4, j=8",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=2, k=1",
+      "paper_value": "61/45",
+      "our_value": "61/45",
+      "status": "MATCH",
+      "note": "iid=4/3, relative=1/60"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=2, k=2",
+      "paper_value": "2191/1215",
+      "our_value": "2191/1215",
+      "status": "MATCH",
+      "note": "iid=16/9, relative=31/2160"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=2, k=3",
+      "paper_value": "949/405",
+      "our_value": "949/405",
+      "status": "MATCH",
+      "note": "iid=64/27, relative=-11/960"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=2, k=4",
+      "paper_value": "241/81",
+      "our_value": "241/81",
+      "status": "MATCH",
+      "note": "iid=256/81, relative=-15/256"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=2, k=4",
+      "paper_value": "241/81",
+      "our_value": "241/81",
+      "status": "MATCH",
+      "note": "iid=256/81, relative=-15/256"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=3, k=1",
+      "paper_value": "253/189",
+      "our_value": "253/189",
+      "status": "MATCH",
+      "note": "iid=4/3, relative=1/252"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=3, k=2",
+      "paper_value": "75869/42525",
+      "our_value": "75869/42525",
+      "status": "MATCH",
+      "note": "iid=16/9, relative=269/75600"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=3, k=3",
+      "paper_value": "100637/42525",
+      "our_value": "100637/42525",
+      "status": "MATCH",
+      "note": "iid=64/27, relative=-163/100800"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=3, k=4",
+      "paper_value": "170771/54675",
+      "our_value": "170771/54675",
+      "status": "MATCH",
+      "note": "iid=256/81, relative=-2029/172800"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=3, k=6",
+      "paper_value": "136427/25515",
+      "our_value": "136427/25515",
+      "status": "MATCH",
+      "note": "iid=4096/729, relative=-6933/143360"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=4, k=1",
+      "paper_value": "1021/765",
+      "our_value": "1021/765",
+      "status": "MATCH",
+      "note": "iid=4/3, relative=1/1020"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=4, k=2",
+      "paper_value": "600277/337365",
+      "our_value": "600277/337365",
+      "status": "MATCH",
+      "note": "iid=16/9, relative=517/599760"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=4, k=3",
+      "paper_value": "2398079/1012095",
+      "our_value": "2398079/1012095",
+      "status": "MATCH",
+      "note": "iid=64/27, relative=-961/2399040"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=4, k=4",
+      "paper_value": "143531347/45544275",
+      "our_value": "143531347/45544275",
+      "status": "MATCH",
+      "note": "iid=256/81, relative=-411053/143942400"
+    },
+    {
+      "paper_line": 690,
+      "claim": "V_k n=4, k=8",
+      "paper_value": "37922099/3903795",
+      "our_value": "37922099/3903795",
+      "status": "MATCH",
+      "note": "iid=65536/6561, relative=-1071821/38993920"
+    },
+    {
+      "paper_line": 700,
+      "claim": "V_{2n} closed form n=2",
+      "paper_value": "241/81",
+      "our_value": "241/81",
+      "status": "MATCH",
+      "note": "summation vs closed form"
+    },
+    {
+      "paper_line": 704,
+      "claim": "V_{2n} p=1/4 simplification n=2",
+      "paper_value": "241/81",
+      "our_value": "241/81",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 700,
+      "claim": "V_{2n} closed form n=3",
+      "paper_value": "136427/25515",
+      "our_value": "136427/25515",
+      "status": "MATCH",
+      "note": "summation vs closed form"
+    },
+    {
+      "paper_line": 704,
+      "claim": "V_{2n} p=1/4 simplification n=3",
+      "paper_value": "136427/25515",
+      "our_value": "136427/25515",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 700,
+      "claim": "V_{2n} closed form n=4",
+      "paper_value": "37922099/3903795",
+      "our_value": "37922099/3903795",
+      "status": "MATCH",
+      "note": "summation vs closed form"
+    },
+    {
+      "paper_line": 704,
+      "claim": "V_{2n} p=1/4 simplification n=4",
+      "paper_value": "37922099/3903795",
+      "our_value": "37922099/3903795",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 724,
+      "claim": "Pr[t=0] at n=2",
+      "paper_value": "11/45",
+      "our_value": "11/45",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 724,
+      "claim": "Pr[t=1] at n=2",
+      "paper_value": "4/9",
+      "our_value": "4/9",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 724,
+      "claim": "Pr[t=2] at n=2",
+      "paper_value": "14/45",
+      "our_value": "14/45",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 724,
+      "claim": "Pr[t=3] at n=2",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 724,
+      "claim": "Pr[t=4] at n=2",
+      "paper_value": "0",
+      "our_value": "0",
+      "status": "MATCH",
+      "note": ""
+    },
+    {
+      "paper_line": 726,
+      "claim": "4*TV(n=2)",
+      "paper_value": "707/1440",
+      "our_value": "707/1440",
+      "status": "MATCH",
+      "note": "TV=707/5760"
+    }
+  ],
+  "mismatches": 0
+}
